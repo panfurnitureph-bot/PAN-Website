@@ -22,6 +22,10 @@ function VideoCard({
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
 
+  // Ang isang slot ay pwedeng larawan O video. Kung larawan, ipapakita ito
+  // bilang still na larawan — walang player.
+  const isImage = /\.(jpe?g|png|webp|gif|avif)(\?|$)/i.test(video);
+
   function toggle() {
     const v = ref.current;
     if (!v || !video) return; // walang source — huwag mag-play (iwas NotSupportedError)
@@ -37,36 +41,43 @@ function VideoCard({
   return (
     <div className="snap-start shrink-0 w-[70vw] sm:w-[300px]">
       <div className="relative aspect-[9/14] bg-sand overflow-hidden">
-        <video
-          ref={ref}
-          src={video}
-          poster={poster}
-          muted={muted}
-          playsInline
-          loop
-          className="w-full h-full object-cover"
-          onClick={toggle}
-        />
-        {/* Controls */}
-        <div className="absolute bottom-3 left-3 flex items-center gap-2">
-          <button
-            onClick={toggle}
-            aria-label={playing ? "Pause" : "Play"}
-            className="w-9 h-9 rounded-full bg-cream/90 text-ink flex items-center justify-center text-sm"
-          >
-            {playing ? "❚❚" : "▶"}
-          </button>
-          <button
-            onClick={() => {
-              setMuted(!muted);
-              if (ref.current) ref.current.muted = !muted;
-            }}
-            aria-label={muted ? "Unmute" : "Mute"}
-            className="w-9 h-9 rounded-full bg-cream/90 text-ink flex items-center justify-center text-sm"
-          >
-            {muted ? "🔇" : "🔊"}
-          </button>
-        </div>
+        {isImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={video} alt={name || "Customer photo"} className="w-full h-full object-cover" />
+        ) : (
+          <>
+            <video
+              ref={ref}
+              src={video}
+              poster={poster}
+              muted={muted}
+              playsInline
+              loop
+              className="w-full h-full object-cover"
+              onClick={toggle}
+            />
+            {/* Controls */}
+            <div className="absolute bottom-3 left-3 flex items-center gap-2">
+              <button
+                onClick={toggle}
+                aria-label={playing ? "Pause" : "Play"}
+                className="w-9 h-9 rounded-full bg-cream/90 text-ink flex items-center justify-center text-sm"
+              >
+                {playing ? "❚❚" : "▶"}
+              </button>
+              <button
+                onClick={() => {
+                  setMuted(!muted);
+                  if (ref.current) ref.current.muted = !muted;
+                }}
+                aria-label={muted ? "Unmute" : "Mute"}
+                className="w-9 h-9 rounded-full bg-cream/90 text-ink flex items-center justify-center text-sm"
+              >
+                {muted ? "🔇" : "🔊"}
+              </button>
+            </div>
+          </>
+        )}
       </div>
       <p className="font-bold text-sm mt-4">{name}</p>
       <p className="text-stone text-sm">{role}</p>
