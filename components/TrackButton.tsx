@@ -7,9 +7,18 @@ import { useEffect, useState } from "react";
 
 export default function TrackButton() {
   const [open, setOpen] = useState(false);
+  // Tumataas kada buksan — pinipilit nitong mag-remount ang iframe, kaya laging
+  // nagsisimula sa form (hindi ang dating resulta).
+  const [instance, setInstance] = useState(0);
   // Taas ng laman ng tracker, iniuulat ng iframe (postMessage) — para sakto
   // lang ang modal sa form, at hahaba lang kapag may resulta na.
   const [height, setHeight] = useState(420);
+
+  function openModal() {
+    setHeight(420); // ibalik sa taas ng form
+    setInstance((n) => n + 1); // sariwang iframe
+    setOpen(true);
+  }
 
   useEffect(() => {
     function onMsg(e: MessageEvent) {
@@ -44,7 +53,7 @@ export default function TrackButton() {
   return (
     <>
       <button
-        onClick={() => setOpen(true)}
+        onClick={openModal}
         aria-label="Track your order"
         title="Track your order"
         data-floating
@@ -76,6 +85,7 @@ export default function TrackButton() {
               {/* Ang iframe ay kasing-taas ng buong laman; ang div na ito ang
                   nagsi-scroll, hindi ang iframe mismo. */}
               <iframe
+                key={instance}
                 src="/track?embed=1"
                 title="Order tracker"
                 className="w-full border-0 block"
