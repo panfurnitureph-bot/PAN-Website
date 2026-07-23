@@ -83,6 +83,10 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 function TrackerInner() {
   const params = useSearchParams();
+  // Naka-loob sa track pop-up (iframe)? — kung gayon, ang resulta ay INLINE
+  // (hindi fixed overlay), para tama ang taas na iniuulat sa modal at walang
+  // doble na backdrop/close.
+  const embed = params.get("embed") === "1";
   const [order, setOrder] = useState(params.get("order") ?? "");
   const [verify, setVerify] = useState("");
   const [busy, setBusy] = useState(false);
@@ -156,7 +160,12 @@ function TrackerInner() {
   return (
     <>
       {/* ---------- FORM ---------- */}
-      <div className="max-w-lg mx-auto px-6 py-16 sm:py-24">
+      {/* Sa pop-up, itago ang form kapag may resulta na o naghahanap — para ang
+          resulta lang ang lumabas at tama ang taas ng modal. */}
+      <div
+        className="max-w-lg mx-auto px-6 py-16 sm:py-24"
+        hidden={embed && (busy || !!result)}
+      >
         <div className="text-center mb-10">
           {/* olive, hindi cognac — ang cognac sa cream ay 3.55:1, kulang para
               sa maliit na teksto. Ang olive ay 9.49:1 at nasa palette pa rin. */}
@@ -217,7 +226,13 @@ function TrackerInner() {
 
       {/* ---------- HABANG NAGHAHANAP ---------- */}
       {busy && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-espresso/50 backdrop-blur-sm px-6">
+        <div
+          className={
+            embed
+              ? "flex items-center justify-center py-16 px-6"
+              : "fixed inset-0 z-50 flex items-center justify-center bg-espresso/50 backdrop-blur-sm px-6"
+          }
+        >
           <div className="bg-cream rounded-lg px-10 py-9 text-center shadow-2xl max-w-xs w-full">
             <div className="mx-auto mb-5 h-9 w-9 animate-spin rounded-full border-2 border-sand border-t-cognac" />
             <p className="font-cormorant text-xl">Looking up your order</p>
@@ -229,22 +244,33 @@ function TrackerInner() {
       {/* ---------- RESULTA ---------- */}
       {result && (
         <div
-          className="fixed inset-0 z-50 overflow-y-auto bg-espresso/50 backdrop-blur-sm p-4 sm:p-8"
-          onClick={() => setResult(null)}
+          className={
+            embed
+              ? "bg-cream" // INLINE sa pop-up — walang fixed overlay
+              : "fixed inset-0 z-50 overflow-y-auto bg-espresso/50 backdrop-blur-sm p-4 sm:p-8"
+          }
+          onClick={embed ? undefined : () => setResult(null)}
         >
           <div
-            className="mx-auto max-w-xl bg-cream rounded-lg overflow-hidden shadow-2xl"
+            className={
+              embed
+                ? "bg-cream overflow-hidden"
+                : "mx-auto max-w-xl bg-cream rounded-lg overflow-hidden shadow-2xl"
+            }
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header — madilim, para agad mabasa ang estado */}
             <div className="relative bg-espresso text-cream px-6 py-7 sm:px-8">
-              <button
-                onClick={() => setResult(null)}
-                aria-label="Close"
-                className="absolute top-4 right-4 h-8 w-8 rounded-full text-cream/60 hover:bg-cream/10 hover:text-cream text-xl leading-none transition-colors"
-              >
-                ×
-              </button>
+              {/* Sa pop-up, ang X ng modal ang nagsasara — huwag nang doblehin. */}
+              {!embed && (
+                <button
+                  onClick={() => setResult(null)}
+                  aria-label="Close"
+                  className="absolute top-4 right-4 h-8 w-8 rounded-full text-cream/60 hover:bg-cream/10 hover:text-cream text-xl leading-none transition-colors"
+                >
+                  ×
+                </button>
+              )}
               <p className="text-[11px] font-bold tracking-widest2 text-cream/50 mb-1.5">
                 ORDER
               </p>
