@@ -234,24 +234,14 @@ export default function UgcGrid({
       <h2 className="text-2xl sm:text-3xl mb-1">{title}</h2>
       <p className="text-ink text-xs tracking-wide font-bold mb-8">{subtitle}</p>
 
-      {/* Masonry pattern kagaya ng tunay: malaking full-width photo,
-          tapos dalawang maliit, salit-salitan (lalo sa mobile) */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {/* Pantay-pantay na square grid — walang bungi-bungi. Lahat ng larawan
+          ay iisang sukat, malinis ang hanay. */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {photos.slice(0, shown).map((ph, i) => (
           <button
             key={ph.product.slug + i}
             onClick={() => setOpenIdx(i)}
-            className={`relative block w-full overflow-hidden group ${
-              // Review CARDS = square lagi (para hindi maputol ang text);
-              // ordinaryong photo = masonry pattern (malaki bawat ika-3)
-              ph.src.includes("/card-")
-                ? i % 3 === 0
-                  ? "col-span-2 aspect-square" // malaking card — square pa rin
-                  : "aspect-square"
-                : i % 3 === 0
-                ? "col-span-2 aspect-[4/3]"
-                : "aspect-square"
-            }`}
+            className="relative block w-full aspect-square overflow-hidden group"
             aria-label={`View ${ph.product.name}`}
           >
             <Image
@@ -261,7 +251,7 @@ export default function UgcGrid({
               className={`${
                 ph.src.includes("/card-") ? "object-contain bg-[#f7f0e4]" : "object-cover"
               } group-hover:scale-105 transition-transform duration-500`}
-              sizes="(min-width: 768px) 50vw, 100vw"
+              sizes="(min-width: 768px) 33vw, 50vw"
             />
           </button>
         ))}
