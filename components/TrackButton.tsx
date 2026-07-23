@@ -14,7 +14,9 @@ export default function TrackButton() {
   useEffect(() => {
     function onMsg(e: MessageEvent) {
       if (e.data?.type === "track-height" && typeof e.data.height === "number") {
-        setHeight(Math.min(Math.max(e.data.height, 240), Math.round(window.innerHeight * 0.9)));
+        // Buong taas ng laman — hindi kina-cap dito. Ang modal container ang
+        // magli-limit sa 90vh at magsi-scroll kapag mas mahaba (tingnan sa ibaba).
+        setHeight(Math.max(e.data.height, 240));
       }
     }
     window.addEventListener("message", onMsg);
@@ -59,10 +61,10 @@ export default function TrackButton() {
       {open && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-3 sm:p-6">
           <div className="absolute inset-0 bg-ink/70 backdrop-blur-sm" onClick={() => setOpen(false)} />
-          <div
-            className="relative bg-cream w-full max-w-lg rounded-xl shadow-2xl overflow-hidden transition-[height] duration-300"
-            style={{ height }}
-          >
+          {/* Wrapper: hanggang 90vh lang. Ang X ay nakadikit sa sulok; ang laman
+              ang nagsi-scroll sa loob kapag mas mahaba kaysa 90vh — kaya hindi
+              maputol ang mahabang resulta. */}
+          <div className="relative bg-cream w-full max-w-lg rounded-xl shadow-2xl overflow-hidden max-h-[90vh]">
             <button
               onClick={() => setOpen(false)}
               aria-label="Close"
@@ -70,9 +72,16 @@ export default function TrackButton() {
             >
               ×
             </button>
-            {/* Ang buong tracker sa loob ng pop-up — walang paglipat ng page.
-                Iniuulat ng embed ang taas nito para sakto ang modal. */}
-            <iframe src="/track?embed=1" title="Order tracker" className="w-full h-full border-0" />
+            <div className="overflow-y-auto max-h-[90vh]">
+              {/* Ang iframe ay kasing-taas ng buong laman; ang div na ito ang
+                  nagsi-scroll, hindi ang iframe mismo. */}
+              <iframe
+                src="/track?embed=1"
+                title="Order tracker"
+                className="w-full border-0 block"
+                style={{ height }}
+              />
+            </div>
           </div>
         </div>
       )}
