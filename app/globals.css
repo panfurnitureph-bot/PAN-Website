@@ -71,3 +71,10 @@ input[type="number"].no-spinner {
 :root[data-track-open="1"] [data-floating] {
   display: none !important;
 }
+
+/* Sa embed, ang container ng modal ang nagsi-scroll — hindi ang iframe body.
+   Alisin ang sariling scroll ng iframe para walang doble na scrollbar. */
+:root[data-embed="1"], :root[data-embed="1"] body {
+  overflow: hidden !important;
+  height: auto !important;
+}

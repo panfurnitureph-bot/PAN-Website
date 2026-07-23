@@ -18,12 +18,19 @@ export default function EmbedMode() {
     // Iulat ang taas ng laman sa parent (ang track pop-up) tuwing may pagbabago —
     // para sakto lang ang modal sa form, at hahaba lang kapag may resulta.
     const report = () => {
-      const h = document.body.scrollHeight;
+      // Gamitin ang TUNAY na taas ng nilalaman (ang <main>), hindi ang buong
+      // body — para hindi kasama ang anumang sobrang puwang, at eksaktong-sakto
+      // ang taas na iniuulat sa modal (walang malaking blankong ibaba).
+      const main = document.querySelector("main");
+      const h = Math.ceil(
+        main ? main.getBoundingClientRect().height : document.documentElement.scrollHeight,
+      );
       window.parent?.postMessage({ type: "track-height", height: h }, "*");
     };
     report();
+    const target = document.querySelector("main") ?? document.body;
     const ro = new ResizeObserver(report);
-    ro.observe(document.body);
+    ro.observe(target);
     return () => {
       document.documentElement.removeAttribute("data-embed");
       ro.disconnect();
