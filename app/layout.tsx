@@ -5,6 +5,7 @@ import { StoreProvider } from "@/components/store";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ChatBubble from "@/components/ChatBubble";
+import TrackButton from "@/components/TrackButton";
 import ContentLive from "@/components/ContentLive";
 import { primeStoreContent } from "@/lib/content";
 
@@ -44,6 +45,7 @@ export default async function RootLayout({
           <Header site={site} />
           <main className="min-h-screen">{children}</main>
           <Footer site={site} />
+          <TrackButton />
           <ChatBubble site={site} />
         </StoreProvider>
       </body>
