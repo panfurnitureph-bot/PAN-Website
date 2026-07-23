@@ -231,19 +231,25 @@ function ReviewModal({
             </div>
           </div>
 
-          {/* Buong review text + READ MORE/SHOW LESS */}
-          <div className="mt-4 text-sm text-ink/90 leading-relaxed whitespace-pre-line">
-            {expanded || !longText ? r.text : r.text.slice(0, 180) + "…"}
-          </div>
-          {longText && (
-            <div className="text-center">
-              <button
-                onClick={() => setExpanded(!expanded)}
-                className="mt-3 text-xs font-bold tracking-widest2 text-stone hover:text-ink"
-              >
-                {expanded ? "SHOW LESS" : "READ MORE"}
-              </button>
-            </div>
+          {/* Buong review text + READ MORE/SHOW LESS. Kung ang ipinapakitang
+              larawan ay ang "CUSTOM MADE" card, naka-embed na ang teksto doon —
+              huwag nang ulitin dito. */}
+          {!gallery[photoIdx]?.includes("/card-") && (
+            <>
+              <div className="mt-4 text-sm text-ink/90 leading-relaxed whitespace-pre-line">
+                {expanded || !longText ? r.text : r.text.slice(0, 180) + "…"}
+              </div>
+              {longText && (
+                <div className="text-center">
+                  <button
+                    onClick={() => setExpanded(!expanded)}
+                    className="mt-3 text-xs font-bold tracking-widest2 text-stone hover:text-ink"
+                  >
+                    {expanded ? "SHOW LESS" : "READ MORE"}
+                  </button>
+                </div>
+              )}
+            </>
           )}
 
           {/* Thumbs */}
@@ -301,6 +307,10 @@ export default function GoogleReviews({
           const isLong = r.text.length > 160;
           const preview = isLong ? r.text.slice(0, 157).trimEnd() + "…" : r.text;
           const mainPhoto = r.photos[0];
+          // Ang "CUSTOM MADE" na card na larawan ay may naka-embed nang review
+          // na teksto — kaya kung card ang preview, hindi na natin inuulit ang
+          // plain na teksto sa taas (para hindi doble).
+          const isCard = !!mainPhoto && mainPhoto.includes("/card-");
           return (
             <div
               key={r.name + r.date}
@@ -317,14 +327,16 @@ export default function GoogleReviews({
                   <Stars n={r.rating} />
                 </div>
               </div>
-              <p className="text-sm text-ink/90 leading-relaxed min-h-[60px]">
-                {preview}
-                {isLong && (
-                  <span className="block mt-1 text-xs font-bold tracking-widest2 text-stone underline underline-offset-2">
-                    SEE MORE
-                  </span>
-                )}
-              </p>
+              {!isCard && (
+                <p className="text-sm text-ink/90 leading-relaxed min-h-[60px]">
+                  {preview}
+                  {isLong && (
+                    <span className="block mt-1 text-xs font-bold tracking-widest2 text-stone underline underline-offset-2">
+                      SEE MORE
+                    </span>
+                  )}
+                </p>
+              )}
               {mainPhoto && (
                 <div className={`relative mt-4 ${mainPhoto.includes("/card-") ? "aspect-square" : "aspect-[4/3]"}`}>
                   <Image src={mainPhoto} alt={`Photo by ${r.name}`} fill className="object-cover" sizes="340px" />
