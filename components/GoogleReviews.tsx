@@ -38,6 +38,46 @@ function Stars({ n }: { n: number }) {
   );
 }
 
+// Branded "CUSTOM MADE" na card na may TUNAY na larawan sa taas at ang review
+// bilang quote sa ibaba — parehong itsura ng dating generated na card, pero
+// naka-CSS kaya awtomatiko para sa kahit anong review na may larawan (walang
+// kailangang i-generate na image, gumagana sa Vercel).
+function ReviewCardImage({
+  photo,
+  text,
+  rating,
+  compact = false,
+}: {
+  photo: string;
+  text: string;
+  rating: number;
+  compact?: boolean;
+}) {
+  const quote = compact && text.length > 150 ? text.slice(0, 147).trimEnd() + "…" : text;
+  return (
+    <div className="bg-[#f6efe1] overflow-hidden">
+      {/* Larawan sa taas */}
+      <div className="relative aspect-[4/3] bg-sand">
+        <Image src={photo} alt="Customer photo" fill className="object-cover" sizes="(min-width:768px) 440px, 100vw" />
+      </div>
+      {/* Branded na ibaba: logo, CUSTOM MADE, quote, verified, stars */}
+      <div className="relative px-5 pt-8 pb-6 text-center -mt-8">
+        <div className="absolute left-1/2 -translate-x-1/2 -top-8 w-16 h-16 rounded-full bg-[#f6efe1] p-1 shadow-sm">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/images/pan-seal.png" alt="PAN Furniture" className="w-full h-full object-contain rounded-full" />
+        </div>
+        <p className="text-[10px] tracking-[0.3em] text-stone/70 font-semibold mb-3">CUSTOM MADE</p>
+        <p className="font-serif italic text-[15px] leading-relaxed text-ink/90 mb-4">“{quote}”</p>
+        <p className="text-[9px] tracking-[0.25em] text-stone/60 mb-1">— VERIFIED GOOGLE REVIEW</p>
+        <p className="text-cognac text-sm tracking-widest mb-1">{"★".repeat(rating)}{"☆".repeat(5 - rating)}</p>
+        <p className="text-[10px] tracking-[0.2em] text-stone/70 font-semibold">
+          PAN FURNITURE · 4.8★ ON GOOGLE
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function Avatar({ name, index, size = "w-10 h-10" }: { name: string; index: number; size?: string }) {
   return (
     <span
@@ -136,20 +176,21 @@ function ReviewModal({
 
       <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto grid md:grid-cols-[48%_52%]">
         {/* ---------- LEFT: MALAKING PHOTO + ARROWS ---------- */}
-        <div className="relative aspect-square md:aspect-auto md:min-h-[560px] bg-[#f7f0e4]">
-          {gallery.length > 0 && (
-            <Image
-              src={gallery[photoIdx]}
-              alt={`Photo by ${r.name}`}
-              fill
-              // Cards ay square — ipakita nang BUO (contain) para hindi
-              // maputol ang text; ordinaryong photos ay cover pa rin
-              className={`md:rounded-l-xl ${
-                gallery[photoIdx].includes("/card-") ? "object-contain" : "object-cover"
-              }`}
-              sizes="(min-width: 768px) 440px, 100vw"
-            />
-          )}
+        <div className="relative aspect-square md:aspect-auto md:min-h-[560px] bg-[#f7f0e4] overflow-y-auto">
+          {gallery.length > 0 &&
+            (gallery[photoIdx].includes("/card-") ? (
+              // Generated na card — ipakita buo (contain).
+              <Image
+                src={gallery[photoIdx]}
+                alt={`Photo by ${r.name}`}
+                fill
+                className="md:rounded-l-xl object-contain"
+                sizes="(min-width: 768px) 440px, 100vw"
+              />
+            ) : (
+              // Tunay na larawan → branded na card na may larawan + quote.
+              <ReviewCardImage photo={gallery[photoIdx]} text={r.text} rating={r.rating} />
+            ))}
           <button
             onClick={prev}
             aria-label="Previous review"
@@ -234,7 +275,10 @@ function ReviewModal({
           {/* Buong review text + READ MORE/SHOW LESS. Kung ang ipinapakitang
               larawan ay ang "CUSTOM MADE" card, naka-embed na ang teksto doon —
               huwag nang ulitin dito. */}
-          {!gallery[photoIdx]?.includes("/card-") && (
+          {/* Ang larawan sa kaliwa (generated card O branded na larawang-card)
+              ay may naka-embed nang review — kaya ipinapakita lang natin ang
+              plain na teksto dito kung WALANG larawan. */}
+          {gallery.length === 0 && (
             <>
               <div className="mt-4 text-sm text-ink/90 leading-relaxed whitespace-pre-line">
                 {expanded || !longText ? r.text : r.text.slice(0, 180) + "…"}
@@ -306,11 +350,10 @@ export default function GoogleReviews({
         {items.slice(0, shown).map((r, i) => {
           const isLong = r.text.length > 160;
           const preview = isLong ? r.text.slice(0, 157).trimEnd() + "…" : r.text;
-          const mainPhoto = r.photos[0];
-          // Ang "CUSTOM MADE" na card na larawan ay may naka-embed nang review
-          // na teksto — kaya kung card ang preview, hindi na natin inuulit ang
-          // plain na teksto sa taas (para hindi doble).
-          const isCard = !!mainPhoto && mainPhoto.includes("/card-");
+          // Unang tunay na larawan (hindi generated na card), kung meron.
+          const realPhoto = r.photos.find((p) => !p.includes("/card-"));
+          const cardPhoto = r.photos.find((p) => p.includes("/card-"));
+          const extra = r.photos.length - 1;
           return (
             <div
               key={r.name + r.date}
@@ -327,7 +370,26 @@ export default function GoogleReviews({
                   <Stars n={r.rating} />
                 </div>
               </div>
-              {!isCard && (
+
+              {realPhoto ? (
+                // May tunay na larawan → branded na card na may larawan sa taas
+                // at review bilang quote sa ibaba (walang doble na teksto).
+                <div className="relative mt-1">
+                  <ReviewCardImage photo={realPhoto} text={r.text} rating={r.rating} compact />
+                  {extra > 0 && (
+                    <span className="absolute top-2 right-2 bg-ink/70 text-cream text-xs px-2 py-1 rounded">
+                      +{extra} more
+                    </span>
+                  )}
+                </div>
+              ) : cardPhoto ? (
+                // Walang tunay na larawan → ang generated na "CUSTOM MADE" card
+                // (may naka-embed nang teksto) lang, walang plain na teksto.
+                <div className="relative mt-1 aspect-square">
+                  <Image src={cardPhoto} alt={r.name} fill className="object-cover" sizes="340px" />
+                </div>
+              ) : (
+                // Walang larawan man lang → plain na teksto.
                 <p className="text-sm text-ink/90 leading-relaxed min-h-[60px]">
                   {preview}
                   {isLong && (
@@ -336,16 +398,6 @@ export default function GoogleReviews({
                     </span>
                   )}
                 </p>
-              )}
-              {mainPhoto && (
-                <div className={`relative mt-4 ${mainPhoto.includes("/card-") ? "aspect-square" : "aspect-[4/3]"}`}>
-                  <Image src={mainPhoto} alt={`Photo by ${r.name}`} fill className="object-cover" sizes="340px" />
-                  {r.photos.length > 1 && (
-                    <span className="absolute bottom-2 right-2 bg-ink/70 text-cream text-xs px-2 py-1 rounded">
-                      +{r.photos.length - 1} more
-                    </span>
-                  )}
-                </div>
               )}
               <p className="text-stone text-xs mt-4">{r.date}</p>
             </div>
