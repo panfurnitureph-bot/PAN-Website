@@ -229,11 +229,19 @@ function TrackerInner() {
         <div
           className={
             embed
-              ? "flex items-center justify-center py-16 px-6"
+              ? "flex items-center justify-center py-14 px-6"
               : "fixed inset-0 z-50 flex items-center justify-center bg-espresso/50 backdrop-blur-sm px-6"
           }
         >
-          <div className="bg-cream rounded-lg px-10 py-9 text-center shadow-2xl max-w-xs w-full">
+          {/* Sa pop-up, ang modal na mismo ang cream na kahon — huwag nang
+              doblehin ng kahon dito. */}
+          <div
+            className={
+              embed
+                ? "text-center"
+                : "bg-cream rounded-lg px-10 py-9 text-center shadow-2xl max-w-xs w-full"
+            }
+          >
             <div className="mx-auto mb-5 h-9 w-9 animate-spin rounded-full border-2 border-sand border-t-cognac" />
             <p className="font-cormorant text-xl">Looking up your order</p>
             <p className="mt-1.5 text-xs text-stone">This only takes a moment.</p>
