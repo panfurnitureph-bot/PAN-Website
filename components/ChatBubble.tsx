@@ -18,7 +18,7 @@ export default function ChatBubble({ site }: { site: SiteContent }) {
   const handle = messengerHandle((site as any).social?.facebook);
 
   return (
-    <div className="fixed bottom-5 right-5 z-50">
+    <div data-floating className="fixed bottom-5 right-5 z-50">
       {open && (
         <div className="absolute bottom-16 right-0 w-72 bg-white shadow-xl border border-sand p-5 rounded-lg">
           <p className="font-bold text-ink">{site.brand.name}</p>

@@ -50,3 +50,13 @@ input[type="number"].no-spinner {
   -moz-appearance: textfield;
   appearance: textfield;
 }
+
+/* Pop-up (iframe) embed mode — itago ang chrome, laman lang ang ipakita. */
+:root[data-embed="1"] header,
+:root[data-embed="1"] footer,
+:root[data-embed="1"] [data-floating] {
+  display: none !important;
+}
+:root[data-embed="1"] main {
+  min-height: 0 !important;
+}

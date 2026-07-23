@@ -4,8 +4,10 @@ import "./globals.css";
 import { StoreProvider } from "@/components/store";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { Suspense } from "react";
 import ChatBubble from "@/components/ChatBubble";
 import TrackButton from "@/components/TrackButton";
+import EmbedMode from "@/components/EmbedMode";
 import ContentLive from "@/components/ContentLive";
 import { primeStoreContent } from "@/lib/content";
 
@@ -42,6 +44,9 @@ export default async function RootLayout({
           {/* Nakikinig kung may binago sa PAN app admin — nagre-refresh ang
               nakabukas na page nang hindi kailangang gawin ito ng bisita. */}
           <ContentLive />
+          <Suspense fallback={null}>
+            <EmbedMode />
+          </Suspense>
           <Header site={site} />
           <main className="min-h-screen">{children}</main>
           <Footer site={site} />
