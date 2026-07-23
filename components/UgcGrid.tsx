@@ -214,7 +214,9 @@ export default function UgcGrid({
   products: Product[];
 }) {
   const { title, subtitle } = ugc;
-  const [shown, setShown] = useState(8);
+  // 9 muna (3 buong hanay), tapos +9 kada LOAD MORE — laging multiple ng 3
+  // kolum, para walang bungi na huling hanay.
+  const [shown, setShown] = useState(9);
   const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   // Kung may sariling photos sa admin (Videos & UGC tab) — yun ang
@@ -222,12 +224,18 @@ export default function UgcGrid({
   // product photos.
   const customPhotos: string[] = (ugc as any).photos ?? [];
   const fallbackProduct = products.find((p) => p.images.length > 0)!;
-  const photos =
+  const allPhotos =
     customPhotos.length > 0
       ? customPhotos.map((src) => ({ src, product: fallbackProduct }))
       : products
           .filter((p) => p.images.length > 0)
           .map((p) => ({ src: p.images[0], product: p }));
+  // Ipakita lang ang mga buong hanay (multiple ng 3) — maliban kung ito na ang
+  // huli, para hindi maiwan ang mga natitirang larawan.
+  const photos =
+    allPhotos.length % 3 === 0
+      ? allPhotos
+      : allPhotos.slice(0, Math.floor(allPhotos.length / 3) * 3 || allPhotos.length);
 
   return (
     <section className="max-w-7xl mx-auto px-6 py-14">
@@ -260,7 +268,7 @@ export default function UgcGrid({
       {shown < photos.length && (
         <div className="text-center mt-8">
           <button
-            onClick={() => setShown(shown + 8)}
+            onClick={() => setShown(shown + 9)}
             className="border border-stone/50 px-8 py-3 text-xs font-bold tracking-widest2 hover:border-ink transition-colors"
           >
             LOAD MORE
