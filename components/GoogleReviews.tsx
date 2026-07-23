@@ -277,7 +277,11 @@ export default function GoogleReviews({
   googleReviews: HomepageContent["googleReviews"];
   products: Product[];
 }) {
-  const { title, rating, count, items } = googleReviews;
+  const { title, rating, count } = googleReviews;
+  // Ipakita lang ang 4–5 na bituin — itinatago ang mababang rating sa
+  // storefront. Reviews na walang rating ay ipinapalagay na mataas (para hindi
+  // matanggal ang mga lumang record na walang score).
+  const items = googleReviews.items.filter((r) => (r.rating ?? 5) >= 4);
   const [shown, setShown] = useState(6);
   const [openIdx, setOpenIdx] = useState<number | null>(null);
 
