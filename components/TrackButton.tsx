@@ -7,6 +7,19 @@ import { useEffect, useState } from "react";
 
 export default function TrackButton() {
   const [open, setOpen] = useState(false);
+  // Taas ng laman ng tracker, iniuulat ng iframe (postMessage) — para sakto
+  // lang ang modal sa form, at hahaba lang kapag may resulta na.
+  const [height, setHeight] = useState(420);
+
+  useEffect(() => {
+    function onMsg(e: MessageEvent) {
+      if (e.data?.type === "track-height" && typeof e.data.height === "number") {
+        setHeight(Math.min(Math.max(e.data.height, 240), Math.round(window.innerHeight * 0.9)));
+      }
+    }
+    window.addEventListener("message", onMsg);
+    return () => window.removeEventListener("message", onMsg);
+  }, []);
 
   // Escape para isara; harangin ang scroll sa likod habang bukas.
   useEffect(() => {
@@ -42,7 +55,10 @@ export default function TrackButton() {
       {open && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-3 sm:p-6">
           <div className="absolute inset-0 bg-ink/70 backdrop-blur-sm" onClick={() => setOpen(false)} />
-          <div className="relative bg-cream w-full max-w-lg h-[85vh] rounded-xl shadow-2xl overflow-hidden">
+          <div
+            className="relative bg-cream w-full max-w-lg rounded-xl shadow-2xl overflow-hidden transition-[height] duration-300"
+            style={{ height }}
+          >
             <button
               onClick={() => setOpen(false)}
               aria-label="Close"
@@ -50,7 +66,8 @@ export default function TrackButton() {
             >
               ×
             </button>
-            {/* Ang buong tracker sa loob ng pop-up — walang paglipat ng page. */}
+            {/* Ang buong tracker sa loob ng pop-up — walang paglipat ng page.
+                Iniuulat ng embed ang taas nito para sakto ang modal. */}
             <iframe src="/track?embed=1" title="Order tracker" className="w-full h-full border-0" />
           </div>
         </div>

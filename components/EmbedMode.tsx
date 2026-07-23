@@ -12,8 +12,22 @@ export default function EmbedMode() {
   const embed = params.get("embed") === "1";
 
   useEffect(() => {
-    if (embed) document.documentElement.setAttribute("data-embed", "1");
-    return () => document.documentElement.removeAttribute("data-embed");
+    if (!embed) return;
+    document.documentElement.setAttribute("data-embed", "1");
+
+    // Iulat ang taas ng laman sa parent (ang track pop-up) tuwing may pagbabago —
+    // para sakto lang ang modal sa form, at hahaba lang kapag may resulta.
+    const report = () => {
+      const h = document.body.scrollHeight;
+      window.parent?.postMessage({ type: "track-height", height: h }, "*");
+    };
+    report();
+    const ro = new ResizeObserver(report);
+    ro.observe(document.body);
+    return () => {
+      document.documentElement.removeAttribute("data-embed");
+      ro.disconnect();
+    };
   }, [embed]);
 
   return null;

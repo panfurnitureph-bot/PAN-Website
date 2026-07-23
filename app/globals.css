@@ -60,3 +60,9 @@ input[type="number"].no-spinner {
 :root[data-embed="1"] main {
   min-height: 0 !important;
 }
+
+/* Sa pop-up embed, bawasan ang malaking padding ng tracker para sakto ang modal. */
+:root[data-embed="1"] main > div {
+  padding-top: 2rem !important;
+  padding-bottom: 2rem !important;
+}
