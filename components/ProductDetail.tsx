@@ -390,6 +390,9 @@ export default function ProductDetail({
                   }`}
                 >
                   <Image src={swatchImg} alt={c} fill className="object-cover" sizes="48px" />
+                  {/* Panloob na hangganan — para kita ang hugis ng swatch kahit
+                      napakaputla ng tela (hal. cream/beige), hindi mukhang blank. */}
+                  <span className="pointer-events-none absolute inset-0 rounded-[2px] ring-1 ring-inset ring-black/10" />
                 </button>
 
                 {/* Hover popup — malaking TELA swatch + pangalan + material */}
