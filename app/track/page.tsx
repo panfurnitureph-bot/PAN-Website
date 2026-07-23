@@ -154,6 +154,20 @@ function TrackerInner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Sa loob ng track pop-up: pag sinara/binuksan ulit, hinihiling ng parent na
+  // ibalik sa form — instant, walang reload.
+  useEffect(() => {
+    function onReset(e: MessageEvent) {
+      if (e.data?.type === "track-reset") {
+        setResult(null);
+        setError("");
+        setBusy(false);
+      }
+    }
+    window.addEventListener("message", onReset);
+    return () => window.removeEventListener("message", onReset);
+  }, []);
+
   const field =
     "w-full border border-sand bg-white px-4 py-3.5 text-sm rounded focus:outline-none focus:border-cognac transition-colors placeholder:text-stone/50";
 

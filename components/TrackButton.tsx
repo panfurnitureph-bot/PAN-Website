@@ -10,7 +10,6 @@ import { useEffect, useRef, useState } from "react";
 
 export default function TrackButton() {
   const [open, setOpen] = useState(false);
-  const [ready, setReady] = useState(false); // na-load na ba ang tracker
   // Taas ng laman ng tracker, iniuulat ng iframe (postMessage) — para sakto
   // lang ang modal sa form, at hahaba lang kapag may resulta na. Ang default
   // (~500) ay malapit sa taas ng form kaya buo agad ang unang labas, walang
@@ -18,17 +17,15 @@ export default function TrackButton() {
   const [height, setHeight] = useState(500);
   const frameRef = useRef<HTMLIFrameElement>(null);
 
-  function openModal() {
+  function reset() {
+    // Sabihan ang tracker na ibalik sa form — client-side, INSTANT (walang
+    // reload). Nakikinig ang track page sa "track-reset".
     setHeight(500);
-    // Ibalik sa form kung may naiwang resulta mula sa dating paghahanap —
-    // i-reload ang iframe (mabilis dahil naka-cache na).
-    if (ready) {
-      try {
-        frameRef.current?.contentWindow?.location.replace("/track?embed=1");
-      } catch {
-        /* cross-origin guard — hindi mangyayari dito (parehong origin) */
-      }
-    }
+    frameRef.current?.contentWindow?.postMessage({ type: "track-reset" }, "*");
+  }
+
+  function openModal() {
+    reset(); // linisin ang naiwang resulta agad
     setOpen(true);
   }
 
@@ -56,7 +53,11 @@ export default function TrackButton() {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
       document.documentElement.removeAttribute("data-track-open");
+      // Pagsara, ibalik agad ang tracker sa form sa background — kaya instant
+      // na ang susunod na buksan.
+      reset();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   return (
@@ -101,7 +102,6 @@ export default function TrackButton() {
               ref={frameRef}
               src="/track?embed=1"
               title="Order tracker"
-              onLoad={() => setReady(true)}
               className="w-full border-0 block transition-[height] duration-200"
               style={{ height }}
             />
