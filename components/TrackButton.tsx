@@ -29,9 +29,13 @@ export default function TrackButton() {
     };
     document.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
+    // Itago ang ibang lumulutang na buton (chat, scroll-top) habang bukas ang
+    // pop-up — para hindi sila sumilip sa ilalim ng modal.
+    document.documentElement.setAttribute("data-track-open", "1");
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
+      document.documentElement.removeAttribute("data-track-open");
     };
   }, [open]);
 

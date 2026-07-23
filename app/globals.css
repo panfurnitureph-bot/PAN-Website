@@ -66,3 +66,8 @@ input[type="number"].no-spinner {
   padding-top: 2rem !important;
   padding-bottom: 2rem !important;
 }
+
+/* Habang bukas ang track pop-up, itago ang lahat ng lumulutang na buton. */
+:root[data-track-open="1"] [data-floating] {
+  display: none !important;
+}
