@@ -776,12 +776,13 @@ export default function ProductDetail({
         )}
 
         {/* Contact us for more information — opens Messenger with the product
-            name + link as the ref, so the team sees exactly which product the
-            customer is asking about. */}
+            slug as the ref. m.me only preserves a limited charset (spaces and
+            em-dashes get mangled), so we send just the slug; the IMS webhook
+            looks the name + photo back up from the catalogue. */}
         {(() => {
           const handle = messengerHandle((site as any).social?.facebook);
           if (!handle) return null;
-          const ref = `Product: ${product.name} — /products/${product.slug}`;
+          const ref = `product_${product.slug}`;
           return (
             <a
               href={messengerUrl(handle, ref)}
