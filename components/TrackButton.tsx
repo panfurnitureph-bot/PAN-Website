@@ -29,7 +29,7 @@ export default function TrackButton() {
         aria-label="Track your order"
         title="Track your order"
         data-floating
-        className="fixed bottom-24 right-5 z-40 w-12 h-12 rounded-full bg-espresso text-cream shadow-lg flex items-center justify-center hover:bg-cognac transition-colors"
+        className="fixed bottom-24 right-5 z-40 w-14 h-14 rounded-full bg-espresso text-cream shadow-lg flex items-center justify-center hover:bg-cognac transition-colors"
       >
         {/* Truck / delivery icon */}
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>

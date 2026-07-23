@@ -20,7 +20,7 @@ export default function ScrollTop() {
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       aria-label="Scroll to top"
       data-floating
-      className="fixed bottom-40 right-5 z-40 w-12 h-12 rounded-full bg-espresso text-cream shadow-lg flex items-center justify-center hover:bg-cognac transition-colors"
+      className="fixed bottom-40 right-5 z-40 w-14 h-14 rounded-full bg-espresso text-cream shadow-lg flex items-center justify-center hover:bg-cognac transition-colors"
     >
       ↑
     </button>
