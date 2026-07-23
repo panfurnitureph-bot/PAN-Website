@@ -12,12 +12,14 @@ export default function TrackButton() {
   const [open, setOpen] = useState(false);
   const [ready, setReady] = useState(false); // na-load na ba ang tracker
   // Taas ng laman ng tracker, iniuulat ng iframe (postMessage) — para sakto
-  // lang ang modal sa form, at hahaba lang kapag may resulta na.
-  const [height, setHeight] = useState(420);
+  // lang ang modal sa form, at hahaba lang kapag may resulta na. Ang default
+  // (~500) ay malapit sa taas ng form kaya buo agad ang unang labas, walang
+  // reflow mula sa maliit.
+  const [height, setHeight] = useState(500);
   const frameRef = useRef<HTMLIFrameElement>(null);
 
   function openModal() {
-    setHeight(420);
+    setHeight(500);
     // Ibalik sa form kung may naiwang resulta mula sa dating paghahanap —
     // i-reload ang iframe (mabilis dahil naka-cache na).
     if (ready) {
@@ -100,7 +102,7 @@ export default function TrackButton() {
               src="/track?embed=1"
               title="Order tracker"
               onLoad={() => setReady(true)}
-              className="w-full border-0 block"
+              className="w-full border-0 block transition-[height] duration-200"
               style={{ height }}
             />
           </div>

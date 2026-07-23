@@ -28,11 +28,16 @@ export default function EmbedMode() {
       window.parent?.postMessage({ type: "track-height", height: h }, "*");
     };
     report();
+    // Iulat din pagkatapos mag-load ang mga font/larawan — para tama agad ang
+    // taas nang hindi naghihintay ng ResizeObserver tick.
+    requestAnimationFrame(report);
+    window.addEventListener("load", report);
     const target = document.querySelector("main") ?? document.body;
     const ro = new ResizeObserver(report);
     ro.observe(target);
     return () => {
       document.documentElement.removeAttribute("data-embed");
+      window.removeEventListener("load", report);
       ro.disconnect();
     };
   }, [embed]);
