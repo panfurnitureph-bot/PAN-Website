@@ -15,8 +15,11 @@ export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
   const order = (sp.get("order") || "").trim();
   const verify = (sp.get("verify") || "").trim();
+  // Ang lagdang token (mula sa FB alert) ang katumbas ng verify — direktang
+  // bumubukas ang tracker. Ipinapasa natin ito sa app nang buo.
+  const token = (sp.get("t") || "").trim();
 
-  if (!order || !verify) {
+  if (!order || (!verify && !token)) {
     return NextResponse.json(
       { error: "Order number and email or phone are required." },
       { status: 400 },
@@ -24,8 +27,11 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    const qs = `order=${encodeURIComponent(order)}` +
+      (verify ? `&verify=${encodeURIComponent(verify)}` : "") +
+      (token ? `&t=${encodeURIComponent(token)}` : "");
     const res = await fetch(
-      `${APP_URL}/api/track?order=${encodeURIComponent(order)}&verify=${encodeURIComponent(verify)}`,
+      `${APP_URL}/api/track?${qs}`,
       { cache: "no-store" },
     );
     const data = await res.json().catch(() => ({}));

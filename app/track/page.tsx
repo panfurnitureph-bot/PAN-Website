@@ -104,8 +104,7 @@ function TrackerInner() {
     };
   }, [result]);
 
-  async function look(e: React.FormEvent) {
-    e.preventDefault();
+  async function lookup(orderRef: string, verifyVal: string, token?: string) {
     setError("");
     setBusy(true);
     setResult(null);
@@ -119,10 +118,10 @@ function TrackerInner() {
     };
 
     try {
-      const res = await fetch(
-        `/api/track?order=${encodeURIComponent(order.trim())}&verify=${encodeURIComponent(verify.trim())}`,
-        { cache: "no-store" },
-      );
+      const qs = `order=${encodeURIComponent(orderRef.trim())}` +
+        (verifyVal.trim() ? `&verify=${encodeURIComponent(verifyVal.trim())}` : "") +
+        (token ? `&t=${encodeURIComponent(token)}` : "");
+      const res = await fetch(`/api/track?${qs}`, { cache: "no-store" });
       const data = await res.json();
       await settle();
       if (!res.ok) {
@@ -136,6 +135,20 @@ function TrackerInner() {
     }
     setBusy(false);
   }
+
+  function look(e: React.FormEvent) {
+    e.preventDefault();
+    lookup(order, verify);
+  }
+
+  // May lagdang token sa URL (mula sa FB alert na "Track order" na link)? —
+  // buksan agad ang tracker, walang hinihinging email/telepono.
+  useEffect(() => {
+    const t = params.get("t");
+    const ord = params.get("order");
+    if (t && ord) lookup(ord, "", t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const field =
     "w-full border border-sand bg-white px-4 py-3.5 text-sm rounded focus:outline-none focus:border-cognac transition-colors placeholder:text-stone/50";
