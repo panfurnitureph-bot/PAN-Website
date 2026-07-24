@@ -3,9 +3,7 @@
 // Trust badges — desktop: 4 sa isang hilera; mobile: swipe carousel
 // na may dots (kagaya ng tunay na site).
 
-import { useRef, useState } from "react";
 import type { HomepageContent } from "@/lib/products";
-import { useSwipeFallback } from "@/components/useSwipeFallback";
 
 const ICONS: Record<string, JSX.Element> = {
   sofa: (
@@ -43,19 +41,6 @@ export default function TrustBadges({
 }: {
   badges: HomepageContent["trustBadges"];
 }) {
-  const track = useRef<HTMLDivElement>(null);
-  const [idx, setIdx] = useState(0);
-  const swipe = useSwipeFallback(track);
-
-  function onScroll() {
-    const el = track.current;
-    if (!el) return;
-    const max = el.scrollWidth - el.clientWidth;
-    if (max <= 0) return;
-    const i = Math.round((el.scrollLeft / max) * (badges.length - 1));
-    if (i !== idx) setIdx(i);
-  }
-
   return (
     <section className="border-b border-sand bg-white">
       {/* Desktop: apat sabay */}
@@ -71,37 +56,18 @@ export default function TrustBadges({
         ))}
       </div>
 
-      {/* Mobile: swipe carousel + dots */}
-      <div className="md:hidden py-6">
-        <div
-          ref={track}
-          onScroll={onScroll}
-          onTouchStart={swipe.onTouchStart}
-          onTouchMove={swipe.onTouchMove}
-          onTouchEnd={swipe.onTouchEnd}
-          onTouchCancel={swipe.onTouchCancel}
-          className="flex overflow-x-auto snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {badges.map((b) => (
-            <div key={b.title} className="w-[80vw] shrink-0 snap-center flex items-center gap-4 px-6">
-              <span className="text-ink shrink-0">{ICONS[b.icon] ?? ICONS.sofa}</span>
-              <div className="text-sm text-ink leading-snug">
-                <p>{b.title}</p>
-                {b.text && <p>{b.text}</p>}
-              </div>
+      {/* Mobile: static na 2x2 grid — tinanggal ang swipe carousel + dots
+          (paulit-ulit na nagka-bug sa iOS; kita naman agad lahat sa grid). */}
+      <div className="md:hidden grid grid-cols-2 gap-x-4 gap-y-5 px-6 py-6">
+        {badges.map((b) => (
+          <div key={b.title} className="flex items-center gap-3">
+            <span className="text-ink shrink-0">{ICONS[b.icon] ?? ICONS.sofa}</span>
+            <div className="text-xs text-ink leading-snug">
+              <p>{b.title}</p>
+              {b.text && <p>{b.text}</p>}
             </div>
-          ))}
-        </div>
-        <div className="flex justify-center gap-1.5 mt-4">
-          {badges.map((_, i) => (
-            <span
-              key={i}
-              className={`h-1.5 rounded-full transition-all ${
-                i === idx ? "bg-espresso w-3" : "bg-stone/40 w-1.5"
-              }`}
-            />
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </section>
   );
