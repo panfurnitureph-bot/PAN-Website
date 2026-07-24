@@ -2,21 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
 body {
-  @apply bg-cream text-ink antialiased;
   /* Pigilan ang page-level na pahalang na pag-scroll — kapag may elementong
      lumampas (carousel child, -mx bleed), hindi na gagalaw pahalang ang buong
-     pahina. Ang mga carousel ay nag-i-scroll pa rin sa LOOB ng sarili nila. */
+     pahina. Ang mga carousel ay nag-i-scroll pa rin sa LOOB ng sarili nila.
+
+     MAHALAGA: `clip` at hindi `hidden` — sa iOS Safari, ang `overflow-x:
+     hidden` sa body ay gumagawa ng sariling scroll container (na-stuck /
+     sticky ang vertical scroll). Ang `clip` ay pumuputol lang nang walang
+     scroll container. May `hidden` fallback para sa lumang browsers. */
   overflow-x: hidden;
+  overflow-x: clip;
+}
+
+body {
+  @apply bg-cream text-ink antialiased;
   max-width: 100%;
 }
 
-/* Mga pahalang na carousel track — tiyaking sa kanila napupunta ang pahalang na
-   hagod (hindi sa page), at may momentum ang scroll sa mobile WebViews. Walang
-   binabago sa itsura. */
+/* Mga pahalang na carousel track — tiyaking sa kanila napupunta ang pahalang
+   na hagod (hindi sa page). Walang binabago sa itsura.
+
+   SADYANG WALANG `-webkit-overflow-scrolling: touch` dito — iOS-only na
+   legacy property na may kilalang bug: nag-fi-freeze ang scroll kapag
+   nagbago ang laman habang gumagalaw (kaya "stuck hanggang mag-refresh" sa
+   iPhone pero OK sa Android). Default na ang momentum sa modernong iOS. */
 .overflow-x-auto,
 [class*="overflow-x-auto"] {
-  -webkit-overflow-scrolling: touch;
   touch-action: pan-x pan-y;
   overscroll-behavior-x: contain;
 }
