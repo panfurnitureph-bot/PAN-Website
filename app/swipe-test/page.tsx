@@ -61,7 +61,12 @@ export default function SwipeTest() {
 
   return (
     <main className="min-h-screen bg-white text-black p-4 space-y-6 pb-40">
-      <h1 className="text-xl font-bold">Swipe Test (pansamantala)</h1>
+      <h1 className="text-xl font-bold">
+        Swipe Test <span className="text-red-600">v3</span> (pansamantala)
+      </h1>
+      <p className="text-xs font-bold text-red-600">
+        Kung walang &quot;v3&quot; sa taas, LUMA pa ang page — i-reload muna!
+      </p>
       <p className="text-sm text-gray-600">
         Subukan i-swipe pakaliwa at pakanan ang bawat kahon. Tingnan ang LOG sa
         baba — screenshot mo lahat pagkatapos.
