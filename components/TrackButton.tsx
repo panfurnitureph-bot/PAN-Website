@@ -15,7 +15,30 @@ export default function TrackButton() {
   // (~500) ay malapit sa taas ng form kaya buo agad ang unang labas, walang
   // reflow mula sa maliit.
   const [height, setHeight] = useState(500);
+  // Ang iframe ay isang buong app sa loob ng page — kapag kasabay itong
+  // nag-lo-load ng mismong page, bumabagal ang unang scroll sa mobile.
+  // Kaya PAGKATAPOS na maging handa ang page (load + idle) saka pa lang
+  // imo-mount ang iframe. Instant pa rin ang pagbukas pagkatapos nun.
+  const [frameReady, setFrameReady] = useState(false);
   const frameRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const arm = () => {
+      const idle =
+        (window as unknown as { requestIdleCallback?: (cb: () => void) => void })
+          .requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 2000));
+      idle(() => {
+        if (!cancelled) setFrameReady(true);
+      });
+    };
+    if (document.readyState === "complete") arm();
+    else window.addEventListener("load", arm, { once: true });
+    return () => {
+      cancelled = true;
+      window.removeEventListener("load", arm);
+    };
+  }, []);
 
   function reset() {
     // Sabihan ang tracker na ibalik sa form — client-side, INSTANT (walang
@@ -111,13 +134,15 @@ export default function TrackButton() {
             ×
           </button>
           <div className="overflow-y-auto max-h-[90vh]">
-            <iframe
-              ref={frameRef}
-              src="/track?embed=1"
-              title="Order tracker"
-              className="w-full border-0 block transition-[height] duration-200"
-              style={{ height }}
-            />
+            {(frameReady || open) && (
+              <iframe
+                ref={frameRef}
+                src="/track?embed=1"
+                title="Order tracker"
+                className="w-full border-0 block transition-[height] duration-200"
+                style={{ height }}
+              />
+            )}
           </div>
         </div>
       </div>

@@ -23,6 +23,13 @@ export default function ContentLive() {
   const router = useRouter();
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dirtyWhileHidden = useRef(false);
+  // Huwag mag-refresh HABANG humahagod o gumagalaw pa ang scroll ng bisita —
+  // ang router.refresh() sa gitna ng gesture ay pumapatay sa swipe at
+  // nagre-reset ng scroll (yun ang pakiramdam na "na-stuck"). Maghihintay ito
+  // hanggang tapos ang galaw, saka magre-refresh. Instant pa rin ang labas ng
+  // edit mula sa admin kapag nakatigil ang bisita.
+  const touching = useRef(false);
+  const lastScroll = useRef(0);
 
   useEffect(() => {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -45,12 +52,34 @@ export default function ContentLive() {
           return;
         }
         if (timer.current) clearTimeout(timer.current);
-        timer.current = setTimeout(() => {
+        const attempt = () => {
+          // May daliring nakadikit pa o kagagalaw lang ng scroll — subukan
+          // ulit mamaya, huwag putulin ang gesture.
+          if (touching.current || Date.now() - lastScroll.current < 450) {
+            timer.current = setTimeout(attempt, 600);
+            return;
+          }
           timer.current = null;
           router.refresh();
-        }, DEBOUNCE_MS);
+        };
+        timer.current = setTimeout(attempt, DEBOUNCE_MS);
       })
       .subscribe();
+
+    const onTouchStart = () => {
+      touching.current = true;
+    };
+    const onTouchEnd = () => {
+      touching.current = false;
+      lastScroll.current = Date.now(); // may momentum pa pagkatapos bumitaw
+    };
+    const onScroll = () => {
+      lastScroll.current = Date.now();
+    };
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    window.addEventListener("touchcancel", onTouchEnd, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true, capture: true });
 
     const onVisible = () => {
       if (document.visibilityState === "visible" && dirtyWhileHidden.current) {
@@ -63,6 +92,10 @@ export default function ContentLive() {
     return () => {
       if (timer.current) clearTimeout(timer.current);
       document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("touchcancel", onTouchEnd);
+      window.removeEventListener("scroll", onScroll, { capture: true } as EventListenerOptions);
       void sb.removeChannel(channel);
     };
   }, [router]);

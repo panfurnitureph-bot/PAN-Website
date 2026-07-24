@@ -1,8 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Placeholder SVG images kaya naka-off ang image optimization.
-  // Kapag pinalitan mo na ng totoong JPG/PNG photos, pwede mong tanggalin ito.
-  images: { unoptimized: true },
+  // next/image optimization ON — awtomatikong nagre-resize at nagse-serve ng
+  // WebP/AVIF ang Vercel, kaya hindi na dina-download ng telepono ang buong
+  // multi-MB na orihinal na larawan (dating sanhi ng mabagal/jank na scroll).
+  images: {
+    // Mga larawang naka-host sa Supabase Storage (uploads mula sa IMS admin).
+    remotePatterns: [
+      { protocol: "https", hostname: "**.supabase.co" },
+      { protocol: "https", hostname: "**.supabase.in" },
+    ],
+  },
 };
 
 export default nextConfig;

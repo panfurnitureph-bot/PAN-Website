@@ -53,6 +53,10 @@ function VideoCard({
               muted={muted}
               playsInline
               loop
+              // Huwag i-download ang video hangga't hindi pinipindot ang play —
+              // ang poster ang nakikita. May 32MB na video review dati na
+              // bumabagal sa buong page load ng mobile.
+              preload="none"
               className="w-full h-full object-cover"
               onClick={toggle}
             />

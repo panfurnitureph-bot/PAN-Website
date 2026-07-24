@@ -33,6 +33,16 @@ export default function HeroSlideshow({
     return () => clearInterval(t);
   }, [next, current]);
 
+  // Ang images ng KASALUKUYAN at mga KATABING slide lang ang irine-render —
+  // ang malalayong slide ay opacity-0 naman kaya walang nagbabago sa itsura,
+  // pero hindi na dina-download lahat nang sabay-sabay (dating pabigat sa
+  // mobile: lahat ng slide, desktop at mobile na bersyon, sabay kinukuha).
+  const nearCurrent = new Set([
+    (current - 1 + slides.length) % slides.length,
+    current,
+    (current + 1) % slides.length,
+  ]);
+
   return (
     // Desktop: ~16:9 na banner (hindi full-screen — kita agad ang trust
     // badges sa baba, kagaya ng tunay). Mobile: 4:5 aspect.
@@ -45,24 +55,28 @@ export default function HeroSlideshow({
           }`}
           aria-hidden={i !== current}
         >
-          {/* Desktop image */}
-          <Image
-            src={slide.imageDesktop}
-            alt={slide.headline}
-            fill
-            priority={i === 0}
-            className="object-cover hidden md:block"
-            sizes="100vw"
-          />
-          {/* Mobile image (ibang crop, tulad ng tunay na site) */}
-          <Image
-            src={slide.imageMobile}
-            alt={slide.headline}
-            fill
-            priority={i === 0}
-            className="object-cover md:hidden"
-            sizes="100vw"
-          />
+          {nearCurrent.has(i) && (
+            <>
+              {/* Desktop image */}
+              <Image
+                src={slide.imageDesktop}
+                alt={slide.headline}
+                fill
+                priority={i === 0}
+                className="object-cover hidden md:block"
+                sizes="100vw"
+              />
+              {/* Mobile image (ibang crop, tulad ng tunay na site) */}
+              <Image
+                src={slide.imageMobile}
+                alt={slide.headline}
+                fill
+                priority={i === 0}
+                className="object-cover md:hidden"
+                sizes="100vw"
+              />
+            </>
+          )}
           {/* Kung may headline — text overlay; kung wala (hal. sale GIF
               na may text na nakabake sa image), image lang */}
           {slide.headline && (

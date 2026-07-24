@@ -25,14 +25,21 @@ export default function Carousel({
     el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: "smooth" });
   }
 
-  // I-track ang scroll position para sa dots
+  // I-track ang scroll position para sa dots. Naka-throttle sa isang frame —
+  // ang scroll event ay pwedeng pumutok nang napakadalas sa mobile at bawat
+  // setState ay re-render; dating nagpapabigat ito sa swipe.
+  const raf = useRef(0);
   function onScroll() {
-    const el = track.current;
-    if (!el || count < 2) return;
-    const max = el.scrollWidth - el.clientWidth;
-    if (max <= 0) return;
-    const i = Math.round((el.scrollLeft / max) * (count - 1));
-    if (i !== idx) setIdx(i);
+    if (raf.current) return;
+    raf.current = requestAnimationFrame(() => {
+      raf.current = 0;
+      const el = track.current;
+      if (!el || count < 2) return;
+      const max = el.scrollWidth - el.clientWidth;
+      if (max <= 0) return;
+      const i = Math.round((el.scrollLeft / max) * (count - 1));
+      setIdx((prev) => (i !== prev ? i : prev));
+    });
   }
 
   return (
