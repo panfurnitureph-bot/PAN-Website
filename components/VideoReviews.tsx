@@ -39,7 +39,7 @@ function VideoCard({
   }
 
   return (
-    <div className="snap-start shrink-0 w-[70vw] sm:w-[300px]">
+    <div className="snap-center shrink-0 w-[70vw] sm:w-[300px]">
       <div className="relative aspect-[9/14] bg-sand overflow-hidden">
         {isImage ? (
           // eslint-disable-next-line @next/next/no-img-element

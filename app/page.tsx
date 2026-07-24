@@ -61,7 +61,7 @@ export default async function HomePage() {
           <Link
             key={tile.slug}
             href={`/collections/${tile.slug}`}
-            className="group snap-start shrink-0 w-[44vw] sm:w-[265px] text-center"
+            className="group snap-center shrink-0 w-[44vw] sm:w-[265px] text-center"
           >
             <div className="relative aspect-[4/5] overflow-hidden bg-sand">
               <Image
@@ -88,7 +88,7 @@ export default async function HomePage() {
         href={`/collections/${homepage.bestSelling.productPrefixes?.[0] ?? "bed"}`}
       >
         {bestSelling.map((p) => (
-          <div key={p.slug} className="snap-start shrink-0 w-[70vw] sm:w-[280px]">
+          <div key={p.slug} className="snap-center shrink-0 w-[70vw] sm:w-[280px]">
             <ProductCard product={p} />
           </div>
         ))}

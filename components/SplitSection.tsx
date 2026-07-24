@@ -79,7 +79,7 @@ export default function SplitSection({
             className="flex gap-4 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {products.map((p) => (
-              <div key={p.slug} className="w-[46vw] shrink-0 snap-start">
+              <div key={p.slug} className="w-[46vw] shrink-0 snap-center">
                 <ProductCard product={p} square />
               </div>
             ))}
