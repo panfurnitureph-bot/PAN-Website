@@ -252,6 +252,10 @@ export default function ProductDetail({
                   alt={product.name}
                   fill
                   priority={i === 0}
+                  // Eager ang lahat ng gallery images — kapag LAZY at nag-load
+                  // habang nag-sw-swipe, nasisira ang snap-point cache ng iOS
+                  // WebKit at nagfi-freeze ang gallery pagkatapos ng unang hagod.
+                  loading="eager"
                   className="object-cover"
                   sizes="100vw"
                 />

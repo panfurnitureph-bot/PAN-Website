@@ -8,7 +8,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { HomepageContent } from "@/lib/products";
 
 const AUTOPLAY_MS = 6000;
@@ -33,6 +33,27 @@ export default function HeroSlideshow({
     return () => clearInterval(t);
   }, [next, current]);
 
+  // Touch swipe sa mobile — dati ay dots/arrows lang ang hero kaya sa telepono
+  // parang "ayaw mag-slide". Pahalang na hagod na lampas 45px = lipat ng slide;
+  // hindi ito nakikialam sa normal na pag-scroll pababa (dapat mas pahalang
+  // kaysa patayo ang galaw bago ito bilangin).
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  function onTouchStart(e: React.TouchEvent) {
+    const t = e.touches[0];
+    touchStart.current = { x: t.clientX, y: t.clientY };
+  }
+  function onTouchEnd(e: React.TouchEvent) {
+    const start = touchStart.current;
+    touchStart.current = null;
+    if (!start) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    if (Math.abs(dx) < 45 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
+    if (dx < 0) next();
+    else prev();
+  }
+
   // Ang images ng KASALUKUYAN at mga KATABING slide lang ang irine-render —
   // ang malalayong slide ay opacity-0 naman kaya walang nagbabago sa itsura,
   // pero hindi na dina-download lahat nang sabay-sabay (dating pabigat sa
@@ -46,7 +67,11 @@ export default function HeroSlideshow({
   return (
     // Desktop: ~16:9 na banner (hindi full-screen — kita agad ang trust
     // badges sa baba, kagaya ng tunay). Mobile: 4:5 aspect.
-    <section className="relative md:aspect-[1.85/1] md:max-h-[86vh] md:w-full max-md:aspect-[4/5] overflow-hidden bg-sand">
+    <section
+      className="relative md:aspect-[1.85/1] md:max-h-[86vh] md:w-full max-md:aspect-[4/5] overflow-hidden bg-sand"
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+    >
       {slides.map((slide, i) => (
         <div
           key={i}

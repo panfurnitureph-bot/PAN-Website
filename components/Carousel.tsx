@@ -70,11 +70,12 @@ export default function Carousel({
       <div
         ref={track}
         onScroll={onScroll}
-        // WALANG `scroll-smooth` dito — sa iOS Safari, ang scroll-behavior:
-        // smooth + scroll-snap ay nagpa-freeze ng touch scroll pagkatapos ng
-        // unang hagod. Ang desktop arrows ay smooth pa rin dahil ang scrollBy()
-        // sa itaas ay may sariling behavior: "smooth".
-        className="flex gap-5 overflow-x-auto snap-x [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        // WALANG `scroll-smooth` at WALANG `snap-x` dito — parehong may iOS
+        // Safari bug. Ang scroll-snap ay nagka-cache ng snap points sa WebKit;
+        // kapag nagbago ang laman ng mga card (lazy na larawan, hover scale),
+        // nasisira ang cache at NAGFI-FREEZE ang swipe pagkatapos ng una.
+        // Free momentum scroll (tulad ng Amazon) — gumagana palagi.
+        className="flex gap-5 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {children}
       </div>

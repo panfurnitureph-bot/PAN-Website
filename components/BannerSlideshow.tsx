@@ -6,7 +6,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type Slide = {
   headline: string;
@@ -28,9 +28,32 @@ export default function BannerSlideshow({ slides }: { slides: Slide[] }) {
     return () => clearInterval(t);
   }, [next, current]);
 
+  // Touch swipe sa mobile — dati ay dots lang, kaya sa telepono parang
+  // "ayaw mag-slide" ang banner.
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  function onTouchStart(e: React.TouchEvent) {
+    const t = e.touches[0];
+    touchStart.current = { x: t.clientX, y: t.clientY };
+  }
+  function onTouchEnd(e: React.TouchEvent) {
+    const start = touchStart.current;
+    touchStart.current = null;
+    if (!start) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    if (Math.abs(dx) < 45 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
+    if (dx < 0) next();
+    else prev();
+  }
+
   return (
     <section className="max-w-7xl mx-auto px-0 sm:px-6 py-10">
-      <div className="relative aspect-[3/4] sm:aspect-[21/9] overflow-hidden bg-sand">
+      <div
+        className="relative aspect-[3/4] sm:aspect-[21/9] overflow-hidden bg-sand"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
         {slides.map((slide, i) => (
           <div
             key={slide.headline}

@@ -68,7 +68,9 @@ export default function SplitSection({
           <div
             ref={track}
             onScroll={onScroll}
-            className="flex gap-4 overflow-x-auto snap-x [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            // Walang snap-x — iOS WebKit snap-cache bug (freeze pagkatapos ng
+            // unang swipe kapag nag-load ang lazy na larawan ng mga card).
+            className="flex gap-4 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {products.map((p) => (
               <div key={p.slug} className="w-[46vw] shrink-0 snap-start">
