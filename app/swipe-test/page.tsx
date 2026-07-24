@@ -62,11 +62,11 @@ export default function SwipeTest() {
   return (
     <main className="min-h-screen bg-white text-black p-4 space-y-6 pb-40">
       <h1 className="text-xl font-bold">
-        Swipe Test <span className="text-red-600">v7</span> (pansamantala)
+        Swipe Test <span className="text-red-600">v8</span> (pansamantala)
       </h1>
       <p className="text-xs font-bold text-red-600">
-        Kung walang &quot;v7&quot; sa taas, LUMA pa ang page — i-reload muna!
-        v7 = inalis ang invisible na iframe sa gitna ng screen (iOS touch-eater).
+        Kung walang &quot;v8&quot; sa taas, LUMA pa ang page — i-reload muna!
+        v8 = bumalik ang trust badges slide (naka-center bawat slide).
       </p>
       <p className="text-sm text-gray-600">
         Subukan i-swipe pakaliwa at pakanan ang bawat kahon. Tingnan ang LOG sa
