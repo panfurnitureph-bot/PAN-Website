@@ -5,6 +5,7 @@
 
 import { useRef, useState } from "react";
 import type { HomepageContent } from "@/lib/products";
+import { useSwipeFallback } from "@/components/useSwipeFallback";
 
 const ICONS: Record<string, JSX.Element> = {
   sofa: (
@@ -44,6 +45,7 @@ export default function TrustBadges({
 }) {
   const track = useRef<HTMLDivElement>(null);
   const [idx, setIdx] = useState(0);
+  const swipe = useSwipeFallback(track);
 
   function onScroll() {
     const el = track.current;
@@ -74,6 +76,8 @@ export default function TrustBadges({
         <div
           ref={track}
           onScroll={onScroll}
+          onTouchStart={swipe.onTouchStart}
+          onTouchEnd={swipe.onTouchEnd}
           className="flex overflow-x-auto snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {badges.map((b) => (

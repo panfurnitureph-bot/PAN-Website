@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import type { Product } from "@/lib/products";
 import ProductCard from "@/components/ProductCard";
+import { useSwipeFallback } from "@/components/useSwipeFallback";
 
 export default function SplitSection({
   image,
@@ -26,6 +27,7 @@ export default function SplitSection({
 }) {
   const track = useRef<HTMLDivElement>(null);
   const [idx, setIdx] = useState(0);
+  const swipe = useSwipeFallback(track);
 
   function onScroll() {
     const el = track.current;
@@ -68,6 +70,8 @@ export default function SplitSection({
           <div
             ref={track}
             onScroll={onScroll}
+            onTouchStart={swipe.onTouchStart}
+            onTouchEnd={swipe.onTouchEnd}
             // Walang snap-x — iOS WebKit snap-cache bug (freeze pagkatapos ng
             // unang swipe kapag nag-load ang lazy na larawan ng mga card).
             className="flex gap-4 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"

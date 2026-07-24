@@ -5,6 +5,7 @@
 // ibaba (kagaya ng tunay na site — walang arrows sa mobile).
 
 import { Children, useRef, useState, type ReactNode } from "react";
+import { useSwipeFallback } from "@/components/useSwipeFallback";
 
 export default function Carousel({
   title,
@@ -18,6 +19,7 @@ export default function Carousel({
   const track = useRef<HTMLDivElement>(null);
   const [idx, setIdx] = useState(0);
   const count = Children.count(children);
+  const swipe = useSwipeFallback(track);
 
   function scroll(dir: 1 | -1) {
     const el = track.current;
@@ -70,6 +72,8 @@ export default function Carousel({
       <div
         ref={track}
         onScroll={onScroll}
+        onTouchStart={swipe.onTouchStart}
+        onTouchEnd={swipe.onTouchEnd}
         // WALANG `scroll-smooth` at WALANG `snap-x` dito — parehong may iOS
         // Safari bug. Ang scroll-snap ay nagka-cache ng snap points sa WebKit;
         // kapag nagbago ang laman ng mga card (lazy na larawan, hover scale),

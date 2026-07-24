@@ -62,10 +62,11 @@ export default function SwipeTest() {
   return (
     <main className="min-h-screen bg-white text-black p-4 space-y-6 pb-40">
       <h1 className="text-xl font-bold">
-        Swipe Test <span className="text-red-600">v3</span> (pansamantala)
+        Swipe Test <span className="text-red-600">v4</span> (pansamantala)
       </h1>
       <p className="text-xs font-bold text-red-600">
-        Kung walang &quot;v3&quot; sa taas, LUMA pa ang page — i-reload muna!
+        Kung walang &quot;v4&quot; sa taas, LUMA pa ang page — i-reload muna!
+        Sa v4, may C-style fallback na ang mga TOTOONG carousel sa homepage.
       </p>
       <p className="text-sm text-gray-600">
         Subukan i-swipe pakaliwa at pakanan ang bawat kahon. Tingnan ang LOG sa

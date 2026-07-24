@@ -10,8 +10,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { averageRating, formatPrice, type Product, type SiteContent } from "@/lib/products";
+import { useSwipeFallback } from "@/components/useSwipeFallback";
 import { messengerHandle, messengerUrl } from "@/lib/messenger";
 import { useStore } from "@/components/store";
 
@@ -39,6 +40,8 @@ export default function ProductDetail({
 }) {
   const { addToCart, toggleWishlist, wishlist } = useStore();
   const [imageIdx, setImageIdx] = useState(0);
+  const galleryTrack = useRef<HTMLDivElement>(null);
+  const gallerySwipe = useSwipeFallback(galleryTrack);
   const [colorIdx, setColorIdx] = useState(0);
   const [hoverColor, setHoverColor] = useState<number | null>(null);
   const [notifyEmail, setNotifyEmail] = useState("");
@@ -233,12 +236,15 @@ export default function ProductDetail({
         {/* MOBILE: swipe carousel na may dots — kagaya ng tunay na site */}
         <div className="lg:hidden -mx-6">
           <div
+            ref={galleryTrack}
             className="flex overflow-x-auto snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             onScroll={(e) => {
               const el = e.currentTarget;
               const idx = Math.round(el.scrollLeft / el.clientWidth);
               if (idx !== imageIdx) setImageIdx(idx);
             }}
+            onTouchStart={gallerySwipe.onTouchStart}
+            onTouchEnd={gallerySwipe.onTouchEnd}
           >
             {galleryImages.map((img, i) => (
               <button
