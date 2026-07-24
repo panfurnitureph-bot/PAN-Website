@@ -82,8 +82,11 @@ export default async function HomePage() {
       {/* 4 — FEATURED IN (dark olive + quote + logos) */}
       <PressBar pressBar={homepage.pressBar} />
 
-      {/* 5 — BEST-SELLING SOFAS */}
-      <Carousel title={homepage.bestSelling.title}>
+      {/* 5 — BEST-SELLING SOFAS — clickable ang heading papunta sa collection */}
+      <Carousel
+        title={homepage.bestSelling.title}
+        href={`/collections/${homepage.bestSelling.productPrefixes?.[0] ?? "bed"}`}
+      >
         {bestSelling.map((p) => (
           <div key={p.slug} className="snap-start shrink-0 w-[70vw] sm:w-[280px]">
             <ProductCard product={p} />

@@ -203,7 +203,8 @@ export function useSwipeFallback(ref: React.RefObject<HTMLElement | null>) {
     // Hindi naging manual (napakabilis na flick): kapag hindi gumalaw ang
     // native scroll, isang card ang itulak sa direksyon ng hagod.
     if (Math.abs(el.scrollLeft - st.sl) > 5) return;
-    const t = e.changedTouches[0];
+    const t = e.changedTouches?.[0];
+    if (!t) return; // touchcancel na walang touch data — wala tayong gagawin
     const dx = t.clientX - st.x;
     const dy = t.clientY - st.y;
     if (Math.abs(dx) < 45 || Math.abs(dx) < Math.abs(dy) * 1.2) return;

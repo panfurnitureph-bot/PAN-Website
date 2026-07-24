@@ -4,16 +4,21 @@
 // bilog na arrow buttons sa kanan; sa MOBILE ay swipe na may DOTS sa
 // ibaba (kagaya ng tunay na site — walang arrows sa mobile).
 
+import Link from "next/link";
 import { Children, useRef, useState, type ReactNode } from "react";
 import { useSwipeFallback } from "@/components/useSwipeFallback";
 
 export default function Carousel({
   title,
   eyebrow,
+  href,
   children,
 }: {
   title: string;
   eyebrow?: string;
+  // Kapag may href, nagiging link ang heading (hal. "Best-selling Bed" →
+  // /collections/bed) — dating patay na text lang ito kapag pinindot.
+  href?: string;
   children: ReactNode;
 }) {
   const track = useRef<HTMLDivElement>(null);
@@ -49,7 +54,15 @@ export default function Carousel({
       <div className="flex items-end justify-between mb-8">
         <div>
           {eyebrow && <p className="text-sm text-ink mb-1">{eyebrow}</p>}
-          <h2 className="text-2xl sm:text-3xl text-ink">{title}</h2>
+          <h2 className="text-2xl sm:text-3xl text-ink">
+            {href ? (
+              <Link href={href} className="hover:text-cognac transition-colors">
+                {title}
+              </Link>
+            ) : (
+              title
+            )}
+          </h2>
         </div>
         {/* Arrows — desktop lang */}
         <div className="hidden md:flex items-center gap-3">

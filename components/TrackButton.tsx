@@ -114,10 +114,18 @@ export default function TrackButton() {
       </button>
 
       {/* Modal shell — laging naka-render kaya naka-load na ang iframe;
-          ipinapakita lang kapag bukas. */}
+          ipinapakita lang kapag bukas.
+
+          MAHALAGA: `invisible` (visibility: hidden) kapag sarado — HINDI
+          sapat ang pointer-events-none: sa iOS Safari, ang IFRAME ay
+          tumatanggap pa rin ng touches kahit naka-pointer-events-none ang
+          parent (kilalang WebKit bug). Dahil nakasentro ito sa screen,
+          kinakain nito ang mga hagod sa gitnang banda ng page — yun ang
+          "may mga parteng hindi ma-scroll" sa iPhone. Ang visibility:
+          hidden ay tunay na nag-aalis sa kanya sa hit-testing. */}
       <div
         className={`fixed inset-0 z-[110] flex items-center justify-center p-3 sm:p-6 ${
-          open ? "" : "pointer-events-none opacity-0"
+          open ? "" : "pointer-events-none opacity-0 invisible"
         }`}
         aria-hidden={!open}
       >
