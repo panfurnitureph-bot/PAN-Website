@@ -71,6 +71,7 @@ export default function SplitSection({
             ref={track}
             onScroll={onScroll}
             onTouchStart={swipe.onTouchStart}
+            onTouchMove={swipe.onTouchMove}
             onTouchEnd={swipe.onTouchEnd}
             // Walang snap-x — iOS WebKit snap-cache bug (freeze pagkatapos ng
             // unang swipe kapag nag-load ang lazy na larawan ng mga card).

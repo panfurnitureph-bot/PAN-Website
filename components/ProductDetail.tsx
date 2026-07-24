@@ -244,6 +244,7 @@ export default function ProductDetail({
               if (idx !== imageIdx) setImageIdx(idx);
             }}
             onTouchStart={gallerySwipe.onTouchStart}
+            onTouchMove={gallerySwipe.onTouchMove}
             onTouchEnd={gallerySwipe.onTouchEnd}
           >
             {galleryImages.map((img, i) => (

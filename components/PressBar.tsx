@@ -60,6 +60,7 @@ export default function PressBar({
             ref={track}
             onScroll={onScroll}
             onTouchStart={swipe.onTouchStart}
+            onTouchMove={swipe.onTouchMove}
             onTouchEnd={swipe.onTouchEnd}
             className="flex overflow-x-auto snap-x snap-mandatory items-center [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >

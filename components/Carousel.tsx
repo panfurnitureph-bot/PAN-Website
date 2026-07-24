@@ -73,6 +73,7 @@ export default function Carousel({
         ref={track}
         onScroll={onScroll}
         onTouchStart={swipe.onTouchStart}
+        onTouchMove={swipe.onTouchMove}
         onTouchEnd={swipe.onTouchEnd}
         // WALANG `scroll-smooth` at WALANG `snap-x` dito — parehong may iOS
         // Safari bug. Ang scroll-snap ay nagka-cache ng snap points sa WebKit;
