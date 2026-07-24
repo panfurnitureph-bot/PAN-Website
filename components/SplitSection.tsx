@@ -73,6 +73,7 @@ export default function SplitSection({
             onTouchStart={swipe.onTouchStart}
             onTouchMove={swipe.onTouchMove}
             onTouchEnd={swipe.onTouchEnd}
+            onTouchCancel={swipe.onTouchCancel}
             // Walang snap-x — iOS WebKit snap-cache bug (freeze pagkatapos ng
             // unang swipe kapag nag-load ang lazy na larawan ng mga card).
             className="flex gap-4 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"

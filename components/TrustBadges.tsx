@@ -79,6 +79,7 @@ export default function TrustBadges({
           onTouchStart={swipe.onTouchStart}
           onTouchMove={swipe.onTouchMove}
           onTouchEnd={swipe.onTouchEnd}
+          onTouchCancel={swipe.onTouchCancel}
           className="flex overflow-x-auto snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {badges.map((b) => (

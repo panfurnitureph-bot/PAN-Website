@@ -62,6 +62,7 @@ export default function PressBar({
             onTouchStart={swipe.onTouchStart}
             onTouchMove={swipe.onTouchMove}
             onTouchEnd={swipe.onTouchEnd}
+            onTouchCancel={swipe.onTouchCancel}
             className="flex overflow-x-auto snap-x snap-mandatory items-center [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {logos.map((name) => (

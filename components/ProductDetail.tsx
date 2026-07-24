@@ -246,6 +246,7 @@ export default function ProductDetail({
             onTouchStart={gallerySwipe.onTouchStart}
             onTouchMove={gallerySwipe.onTouchMove}
             onTouchEnd={gallerySwipe.onTouchEnd}
+            onTouchCancel={gallerySwipe.onTouchCancel}
           >
             {galleryImages.map((img, i) => (
               <button
