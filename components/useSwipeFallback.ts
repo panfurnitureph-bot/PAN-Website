@@ -6,12 +6,15 @@
 // ng mga carousel (WebKit quirk; sa Android ayos lang). Pero napatunayan sa
 // /swipe-test na DUMARATING naman ang touch events sa page.
 //
-// FINGER-FOLLOW: sa unang ~10px na pahalang na galaw, titingnan kung
-// gumagalaw ang native scroll. Kapag HINDI (ang iOS quirk), aagawin natin
-// ang gesture — bawat touchmove ay direktang nagtutulak ng scrollLeft kaya
-// sumusunod ang cards sa daliri (walang delay), at pagbitaw ay may kaunting
-// momentum glide. Kapag gumagalaw ang native (Android, normal na iPhone),
-// WALANG ginagalaw — hindi tayo nakikialam kahit kailan.
+// FINGER-FOLLOW na may rAF smoothing: sa unang ~10px na pahalang na galaw,
+// titingnan kung gumagalaw ang native scroll. Kapag HINDI (ang iOS quirk),
+// aagawin natin ang gesture. Ang touchmove ay nagtatakda lang ng TARGET;
+// isang requestAnimationFrame loop ang banayad na naghahabol dito bawat
+// frame — kaya kahit hindi pantay ang dating ng touch events, tuloy-tuloy
+// at makinis ang galaw (hindi pahinto-hinto). Pagbitaw ay may momentum
+// glide na agad humihinto sa susunod na dampi (para hindi kainin ng iOS
+// ang sunod na vertical swipe). Kapag gumagalaw ang native (Android,
+// normal na iPhone), WALANG ginagalaw — hindi tayo nakikialam.
 
 import { useRef } from "react";
 import type React from "react";
@@ -22,6 +25,7 @@ type GestureState = {
   sl: number;
   decided: boolean;
   manual: boolean;
+  target: number; // saan dapat ang scrollLeft ayon sa daliri
   lastX: number;
   lastT: number;
   vx: number; // px bawat ms — para sa momentum glide
@@ -29,21 +33,39 @@ type GestureState = {
 
 export function useSwipeFallback(ref: React.RefObject<HTMLElement | null>) {
   const g = useRef<GestureState | null>(null);
-  const glideRaf = useRef(0);
+  const raf = useRef(0);
 
-  // Itigil agad ang glide animation — mahalagang tumakbo ito sa bawat bagong
-  // dampi: kapag may umaandar pang animation habang dumidikit ang daliri,
-  // kinakain ng iOS ang buong susunod na gesture (hindi makapag-scroll
-  // pataas/pababa hangga't hindi "pinipindot" muna).
-  function stopGlide() {
-    if (glideRaf.current) {
-      cancelAnimationFrame(glideRaf.current);
-      glideRaf.current = 0;
+  // Itigil ang kahit anong umaandar na animation (follow o glide). Mahalagang
+  // tumakbo ito sa bawat bagong dampi: kapag may animation pang umaandar
+  // habang dumidikit ang daliri, kinakain ng iOS ang buong susunod na gesture
+  // (hindi makapag-scroll pataas/pababa hangga't hindi pinipindot muna).
+  function stopAnim() {
+    if (raf.current) {
+      cancelAnimationFrame(raf.current);
+      raf.current = 0;
     }
   }
 
+  // Habang hawak ang gesture: banayad na habulin ang target bawat frame.
+  function startFollow() {
+    if (raf.current) return;
+    const step = () => {
+      const node = ref.current;
+      const st = g.current;
+      if (!node || !st || !st.manual) {
+        raf.current = 0;
+        return;
+      }
+      const gap = st.target - node.scrollLeft;
+      // 45% ng natitirang layo bawat frame — mabilis humabol, walang jitter.
+      if (Math.abs(gap) > 0.5) node.scrollLeft += gap * 0.45;
+      raf.current = requestAnimationFrame(step);
+    };
+    raf.current = requestAnimationFrame(step);
+  }
+
   function onTouchStart(e: React.TouchEvent) {
-    stopGlide();
+    stopAnim();
     const t = e.touches[0];
     g.current = {
       x: t.clientX,
@@ -51,6 +73,7 @@ export function useSwipeFallback(ref: React.RefObject<HTMLElement | null>) {
       sl: ref.current?.scrollLeft ?? 0,
       decided: false,
       manual: false,
+      target: ref.current?.scrollLeft ?? 0,
       lastX: t.clientX,
       lastT: performance.now(),
       vx: 0,
@@ -74,6 +97,7 @@ export function useSwipeFallback(ref: React.RefObject<HTMLElement | null>) {
         // Pahalang ang hagod pero patay ang native scroll — akuin natin.
         st.decided = true;
         st.manual = true;
+        startFollow();
       }
     }
 
@@ -82,7 +106,7 @@ export function useSwipeFallback(ref: React.RefObject<HTMLElement | null>) {
       st.vx = (t.clientX - st.lastX) / Math.max(now - st.lastT, 1);
       st.lastX = t.clientX;
       st.lastT = now;
-      el.scrollLeft = st.sl - dx; // sumusunod sa daliri, walang antay
+      st.target = st.sl - dx; // ang rAF loop ang maghahatid dito nang makinis
     }
   }
 
@@ -90,28 +114,29 @@ export function useSwipeFallback(ref: React.RefObject<HTMLElement | null>) {
     const st = g.current;
     g.current = null;
     const el = ref.current;
+    stopAnim();
     if (!st || !el) return;
 
     if (st.manual) {
       // Momentum glide pagbitaw — sariling rAF animation (HINDI ang browser
-      // smooth scroll) para kaya nating ihinto agad sa susunod na dampi.
+      // smooth scroll) para maihinto agad sa susunod na dampi.
       let v = -st.vx; // px bawat ms, sa direksyon ng scroll
       if (Math.abs(v) > 0.05) {
         let last = performance.now();
         const step = (now: number) => {
           const node = ref.current;
           if (!node) {
-            glideRaf.current = 0;
+            raf.current = 0;
             return;
           }
           const dt = now - last;
           last = now;
           node.scrollLeft += v * dt;
           v *= Math.pow(0.94, dt / 16); // unti-unting bumabagal
-          if (Math.abs(v) > 0.02) glideRaf.current = requestAnimationFrame(step);
-          else glideRaf.current = 0;
+          if (Math.abs(v) > 0.02) raf.current = requestAnimationFrame(step);
+          else raf.current = 0;
         };
-        glideRaf.current = requestAnimationFrame(step);
+        raf.current = requestAnimationFrame(step);
       }
       return;
     }
