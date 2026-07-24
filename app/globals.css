@@ -21,16 +21,17 @@ body {
   max-width: 100%;
 }
 
-/* Mga pahalang na carousel track — tiyaking sa kanila napupunta ang pahalang
-   na hagod (hindi sa page). Walang binabago sa itsura.
+/* Mga pahalang na carousel track. Walang binabago sa itsura.
 
-   SADYANG WALANG `-webkit-overflow-scrolling: touch` dito — iOS-only na
-   legacy property na may kilalang bug: nag-fi-freeze ang scroll kapag
-   nagbago ang laman habang gumagalaw (kaya "stuck hanggang mag-refresh" sa
-   iPhone pero OK sa Android). Default na ang momentum sa modernong iOS. */
+   SADYANG WALANG `touch-action` at `-webkit-overflow-scrolling` dito —
+   parehong may kilalang iOS Safari bug: ang `touch-action: pan-x pan-y` sa
+   nested scroller ay HINAHARANGAN ng WebKit ang mismong pag-swipe nito
+   (hindi ma-scroll pahalang ang carousel sa iPhone; ayos lang sa Android),
+   at ang legacy momentum property ay nag-fi-freeze ng scroll kapag nagbago
+   ang laman. Hinahayaan nating default (`auto`) — sapat na ang
+   `overflow-x: clip` sa body para hindi gumalaw pahalang ang page. */
 .overflow-x-auto,
 [class*="overflow-x-auto"] {
-  touch-action: pan-x pan-y;
   overscroll-behavior-x: contain;
 }
 
