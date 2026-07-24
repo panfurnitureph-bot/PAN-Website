@@ -47,11 +47,14 @@ export default function TrackButton() {
       if (e.key === "Escape") setOpen(false);
     };
     document.addEventListener("keydown", onKey);
+    // Itago ang dating value ng body.overflow para maibalik nang tama, imbes na
+    // basta gawing "" (na baka mag-clobber sa ibang lock).
+    const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     document.documentElement.setAttribute("data-track-open", "1");
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
+      document.body.style.overflow = prevOverflow;
       document.documentElement.removeAttribute("data-track-open");
       // Pagsara, ibalik agad ang tracker sa form sa background — kaya instant
       // na ang susunod na buksan.
@@ -59,6 +62,16 @@ export default function TrackButton() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
+
+  // Panghuling proteksyon: kahit ma-unmount ang component habang bukas ang modal
+  // (hal. paglipat ng pahina), siguraduhing hindi maiiwang naka-lock ang scroll.
+  // Ito ang pangunahing sanhi ng "naka-stuck, kailangan mag-refresh" na bug.
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = "";
+      document.documentElement.removeAttribute("data-track-open");
+    };
+  }, []);
 
   return (
     <>

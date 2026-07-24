@@ -4,6 +4,21 @@
 
 body {
   @apply bg-cream text-ink antialiased;
+  /* Pigilan ang page-level na pahalang na pag-scroll — kapag may elementong
+     lumampas (carousel child, -mx bleed), hindi na gagalaw pahalang ang buong
+     pahina. Ang mga carousel ay nag-i-scroll pa rin sa LOOB ng sarili nila. */
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Mga pahalang na carousel track — tiyaking sa kanila napupunta ang pahalang na
+   hagod (hindi sa page), at may momentum ang scroll sa mobile WebViews. Walang
+   binabago sa itsura. */
+.overflow-x-auto,
+[class*="overflow-x-auto"] {
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
+  overscroll-behavior-x: contain;
 }
 
 /* Dual-range price slider — thumb lang ang clickable (track invisible) */
