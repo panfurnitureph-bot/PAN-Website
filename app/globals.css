@@ -2,23 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body {
-  /* Pigilan ang page-level na pahalang na pag-scroll — kapag may elementong
-     lumampas (carousel child, -mx bleed), hindi na gagalaw pahalang ang buong
-     pahina. Ang mga carousel ay nag-i-scroll pa rin sa LOOB ng sarili nila.
-
-     MAHALAGA: `clip` at hindi `hidden` — sa iOS Safari, ang `overflow-x:
-     hidden` sa body ay gumagawa ng sariling scroll container (na-stuck /
-     sticky ang vertical scroll). Ang `clip` ay pumuputol lang nang walang
-     scroll container. May `hidden` fallback para sa lumang browsers. */
-  overflow-x: hidden;
-  overflow-x: clip;
-}
-
+/* HUWAG lagyan ng overflow-x ang html/body! Sa iOS Safari, kapag ang ROOT ang
+   pumipigil sa pahalang na overflow (hidden man o clip), inaangkin ng root ang
+   pahalang na hagod at HINDI NA UMAABOT sa mga carousel — hindi ma-swipe ang
+   kahit anong overflow-x-auto sa buong site (sa iPhone lang; OK ang Android).
+   Napatunayan ito sa /swipe-test: kahit plain na scroll ay ayaw gumalaw.
+   Ang proteksyon laban sa pahalang na page drift ay nasa isang wrapper div sa
+   app/layout.tsx (`overflow-x: clip` — hindi root, kaya ligtas). */
 body {
   @apply bg-cream text-ink antialiased;
   max-width: 100%;
+}
+
+/* Wrapper ng buong page (tingnan ang app/layout.tsx) — pumuputol ng pahalang
+   na overflow nang HINDI ginagalaw ang root scroller. Ang `clip` ay hindi
+   gumagawa ng scroll container kaya walang epekto sa mga gesture. */
+.page-clip {
+  overflow-x: clip;
 }
 
 /* Mga pahalang na carousel track: SADYANG WALANG custom CSS —

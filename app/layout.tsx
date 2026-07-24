@@ -40,6 +40,10 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${cormorant.variable}`}>
       <body className="font-sans">
+        {/* page-clip: pumipigil sa pahalang na page drift. Nasa wrapper ito at
+            HINDI sa html/body — sa iOS Safari, overflow-x sa root = hindi na
+            ma-swipe ang mga carousel sa buong site. */}
+        <div className="page-clip">
         <StoreProvider>
           {/* Nakikinig kung may binago sa PAN app admin — nagre-refresh ang
               nakabukas na page nang hindi kailangang gawin ito ng bisita. */}
@@ -53,6 +57,7 @@ export default async function RootLayout({
           <TrackButton />
           <ChatBubble site={site} />
         </StoreProvider>
+        </div>
       </body>
     </html>
   );
