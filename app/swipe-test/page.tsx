@@ -75,6 +75,10 @@ export default function SwipeTest() {
             const el = aRef.current;
             if (el) add(`A scroll=${Math.round(el.scrollLeft)}`);
           }}
+          onTouchStart={(e) => add(`A tstart x=${Math.round(e.touches[0].clientX)}`)}
+          onTouchMove={(e) => add(`A tmove x=${Math.round(e.touches[0].clientX)}`)}
+          onTouchEnd={() => add("A tend")}
+          onTouchCancel={() => add("A TCANCEL ← inagaw ng system ang gesture!")}
           className="flex gap-3 overflow-x-auto"
         >
           <Cards />
@@ -89,6 +93,10 @@ export default function SwipeTest() {
             const el = bRef.current;
             if (el) add(`B scroll=${Math.round(el.scrollLeft)}`);
           }}
+          onTouchStart={(e) => add(`B tstart x=${Math.round(e.touches[0].clientX)}`)}
+          onTouchMove={(e) => add(`B tmove x=${Math.round(e.touches[0].clientX)}`)}
+          onTouchEnd={() => add("B tend")}
+          onTouchCancel={() => add("B TCANCEL ← inagaw ng system ang gesture!")}
           className="flex gap-3 overflow-x-auto snap-x snap-mandatory"
         >
           {COLORS.map((c, i) => (
