@@ -21,19 +21,14 @@ body {
   max-width: 100%;
 }
 
-/* Mga pahalang na carousel track. Walang binabago sa itsura.
-
-   SADYANG WALANG `touch-action` at `-webkit-overflow-scrolling` dito —
-   parehong may kilalang iOS Safari bug: ang `touch-action: pan-x pan-y` sa
-   nested scroller ay HINAHARANGAN ng WebKit ang mismong pag-swipe nito
-   (hindi ma-scroll pahalang ang carousel sa iPhone; ayos lang sa Android),
-   at ang legacy momentum property ay nag-fi-freeze ng scroll kapag nagbago
-   ang laman. Hinahayaan nating default (`auto`) — sapat na ang
-   `overflow-x: clip` sa body para hindi gumalaw pahalang ang page. */
-.overflow-x-auto,
-[class*="overflow-x-auto"] {
-  overscroll-behavior-x: contain;
-}
+/* Mga pahalang na carousel track: SADYANG WALANG custom CSS —
+   100% native na scroll behavior. Bawat dinagdag namin dito ay may
+   katumbas na iOS Safari bug:
+   - `-webkit-overflow-scrolling: touch` → nag-fi-freeze kapag nagbago laman
+   - `touch-action: pan-x pan-y` → hinaharangan ng WebKit ang swipe mismo
+   - `overscroll-behavior-x: contain` → nakaka-stuck sa dulo ng carousel
+   Sapat na ang `overflow-x: clip` sa body para hindi gumalaw pahalang ang
+   buong page. Huwag nang dagdagan ulit ito. */
 
 /* Dual-range price slider — thumb lang ang clickable (track invisible) */
 .range-thumb {
