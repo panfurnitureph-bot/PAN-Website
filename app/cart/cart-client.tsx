@@ -113,14 +113,13 @@ export default function CartClient({ products }: { products: Product[] }) {
               <span className="text-stone">Subtotal</span>
               <span>{formatPrice(subtotal)}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-stone">Shipping</span>
-              <span className="text-cognac font-bold">FREE</span>
-            </div>
+            {/* Walang "Shipping FREE" dito — hindi libre ang shipping; ang fee
+                ay nakadepende sa address at kinukuwenta sa checkout. */}
             <div className="flex justify-between border-t border-stone/30 pt-3 mt-3 font-bold text-base">
               <span>Total</span>
               <span>{formatPrice(subtotal)}</span>
             </div>
+            <p className="text-xs text-stone">Shipping is calculated at checkout.</p>
           </div>
           <Link
             href="/checkout"
