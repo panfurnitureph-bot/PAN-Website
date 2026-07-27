@@ -347,13 +347,10 @@ export default function CheckoutClient({
           total,
           shipping: shippingKnown
             ? {
-                // Kaparehong porma ng ibang line item — pamagat, tapos
-                // bullet ang destinasyon at ang mismong address kung may pin.
-                label: [
-                  "Shipping",
-                  `• ${city}, ${province}`,
-                  ...(pin?.address ? [`• ${pin.address}`] : []),
-                ].join("\n"),
+                // Pamagat + destinasyon lang (basis ng fee). ANG BUONG ADDRESS
+                // AY HINDI NA ISINASAMA — nasa order na mismo iyon; kapag
+                // inulit dito, dumodoble ang address sa IMS at receipt.
+                label: ["Shipping", `• ${city}, ${province}`].join("\n"),
                 amount: shippingCost,
               }
             : null,
