@@ -41,6 +41,8 @@ export default function ProductDetail({
   const { addToCart, toggleWishlist, wishlist } = useStore();
   const [imageIdx, setImageIdx] = useState(0);
   const galleryTrack = useRef<HTMLDivElement>(null);
+  // Desktop thumbnail rail — pang-scroll ng ˅ button kapag 8+ ang images.
+  const thumbRailRef = useRef<HTMLDivElement>(null);
   const gallerySwipe = useSwipeFallback(galleryTrack);
   const [colorIdx, setColorIdx] = useState(0);
   const [hoverColor, setHoverColor] = useState<number | null>(null);
@@ -285,21 +287,42 @@ export default function ProductDetail({
           )}
         </div>
 
-        {/* DESKTOP: vertical thumbs kaliwa + main image */}
+        {/* DESKTOP: vertical thumbs kaliwa + main image. Poly & Bark behavior:
+            hover sa thumb = agad palit ang main image; kapag mahaba ang rail,
+            may ˅ button sa baba para mag-scroll. */}
         <div className="hidden lg:flex gap-4">
-          <div className="flex flex-col gap-2 max-h-[560px] overflow-auto shrink-0 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {galleryImages.map((img, i) => (
+          <div className="relative shrink-0">
+            <div
+              ref={thumbRailRef}
+              className="flex flex-col gap-2 max-h-[560px] overflow-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {galleryImages.map((img, i) => (
+                <button
+                  key={img}
+                  onClick={() => setImageIdx(i)}
+                  onMouseEnter={() => setImageIdx(i)}
+                  className={`relative w-16 h-16 bg-sand overflow-hidden rounded border-2 shrink-0 ${
+                    i === imageIdx ? "border-ink" : "border-transparent hover:border-stone/40"
+                  }`}
+                  aria-label={`Image ${i + 1}`}
+                >
+                  <Image src={img} alt="" fill className="object-cover" sizes="64px" />
+                </button>
+              ))}
+            </div>
+            {galleryImages.length > 7 && (
               <button
-                key={img}
-                onClick={() => setImageIdx(i)}
-                className={`relative w-16 h-16 bg-sand overflow-hidden rounded border-2 shrink-0 ${
-                  i === imageIdx ? "border-ink" : "border-transparent hover:border-stone/40"
-                }`}
-                aria-label={`Image ${i + 1}`}
+                onClick={() =>
+                  thumbRailRef.current?.scrollBy({ top: 220, behavior: "smooth" })
+                }
+                className="absolute bottom-0 left-1/2 flex h-8 w-12 -translate-x-1/2 items-center justify-center rounded bg-white/90 shadow-md hover:bg-white"
+                aria-label="Scroll thumbnails down"
               >
-                <Image src={img} alt="" fill className="object-cover" sizes="64px" />
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
               </button>
-            ))}
+            )}
           </div>
           <button
             onClick={() => setLightbox(true)}
