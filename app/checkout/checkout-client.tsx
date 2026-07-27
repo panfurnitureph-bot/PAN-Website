@@ -20,7 +20,7 @@ import CardForm from "@/components/CardForm";
 import RedirectCountdown from "@/components/RedirectCountdown";
 import MessengerRedirect from "@/components/MessengerRedirect";
 
-import { messengerHandle } from "@/lib/messenger";
+import { messengerHandle, messengerUrl } from "@/lib/messenger";
 import { DEFAULT_BED_SIZES } from "@/components/FrameDiagram";
 
 // Map = client-only (Leaflet umaasa sa window) — walang SSR
@@ -275,12 +275,17 @@ export default function CheckoutClient({
     return () => clearInterval(iv);
   }, [order, paymentDone]);
 
-  // Bayad na (QR man o card): 5 segundong "salamat" tapos uwi sa home.
+  // Bayad na (QR man o card): 5 segundong "salamat" tapos diretso sa
+  // MESSENGER na may kasamang order ref (parang CHAT WITH US NOW) — doon
+  // magsisimula ang conversation: matatali ang PSID nila sa order at
+  // awtomatikong ie-echo ng page ang order sa thread. Kung walang naka-set
+  // na Messenger page, uwi na lang sa home.
   useEffect(() => {
-    if (!paymentDone) return;
-    const t = setTimeout(() => { window.location.href = "/"; }, 5000);
+    if (!paymentDone || !order) return;
+    const dest = messengerPage ? messengerUrl(messengerPage, order.number) : "/";
+    const t = setTimeout(() => { window.location.href = dest; }, 5000);
     return () => clearTimeout(t);
-  }, [paymentDone]);
+  }, [paymentDone, order, messengerPage]);
 
   const rows = useMemo(
     () =>
@@ -502,7 +507,7 @@ export default function CheckoutClient({
                 </p>
                 <div className="mt-4 h-7 w-7 animate-spin rounded-full border-2 border-sand border-t-cognac" />
                 <p className="text-xs text-stone mt-3">
-                  Taking you back to the homepage…
+                  Opening our Messenger chat for your order updates…
                 </p>
               </div>
             ) : order.qrDataUrl ? (
@@ -637,7 +642,7 @@ export default function CheckoutClient({
             // Bumibilang lang kapag bayad na. Habang hindi pa, nananatili ang
             // buton pero walang awtomatikong paglipat — masama kung mailipat
             // siya habang sina-scan pa ang QR o nagta-type ng card.
-            autoOpen={cardPaid}
+            autoOpen={false}
           />
         )}
 
