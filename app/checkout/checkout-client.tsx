@@ -13,7 +13,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { formatPrice, type Product, type SiteContent } from "@/lib/products";
 import { useStore } from "@/components/store";
 import CardForm from "@/components/CardForm";
@@ -251,7 +251,36 @@ export default function CheckoutClient({
   // Nabayaran na ba ang card sa confirmation screen? (Ang QR ay walang
   // katumbas nito — ang webhook ang bahala doon.)
   const [cardPaid, setCardPaid] = useState(false);
+  // Na-detect na ba ang QR payment (poll sa /api/track habang nakabukas ang
+  // confirmation page)? Pareho ang epekto ng cardPaid: salamat + uwi sa home.
+  const [qrPaid, setQrPaid] = useState(false);
   const [order, setOrder] = useState<Order | null>(null);
+
+  // QR: bantayan kung nag-land na ang bayad. Ang /api/track ay bukas sa
+  // order number + email (pareho ng track page), at nagbabalik ng `paid`.
+  const paymentDone = cardPaid || qrPaid;
+  useEffect(() => {
+    if (!order || !order.qrDataUrl || paymentDone) return;
+    const iv = setInterval(async () => {
+      try {
+        const qs = new URLSearchParams({ order: order.number, verify: order.email });
+        const res = await fetch(`/api/track?${qs}`, { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        if ((Number(data?.paid) || 0) > 0) setQrPaid(true);
+      } catch {
+        /* network blip — susubok ulit sa susunod na ikot */
+      }
+    }, 5000);
+    return () => clearInterval(iv);
+  }, [order, paymentDone]);
+
+  // Bayad na (QR man o card): 5 segundong "salamat" tapos uwi sa home.
+  useEffect(() => {
+    if (!paymentDone) return;
+    const t = setTimeout(() => { window.location.href = "/"; }, 5000);
+    return () => clearTimeout(t);
+  }, [paymentDone]);
 
   const rows = useMemo(
     () =>
@@ -464,7 +493,19 @@ export default function CheckoutClient({
               </span>
             </div>
 
-            {order.qrDataUrl ? (
+            {paymentDone ? (
+              // Bayad na (QR man o card) — salamat + uuwi sa home sa loob ng
+              // 5 segundo (tingnan ang redirect effect sa itaas).
+              <div className="flex flex-col items-center py-6 text-center">
+                <p className="text-sm font-semibold text-green-700">
+                  ✓ Payment received — thank you!
+                </p>
+                <div className="mt-4 h-7 w-7 animate-spin rounded-full border-2 border-sand border-t-cognac" />
+                <p className="text-xs text-stone mt-3">
+                  Taking you back to the homepage…
+                </p>
+              </div>
+            ) : order.qrDataUrl ? (
               <div className="flex flex-col items-center">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -489,10 +530,6 @@ export default function CheckoutClient({
                   </a>
                 )}
               </div>
-            ) : cardPaid ? (
-              <p className="text-center text-sm font-semibold text-green-700 py-4">
-                ✓ Payment received — thank you!
-              </p>
             ) : (
               <CardForm
                 amount={order.amountDue ?? 0}
