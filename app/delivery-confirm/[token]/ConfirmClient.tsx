@@ -24,7 +24,7 @@ function DetailRow({ label, value, bold }: { label: string; value: React.ReactNo
   return (
     <div className="flex items-start justify-between gap-4 py-2.5 border-b border-[#efe9db]">
       <span className="text-xs text-[#8a8272] whitespace-nowrap pt-0.5">{label}</span>
-      <span className={`font-cormorant text-right text-[15px] text-[#2b2620] ${bold ? "font-bold" : ""}`}>{value}</span>
+      <span className={`text-right text-[13px] leading-relaxed text-[#2b2620] ${bold ? "font-bold" : "font-medium"}`}>{value}</span>
     </div>
   );
 }
@@ -105,7 +105,7 @@ export default function ConfirmClient({ token, summary }: {
           /* LOADING — spinner lang */
           <div className="text-center px-6 py-14 mb-4">
             <span className="inline-block h-10 w-10 rounded-full border-4 border-[#e6dcc4] border-t-[#2e7d52] animate-spin" />
-            <p className="font-cormorant text-lg text-[#2b2620] mt-5">Confirming your delivery…</p>
+            <p className="text-sm font-medium text-[#2b2620] mt-5">Confirming your delivery…</p>
             <p className="text-[11px] text-[#8a8272] mt-1">Please wait a moment.</p>
           </div>
         ) : done ? (
@@ -113,7 +113,7 @@ export default function ConfirmClient({ token, summary }: {
           <div className="text-center rounded-lg border border-[#bfe0cc] bg-[#f0f7f2] px-6 py-9 mb-4">
             <p className="text-3xl mb-3">✅</p>
             <p className="font-cormorant text-2xl font-bold text-[#1e5c3c] mb-1.5">Delivery confirmed — thank you!</p>
-            <p className="font-cormorant text-lg text-[#2b2620]">{fmtLong(summary.date)}</p>
+            <p className="text-sm font-bold text-[#2b2620]">{fmtLong(summary.date)}</p>
             <p className="font-mono text-xs font-bold text-[#8a8272] mt-2">{ord}</p>
             <p className="text-[11px] text-[#8a8272] mt-4 leading-relaxed max-w-xs mx-auto">
               Our team will deliver on the confirmed date. A reminder will be sent as it approaches.
@@ -123,7 +123,7 @@ export default function ConfirmClient({ token, summary }: {
           <>
             <p className="text-[10px] font-bold tracking-widest2 uppercase text-[#8a8272] mb-2">Delivery Confirmation</p>
             <p className="font-cormorant text-2xl font-bold text-[#2b2620] mb-3">Good news — your order is ready.</p>
-            <p className="font-cormorant text-[14px] leading-relaxed text-[#2b2620] mb-6">
+            <p className="text-[13px] leading-relaxed text-[#57534b] mb-6">
               Your order has completed crafting and passed our quality inspection. We have reserved the delivery date below — please confirm to secure your slot.
             </p>
 
