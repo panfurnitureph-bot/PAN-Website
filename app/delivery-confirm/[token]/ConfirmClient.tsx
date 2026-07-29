@@ -66,14 +66,22 @@ export default function ConfirmClient({ token, summary }: {
       </div>
 
       <div className="px-7 pt-7 pb-2">
-        {done ? (
-          /* Confirmed state — green banner gaya ng thank-you email */
-          <div className="text-center rounded-lg border border-[#bfe0cc] bg-[#f0f7f2] px-6 py-7 mb-2">
-            <p className="text-2xl mb-2">✅</p>
-            <p className="font-cormorant text-xl font-bold text-[#1e5c3c] mb-1">Your delivery is confirmed</p>
+        {busy ? (
+          /* LOADING — pagpindot ng Confirm: spinner LANG ang kita, walang kasabay */
+          <div className="text-center px-6 py-14 mb-4">
+            <span className="inline-block h-10 w-10 rounded-full border-4 border-[#e6dcc4] border-t-[#2e7d52] animate-spin" />
+            <p className="font-cormorant text-lg text-[#2b2620] mt-5">Confirming your delivery…</p>
+            <p className="text-[11px] text-[#8a8272] mt-1">Please wait a moment.</p>
+          </div>
+        ) : done ? (
+          /* CONFIRMED — ito na LANG ang kita (walang kasabay na date card) */
+          <div className="text-center rounded-lg border border-[#bfe0cc] bg-[#f0f7f2] px-6 py-9 mb-4">
+            <p className="text-3xl mb-3">✅</p>
+            <p className="font-cormorant text-2xl font-bold text-[#1e5c3c] mb-1.5">Delivery confirmed — thank you!</p>
             <p className="font-cormorant text-lg text-[#2b2620]">{fmtDate(summary.date)}</p>
-            <p className="text-[11px] text-[#8a8272] mt-3 leading-relaxed">
-              A reminder will be sent as your delivery date approaches.
+            <p className="font-mono text-xs font-bold text-[#8a8272] mt-2">{summary.orderNumber ?? ""}</p>
+            <p className="text-[11px] text-[#8a8272] mt-4 leading-relaxed max-w-xs mx-auto">
+              Our team will deliver on the confirmed date. A reminder will be sent as it approaches.
             </p>
           </div>
         ) : (
@@ -82,33 +90,29 @@ export default function ConfirmClient({ token, summary }: {
             <p className="font-cormorant text-[15px] leading-relaxed text-[#2b2620] mb-6">
               We are pleased to inform you that your order <b>{summary.orderNumber ?? ""}</b> has successfully passed our final quality inspection and is now ready for delivery.
             </p>
+
+            {/* Date banner — cream + gold, kapareho ng email */}
+            <div className="text-center rounded-lg border border-[#caa45a] bg-[#faf6ec] px-6 py-5">
+              <p className="text-[10px] font-bold tracking-widest2 uppercase text-[#8a8272] mb-2">Scheduled Delivery Date</p>
+              <p className="font-cormorant text-2xl font-bold text-[#4a3b1a]">{fmtDate(summary.date)}</p>
+            </div>
+
+            {/* Details — labeled rows gaya ng email */}
+            <div className="mt-5 mb-1">
+              <DetailRow label="Order Number" value={<span className="font-mono text-[13px] font-bold">{summary.orderNumber ?? ""}</span>} />
+              {summary.address && <DetailRow label="Delivery Address" value={summary.address} />}
+              {summary.balance > 0 && <DetailRow label="Balance Due on Delivery" value={peso(summary.balance)} bold />}
+            </div>
+
+            <p className="font-cormorant text-[15px] leading-relaxed text-[#2b2620] mt-5">
+              To proceed, kindly confirm that someone will be available to receive the delivery on the scheduled date:
+            </p>
           </>
-        )}
-
-        {/* Date banner — cream + gold, kapareho ng email */}
-        {!done && (
-          <div className="text-center rounded-lg border border-[#caa45a] bg-[#faf6ec] px-6 py-5">
-            <p className="text-[10px] font-bold tracking-widest2 uppercase text-[#8a8272] mb-2">Scheduled Delivery Date</p>
-            <p className="font-cormorant text-2xl font-bold text-[#4a3b1a]">{fmtDate(summary.date)}</p>
-          </div>
-        )}
-
-        {/* Details — labeled rows gaya ng email */}
-        <div className="mt-5 mb-1">
-          <DetailRow label="Order Number" value={<span className="font-mono text-[13px] font-bold">{summary.orderNumber ?? ""}</span>} />
-          {summary.address && <DetailRow label="Delivery Address" value={summary.address} />}
-          {summary.balance > 0 && <DetailRow label="Balance Due on Delivery" value={peso(summary.balance)} bold />}
-        </div>
-
-        {!done && (
-          <p className="font-cormorant text-[15px] leading-relaxed text-[#2b2620] mt-5">
-            To proceed, kindly confirm that someone will be available to receive the delivery on the scheduled date:
-          </p>
         )}
       </div>
 
       {/* CTA — green button gaya ng email */}
-      {!done && (
+      {!done && !busy && (
         <div className="px-7 pt-4 pb-7 text-center">
           <button
             onClick={confirm}
