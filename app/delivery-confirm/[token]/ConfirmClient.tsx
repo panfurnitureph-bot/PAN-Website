@@ -29,17 +29,21 @@ function DetailRow({ label, value, bold }: { label: string; value: React.ReactNo
   );
 }
 
-function Steps() {
+function Steps({ confirmed = false }: { confirmed?: boolean }) {
   return (
     <div className="flex items-center justify-center mt-6 mb-1">
       <div className="flex flex-col items-center">
-        <span className="w-9 h-9 rounded-full bg-[#caa45a] text-white font-cormorant font-bold flex items-center justify-center">1</span>
-        <span className="text-[9px] font-bold tracking-widest2 text-[#4a3b1a] mt-1.5">CONFIRM</span>
+        {confirmed
+          ? <span className="w-9 h-9 rounded-full bg-[#2e7d52] text-white font-bold flex items-center justify-center">✓</span>
+          : <span className="w-9 h-9 rounded-full bg-[#caa45a] text-white font-cormorant font-bold flex items-center justify-center">1</span>}
+        <span className={`text-[9px] font-bold tracking-widest2 mt-1.5 ${confirmed ? "text-[#2e7d52]" : "text-[#4a3b1a]"}`}>{confirmed ? "CONFIRMED" : "CONFIRM"}</span>
       </div>
-      <span className="w-12 border-t-2 border-[#e0d7c3] mx-2 mb-5" />
+      <span className={`w-12 border-t-2 mx-2 mb-5 ${confirmed ? "border-[#2e7d52]" : "border-[#e0d7c3]"}`} />
       <div className="flex flex-col items-center">
-        <span className="w-9 h-9 rounded-full border border-[#d8cfba] text-[#8a8272] font-cormorant flex items-center justify-center">2</span>
-        <span className="text-[9px] tracking-widest2 text-[#8a8272] mt-1.5">PREPARE</span>
+        {confirmed
+          ? <span className="w-9 h-9 rounded-full bg-[#caa45a] text-white font-cormorant font-bold flex items-center justify-center">2</span>
+          : <span className="w-9 h-9 rounded-full border border-[#d8cfba] text-[#8a8272] font-cormorant flex items-center justify-center">2</span>}
+        <span className={`text-[9px] tracking-widest2 mt-1.5 ${confirmed ? "font-bold text-[#4a3b1a]" : "text-[#8a8272]"}`}>PREPARE</span>
       </div>
       <span className="w-12 border-t-2 border-[#e0d7c3] mx-2 mb-5" />
       <div className="flex flex-col items-center">
@@ -104,16 +108,38 @@ export default function ConfirmClient({ token, summary }: {
             <p className="text-[11px] text-[#8a8272] mt-1">Please wait a moment.</p>
           </div>
         ) : done ? (
-          /* CONFIRMED — ito na lang ang kita */
-          <div className="text-center rounded-lg border border-[#bfe0cc] bg-[#f0f7f2] px-6 py-9 mb-4">
-            <p className="text-3xl mb-3">✅</p>
-            <p className="font-cormorant text-2xl font-bold text-[#1e5c3c] mb-1.5">Delivery confirmed — thank you!</p>
-            <p className="text-sm font-bold text-[#2b2620]">{fmtLong(summary.date)}</p>
-            <p className="font-mono text-xs font-bold text-[#8a8272] mt-2">{ord}</p>
-            <p className="text-[11px] text-[#8a8272] mt-4 leading-relaxed max-w-xs mx-auto">
-              Our team will deliver on the confirmed date. A reminder will be sent as it approaches.
+          /* CONFIRMED — "booked" layout, kapareho ng confirmed email */
+          <>
+            <p className="text-[10px] font-bold tracking-widest2 uppercase text-[#2e7d52] mb-2">Confirmed ✓</p>
+            <p className="font-cormorant text-2xl font-bold text-[#2b2620] mb-3">Thank you — your delivery is booked.</p>
+            <p className="text-[13px] leading-relaxed text-[#57534b] mb-6">
+              The date below is reserved for you. On delivery day, we will send a <b className="text-[#2b2620]">live tracking link</b> so you can follow our team as they approach.
             </p>
-          </div>
+            <div className="text-center rounded-lg border border-[#bfe0cc] bg-[#f0f7f2] px-6 py-5">
+              <p className="text-[10px] font-bold tracking-widest2 uppercase text-[#2e7d52] mb-2">Confirmed Delivery</p>
+              <p className="font-cormorant text-[26px] font-bold text-[#1e5c3c] leading-tight">{fmtLong(summary.date)}</p>
+              <p className="text-xs text-[#8a8272] mt-1.5">{weekdayOf(summary.date)}</p>
+            </div>
+            <Steps confirmed />
+            <div className="mt-4 mb-1">
+              <DetailRow label="Order" value={<span className="font-mono text-[13px] font-bold">{ord}</span>} />
+              {summary.address && <DetailRow label="Delivery address" value={<b>{summary.address}</b>} />}
+              {summary.balance > 0 && <DetailRow label="Amount due on arrival (COD)" value={peso(summary.balance)} bold />}
+            </div>
+            <div className="text-xs leading-[1.9] text-[#57534b] mt-5">
+              <b className="text-[#2b2620]">Before our team arrives:</b><br />
+              · Please ensure someone is available at the address on delivery day.<br />
+              {summary.balance > 0 && <>· Prepare the exact balance — QR payment is also accepted on arrival.<br /></>}
+              · If access requires an elevator booking or involves narrow passages, let us know in advance.
+            </div>
+            <div className="border-t border-[#efe9db] mt-5 pt-4 pb-4 flex items-start gap-2.5">
+              <span className="inline-flex w-7 h-7 shrink-0 items-center justify-center rounded-full border border-[#d8cfba] font-cormorant text-[#8a8272]">?</span>
+              <p className="text-[11px] leading-relaxed text-[#6b6353]">
+                <b className="text-[#2b2620]">Plans changed?</b> A reminder with rescheduling options will be sent before your delivery — or message us on{" "}
+                <a href="https://m.me/1223308547524374" target="_blank" rel="noreferrer" className="text-[#2563eb] underline">Messenger</a>.
+              </p>
+            </div>
+          </>
         ) : (
           <>
             <p className="text-[10px] font-bold tracking-widest2 uppercase text-[#8a8272] mb-2">Delivery Confirmation</p>
