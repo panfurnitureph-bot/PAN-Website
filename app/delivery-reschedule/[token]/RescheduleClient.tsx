@@ -1,173 +1,75 @@
 "use client";
 
-// Calendar month grid (bukas hanggang +60 araw ang clickable) + time-window
-// chips. Ang bagong petsa ay AUTO-CONFIRMED — walang dagdag na hakbang.
-// Website look: cream/sand/olive/cormorant.
+// Reschedule — HINDI na self-service calendar. Ang bagong petsa ay
+// pinag-uusapan MUNA sa Messenger kasama ang team (para alam ng page/Ops), at
+// may one-time ₱500 rescheduling fee na idadagdag sa balance (COD). Ang page
+// na ito ay fee notice + Messenger CTA na may RESCHED-<order> ref para
+// awtomatikong makilala ng system ang hiling sa thread.
 
-import { useMemo, useState } from "react";
+const MESSENGER_PAGE = "1223308547524374";
 
-const WINDOWS = ["9–11 AM", "11 AM–1 PM", "1–3 PM", "3–5 PM"];
-const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 const fmt = (isoStr: string) => {
   try { return new Date(`${isoStr}T00:00:00`).toLocaleDateString("en-PH", { weekday: "long", month: "long", day: "numeric", year: "numeric" }); }
   catch { return isoStr; }
 };
 
-export default function RescheduleClient({ token, summary }: {
+export default function RescheduleClient({ summary }: {
   token: string;
   summary: { orderNumber: string | null; customerName: string | null; currentDate: string | null };
 }) {
-  const [busy, setBusy] = useState(false);
-  const [picked, setPicked] = useState<string | null>(null);
-  const [win, setWin] = useState<string | null>(null);
-  // Dalawang hakbang: pumili muna (pick) → REVIEW page bago tuluyang i-confirm.
-  const [step, setStep] = useState<"pick" | "review">("pick");
-  const [done, setDone] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const today = useMemo(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }, []);
-  const min = useMemo(() => { const d = new Date(today); d.setDate(d.getDate() + 1); return d; }, [today]);
-  const max = useMemo(() => { const d = new Date(today); d.setDate(d.getDate() + 60); return d; }, [today]);
-  const [view, setView] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
-
-  const cells = useMemo(() => {
-    const first = new Date(view.getFullYear(), view.getMonth(), 1);
-    const out: (Date | null)[] = Array.from({ length: first.getDay() }, () => null);
-    const dim = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
-    for (let d = 1; d <= dim; d++) out.push(new Date(view.getFullYear(), view.getMonth(), d));
-    return out;
-  }, [view]);
-
-  const submit = async () => {
-    if (!picked) return;
-    setBusy(true); setError(null);
-    try {
-      const r = await fetch("/api/delivery-reschedule", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, date: picked, timeWindow: win }),
-      });
-      const j = await r.json();
-      if (!r.ok || j.error) { setError(j.error || "Something went wrong — please try again."); return; }
-      setDone(j.date ?? picked);
-    } catch {
-      setError("Something went wrong — please try again.");
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  // ── REVIEW step — direct na paghahambing bago ma-confirm ──
-  if (step === "review" && picked && !done) {
-    return (
-      <div className="bg-white border border-sand rounded-lg p-6 sm:p-8">
-        <p className="text-[11px] font-bold tracking-widest2 text-olive text-center mb-5">REVIEW YOUR NEW SCHEDULE</p>
-        <div className="rounded-lg border border-sand bg-linen px-5 py-5 text-center">
-          <p className="text-[10px] font-bold tracking-widest2 text-stone/70 mb-1">CURRENT DATE</p>
-          <p className="text-sm text-stone line-through">{summary.currentDate ? fmt(summary.currentDate) : "—"}</p>
-          <p className="text-lg my-2 text-stone">↓</p>
-          <p className="text-[10px] font-bold tracking-widest2 text-olive mb-1">NEW DATE</p>
-          <p className="font-cormorant text-2xl font-bold text-ink">{fmt(picked)}</p>
-          {win && <p className="text-xs font-bold text-ink mt-1">{win}</p>}
-          <p className="font-mono text-xs font-bold text-stone mt-3">{summary.orderNumber ?? ""}</p>
-        </div>
-        <p className="text-[11px] text-stone text-center mt-4 leading-relaxed">
-          Once you confirm, your new date is booked immediately and your previous slot is released.
-        </p>
-        <div className="flex gap-2.5 mt-5">
-          <button type="button" onClick={() => setStep("pick")} disabled={busy}
-            className="flex-1 border border-sand text-stone text-[12px] font-bold tracking-widest2 py-3.5 rounded hover:border-cognac transition-colors disabled:opacity-50">
-            ← BACK
-          </button>
-          <button type="button" onClick={submit} disabled={busy}
-            className="flex-[2] bg-ink text-white text-[12px] font-bold tracking-widest2 py-3.5 rounded hover:bg-espresso transition-colors disabled:opacity-60">
-            {busy ? "BOOKING…" : "✓ CONFIRM NEW DATE"}
-          </button>
-        </div>
-        {error && <p className="mt-4 text-center text-xs text-red-700 bg-red-50 border border-red-100 rounded px-3 py-2">{error}</p>}
-      </div>
-    );
-  }
-
-  if (done) {
-    return (
-      <div className="bg-white border border-sand rounded-lg p-6 sm:p-8 text-center">
-        <p className="text-2xl mb-2">✓</p>
-        <p className="font-cormorant text-2xl font-medium text-olive mb-2">New delivery date confirmed!</p>
-        <p className="text-sm font-bold mb-3">{fmt(done)}{win ? ` · ${win}` : ""}</p>
-        <p className="text-stone text-xs leading-relaxed">
-          Order {summary.orderNumber ?? ""} — no further action needed. A reminder will be sent as the new date approaches.
-        </p>
-      </div>
-    );
-  }
+  const ord = summary.orderNumber ?? "";
+  const mme = `https://m.me/${MESSENGER_PAGE}?ref=${encodeURIComponent(`RESCHED-${ord}`)}`;
 
   return (
-    <div className="bg-white border border-sand rounded-lg p-5 sm:p-7">
-      <p className="text-center text-xs text-stone mb-5">
-        Order <span className="font-mono font-bold text-ink">{summary.orderNumber ?? ""}</span>
-        {summary.currentDate && <> · currently scheduled <b className="text-ink">{fmt(summary.currentDate)}</b></>}
-      </p>
-
-      {/* Calendar */}
-      <div className="border border-sand rounded-lg p-3">
-        <div className="flex items-center justify-between mb-2">
-          <button type="button" onClick={() => setView(new Date(view.getFullYear(), view.getMonth() - 1, 1))}
-            disabled={view <= new Date(today.getFullYear(), today.getMonth(), 1)}
-            className="h-9 w-9 rounded border border-sand text-stone disabled:opacity-30 hover:border-cognac transition-colors">‹</button>
-          <p className="font-cormorant text-lg font-medium">{MONTHS[view.getMonth()]} {view.getFullYear()}</p>
-          <button type="button" onClick={() => setView(new Date(view.getFullYear(), view.getMonth() + 1, 1))}
-            disabled={new Date(view.getFullYear(), view.getMonth() + 1, 1) > max}
-            className="h-9 w-9 rounded border border-sand text-stone disabled:opacity-30 hover:border-cognac transition-colors">›</button>
-        </div>
-        <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold tracking-widest2 text-stone/70 mb-1">
-          {["SU", "MO", "TU", "WE", "TH", "FR", "SA"].map((d) => <span key={d}>{d}</span>)}
-        </div>
-        <div className="grid grid-cols-7 gap-1">
-          {cells.map((d, i) => {
-            if (!d) return <span key={`e${i}`} />;
-            const dISO = iso(d);
-            const selectable = d >= min && d <= max;
-            const sel = picked === dISO;
-            return (
-              <button key={dISO} type="button" disabled={!selectable} onClick={() => setPicked(dISO)}
-                className={
-                  sel
-                    ? "h-10 rounded bg-ink text-sm font-bold text-white"
-                    : selectable
-                      ? "h-10 rounded border border-sand text-sm text-ink hover:border-cognac hover:bg-linen transition-colors"
-                      : "h-10 rounded text-sm text-stone/30"
-                }>
-                {d.getDate()}
-              </button>
-            );
-          })}
-        </div>
+    <div className="rounded-xl overflow-hidden border border-[#e6dcc4] shadow-sm">
+      {/* Header: seal + wordmark — same family ng emails */}
+      <div className="bg-[#4a3b1a] px-7 pt-7 pb-6 border-b-[3px] border-[#b3402a] text-center">
+        <span className="inline-flex w-16 h-16 items-center justify-center rounded-full border-2 border-[#caa45a] font-cormorant font-bold tracking-[0.15em] text-[#caa45a]">PAN</span>
+        <p className="font-cormorant font-bold text-2xl tracking-[0.3em] text-[#f4ead8] mt-3.5">PAN&nbsp;FURNITURE</p>
+        <p className="text-[10px] font-bold tracking-widest2 uppercase text-[#caa45a] mt-2">Reschedule Delivery</p>
       </div>
 
-      {/* Time windows */}
-      {picked && (
-        <div className="mt-5">
-          <p className="text-[11px] font-bold tracking-widest2 text-stone mb-2">PREFERRED TIME · {fmt(picked).toUpperCase()}</p>
-          <div className="flex flex-wrap gap-2">
-            {WINDOWS.map((w) => (
-              <button key={w} type="button" onClick={() => setWin(win === w ? null : w)}
-                className={win === w
-                  ? "rounded-full bg-ink px-4 py-2 text-xs font-bold text-white"
-                  : "rounded-full border border-sand px-4 py-2 text-xs font-semibold text-stone hover:border-cognac transition-colors"}>
-                {w}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      <div className="bg-white px-7 pt-7 pb-7">
+        <p className="text-[10px] font-bold tracking-widest2 uppercase text-[#b3402a] mb-2">Reschedule Request</p>
+        <p className="font-cormorant text-2xl font-bold text-[#2b2620] mb-3">Need a different delivery date?</p>
+        <p className="text-[13px] leading-relaxed text-[#57534b] mb-6">
+          Our team will personally arrange a new date with you on Messenger — this keeps your route slot and payment details accurate.
+        </p>
 
-      <button type="button" onClick={() => { setError(null); setStep("review"); }} disabled={!picked}
-        className="mt-6 w-full bg-ink text-white text-[13px] font-bold tracking-widest2 py-4 rounded hover:bg-espresso transition-colors disabled:opacity-50">
-        {picked ? `CONTINUE — ${fmt(picked).toUpperCase()}` : "PICK A DATE ABOVE"}
-      </button>
-      <p className="mt-5 text-center text-[11px] text-stone/70">You will review your new schedule before it is confirmed.</p>
+        {/* Current schedule */}
+        <div className="text-center rounded-lg border border-[#e6dcc4] bg-[#faf8f3] px-6 py-4">
+          <p className="text-[10px] font-bold tracking-widest2 uppercase text-[#8a8272] mb-1.5">Current Schedule</p>
+          <p className="font-cormorant text-xl font-bold text-[#2b2620]">{summary.currentDate ? fmt(summary.currentDate) : "—"}</p>
+          <p className="font-mono text-xs font-bold text-[#8a8272] mt-1.5">{ord}</p>
+        </div>
+
+        {/* Fee notice */}
+        <div className="mt-4 rounded-lg border border-[#e8c9a8] bg-[#fdf6ee] px-5 py-4">
+          <p className="text-[12px] leading-relaxed text-[#7a5a34]">
+            <b className="text-[#5c421f]">⚠ One-time rescheduling fee: ₱500.00</b><br />
+            The fee is added to your remaining balance and is payable together with your order on delivery (COD). It is charged only once, no matter the new date.
+          </p>
+        </div>
+
+        {/* Messenger CTA */}
+        <a href={mme} target="_blank" rel="noreferrer"
+          className="block w-full mt-6 bg-[#0084ff] hover:bg-[#0073e0] text-white text-center text-[14px] font-bold py-4 rounded-lg transition-colors">
+          💬 Message Us on Messenger
+        </a>
+        <p className="text-[11px] text-[#8a8272] mt-3 leading-relaxed text-center">
+          Opening Messenger sends your order details to our team automatically. We respond during business hours (Mon–Sat, 8:00 AM–5:00 PM). Your current schedule stays reserved until a new date is agreed.
+        </p>
+      </div>
+
+      {/* Dark footer */}
+      <div className="bg-[#33261c] px-7 py-5 text-center">
+        <p className="font-cormorant font-bold text-sm tracking-[0.25em] text-[#f4ead8]">PAN&nbsp;FURNITURE</p>
+        <p className="text-[11px] text-[#c9b896] mt-2">
+          San Pedro, Laguna ·{" "}
+          <a href="mailto:panfurnitureph@gmail.com" className="text-[#caa45a] underline">panfurnitureph@gmail.com</a>
+        </p>
+        <p className="text-[10px] text-[#8f7f68] mt-2.5">Ref DC-{ord.replace(/^ORD-/, "")}-RS · This reschedule link is unique to your order</p>
+      </div>
     </div>
   );
 }

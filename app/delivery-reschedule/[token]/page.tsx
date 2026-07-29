@@ -28,11 +28,11 @@ export default async function Page({ params }: { params: Promise<{ token: string
       <div className="text-center mb-10">
         <p className="text-[11px] font-bold tracking-widest2 text-olive mb-3">RESCHEDULE DELIVERY</p>
         <h1 className="font-cormorant font-medium text-4xl sm:text-5xl leading-tight mb-3">
-          {summary ? "Pick a new date" : "Link no longer valid"}
+          {summary ? "Reschedule your delivery" : "Link no longer valid"}
         </h1>
         <p className="text-stone text-sm leading-relaxed">
           {summary
-            ? "Choose a new delivery date below — your new schedule is confirmed immediately."
+            ? "Coordinate a new delivery date with our team — a one-time ₱500 rescheduling fee applies."
             : "This link has expired or is invalid. If you believe this is a mistake, please contact our team."}
         </p>
       </div>
