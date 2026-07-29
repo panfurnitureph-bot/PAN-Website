@@ -89,11 +89,6 @@ export default function ConfirmClient({ token, summary }: {
 
   return (
     <div className="rounded-xl overflow-hidden border border-[#e6dcc4] shadow-sm">
-      {/* Preheader strip */}
-      <div className="bg-[#f4ead8] px-5 py-2 text-center text-[11px] text-[#6b6353]">
-        Confirm your delivery for order <b>{ord}</b> — {fmtLong(summary.date)}
-      </div>
-
       {/* Header: seal + wordmark (kapareho ng email) */}
       <div className="bg-[#4a3b1a] px-7 pt-7 pb-6 border-b-[3px] border-[#caa45a] text-center">
         <span className="inline-flex w-16 h-16 items-center justify-center rounded-full border-2 border-[#caa45a] font-cormorant font-bold tracking-[0.15em] text-[#caa45a]">PAN</span>
