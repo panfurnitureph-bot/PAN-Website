@@ -21,6 +21,8 @@ export default function RescheduleClient({ token, summary }: {
   const [busy, setBusy] = useState(false);
   const [picked, setPicked] = useState<string | null>(null);
   const [win, setWin] = useState<string | null>(null);
+  // Dalawang hakbang: pumili muna (pick) → REVIEW page bago tuluyang i-confirm.
+  const [step, setStep] = useState<"pick" | "review">("pick");
   const [done, setDone] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,6 +57,38 @@ export default function RescheduleClient({ token, summary }: {
       setBusy(false);
     }
   };
+
+  // ── REVIEW step — direct na paghahambing bago ma-confirm ──
+  if (step === "review" && picked && !done) {
+    return (
+      <div className="bg-white border border-sand rounded-lg p-6 sm:p-8">
+        <p className="text-[11px] font-bold tracking-widest2 text-olive text-center mb-5">REVIEW YOUR NEW SCHEDULE</p>
+        <div className="rounded-lg border border-sand bg-linen px-5 py-5 text-center">
+          <p className="text-[10px] font-bold tracking-widest2 text-stone/70 mb-1">CURRENT DATE</p>
+          <p className="text-sm text-stone line-through">{summary.currentDate ? fmt(summary.currentDate) : "—"}</p>
+          <p className="text-lg my-2 text-stone">↓</p>
+          <p className="text-[10px] font-bold tracking-widest2 text-olive mb-1">NEW DATE</p>
+          <p className="font-cormorant text-2xl font-bold text-ink">{fmt(picked)}</p>
+          {win && <p className="text-xs font-bold text-ink mt-1">{win}</p>}
+          <p className="font-mono text-xs font-bold text-stone mt-3">{summary.orderNumber ?? ""}</p>
+        </div>
+        <p className="text-[11px] text-stone text-center mt-4 leading-relaxed">
+          Once you confirm, your new date is booked immediately and your previous slot is released.
+        </p>
+        <div className="flex gap-2.5 mt-5">
+          <button type="button" onClick={() => setStep("pick")} disabled={busy}
+            className="flex-1 border border-sand text-stone text-[12px] font-bold tracking-widest2 py-3.5 rounded hover:border-cognac transition-colors disabled:opacity-50">
+            ← BACK
+          </button>
+          <button type="button" onClick={submit} disabled={busy}
+            className="flex-[2] bg-ink text-white text-[12px] font-bold tracking-widest2 py-3.5 rounded hover:bg-espresso transition-colors disabled:opacity-60">
+            {busy ? "BOOKING…" : "✓ CONFIRM NEW DATE"}
+          </button>
+        </div>
+        {error && <p className="mt-4 text-center text-xs text-red-700 bg-red-50 border border-red-100 rounded px-3 py-2">{error}</p>}
+      </div>
+    );
+  }
 
   if (done) {
     return (
@@ -129,12 +163,11 @@ export default function RescheduleClient({ token, summary }: {
         </div>
       )}
 
-      <button type="button" onClick={submit} disabled={busy || !picked}
+      <button type="button" onClick={() => { setError(null); setStep("review"); }} disabled={!picked}
         className="mt-6 w-full bg-ink text-white text-[13px] font-bold tracking-widest2 py-4 rounded hover:bg-espresso transition-colors disabled:opacity-50">
-        {busy ? "SAVING…" : picked ? `CONFIRM NEW DATE — ${fmt(picked).toUpperCase()}` : "PICK A DATE ABOVE"}
+        {picked ? `CONTINUE — ${fmt(picked).toUpperCase()}` : "PICK A DATE ABOVE"}
       </button>
-      {error && <p className="mt-4 text-center text-xs text-red-700 bg-red-50 border border-red-100 rounded px-3 py-2">{error}</p>}
-      <p className="mt-5 text-center text-[11px] text-stone/70">Your new date is confirmed immediately — no further steps needed.</p>
+      <p className="mt-5 text-center text-[11px] text-stone/70">You will review your new schedule before it is confirmed.</p>
     </div>
   );
 }
