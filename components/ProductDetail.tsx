@@ -11,6 +11,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { averageRating, formatPrice, type Product, type SiteContent } from "@/lib/products";
 import { useSwipeFallback } from "@/components/useSwipeFallback";
 import { messengerHandle, messengerUrl } from "@/lib/messenger";
@@ -39,6 +40,7 @@ export default function ProductDetail({
   site: SiteContent;
 }) {
   const { addToCart, toggleWishlist, wishlist } = useStore();
+  const router = useRouter();
   const [imageIdx, setImageIdx] = useState(0);
   const galleryTrack = useRef<HTMLDivElement>(null);
   // Desktop thumbnail rail — pang-scroll ng ˅ button kapag 8+ ang images.
@@ -190,6 +192,12 @@ export default function ProductDetail({
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
+  }
+
+  // Buy now — idagdag sa cart tapos diretso sa checkout.
+  function handleBuyNow() {
+    handleAdd();
+    router.push("/checkout");
   }
 
   function copyCode() {
@@ -744,9 +752,15 @@ export default function ProductDetail({
             </div>
             <button
               onClick={handleAdd}
-              className="flex-1 bg-espresso text-cream text-base font-medium rounded py-3 px-4 hover:bg-cognac transition-colors"
+              className="flex-1 border border-espresso text-espresso text-base font-medium rounded py-3 px-4 hover:bg-espresso hover:text-cream transition-colors"
             >
               {added ? "✓ Added to Cart" : "Add to cart"}
+            </button>
+            <button
+              onClick={handleBuyNow}
+              className="flex-1 bg-espresso text-cream text-base font-medium rounded py-3 px-4 hover:bg-cognac transition-colors"
+            >
+              Buy now
             </button>
             <button
               onClick={() => toggleWishlist(product.slug)}
