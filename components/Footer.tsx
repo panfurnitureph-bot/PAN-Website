@@ -29,9 +29,9 @@ const FOOTER_COLUMNS = [
       { label: "Real Customer Reviews", href: "/#reviews" },
       { label: "About Us", href: "/about" },
       { label: "Blog", href: "/about" },
-      { label: "Privacy Policy", href: "/faqs" },
+      { label: "Privacy Policy", href: "/privacy" },
       { label: "Terms & Conditions", href: "/faqs" },
-      { label: "Your Privacy Choices", href: "/faqs" },
+      { label: "Your Privacy Choices", href: "/privacy" },
     ],
   },
   {
