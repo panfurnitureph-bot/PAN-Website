@@ -826,6 +826,15 @@ export default function ProductDetail({
               href={messengerUrl(handle, ref)}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => {
+                // Sa mobile, ang bagong-tab na m.me redirect ay nawawalan ng
+                // thread target sa hand-off papuntang Messenger app (bumubukas
+                // sa inbox lang). Same-tab navigation ang maaasahang daan.
+                if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+                  e.preventDefault();
+                  window.location.href = messengerUrl(handle, ref);
+                }
+              }}
               className="mt-3 flex items-center justify-center gap-2 w-full border border-ink rounded py-3 px-4 text-sm font-bold tracking-widest2 hover:bg-ink hover:text-cream transition-colors"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
