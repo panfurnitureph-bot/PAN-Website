@@ -241,6 +241,7 @@ export default function CheckoutClient({
   const [postal, setPostal] = useState("");
   const [phone, setPhone] = useState("");
   const [fbName, setFbName] = useState("");
+  const [landmark, setLandmark] = useState("");
   const [fbLink, setFbLink] = useState("");
   const [pin, setPin] = useState<{ lat: number; lng: number; address: string } | null>(null);
   // Paano magbabayad ng 30% downpayment: QR Ph (GCash/GoTyme/bank app)
@@ -373,6 +374,7 @@ export default function CheckoutClient({
           province,
           postal_code: postal,
           fb_name: fbName,
+          landmark: landmark.trim() || null,
           fb_link: fbLink,
           address_lat: pin?.lat ?? null,
           address_lng: pin?.lng ?? null,
@@ -743,6 +745,12 @@ export default function CheckoutClient({
             <Field label="Phone" value={phone} onChange={setPhone} half inputMode="tel" error={errors.phone} />
             {/* Dito karamihan nakikipag-usap ang customer — kailangan ng
                 team para may mabalikan sa Messenger. */}
+            <Field
+              label="Landmark / delivery notes (optional)"
+              value={landmark}
+              onChange={setLandmark}
+              placeholder="e.g. blue gate, across the sari-sari store, call on arrival"
+            />
             <Field
               label="Facebook name"
               value={fbName}
