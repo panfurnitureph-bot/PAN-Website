@@ -859,7 +859,7 @@ export default function CheckoutClient({
           {/* Interactive map pin — eksaktong lokasyon para sa delivery.
               Lumilipat kapag pumili ng province+city; pinupunan ang Address
               field kapag naka-pin na. */}
-          {province && city && barangay && address.trim() ? (
+          {province && city && barangay ? (
             <LocationPicker
               value={pin}
               flyTo={`${barangay}, ${city}, ${province}, Philippines`}
