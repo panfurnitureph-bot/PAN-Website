@@ -165,6 +165,19 @@ export default function LocationPicker({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flyTo]);
 
+  // Panlabas na pagbabago ng value (hal. pumili ng street suggestion sa
+  // Street field) → ilipat ang mapa+pin doon. Ang sariling drag/click/GPS ay
+  // hindi gumagalaw ulit — ang marker ay nasa parehong coords na, kaya
+  // nilalaktawan ng guard.
+  useEffect(() => {
+    if (!value || !mapRef.current || !markerRef.current) return;
+    const cur = markerRef.current.getLatLng();
+    if (Math.abs(cur.lat - value.lat) < 1e-7 && Math.abs(cur.lng - value.lng) < 1e-7) return;
+    mapRef.current.setView([value.lat, value.lng], 17, { animate: true });
+    markerRef.current.setLatLng([value.lat, value.lng]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value?.lat, value?.lng]);
+
   // Hanapin ang lokasyon ng user (GPS)
   function locateMe() {
     if (!navigator.geolocation) return;

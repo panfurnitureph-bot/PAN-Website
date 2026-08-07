@@ -19,6 +19,7 @@ import { useStore } from "@/components/store";
 import CardForm from "@/components/CardForm";
 import RedirectCountdown from "@/components/RedirectCountdown";
 import MessengerRedirect from "@/components/MessengerRedirect";
+import StreetSuggest from "@/components/StreetSuggest";
 
 import { messengerHandle, messengerUrl } from "@/lib/messenger";
 import { DEFAULT_BED_SIZES } from "@/components/FrameDiagram";
@@ -811,7 +812,22 @@ export default function CheckoutClient({
               {errors.barangay && <span className="text-red-700 text-xs">{errors.barangay}</span>}
             </label>
 
-            <Field label="Street / House no." value={address} onChange={setAddress} half placeholder="House no., street, subdivision" error={errors.address} />
+            {/* Shopee-style typeahead: habang nagta-type, live na suggestions
+                (naka-scope sa napiling Province/City/Barangay); pagpili,
+                lumilipat ang pin ng mapa sa kalyeng iyon. */}
+            <StreetSuggest
+              label="Street / House no."
+              value={address}
+              onChange={setAddress}
+              onPick={(loc) => {
+                setPin({ lat: loc.lat, lng: loc.lng, address: loc.address });
+                setErrors((e) => ({ ...e, address: "" }));
+              }}
+              context={[barangay, city, province].filter(Boolean).join(", ")}
+              bias={pin}
+              placeholder="House no., street, subdivision"
+              error={errors.address}
+            />
 
             <Field label="Postal code" value={postal} onChange={setPostal} half inputMode="numeric" error={errors.postal} />
             <Field label="Phone" value={phone} onChange={setPhone} half inputMode="tel" error={errors.phone} />
