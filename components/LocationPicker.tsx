@@ -109,26 +109,54 @@ export default function LocationPicker({
 
   // Kapag nagbago ang napiling province+city -> forward geocode -> lumipat
   // ang mapa at pin doon (pero HINDI iaano-verride kung nag-drag na ang user)
+  //
+  // PH LANG: countrycodes=ph = HARD filter kay Nominatim. Dati free-text lang
+  // ("Barangay, City, Province, Philippines") — kapag walang exact match ang
+  // barangay sa OSM, nagda-drop si Nominatim ng terms at ang KAPANGALANG lugar
+  // sa ibang bansa ang naibabalik, kaya tumatalon ang pin sa labas ng Pilipinas.
+  // Dagdag pa: fallback chain (Barangay → City → Province, Shopee-style) para
+  // laging may mapupuntahan ang mapa, at coordinate sanity check bilang pangwakas
+  // na bantay.
   const flyDone = useRef<string>("");
   useEffect(() => {
     if (!flyTo || flyTo === flyDone.current) return;
     flyDone.current = flyTo;
     let cancelled = false;
     (async () => {
-      try {
-        const r = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(flyTo)}`,
-          { headers: { "Accept-Language": "en" } }
-        );
-        const j = await r.json();
-        if (cancelled || !j[0] || !mapRef.current || !markerRef.current) return;
-        const lat = parseFloat(j[0].lat);
-        const lng = parseFloat(j[0].lon);
-        mapRef.current.setView([lat, lng], 14, { animate: true });
-        markerRef.current.setLatLng([lat, lng]);
-        reverse(lat, lng); // punan agad ang address ng gitna ng bayan
-      } catch {
-        /* walang net / geocode fail — ok lang, gagana pa rin ang manual pin */
+      const inPH = (lat: number, lng: number) =>
+        lat >= 4.2 && lat <= 21.6 && lng >= 116 && lng <= 127.5;
+      const parts = flyTo
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s && !/^philippines$/i.test(s));
+      // ["Brgy, City, Prov", "City, Prov", "Prov"] — palapit nang palapit na zoom
+      // sa mas espesipikong tama.
+      const attempts = parts.map((_, i) => ({
+        q: [...parts.slice(i), "Philippines"].join(", "),
+        zoom: [16, 14, 11][Math.min(i, 2)],
+      }));
+      for (let i = 0; i < attempts.length; i++) {
+        // Nominatim policy: max 1 request/segundo — maghintay bago ang fallback.
+        if (i > 0) await new Promise((res) => setTimeout(res, 1100));
+        if (cancelled) return;
+        try {
+          const r = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=ph&q=${encodeURIComponent(attempts[i].q)}`,
+            { headers: { "Accept-Language": "en" } }
+          );
+          const j = await r.json();
+          if (cancelled || !mapRef.current || !markerRef.current) return;
+          if (!j[0]) continue; // wala sa OSM ang level na ito — subukan ang mas malawak
+          const lat = parseFloat(j[0].lat);
+          const lng = parseFloat(j[0].lon);
+          if (!inPH(lat, lng)) continue; // hindi dapat mangyari (countrycodes=ph), pero siguraduhin
+          mapRef.current.setView([lat, lng], attempts[i].zoom, { animate: true });
+          markerRef.current.setLatLng([lat, lng]);
+          reverse(lat, lng); // punan agad ang address ng gitna ng lugar
+          return;
+        } catch {
+          /* walang net / geocode fail — subukan ang susunod na level */
+        }
       }
     })();
     return () => {
