@@ -1,4 +1,4 @@
-// ADMIN — inilipat na sa PAN Furnitures app.
+// ADMIN — inilipat na sa PAN Furniture app.
 //
 // Ang panel na ito ay nagsusulat dati sa content/*.json sa mismong computer,
 // kaya kailangan pa ng `git push` bago lumabas sa live site — at hindi ito
@@ -25,7 +25,7 @@ export default function AdminMoved() {
       <h1 className="text-2xl font-bold mb-3">Nasa PAN app na ang admin</h1>
 
       <p className="text-stone mb-6 leading-relaxed">
-        Ang pag-edit ng nilalaman ng website ay nasa PAN Furnitures app na.
+        Ang pag-edit ng nilalaman ng website ay nasa PAN Furniture app na.
         Doon nagse-save sa Supabase, kaya sabay nang nag-uupdate ang website,
         ang windows app, at ang APK — hindi na kailangang mag-deploy.
       </p>

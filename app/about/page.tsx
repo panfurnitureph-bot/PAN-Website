@@ -1,7 +1,7 @@
 import { site } from "@/lib/products";
 import { primeStoreContent } from "@/lib/content";
 
-export const metadata = { title: "About Us — PAN Furnitures" };
+export const metadata = { title: "About Us — PAN Furniture" };
 
 // Walang cache: sariwang kuha sa Supabase kada page load, kaya ang binago sa
 // PAN app admin ay lumalabas agad — hindi na kailangang maghintay.

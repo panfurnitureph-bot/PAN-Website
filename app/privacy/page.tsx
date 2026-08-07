@@ -1,4 +1,4 @@
-export const metadata = { title: "Privacy Policy — PAN Furnitures" };
+export const metadata = { title: "Privacy Policy — PAN Furniture" };
 
 // Public Privacy Policy — kailangan din ng Meta App Review (Privacy Policy URL)
 // para sa Messenger app, at ng mga customer ng site.
@@ -39,7 +39,7 @@ const SECTIONS: { h: string; body: string[] }[] = [
   {
     h: "Contact us",
     body: [
-      "PAN Furnitures · Philippines",
+      "PAN Furniture · Philippines",
       "Email: panfurnitureph@gmail.com",
       "Facebook: facebook.com/panfurnitureph",
     ],
@@ -53,7 +53,7 @@ export default function PrivacyPage() {
       <p className="text-stone text-sm mb-10">Last updated: August 4, 2026</p>
 
       <p className="text-stone text-sm leading-relaxed mb-8">
-        PAN Furnitures (&quot;we&quot;, &quot;our&quot;, &quot;us&quot;) operates this website, our order and
+        PAN Furniture (&quot;we&quot;, &quot;our&quot;, &quot;us&quot;) operates this website, our order and
         delivery systems, and the PAN Furniture Facebook Page and Messenger experience. This policy
         explains what information we collect, how we use it, and the choices you have.
       </p>

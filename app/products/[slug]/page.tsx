@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   // Kung hindi, ang bagong product mula sa admin ay makakakuha ng generic title.
   await primeStoreContent();
   const product = getProduct(params.slug);
-  return { title: product ? `${product.name} — PAN Furnitures` : "PAN Furnitures" };
+  return { title: product ? `${product.name} — PAN Furniture` : "PAN Furniture" };
 }
 
 export default async function ProductPage({ params }: { params: { slug: string } }) {

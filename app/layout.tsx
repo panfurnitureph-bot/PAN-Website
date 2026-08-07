@@ -19,7 +19,7 @@ const cormorant = Cormorant({
 });
 
 export const metadata: Metadata = {
-  title: "PAN Furnitures",
+  title: "PAN Furniture",
   description:
     "Premium sofas, sectionals, dining, bedroom, and outdoor furniture. Quality materials, built to last. Free shipping and a 100-day happiness guarantee.",
   // Favicon mula sa /public (static — hindi na dynamic route, iwas crash)

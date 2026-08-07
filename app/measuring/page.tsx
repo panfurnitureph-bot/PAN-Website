@@ -9,7 +9,7 @@ import { CATEGORY_TILES } from "@/lib/products";
 import { primeStoreContent } from "@/lib/content";
 import PreFooter from "@/components/PreFooter";
 
-export const metadata = { title: "Measuring Your Space — PAN Furnitures" };
+export const metadata = { title: "Measuring Your Space — PAN Furniture" };
 
 // Walang cache: sariwang kuha sa Supabase kada page load, kaya ang binago sa
 // PAN app admin ay lumalabas agad — hindi na kailangang maghintay.

@@ -62,7 +62,7 @@ type Order = {
   amountDue?: number;
   qrDataUrl?: string; // naka-render nang QR image (data: URI)
   paymentUrl?: string;
-  // Row id sa PAN Furnitures app — doon kinukuha ng server ang halagang
+  // Row id sa PAN Furniture app — doon kinukuha ng server ang halagang
   // sisingilin kapag nagbayad ng card, para hindi ito galing sa browser.
   appOrderId?: string;
   payMethod?: "qr" | "card";
@@ -236,6 +236,21 @@ export default function CheckoutClient({
       return { province: "", city: "" };
     }
   })();
+  // Shopee-style hierarchy: Country (PH) → Region → Province → City → Barangay.
+  // Ang region ay hinango sa province (CALABARZON atbp.) para mag-filter lang.
+  const REGION_OF: Record<string, string> = {
+    "Laguna": "CALABARZON (Region IV-A)", "Batangas": "CALABARZON (Region IV-A)",
+    "Cavite": "CALABARZON (Region IV-A)", "Rizal": "CALABARZON (Region IV-A)",
+    "Quezon": "CALABARZON (Region IV-A)",
+    "Metro Manila (NCR)": "Metro Manila (NCR)", "Bulacan": "Central Luzon (Region III)",
+  };
+  const [region, setRegion] = useState(savedLoc.province ? (REGION_OF[savedLoc.province] ?? "") : "");
+  const [barangay, setBarangay] = useState("");
+  // Opisyal na PSGC barangay list bawat "Province|City" — static file sa /public.
+  const [brgyData, setBrgyData] = useState<Record<string, string[]>>({});
+  useEffect(() => {
+    fetch("/barangays.json").then((r) => r.json()).then(setBrgyData).catch(() => {});
+  }, []);
   const [province, setProvince] = useState(savedLoc.province ?? "");
   const [city, setCity] = useState(savedLoc.city ?? "");
   const [postal, setPostal] = useState("");
@@ -300,6 +315,11 @@ export default function CheckoutClient({
   );
   const subtotal = rows.reduce((sum, r) => sum + (r.item.unitPrice ?? r.product!.price) * r.item.qty, 0);
 
+  const brgyOptions = useMemo(
+    () => brgyData[`${province}|${city}`] ?? [],
+    [brgyData, province, city]
+  );
+
   // Shipping fee base sa napiling province + city
   const cityList = useMemo(
     () => SHIP_LOCATIONS.find((p) => p.name === province)?.cities ?? [],
@@ -321,6 +341,7 @@ export default function CheckoutClient({
     if (!lastName.trim()) e.lastName = "Required.";
     if (!address.trim()) e.address = "Required.";
     if (!province) e.province = "Please select a province.";
+    if (brgyOptions.length > 0 && !barangay) e.barangay = "Please select a barangay.";
     if (!city) e.city = "Please select a city/town.";
     if (!postal.trim()) e.postal = "Required.";
     if (phone.replace(/\D/g, "").length < 7) e.phone = "Phone number is required.";
@@ -355,7 +376,7 @@ export default function CheckoutClient({
       email,
       name: `${firstName} ${lastName}`,
     };
-    // Ipadala sa PAN Furnitures app (Orders list) + kumuha ng Maya
+    // Ipadala sa PAN Furniture app (Orders list) + kumuha ng Maya
     // downpayment QR. Best-effort — kahit mabigo, may confirmation pa rin.
     try {
       const res = await fetch("/api/send-order", {
@@ -365,7 +386,7 @@ export default function CheckoutClient({
           customer_name: `${firstName} ${lastName}`.trim(),
           email,
           contact_number: phone,
-          address: [address, city, province, postal].filter(Boolean).join(", "),
+          address: [address, barangay ? `Brgy. ${barangay}` : "", city, province, postal].filter(Boolean).join(", "),
           // Hiwalay ding ipinapadala ang mga bahagi ng address. Hindi
           // kayang laktawan ng Maya ang Shipping & Billing step nito kung
           // ang alam lang niya ay isang pinagsamang string — kailangan
@@ -697,7 +718,29 @@ export default function CheckoutClient({
           <div className="grid grid-cols-2 gap-x-3">
             <Field label="First name" value={firstName} onChange={setFirstName} half error={errors.firstName} />
             <Field label="Last name" value={lastName} onChange={setLastName} half error={errors.lastName} />
-            <Field label="Address" value={address} onChange={setAddress} placeholder="House no., street, barangay" error={errors.address} />
+            
+
+            {/* Shopee-style: Country → Region → Province → City → Barangay,
+                saka ang street — at ang mapa ay lalabas lang pag kumpleto. */}
+            <label className="block mb-3 col-span-2 sm:col-span-1">
+              <span className="block text-xs font-bold text-stone mb-1">Country</span>
+              <select value="PH" disabled className="w-full border border-stone/40 bg-sand/50 px-4 py-3 text-sm rounded text-stone">
+                <option value="PH">Philippines</option>
+              </select>
+            </label>
+            <label className="block mb-3 col-span-2 sm:col-span-1">
+              <span className="block text-xs font-bold text-stone mb-1">Region</span>
+              <select
+                value={region}
+                onChange={(e) => { setRegion(e.target.value); setProvince(""); setCity(""); setBarangay(""); }}
+                className="w-full border border-stone/40 bg-white px-4 py-3 text-sm rounded focus:outline-none focus:border-cognac"
+              >
+                <option value="">— Select —</option>
+                {Array.from(new Set(SHIP_LOCATIONS.map((p) => REGION_OF[p.name] ?? "Other"))).map((r) => (
+                  <option key={r} value={r}>{r}</option>
+                ))}
+              </select>
+            </label>
 
             {/* Province dropdown → nagse-set ng shipping fee kasama ang city */}
             <label className="block mb-3 col-span-2 sm:col-span-1">
@@ -707,13 +750,15 @@ export default function CheckoutClient({
                 onChange={(e) => {
                   setProvince(e.target.value);
                   setCity(""); // reset city kapag nagpalit ng province
+                  setBarangay("");
+                  if (e.target.value) setRegion(REGION_OF[e.target.value] ?? "");
                 }}
                 className={`w-full border bg-white px-4 py-3 text-sm rounded focus:outline-none focus:border-cognac ${
                   errors.province ? "border-red-600" : "border-stone/40"
                 }`}
               >
                 <option value="">— Select —</option>
-                {SHIP_LOCATIONS.map((p) => (
+                {SHIP_LOCATIONS.filter((p) => !region || (REGION_OF[p.name] ?? "Other") === region).map((p) => (
                   <option key={p.name} value={p.name}>{p.name}</option>
                 ))}
               </select>
@@ -726,7 +771,7 @@ export default function CheckoutClient({
               <select
                 value={city}
                 disabled={!province}
-                onChange={(e) => setCity(e.target.value)}
+                onChange={(e) => { setCity(e.target.value); setBarangay(""); }}
                 className={`w-full border bg-white px-4 py-3 text-sm rounded focus:outline-none focus:border-cognac disabled:bg-sand/50 disabled:text-stone ${
                   errors.city ? "border-red-600" : "border-stone/40"
                 }`}
@@ -740,6 +785,33 @@ export default function CheckoutClient({
               </select>
               {errors.city && <span className="text-red-700 text-xs">{errors.city}</span>}
             </label>
+
+            {/* Barangay — opisyal na PSGC list ng napiling city */}
+            <label className="block mb-3 col-span-2 sm:col-span-1">
+              <span className="block text-xs font-bold text-stone mb-1">Barangay</span>
+              {brgyOptions.length > 0 ? (
+                <select
+                  value={barangay}
+                  disabled={!city}
+                  onChange={(e) => setBarangay(e.target.value)}
+                  className={`w-full border bg-white px-4 py-3 text-sm rounded focus:outline-none focus:border-cognac disabled:bg-sand/50 disabled:text-stone ${errors.barangay ? "border-red-600" : "border-stone/40"}`}
+                >
+                  <option value="">{city ? "— Select —" : "Select a city first"}</option>
+                  {brgyOptions.map((b) => <option key={b} value={b}>{b}</option>)}
+                </select>
+              ) : (
+                <input
+                  value={barangay}
+                  disabled={!city}
+                  onChange={(e) => setBarangay(e.target.value)}
+                  placeholder={city ? "Type your barangay" : "Select a city first"}
+                  className="w-full border border-stone/40 bg-white px-4 py-3 text-sm rounded focus:outline-none focus:border-cognac disabled:bg-sand/50"
+                />
+              )}
+              {errors.barangay && <span className="text-red-700 text-xs">{errors.barangay}</span>}
+            </label>
+
+            <Field label="Street / House no." value={address} onChange={setAddress} half placeholder="House no., street, subdivision" error={errors.address} />
 
             <Field label="Postal code" value={postal} onChange={setPostal} half inputMode="numeric" error={errors.postal} />
             <Field label="Phone" value={phone} onChange={setPhone} half inputMode="tel" error={errors.phone} />
@@ -787,15 +859,21 @@ export default function CheckoutClient({
           {/* Interactive map pin — eksaktong lokasyon para sa delivery.
               Lumilipat kapag pumili ng province+city; pinupunan ang Address
               field kapag naka-pin na. */}
-          <LocationPicker
-            value={pin}
-            flyTo={city && province ? `${city}, ${province}, Philippines` : undefined}
-            onChange={(loc) => {
-              setPin(loc);
-              if (!address.trim()) setAddress(loc.address); // auto-fill kung blanko pa
-              if (loc.postcode && !postal.trim()) setPostal(loc.postcode); // auto postal
-            }}
-          />
+          {province && city && barangay && address.trim() ? (
+            <LocationPicker
+              value={pin}
+              flyTo={`${barangay}, ${city}, ${province}, Philippines`}
+              onChange={(loc) => {
+                setPin(loc);
+                if (loc.postcode && !postal.trim()) setPostal(loc.postcode); // auto postal
+              }}
+            />
+          ) : (
+            <p className="text-xs text-stone bg-linen rounded px-3 py-2">
+              Complete your address (province, city, barangay, street) and the map will appear —
+              drag the pin to your exact house so our driver finds you easily.
+            </p>
+          )}
 
           {/* Payment */}
           <h2 className="text-xl font-bold mb-1 mt-8">Payment</h2>

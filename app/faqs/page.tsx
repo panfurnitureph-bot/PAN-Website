@@ -1,4 +1,4 @@
-export const metadata = { title: "FAQs — PAN Furnitures" };
+export const metadata = { title: "FAQs — PAN Furniture" };
 
 const FAQS = [
   {

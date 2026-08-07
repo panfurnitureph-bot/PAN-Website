@@ -1,4 +1,4 @@
-// SEND ORDER — ipinapadala ang checkout order sa PAN Furnitures app
+// SEND ORDER — ipinapadala ang checkout order sa PAN Furniture app
 // (Supabase-backed) via webhook. Ang secret ay server-side lang.
 //
 // Kailangan sa .env.local:

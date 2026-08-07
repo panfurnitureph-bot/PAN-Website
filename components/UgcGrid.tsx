@@ -1,6 +1,6 @@
 "use client";
 
-// "PAN Furnitures, in real life" — masonry photo grid (UGC style).
+// "PAN Furniture, in real life" — masonry photo grid (UGC style).
 // Pag-click ng photo: lightbox modal (tulad ng tunay na site):
 // kaliwa = malaking photo na may prev/next arrows,
 // kanan = product card (rating + SHOP NOW), handle + date, caption
@@ -51,7 +51,7 @@ function UgcModal({
   const [likes, setLikes] = useState(0);
   const [dislikes, setDislikes] = useState(0);
 
-  const handle = (ugc as any).handle ?? "@panfurnitures";
+  const handle = (ugc as any).handle ?? "@panfurniture";
   const caption =
     (ugc as any).caption ??
     "A little look at how our pieces are living in your homes ✨\n\nDifferent styles, different spaces, but one thing stays the same — furniture that feels like you.";

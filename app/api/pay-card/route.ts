@@ -1,4 +1,4 @@
-// PAY CARD — isinisingil ang tokenized card sa pamamagitan ng PAN Furnitures app.
+// PAY CARD — isinisingil ang tokenized card sa pamamagitan ng PAN Furniture app.
 //
 // Ang browser ay nagpapadala lang ng gamit-minsang paymentTokenId. Ang halaga
 // ay SINASADYANG hindi tinatanggap mula sa client — ang app ang kumukuha niyon

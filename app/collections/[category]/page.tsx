@@ -39,7 +39,7 @@ export async function generateStaticParams() {
 
 export function generateMetadata({ params }: { params: { category: string } }) {
   const collection = COLLECTIONS[params.category];
-  return { title: collection ? `${collection.title} — PAN Furnitures` : "PAN Furnitures" };
+  return { title: collection ? `${collection.title} — PAN Furniture` : "PAN Furniture" };
 }
 
 export default async function CollectionPage({

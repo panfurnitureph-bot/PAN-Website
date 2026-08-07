@@ -1,4 +1,4 @@
-export const metadata = { title: "Shipping & Returns — PAN Furnitures" };
+export const metadata = { title: "Shipping & Returns — PAN Furniture" };
 
 export default function ShippingPage() {
   return (
