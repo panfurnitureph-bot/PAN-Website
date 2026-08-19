@@ -85,6 +85,7 @@ export type MtoAddon = {
   price: number | null;
   on: boolean;
 };
+export type MtoMeasure = { label: string; def: number | null; unit: string; on: boolean };
 export type MtoItemConfig = {
   sku: string;
   category: string;
@@ -92,6 +93,7 @@ export type MtoItemConfig = {
   customizable: boolean;
   published: boolean;
   sizes: MtoSize[];
+  measurements?: MtoMeasure[];
   addons: MtoAddon[];
   fabricsOff: string[];
 };

@@ -36,6 +36,22 @@ const colRank = (c: string) => {
 // Team rule: bawal ang leather sa Sofa at Sofa Bed.
 const noLeatherCategory = (c: string) => c === "Sofa" || c === "Sofa Bed";
 
+// ½-FRACTION display (parehong gawi ng IMS): 3.5 → "3 ½", ±½ ang steps.
+function fmtHalf(n: number): string {
+  if (!isFinite(n) || n <= 0) return "0";
+  const w = Math.floor(n);
+  const fr = n - w;
+  if (Math.abs(fr - 0.5) < 0.001) return w ? `${w} ½` : "½";
+  return String(n);
+}
+function parseHalf(v: string): number {
+  const s = String(v ?? "").trim();
+  if (!s) return 0;
+  const half = /½/.test(s) || /\b1\/2\b/.test(s) ? 0.5 : 0;
+  const m = /([\d.]+)/.exec(s.replace(/\b1\/2\b/, "").replace(/½/, ""));
+  return (m ? parseFloat(m[1]) : 0) + half;
+}
+
 function SwatchTile({ s, className }: { s: LibrarySwatch; className?: string }) {
   if (s.swatch)
     return (
@@ -131,8 +147,24 @@ export default function MtoOptions({ cfg, product, site }: { cfg: MtoItemConfig;
   const addons = cfg.addons.filter((a) => a.on && a.label.trim());
   const choices = addons.filter((a) => a.type === "CHOICE");
   const checks = addons.filter((a) => a.type === "ADD-ON");
-  const fields = addons.filter((a) => a.type === "FIELD");
   const fixed = addons.filter((a) => a.type === "FIXED");
+
+  // CHOICE GROUPING (2026-08-20): ang "Legs: Standard" at "Legs: Round" ay
+  // IISANG "Legs" dropdown na may dalawang option — hindi tag-isang dropdown.
+  // Suportado rin ang single row na "Legs: Standard/Round" (hinahati sa "/").
+  type ChoiceOpt = { value: string; full: string; price: number | null };
+  const choiceGroups: { name: string; options: ChoiceOpt[] }[] = [];
+  for (const c of choices) {
+    const m = /^([^:]+):\s*(.+)$/.exec(c.label);
+    const gname = m ? m[1].trim() : choiceName(c);
+    const optsRaw = m ? m[2].split("/").map((s) => s.trim()).filter(Boolean) : [c.label];
+    let g = choiceGroups.find((x) => x.name.toLowerCase() === gname.toLowerCase());
+    if (!g) {
+      g = { name: gname, options: [] };
+      choiceGroups.push(g);
+    }
+    for (const o of optsRaw) g.options.push({ value: o, full: m ? `${gname}: ${o}` : c.label, price: c.price ?? null });
+  }
 
   // Priced mode: LAHAT ng on-sizes may presyo (>0). Kung walang size rows,
   // priced kapag may base price ang product.
@@ -149,9 +181,22 @@ export default function MtoOptions({ cfg, product, site }: { cfg: MtoItemConfig;
   );
   const collections = useMemo(() => Array.from(new Set(fabrics.map((l) => colOf(l.name)))), [fabrics]);
 
+  // FIELD rows — itago ang fabric/upholstery na free-text kapag may fabric
+  // picker na (doble kung hindi); ang iba (hal. Top Material) ay lalabas.
+  const fields = addons
+    .filter((a) => a.type === "FIELD")
+    .filter((f) => !(fabrics.length > 0 && /fabric|upholster/i.test(f.label)));
+
   // ── State ──
+  const measures = (cfg.measurements ?? []).filter((m) => m.on && m.label.trim());
+  const [measVal, setMeasVal] = useState<Record<string, number>>(() => {
+    const init: Record<string, number> = {};
+    for (const m of measures) init[m.label] = m.def ?? 0;
+    return init;
+  });
   const [size, setSize] = useState(sizes[0]?.label ?? "");
-  const [choicePick, setChoicePick] = useState<Record<string, boolean>>({});
+  // Napiling option kada choice group (value = option value, hal. "Standard").
+  const [choiceSel, setChoiceSel] = useState<Record<string, string>>({});
   const [checkPick, setCheckPick] = useState<Record<string, boolean>>({});
   const [fieldVal, setFieldVal] = useState<Record<string, string>>({});
   const [fabric, setFabric] = useState("");
@@ -174,23 +219,29 @@ export default function MtoOptions({ cfg, product, site }: { cfg: MtoItemConfig;
 
   // ── Presyo ──
   const sizePrice = sizes.find((s) => s.label === size)?.price ?? (sizes.length ? 0 : product.price);
-  const addonTotal = addons.reduce((sum, a) => {
-    const on = a.type === "ADD-ON" ? checkPick[a.label] : a.type === "CHOICE" ? choicePick[a.label] : false;
-    return on && a.price ? sum + a.price : sum;
-  }, 0);
+  const pickedChoices = choiceGroups
+    .map((g) => g.options.find((o) => o.value === choiceSel[g.name]))
+    .filter((o): o is ChoiceOpt => !!o);
+  const addonTotal =
+    checks.reduce((sum, a) => (checkPick[a.label] && a.price ? sum + a.price : sum), 0) +
+    pickedChoices.reduce((sum, o) => sum + (o.price ?? 0), 0);
   const total = (sizePrice ?? 0) + addonTotal;
 
   // ── Build summary (cart lines / quote ref) ──
-  const pickedAddonLines = addons
-    .filter((a) => (a.type === "ADD-ON" ? checkPick[a.label] : a.type === "CHOICE" ? choicePick[a.label] : false))
-    .map((a) => ({ label: a.label, price: a.price ?? 0 }));
+  const pickedAddonLines = [
+    ...checks.filter((a) => checkPick[a.label]).map((a) => ({ label: a.label, price: a.price ?? 0 })),
+    ...pickedChoices.map((o) => ({ label: o.full, price: o.price ?? 0 })),
+  ];
   const fieldLines = fields
     .filter((f) => (fieldVal[f.label] ?? "").trim())
     .map((f) => ({ label: `${f.label}: ${fieldVal[f.label].trim()}`, price: 0 }));
+  const measureLines = measures
+    .filter((m) => (measVal[m.label] ?? 0) > 0)
+    .map((m) => ({ label: `${m.label}: ${fmtHalf(measVal[m.label])} ${m.unit}`, price: 0 }));
 
   function handleAdd(buyNow: boolean) {
     const baseLabel = [fabric || null, size || null].filter(Boolean).join(" / ") || product.name;
-    const addOnLines = [...pickedAddonLines, ...fieldLines];
+    const addOnLines = [...measureLines, ...pickedAddonLines, ...fieldLines];
     const variantKey = addOnLines.length ? `${baseLabel} + ${addOnLines.map((a) => a.label).join("+")}` : baseLabel;
     addToCart(product.slug, variantKey, qty, total, {
       baseLabel,
@@ -224,6 +275,46 @@ export default function MtoOptions({ cfg, product, site }: { cfg: MtoItemConfig;
       </div>
       <hr className="border-sand my-5" />
 
+      {/* ── MEASUREMENTS — one-line ±½ steppers ("3 ½") ── */}
+      {measures.length > 0 && (
+        <div className="mb-2">
+          <p className="mb-1 text-sm">Measurements</p>
+          {measures.map((m) => {
+            const v = measVal[m.label] ?? 0;
+            return (
+              <div key={m.label} className="grid grid-cols-[110px_1fr] items-center gap-3 border-b border-dashed border-sand py-1.5 last:border-b-0">
+                <span className="text-sm text-stone">{m.label}</span>
+                <div className="flex max-w-[220px] items-stretch">
+                  <button
+                    type="button"
+                    onClick={() => setMeasVal((p) => ({ ...p, [m.label]: Math.max(0, (p[m.label] ?? 0) - 0.5) }))}
+                    className="w-9 rounded-l border border-sand font-bold hover:text-cognac"
+                    aria-label={`Decrease ${m.label}`}
+                  >
+                    −
+                  </button>
+                  <input
+                    value={fmtHalf(v)}
+                    onChange={(e) => setMeasVal((p) => ({ ...p, [m.label]: parseHalf(e.target.value) }))}
+                    inputMode="decimal"
+                    className="w-full min-w-0 border-y border-sand bg-transparent text-center text-sm font-semibold focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setMeasVal((p) => ({ ...p, [m.label]: (p[m.label] ?? 0) + 0.5 }))}
+                    className="w-9 rounded-r border border-sand font-bold hover:text-cognac"
+                    aria-label={`Increase ${m.label}`}
+                  >
+                    +
+                  </button>
+                  <span className="ml-2 self-center text-xs text-stone">{m.unit}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       {/* ── SIZE dropdown ── */}
       {sizes.length > 0 && (
         <Dropdown
@@ -235,15 +326,15 @@ export default function MtoOptions({ cfg, product, site }: { cfg: MtoItemConfig;
         />
       )}
 
-      {/* ── CHOICE dropdowns (isang linya bawat isa) ── */}
-      {choices.map((c) => (
+      {/* ── CHOICE dropdowns — isang dropdown kada group, options sa loob ── */}
+      {choiceGroups.map((g) => (
         <Dropdown
-          key={c.label}
-          label={choiceName(c)}
-          value={choicePick[c.label] ? c.label : ""}
-          placeholder={`Select ${choiceName(c).toLowerCase()}…`}
-          options={[{ label: c.label, note: (c.price ?? 0) > 0 ? `+${formatPrice(c.price!)}` : undefined }]}
-          onPick={(v) => setChoicePick((p) => ({ ...p, [c.label]: v !== "" }))}
+          key={g.name}
+          label={g.name}
+          value={choiceSel[g.name] ?? ""}
+          placeholder={`Select ${g.name.toLowerCase()}…`}
+          options={g.options.map((o) => ({ label: o.value, note: (o.price ?? 0) > 0 ? `+${formatPrice(o.price!)}` : undefined }))}
+          onPick={(v) => setChoiceSel((p) => ({ ...p, [g.name]: v }))}
           clearable
         />
       ))}
