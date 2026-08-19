@@ -10,7 +10,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { averageRating, formatPrice, type Product, type SiteContent } from "@/lib/products";
 import { useSwipeFallback } from "@/components/useSwipeFallback";
@@ -47,6 +47,13 @@ export default function ProductDetail({
   // MTO: customizable = ang MtoOptions panel ang options UI; locked = as-is
   // page (presyo + Add to cart lang, walang classic options).
   const mtoActive = !!mto?.customizable;
+  // View ng MTO panel (ready | mto) — para sa "— Made to Order" na title.
+  const [mtoView, setMtoView] = useState<string>("mto");
+  useEffect(() => {
+    const h = (e: Event) => setMtoView(String((e as CustomEvent).detail));
+    window.addEventListener("mto-view", h);
+    return () => window.removeEventListener("mto-view", h);
+  }, []);
   const mtoLocked = !!mto && !mto.customizable;
   const hideOpts = mtoActive || mtoLocked;
   const { addToCart, toggleWishlist, wishlist } = useStore();
@@ -367,6 +374,7 @@ export default function ProductDetail({
         {/* Serif title + rating */}
         <h1 className="font-cormorant font-medium text-3xl sm:text-4xl leading-snug">
           {product.name}
+          {mtoActive && mtoView === "mto" ? " — Made to Order" : ""}
         </h1>
         <a href="#reviews" className="inline-flex items-center gap-2 mt-2 text-sm hover:opacity-70">
           <span className="text-olive tracking-tight">

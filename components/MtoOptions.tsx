@@ -318,6 +318,11 @@ export default function MtoOptions({ cfg, product, site }: { cfg: MtoItemConfig;
   const readyPrice = Number(px.mtoReadyPrice ?? product.price ?? 0);
   const readyAvail = (product.stock ?? 0) > 0 && readyPrice > 0;
   const [view, setView] = useState<"ready" | "mto">(readyAvail ? "ready" : "mto");
+  // Ipaalam sa ProductDetail ang view — "— Made to Order" ang title suffix
+  // kapag nasa customize view (gaya ng mock).
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("mto-view", { detail: view }));
+  }, [view]);
 
   function handleBuyReady(buyNow: boolean) {
     addToCart(product.slug, "Ready unit — as configured", qty, readyPrice, {
@@ -649,46 +654,29 @@ export default function MtoOptions({ cfg, product, site }: { cfg: MtoItemConfig;
           <span className="w-8 text-center text-sm">{qty}</span>
           <button onClick={() => setQty(qty + 1)} className="px-4 py-3 hover:text-cognac" aria-label="Increase quantity">+</button>
         </div>
-        {priced ? (
-          <>
-            <button
-              onClick={() => handleAdd(false)}
-              className="flex-1 rounded border border-espresso px-4 py-3 text-base font-medium text-espresso transition-colors hover:bg-espresso hover:text-cream"
-            >
-              {added ? "✓ Added to Cart" : "Add to cart"}
-            </button>
-            <button
-              onClick={() => handleAdd(true)}
-              className="flex-1 rounded bg-espresso px-4 py-3 text-base font-medium text-cream transition-colors hover:bg-cognac"
-            >
-              Buy now
-            </button>
-          </>
-        ) : (
-          handle && (
-            <a
-              href={messengerUrl(handle, `mto_${product.slug}`)}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => {
-                if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
-                  e.preventDefault();
-                  window.location.href = messengerUrl(handle, `mto_${product.slug}`);
-                }
-              }}
-              className="flex flex-1 items-center justify-center rounded bg-espresso px-4 py-3 text-base font-medium text-cream transition-colors hover:bg-cognac"
-            >
-              Request a Quote
-            </a>
-          )
+        {/* MADE TO ORDER = laging Request a Quote (mock behavior) — ang
+            direct na Buy now ay para lang sa ready unit view. */}
+        {handle && (
+          <a
+            href={messengerUrl(handle, `mto_${product.slug}`)}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => {
+              if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+                e.preventDefault();
+                window.location.href = messengerUrl(handle, `mto_${product.slug}`);
+              }
+            }}
+            className="flex flex-1 items-center justify-center rounded bg-espresso px-4 py-3 text-base font-medium text-cream transition-colors hover:bg-cognac"
+          >
+            Request a Quote
+          </a>
         )}
       </div>
-      {!priced && (
-        <p className="mt-2 rounded bg-linen px-3 py-2 text-xs text-stone">
-          Your build ({[size, fabric].filter(Boolean).join(" · ") || "current selections"}) will be sent to our team on
-          Messenger — we&apos;ll reply with a formal quotation.
-        </p>
-      )}
+      <p className="mt-2 rounded bg-linen px-3 py-2 text-xs text-stone">
+        Your build ({[size, fabric].filter(Boolean).join(" · ") || "current selections"}) will be sent to our team on
+        Messenger — we&apos;ll reply with a formal quotation{priced ? " confirming the final total" : ""}.
+      </p>
       {/* Balik sa yari nang unit — same button style ng CUSTOMIZE */}
       {readyAvail && (
         <button
