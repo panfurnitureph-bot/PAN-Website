@@ -139,8 +139,9 @@ function Dropdown({
 }
 
 export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoItemConfig; product: Product; site: SiteContent; locked?: boolean }) {
-  const { addToCart } = useStore();
+  const { addToCart, toggleWishlist, wishlist } = useStore();
   const router = useRouter();
+  const wished = wishlist.includes(product.slug);
 
   // ── Options mula sa config ──
   const sizes = cfg.sizes.filter((s) => s.on && s.label.trim());
@@ -340,6 +341,68 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     }
   }
 
+  // ── Shipping estimator (kapareho ng classic page; rates sa site.json) ──
+  const SHIP_PROVINCES = ((site as unknown as { shipping?: { provinces?: { name: string; cities: { name: string; fee: number }[] }[] } }).shipping?.provinces ?? []);
+  const [shipOpen, setShipOpen] = useState(false);
+  const [shipProvince, setShipProvince] = useState("");
+  const [shipCity, setShipCity] = useState("");
+  const shipCityList = SHIP_PROVINCES.find((p) => p.name === shipProvince)?.cities ?? [];
+  const shipFee = shipCityList.find((c) => c.name === shipCity)?.fee ?? null;
+  const shipBlock = (
+    <div className="mt-4 text-sm">
+      <button type="button" onClick={() => setShipOpen((v) => !v)} className="flex items-center gap-2 text-ink hover:text-cognac transition-colors">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" className="text-olive">
+          <path d="M1 7h12v9H1zM13 10h5l3 3v3h-8z" />
+          <circle cx="6" cy="18" r="1.8" />
+          <circle cx="17" cy="18" r="1.8" />
+        </svg>
+        <span className="border-b border-ink/40">Estimate your shipping</span>
+        <span className="text-stone text-xs">{shipOpen ? "▲" : "▼"}</span>
+      </button>
+      {shipOpen && (
+        <div className="mt-3 border border-stone/25 rounded p-3 bg-linen/40 space-y-2">
+          <select value={shipProvince} onChange={(e) => { setShipProvince(e.target.value); setShipCity(""); }} className="w-full border border-stone/30 bg-white px-3 py-2 text-sm rounded focus:outline-none focus:border-cognac">
+            <option value="">Select province</option>
+            {SHIP_PROVINCES.map((p) => (<option key={p.name} value={p.name}>{p.name}</option>))}
+          </select>
+          <select
+            value={shipCity}
+            disabled={!shipProvince}
+            onChange={(e) => { setShipCity(e.target.value); try { localStorage.setItem("pb_ship_loc", JSON.stringify({ province: shipProvince, city: e.target.value })); } catch {} }}
+            className="w-full border border-stone/30 bg-white px-3 py-2 text-sm rounded focus:outline-none focus:border-cognac disabled:bg-sand/40 disabled:text-stone"
+          >
+            <option value="">{shipProvince ? "Select city / town" : "Select a province first"}</option>
+            {shipCityList.map((c) => (<option key={c.name} value={c.name}>{c.name}</option>))}
+          </select>
+          {shipFee !== null && (
+            <div className="pt-2 border-t border-sand space-y-1.5">
+              <p className="flex justify-between items-baseline">
+                <span className="text-stone">Estimated shipping to {shipCity}</span>
+                <span className="font-bold text-cognac">{formatPrice(shipFee)}</span>
+              </p>
+              <p className="text-[11px] text-stone leading-snug">
+                Estimate only. Final fee is confirmed after we check your exact address — you&apos;ll pin your location at
+                checkout. Far-end or boundary areas may differ.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
+  const heartBtn = (
+    <button
+      onClick={() => toggleWishlist(product.slug)}
+      aria-label="Add to wishlist"
+      className="border border-stone/40 rounded px-4 hover:border-cognac"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill={wished ? "#B87333" : "none"} stroke={wished ? "#B87333" : "#1A1A1A"} strokeWidth="1.6">
+        <path d="M12 21C7 16.5 3 13 3 8.8 3 6 5.2 4 7.8 4c1.7 0 3.2.9 4.2 2.3C13 4.9 14.5 4 16.2 4 18.8 4 21 6 21 8.8c0 4.2-4 7.7-9 12.2z" />
+      </svg>
+    </button>
+  );
+
   // Availability card — nagpapalit ang delivery text ayon sa view at stock.
   const shipsNow = view === "ready" && (product.stock ?? 0) > 0;
   const etaCard = (
@@ -421,6 +484,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             </div>
           </div>
         )}
+        {shipBlock}
         {etaCard}
         <div className="mt-3 flex gap-3">
           <div className="flex items-center rounded border border-stone/40">
@@ -434,6 +498,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           <button onClick={() => handleBuyReady(true)} className="flex-1 rounded bg-espresso px-4 py-3 text-base font-medium text-cream transition-colors hover:bg-cognac">
             Buy now
           </button>
+          {heartBtn}
         </div>
         {!locked && (
           <button
@@ -689,6 +754,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
         </div>
       ))}
 
+      {shipBlock}
       {etaCard}
 
       {/* ── QTY + BUY / QUOTE ── */}
@@ -716,6 +782,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             Request a Quote
           </a>
         )}
+        {heartBtn}
       </div>
       <p className="mt-2 rounded bg-linen px-3 py-2 text-xs text-stone">
         Your build ({[size, fabric].filter(Boolean).join(" · ") || "current selections"}) will be sent to our team on

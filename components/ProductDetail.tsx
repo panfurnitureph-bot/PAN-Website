@@ -641,6 +641,8 @@ export default function ProductDetail({
             );
           })}
 
+        {/* MTO: ang estimator ay nasa loob na ng MTO panel (tamang ayos). */}
+        {!hideOpts && (<>
         <hr className="border-sand my-5" />
 
         {/* Shipping estimator — pumili ng lugar, lalabas ang SF.
@@ -717,6 +719,7 @@ export default function ProductDetail({
             </div>
           )}
         </div>
+        </>)}
 
         {/* Availability + lead time — enterprise style: malinaw na
             hierarchy, may icon, at trust signals sa ilalim */}
