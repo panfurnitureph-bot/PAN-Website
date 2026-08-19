@@ -323,6 +323,16 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
       ...pickedAddonLines.map((l) => ({ label: l.label, price: l.price })),
       ...fieldLines.map((l) => ({ label: l.label, price: 0 })),
     ];
+    // Kung may napiling lugar sa shipping estimator, isama — nagiging address
+    // hint sa MTO request at basehan ng auto delivery-fee sa quotation.
+    let where = "";
+    if (shipCity && shipProvince) where = `${shipCity}, ${shipProvince}`;
+    else {
+      try {
+        const saved = JSON.parse(localStorage.getItem("pb_ship_loc") ?? "{}") as { province?: string; city?: string };
+        if (saved.city && saved.province) where = `${saved.city}, ${saved.province}`;
+      } catch { /* wala pang napiling lugar */ }
+    }
     let mtoRef: string | null = null;
     try {
       const res = await fetch("/api/send-mto", {
@@ -334,6 +344,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           name: product.name,
           category: cfg.category,
           image: product.images[0] ?? null,
+          address: where || null,
           build: { size, fabric, lines: buildLines, total, priced },
         }),
         signal: AbortSignal.timeout(20000),
