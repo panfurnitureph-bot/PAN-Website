@@ -712,7 +712,7 @@ export default function ProductDetail({
 
         {/* Availability + lead time — enterprise style: malinaw na
             hierarchy, may icon, at trust signals sa ilalim */}
-        {(product.stock ?? 1) > 0 ? (
+        {!mtoActive && ((product.stock ?? 1) > 0 ? (
           <div className="mt-4 border border-sand rounded-lg overflow-hidden">
             {/* Status bar */}
             <div className="flex items-center gap-2.5 px-4 py-3 bg-green-50/60 border-b border-sand">
@@ -756,7 +756,7 @@ export default function ProductDetail({
               you as soon as it&apos;s back.
             </p>
           </div>
-        )}
+        ))}
 
         {/* Qty + Add to cart / Sold out + heart */}
         {!mtoActive && (product.stock ?? 1) > 0 ? (

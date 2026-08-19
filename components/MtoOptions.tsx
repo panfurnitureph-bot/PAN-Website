@@ -306,6 +306,109 @@ export default function MtoOptions({ cfg, product, site }: { cfg: MtoItemConfig;
 
   const handle = messengerHandle((site as unknown as { social?: { facebook?: string } }).social?.facebook);
 
+  // ── READY UNIT (Buy Now — ships this week) ──
+  // May stock ang item: default view = ang yari nang unit (as-is specs, unit
+  // price, Ships this week, Buy now); ang "MADE TO ORDER — CUSTOMIZE" button
+  // ang lumilipat sa configurator, at may "BUY NOW — SHIPS THIS WEEK" pabalik.
+  const px = product as unknown as { mtoReadySpecs?: string; mtoReadyPrice?: number };
+  const readySpecs = String(px.mtoReadySpecs ?? "")
+    .split("\n")
+    .map((s) => s.trim().replace(/^[•·\-]\s*/, ""))
+    .filter(Boolean);
+  const readyPrice = Number(px.mtoReadyPrice ?? product.price ?? 0);
+  const readyAvail = (product.stock ?? 0) > 0 && readyPrice > 0;
+  const [view, setView] = useState<"ready" | "mto">(readyAvail ? "ready" : "mto");
+
+  function handleBuyReady(buyNow: boolean) {
+    addToCart(product.slug, "Ready unit — as configured", qty, readyPrice, {
+      baseLabel: "Ready unit — as configured",
+      basePrice: readyPrice,
+      addOns: readySpecs.map((l) => ({ label: l, price: 0 })),
+    });
+    if (buyNow) router.push("/checkout");
+    else {
+      setAdded(true);
+      setTimeout(() => setAdded(false), 2000);
+    }
+  }
+
+  // Availability card — nagpapalit ang delivery text ayon sa view.
+  const etaCard = (
+    <div className="mt-4 border border-sand rounded-lg overflow-hidden">
+      <div className="flex items-center gap-2.5 px-4 py-3 bg-green-50/60 border-b border-sand">
+        <span className="relative flex h-2.5 w-2.5 shrink-0">
+          <span className="absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-60 animate-ping" />
+          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-600" />
+        </span>
+        <span className="text-sm font-bold text-green-800">{view === "ready" ? "In stock" : "Made to order"}</span>
+      </div>
+      <div className="px-4 py-3 text-sm">
+        {view === "ready" ? (
+          <>
+            <p className="font-medium text-ink">Ships this week</p>
+            <p className="text-xs text-stone">Ready unit — in stock in San Pedro, Laguna</p>
+          </>
+        ) : (
+          <>
+            <p className="font-medium text-ink">Delivery in 4–6 weeks</p>
+            <p className="text-xs text-stone">Made to order in San Pedro, Laguna</p>
+          </>
+        )}
+      </div>
+    </div>
+  );
+
+  if (view === "ready") {
+    return (
+      <div>
+        <div className="flex items-baseline gap-3 flex-wrap">
+          <span className="text-3xl font-bold">{formatPrice(readyPrice)}</span>
+        </div>
+        <hr className="border-sand my-5" />
+        {/* As-is spec sheet ng yari nang unit */}
+        {readySpecs.length > 0 && (
+          <div className="rounded-lg border border-sand overflow-hidden">
+            <div className="p-3 space-y-2">
+              {readySpecs.map((l) => {
+                const m = /^([^:]+):\s*(.+)$/.exec(l);
+                return (
+                  <div key={l} className="flex items-center justify-between gap-3 rounded border border-sand bg-transparent px-4 py-3 text-sm">
+                    <span className="text-stone">{m ? m[1].trim() : ""}</span>
+                    <span className="font-bold text-right">{m ? m[2].trim() : l}</span>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="flex items-center gap-2 border-t border-sand bg-linen px-4 py-2">
+              <span className="rounded bg-espresso px-2 py-0.5 text-[9px] font-extrabold tracking-widest2 text-cream">AS-IS</span>
+              <span className="text-xs text-stone">Built exactly as specified — this unit is ready for delivery.</span>
+            </div>
+          </div>
+        )}
+        {etaCard}
+        <div className="mt-3 flex gap-3">
+          <div className="flex items-center rounded border border-stone/40">
+            <button onClick={() => setQty(Math.max(1, qty - 1))} className="px-4 py-3 hover:text-cognac" aria-label="Decrease quantity">−</button>
+            <span className="w-8 text-center text-sm">{qty}</span>
+            <button onClick={() => setQty(qty + 1)} className="px-4 py-3 hover:text-cognac" aria-label="Increase quantity">+</button>
+          </div>
+          <button onClick={() => handleBuyReady(false)} className="flex-1 rounded border border-espresso px-4 py-3 text-base font-medium text-espresso transition-colors hover:bg-espresso hover:text-cream">
+            {added ? "✓ Added to Cart" : "Add to cart"}
+          </button>
+          <button onClick={() => handleBuyReady(true)} className="flex-1 rounded bg-espresso px-4 py-3 text-base font-medium text-cream transition-colors hover:bg-cognac">
+            Buy now
+          </button>
+        </div>
+        <button
+          onClick={() => setView("mto")}
+          className="mt-3 flex w-full items-center justify-center gap-2 rounded border border-ink py-3 px-4 text-sm font-bold tracking-widest2 transition-colors hover:bg-ink hover:text-cream"
+        >
+          ✎ MADE TO ORDER — CUSTOMIZE
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div>
       {/* ── PRICE CARD ── */}
@@ -532,8 +635,10 @@ export default function MtoOptions({ cfg, product, site }: { cfg: MtoItemConfig;
         </div>
       ))}
 
+      {etaCard}
+
       {/* ── QTY + BUY / QUOTE ── */}
-      <div className="mt-5 flex gap-3">
+      <div className="mt-3 flex gap-3">
         <div className="flex items-center rounded border border-stone/40">
           <button onClick={() => setQty(Math.max(1, qty - 1))} className="px-4 py-3 hover:text-cognac" aria-label="Decrease quantity">−</button>
           <span className="w-8 text-center text-sm">{qty}</span>
@@ -578,6 +683,15 @@ export default function MtoOptions({ cfg, product, site }: { cfg: MtoItemConfig;
           Your build ({[size, fabric].filter(Boolean).join(" · ") || "current selections"}) will be sent to our team on
           Messenger — we&apos;ll reply with a formal quotation.
         </p>
+      )}
+      {/* Balik sa yari nang unit — same button style ng CUSTOMIZE */}
+      {readyAvail && (
+        <button
+          onClick={() => setView("ready")}
+          className="mt-3 flex w-full items-center justify-center gap-2 rounded border border-ink py-3 px-4 text-sm font-bold tracking-widest2 transition-colors hover:bg-ink hover:text-cream"
+        >
+          ● BUY NOW — SHIPS THIS WEEK
+        </button>
       )}
     </div>
   );
