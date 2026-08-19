@@ -388,10 +388,10 @@ export default function ProductDetail({
 
         {/* MADE-TO-ORDER panel — pumapalit sa classic options kapag may
             published config ang item sa IMS configurator. */}
-        {mtoActive && mto && <MtoOptions cfg={mto} product={product} site={site} />}
+        {(mtoActive || mtoLocked) && mto && <MtoOptions cfg={mto} product={product} site={site} locked={mtoLocked} />}
 
         {/* Price block */}
-        {!mtoActive && (
+        {!hideOpts && (
         <div className="flex items-baseline gap-3 flex-wrap">
           <span className="text-3xl font-bold">{formatPrice(price)}</span>
           {compareAt && compareAt > price && (
@@ -407,7 +407,7 @@ export default function ProductDetail({
           )}
         </div>
         )}
-        {!mtoActive && promoOn && (
+        {!hideOpts && promoOn && (
           <p className="mt-2 text-sm">
             or <span className="text-red-500 text-xl font-medium">{formatPrice(Math.round(promoPrice))}</span>{" "}
             with code <strong>{PROMO_CODE}</strong>{" "}
@@ -417,7 +417,7 @@ export default function ProductDetail({
             {copied && <span className="text-green-700 text-xs ml-1">Copied!</span>}
           </p>
         )}
-        {!mtoActive && <hr className="border-sand my-5" />}
+        {!hideOpts && <hr className="border-sand my-5" />}
 
         {/* Color swatches (image thumbs) — itinatago kung walang kulay */}
         {!hideOpts && product.colors.length > 0 && (
@@ -720,7 +720,7 @@ export default function ProductDetail({
 
         {/* Availability + lead time — enterprise style: malinaw na
             hierarchy, may icon, at trust signals sa ilalim */}
-        {!mtoActive && ((product.stock ?? 1) > 0 ? (
+        {!hideOpts && ((product.stock ?? 1) > 0 ? (
           <div className="mt-4 border border-sand rounded-lg overflow-hidden">
             {/* Status bar */}
             <div className="flex items-center gap-2.5 px-4 py-3 bg-green-50/60 border-b border-sand">
@@ -767,7 +767,7 @@ export default function ProductDetail({
         ))}
 
         {/* Qty + Add to cart / Sold out + heart */}
-        {!mtoActive && (product.stock ?? 1) > 0 ? (
+        {!hideOpts && (product.stock ?? 1) > 0 ? (
           <div className="flex gap-3 mt-3">
             <div className="flex items-center border border-stone/40 rounded">
               <button onClick={() => setQtyState(Math.max(1, qty - 1))} className="px-4 py-3 hover:text-cognac" aria-label="Decrease quantity">−</button>
@@ -806,7 +806,7 @@ export default function ProductDetail({
           </p>
         )}
 
-        {!mtoActive && (product.stock ?? 1) <= 0 && (
+        {!hideOpts && (product.stock ?? 1) <= 0 && (
           // SOLD OUT flow — kagaya ng tunay na site
           <div className="mt-3">
             <div className="flex gap-3">

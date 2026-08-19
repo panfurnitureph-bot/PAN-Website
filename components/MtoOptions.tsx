@@ -138,7 +138,7 @@ function Dropdown({
   );
 }
 
-export default function MtoOptions({ cfg, product, site }: { cfg: MtoItemConfig; product: Product; site: SiteContent }) {
+export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoItemConfig; product: Product; site: SiteContent; locked?: boolean }) {
   const { addToCart } = useStore();
   const router = useRouter();
 
@@ -317,12 +317,13 @@ export default function MtoOptions({ cfg, product, site }: { cfg: MtoItemConfig;
     .filter(Boolean);
   const readyPrice = Number(px.mtoReadyPrice ?? product.price ?? 0);
   const readyAvail = (product.stock ?? 0) > 0 && readyPrice > 0;
-  const [view, setView] = useState<"ready" | "mto">(readyAvail ? "ready" : "mto");
+  // LOCKED (as-is item): laging ready/as-is view — walang customize.
+  const [view, setView] = useState<"ready" | "mto">(locked || readyAvail ? "ready" : "mto");
   // Ipaalam sa ProductDetail ang view — "— Made to Order" ang title suffix
   // kapag nasa customize view (gaya ng mock).
   useEffect(() => {
-    window.dispatchEvent(new CustomEvent("mto-view", { detail: view }));
-  }, [view]);
+    window.dispatchEvent(new CustomEvent("mto-view", { detail: locked ? "ready" : view }));
+  }, [view, locked]);
 
   function handleBuyReady(buyNow: boolean) {
     addToCart(product.slug, "Ready unit — as configured", qty, readyPrice, {
@@ -337,7 +338,8 @@ export default function MtoOptions({ cfg, product, site }: { cfg: MtoItemConfig;
     }
   }
 
-  // Availability card — nagpapalit ang delivery text ayon sa view.
+  // Availability card — nagpapalit ang delivery text ayon sa view at stock.
+  const shipsNow = view === "ready" && (product.stock ?? 0) > 0;
   const etaCard = (
     <div className="mt-4 border border-sand rounded-lg overflow-hidden">
       <div className="flex items-center gap-2.5 px-4 py-3 bg-green-50/60 border-b border-sand">
@@ -345,10 +347,10 @@ export default function MtoOptions({ cfg, product, site }: { cfg: MtoItemConfig;
           <span className="absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-60 animate-ping" />
           <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-600" />
         </span>
-        <span className="text-sm font-bold text-green-800">{view === "ready" ? "In stock" : "Made to order"}</span>
+        <span className="text-sm font-bold text-green-800">{shipsNow ? "In stock" : "Made to order"}</span>
       </div>
       <div className="px-4 py-3 text-sm">
-        {view === "ready" ? (
+        {shipsNow ? (
           <>
             <p className="font-medium text-ink">Ships this week</p>
             <p className="text-xs text-stone">Ready unit — in stock in San Pedro, Laguna</p>
@@ -363,7 +365,7 @@ export default function MtoOptions({ cfg, product, site }: { cfg: MtoItemConfig;
     </div>
   );
 
-  if (view === "ready") {
+  if (locked || view === "ready") {
     return (
       <div>
         <div className="flex items-baseline gap-3 flex-wrap">
@@ -404,12 +406,14 @@ export default function MtoOptions({ cfg, product, site }: { cfg: MtoItemConfig;
             Buy now
           </button>
         </div>
-        <button
-          onClick={() => setView("mto")}
-          className="mt-3 flex w-full items-center justify-center gap-2 rounded border border-ink py-3 px-4 text-sm font-bold tracking-widest2 transition-colors hover:bg-ink hover:text-cream"
-        >
-          ✎ MADE TO ORDER — CUSTOMIZE
-        </button>
+        {!locked && (
+          <button
+            onClick={() => setView("mto")}
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded border border-ink py-3 px-4 text-sm font-bold tracking-widest2 transition-colors hover:bg-ink hover:text-cream"
+          >
+            ✎ MADE TO ORDER — CUSTOMIZE
+          </button>
+        )}
       </div>
     );
   }
