@@ -309,6 +309,47 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
 
   const handle = messengerHandle((site as unknown as { social?: { facebook?: string } }).social?.facebook);
 
+  // ── REQUEST A QUOTE (Phase 3): ipadala ang build sa PAN app → MTO ref →
+  // Messenger redirect (ref mto_<MTO-000042>; fallback mto_<slug>). ──
+  const [quoteSending, setQuoteSending] = useState(false);
+  const [quoteRef, setQuoteRef] = useState<string | null>(null);
+  async function submitQuote() {
+    if (!handle) return;
+    setQuoteSending(true);
+    const buildLines = [
+      ...(size ? [{ label: `Size: ${size}`, price: sizes.find((s) => s.label === size)?.price ?? 0 }] : []),
+      ...(fabric ? [{ label: `Fabric: ${fabric}`, price: 0 }] : []),
+      ...measureLines.map((l) => ({ label: l.label, price: 0 })),
+      ...pickedAddonLines.map((l) => ({ label: l.label, price: l.price })),
+      ...fieldLines.map((l) => ({ label: l.label, price: 0 })),
+    ];
+    let mtoRef: string | null = null;
+    try {
+      const res = await fetch("/api/send-mto", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sku: cfg.sku,
+          slug: product.slug,
+          name: product.name,
+          category: cfg.category,
+          image: product.images[0] ?? null,
+          build: { size, fabric, lines: buildLines, total, priced },
+        }),
+        signal: AbortSignal.timeout(20000),
+      });
+      const data = (await res.json().catch(() => ({}))) as { ok?: boolean; mto_number?: string };
+      if (data.ok && data.mto_number) mtoRef = data.mto_number;
+    } catch {
+      /* relay down — Messenger link pa rin ang fallback */
+    }
+    setQuoteSending(false);
+    setQuoteRef(mtoRef);
+    const url = messengerUrl(handle, mtoRef ? `mto_${mtoRef}` : `mto_${product.slug}`);
+    if (/Android|iPhone|iPad/i.test(navigator.userAgent)) window.location.href = url;
+    else window.open(url, "_blank", "noopener,noreferrer");
+  }
+
   // ── READY UNIT (Buy Now — ships this week) ──
   // May stock ang item: default view = ang yari nang unit (as-is specs, unit
   // price, Ships this week, Buy now); ang "MADE TO ORDER — CUSTOMIZE" button
@@ -764,26 +805,27 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           <span className="w-8 text-center text-sm">{qty}</span>
           <button onClick={() => setQty(qty + 1)} className="px-4 py-3 hover:text-cognac" aria-label="Increase quantity">+</button>
         </div>
-        {/* MADE TO ORDER = laging Request a Quote (mock behavior) — ang
-            direct na Buy now ay para lang sa ready unit view. */}
+        {/* MADE TO ORDER = laging Request a Quote (mock behavior) — Phase 3:
+            ipinapadala muna ang BUONG build sa PAN app (MTO request), saka
+            nire-redirect sa Messenger na may ref mto_<MTO-number> para
+            ma-echo ng IMS ang build sa thread. */}
         {handle && (
-          <a
-            href={messengerUrl(handle, `mto_${product.slug}`)}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => {
-              if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
-                e.preventDefault();
-                window.location.href = messengerUrl(handle, `mto_${product.slug}`);
-              }
-            }}
-            className="flex flex-1 items-center justify-center rounded bg-espresso px-4 py-3 text-base font-medium text-cream transition-colors hover:bg-cognac"
+          <button
+            type="button"
+            disabled={quoteSending}
+            onClick={() => void submitQuote()}
+            className="flex flex-1 items-center justify-center rounded bg-espresso px-4 py-3 text-base font-medium text-cream transition-colors hover:bg-cognac disabled:opacity-60"
           >
-            Request a Quote
-          </a>
+            {quoteSending ? "Sending…" : "Request a Quote"}
+          </button>
         )}
         {heartBtn}
       </div>
+      {quoteRef && (
+        <p className="mt-2 rounded border border-green-200 bg-green-50 px-3 py-2 text-xs font-semibold text-green-800">
+          ✓ Quote request sent — {quoteRef} · opening Messenger…
+        </p>
+      )}
       <p className="mt-2 rounded bg-linen px-3 py-2 text-xs text-stone">
         Your build ({[size, fabric].filter(Boolean).join(" · ") || "current selections"}) will be sent to our team on
         Messenger — we&apos;ll reply with a formal quotation{priced ? " confirming the final total" : ""}.
