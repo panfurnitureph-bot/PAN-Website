@@ -204,6 +204,8 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   const [fabQ, setFabQ] = useState("");
   const [fabCol, setFabCol] = useState("");
   const [qty, setQty] = useState(1);
+  // ADD-ONS card collapse (mock: − HIDE / + SHOW)
+  const [addOpen, setAddOpen] = useState(true);
   const [added, setAdded] = useState(false);
   const fabRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -372,16 +374,43 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           <span className="text-3xl font-bold">{formatPrice(readyPrice)}</span>
         </div>
         <hr className="border-sand my-5" />
-        {/* As-is spec sheet ng yari nang unit */}
+        {/* As-is spec sheet ng yari nang unit — MOCK STYLE: bold value + gray
+            label sub, presyo/"included" sa kanan (galing sa config prices). */}
         {readySpecs.length > 0 && (
           <div className="rounded-lg border border-sand overflow-hidden">
             <div className="p-3 space-y-2">
               {readySpecs.map((l) => {
                 const m = /^([^:]+):\s*(.+)$/.exec(l);
+                const label = m ? m[1].trim() : "";
+                const value = m ? m[2].trim() : l;
+                // Hanapin ang presyo ng linyang ito sa config: size price,
+                // add-on +₱, choice option, o "included".
+                let price = "";
+                if (/^size$/i.test(label)) {
+                  const sz = sizes.find((s) => s.label.toLowerCase() === value.toLowerCase() || s.label.toLowerCase().startsWith(value.toLowerCase().split(" ")[0]));
+                  if (sz && (sz.price ?? 0) > 0) price = formatPrice(sz.price!);
+                } else {
+                  const ad = addons.find((a) => a.label.toLowerCase() === l.toLowerCase() || a.label.toLowerCase() === value.toLowerCase());
+                  if (ad) price = (ad.price ?? 0) > 0 ? `+${formatPrice(ad.price!)}` : "included";
+                  else {
+                    let hit: ChoiceOpt | undefined;
+                    for (const g of choiceGroups) {
+                      hit = g.options.find((o) => o.full.toLowerCase() === l.toLowerCase() || (g.name.toLowerCase() === label.toLowerCase() && o.value.toLowerCase() === value.toLowerCase()));
+                      if (hit) break;
+                    }
+                    if (hit) price = (hit.price ?? 0) > 0 ? `+${formatPrice(hit.price!)}` : "included";
+                    else if (/color|fabric|upholster/i.test(label)) price = "included";
+                  }
+                }
                 return (
-                  <div key={l} className="flex items-center justify-between gap-3 rounded border border-sand bg-transparent px-4 py-3 text-sm">
-                    <span className="text-stone">{m ? m[1].trim() : ""}</span>
-                    <span className="font-bold text-right">{m ? m[2].trim() : l}</span>
+                  <div key={l} className="flex items-center gap-3 rounded border border-sand bg-transparent px-4 py-3 text-sm">
+                    <span className="min-w-0 flex-1">
+                      <span className="block font-bold leading-tight">{value}</span>
+                      {label && <span className="block text-xs text-stone">{label}</span>}
+                    </span>
+                    {price && (
+                      <span className={`shrink-0 ${price === "included" ? "text-xs text-stone" : "font-bold"}`}>{price}</span>
+                    )}
                   </div>
                 );
               })}
@@ -438,7 +467,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
 
       {/* ── MEASUREMENTS — one-line ±½ steppers ("3 ½") ── */}
       {measures.length > 0 && (
-        <div className="mb-2">
+        <div className="mb-3 rounded-lg border border-sand px-4 py-2">
           <p className="mb-1 text-sm">Measurements</p>
           {measures.map((m) => {
             const v = measVal[m.label] ?? 0;
@@ -478,6 +507,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
 
       {/* ── SIZE dropdown ── */}
       {sizes.length > 0 && (
+        <div className="mb-3 rounded-lg border border-sand px-4 py-2">
         <Dropdown
           label="Size"
           value={size}
@@ -490,10 +520,12 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             window.dispatchEvent(new CustomEvent("pb-size-change", { detail: v.split(" ")[0] }));
           }}
         />
+        </div>
       )}
 
       {/* ── CHOICE dropdowns — isang dropdown kada group, options sa loob ── */}
       {choiceGroups.map((g) => (
+        <div key={g.name} className="mb-3 rounded-lg border border-sand px-4 py-2">
         <Dropdown
           key={g.name}
           label={g.name}
@@ -503,10 +535,12 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           onPick={(v) => setChoiceSel((p) => ({ ...p, [g.name]: v }))}
           clearable
         />
+        </div>
       ))}
 
       {/* ── FABRIC dropdown panel ── */}
       {fabrics.length > 0 && (
+        <div className="mb-3 rounded-lg border border-sand px-4 py-2">
         <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
           <span className="text-sm text-stone">Fabric</span>
           <div ref={fabRef} className="relative">
@@ -579,11 +613,13 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             )}
           </div>
         </div>
+        </div>
       )}
 
       {/* ── FIELD inputs ── */}
       {fields.map((f) => (
-        <div key={f.label} className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
+        <div key={f.label} className="mb-3 rounded-lg border border-sand px-4 py-2">
+        <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
           <span className="text-sm text-stone">{f.label.split("—")[0].split(":")[0].trim()}</span>
           <input
             value={fieldVal[f.label] ?? ""}
@@ -592,17 +628,19 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             className="w-full rounded-lg border border-sand bg-transparent px-3 py-2.5 text-sm focus:border-cognac focus:outline-none"
           />
         </div>
+        </div>
       ))}
 
       {/* ── ADD-ON checkbox rows ── */}
       {checks.length > 0 && (
-        <div className="mt-4">
-          <p className="mb-2 text-sm">
-            Add-ons{" "}
-            <span className="rounded bg-cognac/10 px-2 py-0.5 text-[11px] font-bold text-cognac">
-              {checks.filter((a) => isPicked(a.label)).length} selected
-            </span>
-          </p>
+        <div className="mb-3 overflow-hidden rounded-lg border border-sand">
+          <button type="button" onClick={() => setAddOpen((v) => !v)} className="flex w-full items-center gap-2 border-b border-sand bg-linen px-4 py-2.5 text-left">
+            <span className="text-xs font-bold tracking-widest2">ADD-ONS</span>
+            <span className="rounded bg-cognac/10 px-2 py-0.5 text-[10px] font-bold tracking-widest2 text-cognac">{checks.filter((a) => isPicked(a.label)).length} SELECTED</span>
+            <span className="ml-auto text-xs text-stone">{addOpen ? "− HIDE" : "+ SHOW"}</span>
+          </button>
+          {addOpen && (
+          <div className="p-3">
           <div className="space-y-2">
             {checks.map((a) => {
               const ban = banReason(a.label);
@@ -637,6 +675,8 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             <p className="mt-2 rounded bg-linen px-3 py-2 text-xs text-stone">
               Lift Storage — Platform Style base; drawers/pullout are no longer available (Tufted only).
             </p>
+          )}
+          </div>
           )}
         </div>
       )}
