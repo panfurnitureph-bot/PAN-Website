@@ -474,7 +474,12 @@ export default function MtoOptions({ cfg, product, site }: { cfg: MtoItemConfig;
           value={size}
           placeholder="Select size…"
           options={sizes.map((s) => ({ label: s.label, note: (s.price ?? 0) > 0 ? formatPrice(s.price!) : undefined }))}
-          onPick={setSize}
+          onPick={(v) => {
+            setSize(v);
+            // Pareho ng classic size chips: ang Dimensions tab (FrameDiagram)
+            // ay sumusunod sa napiling size via pb-size-change.
+            window.dispatchEvent(new CustomEvent("pb-size-change", { detail: v.split(" ")[0] }));
+          }}
         />
       )}
 
