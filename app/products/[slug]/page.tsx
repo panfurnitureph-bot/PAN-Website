@@ -9,7 +9,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { COLLECTIONS, getProduct, homepage, products, site } from "@/lib/products";
-import { primeStoreContent } from "@/lib/content";
+import { loadItemConfig, primeStoreContent } from "@/lib/content";
 import ProductDetail from "@/components/ProductDetail";
 import ProductTabs from "@/components/ProductTabs";
 import ProductCard from "@/components/ProductCard";
@@ -48,6 +48,10 @@ export default async function ProductPage({ params }: { params: { slug: string }
   const product = getProduct(params.slug);
   if (!product) notFound();
 
+  // Made-to-Order config (IMS Website → MTO Configurator) — published lang;
+  // kapag meron, ang MTO options panel ang papalit sa classic options.
+  const mto = await loadItemConfig(product.sku);
+
   // "Explore The Collection" — kaparehong category, 3 items
   const sameCollection = products
     .filter((p) => p.category === product.category && p.slug !== product.slug)
@@ -74,7 +78,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
       </nav>
 
       {/* 1 — GALLERY + OPTIONS */}
-      <ProductDetail product={product} site={site} />
+      <ProductDetail product={product} site={site} mto={mto} />
 
       {/* 2 — FULL-WIDTH TABS */}
       <ProductTabs product={product} />

@@ -73,3 +73,34 @@ export async function primeStoreContent(): Promise<StoreContent> {
   primeContent(content);
   return content;
 }
+
+// ---------- Made-to-Order Configurator (PAN app: Website → MTO Configurator) ----------
+// Per-item config mula sa website_item_config (IMS migration 0168), naka-link
+// sa product via SKU. Published lang ang ginagamit; draft o walang config =
+// dating product page ang nire-render.
+export type MtoSize = { label: string; price: number | null; on: boolean };
+export type MtoAddon = {
+  label: string;
+  type: "ADD-ON" | "CHOICE" | "FIELD" | "FIXED";
+  price: number | null;
+  on: boolean;
+};
+export type MtoItemConfig = {
+  sku: string;
+  category: string;
+  name: string;
+  customizable: boolean;
+  published: boolean;
+  sizes: MtoSize[];
+  addons: MtoAddon[];
+  fabricsOff: string[];
+};
+
+export async function loadItemConfig(sku: string | undefined | null): Promise<MtoItemConfig | null> {
+  if (!sku?.trim()) return null;
+  const rows = await rest<{ data: MtoItemConfig }[]>(
+    `website_item_config?select=data&sku=eq.${encodeURIComponent(sku.trim())}&limit=1`,
+  );
+  const cfg = rows?.[0]?.data ?? null;
+  return cfg?.published ? cfg : null;
+}

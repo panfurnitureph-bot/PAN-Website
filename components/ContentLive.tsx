@@ -17,7 +17,7 @@ import { createClient } from "@supabase/supabase-js";
 // nag-save ng maraming produkto nang sabay.
 const DEBOUNCE_MS = 400;
 
-const WATCHED = new Set(["web_products", "web_swatches", "web_content"]);
+const WATCHED = new Set(["web_products", "web_swatches", "web_content", "website_item_config"]);
 
 export default function ContentLive() {
   const router = useRouter();

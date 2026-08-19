@@ -16,6 +16,8 @@ import { averageRating, formatPrice, type Product, type SiteContent } from "@/li
 import { useSwipeFallback } from "@/components/useSwipeFallback";
 import { messengerHandle, messengerUrl } from "@/lib/messenger";
 import { useStore } from "@/components/store";
+import MtoOptions from "@/components/MtoOptions";
+import type { MtoItemConfig } from "@/lib/content";
 
 // Fallback na 6 bed sizes kung walang custom na bedSizes ang product
 const DEFAULT_SIZES = [
@@ -35,10 +37,18 @@ const SIZED_CATEGORIES = ["bed", "customized-bed", "sofa-bed", "mattress", "bedr
 export default function ProductDetail({
   product,
   site,
+  mto,
 }: {
   product: Product;
   site: SiteContent;
+  // Made-to-Order config (IMS Website → MTO Configurator) — published lang.
+  mto?: MtoItemConfig | null;
 }) {
+  // MTO: customizable = ang MtoOptions panel ang options UI; locked = as-is
+  // page (presyo + Add to cart lang, walang classic options).
+  const mtoActive = !!mto?.customizable;
+  const mtoLocked = !!mto && !mto.customizable;
+  const hideOpts = mtoActive || mtoLocked;
   const { addToCart, toggleWishlist, wishlist } = useStore();
   const router = useRouter();
   const [imageIdx, setImageIdx] = useState(0);
@@ -368,7 +378,12 @@ export default function ProductDetail({
 
         <hr className="border-sand my-5" />
 
+        {/* MADE-TO-ORDER panel — pumapalit sa classic options kapag may
+            published config ang item sa IMS configurator. */}
+        {mtoActive && mto && <MtoOptions cfg={mto} product={product} site={site} />}
+
         {/* Price block */}
+        {!mtoActive && (
         <div className="flex items-baseline gap-3 flex-wrap">
           <span className="text-3xl font-bold">{formatPrice(price)}</span>
           {compareAt && compareAt > price && (
@@ -383,7 +398,8 @@ export default function ProductDetail({
             </span>
           )}
         </div>
-        {promoOn && (
+        )}
+        {!mtoActive && promoOn && (
           <p className="mt-2 text-sm">
             or <span className="text-red-500 text-xl font-medium">{formatPrice(Math.round(promoPrice))}</span>{" "}
             with code <strong>{PROMO_CODE}</strong>{" "}
@@ -393,10 +409,10 @@ export default function ProductDetail({
             {copied && <span className="text-green-700 text-xs ml-1">Copied!</span>}
           </p>
         )}
-        <hr className="border-sand my-5" />
+        {!mtoActive && <hr className="border-sand my-5" />}
 
         {/* Color swatches (image thumbs) — itinatago kung walang kulay */}
-        {product.colors.length > 0 && (
+        {!hideOpts && product.colors.length > 0 && (
           <div className="flex items-center justify-between">
             <p className="text-sm">
               Color: <span className="text-stone">{color}</span>
@@ -404,7 +420,7 @@ export default function ProductDetail({
           </div>
         )}
         <div className="flex gap-2 mt-3 flex-wrap">
-          {product.colors.map((c, i) => {
+          {!hideOpts && product.colors.map((c, i) => {
             const sw = product.colorSwatches?.[i];
             // Thumbnail box: tela swatch muna, tapos bed photo sa kulay
             const swatchImg =
@@ -456,7 +472,7 @@ export default function ProductDetail({
         </div>
 
         {/* Size — filled buttons */}
-        {hasSize && (
+        {!hideOpts && hasSize && (
           <>
             <hr className="border-sand my-5" />
             <p className="text-sm">
@@ -488,7 +504,7 @@ export default function ProductDetail({
 
         {/* Add-ons — naka-pangkat ayon sa `group` (hal. Mattress, Wall
             Padding). Kung walang group, "Add-ons" ang heading. */}
-        {addOns.length > 0 &&
+        {!hideOpts && addOns.length > 0 &&
           Object.entries(
             addOns.reduce<Record<string, typeof addOns>>((acc, a) => {
               const g = a.group || "Add-ons";
@@ -743,7 +759,7 @@ export default function ProductDetail({
         )}
 
         {/* Qty + Add to cart / Sold out + heart */}
-        {(product.stock ?? 1) > 0 ? (
+        {!mtoActive && (product.stock ?? 1) > 0 ? (
           <div className="flex gap-3 mt-3">
             <div className="flex items-center border border-stone/40 rounded">
               <button onClick={() => setQtyState(Math.max(1, qty - 1))} className="px-4 py-3 hover:text-cognac" aria-label="Decrease quantity">−</button>
@@ -775,14 +791,14 @@ export default function ProductDetail({
         ) : null}
 
         {/* Babala kung may add-on na range ang presyo */}
-        {(product.stock ?? 1) > 0 && hasQuotedAddOn && (
+        {!hideOpts && (product.stock ?? 1) > 0 && hasQuotedAddOn && (
           <p className="mt-2 text-xs text-stone bg-linen rounded px-3 py-2">
             Some selected add-ons are priced on a range — we&apos;ll confirm the
             exact amount with you before production.
           </p>
         )}
 
-        {(product.stock ?? 1) <= 0 && (
+        {!mtoActive && (product.stock ?? 1) <= 0 && (
           // SOLD OUT flow — kagaya ng tunay na site
           <div className="mt-3">
             <div className="flex gap-3">
