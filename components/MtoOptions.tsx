@@ -217,19 +217,68 @@ export default function MtoOptions({ cfg, product, site }: { cfg: MtoItemConfig;
 
   const selFabric = fabrics.find((l) => l.name === fabric) ?? null;
 
+  // ── BUILT-IN CATEGORY RULES (team, parehong nasa IMS builder/mock) ──
+  // Lift Storage = Platform Style base → bawal drawers/pullout (Tufted lang);
+  // pullout dapat kasya sa lapad ng size; leather ↔ Lift ban; drawers /
+  // pullout / footboard = tig-iisang pipiliin; below Queen = drawers O
+  // pullout lang, hindi pareho.
+  const bedW = (() => {
+    const m = /(\d+)\s*X\s*\d+/i.exec(size || "");
+    return m ? +m[1] : 99;
+  })();
+  const isLift = (l: string) => /lift/i.test(l);
+  const isDrawer = (l: string) => /drawer/i.test(l);
+  const isPullout = (l: string) => /pullout/i.test(l);
+  const isFootboard = (l: string) => /tufted|footboard/i.test(l);
+  const liftOn = checks.some((a) => isLift(a.label) && checkPick[a.label]);
+  const leatherFabric = /leather/i.test(fabric);
+  function banReason(label: string): string | null {
+    if (isLift(label) && leatherFabric) return "not available with leather fabric — change the fabric first";
+    if ((isDrawer(label) || isPullout(label)) && liftOn) return "not available with Lift Storage (Tufted only)";
+    if (isPullout(label)) {
+      const m = /(\d+)\s*X\s*\d+/i.exec(label);
+      if (m && +m[1] >= bedW) return `does not fit ${size.split(" ")[0] || "this size"}`;
+    }
+    return null;
+  }
+  // Effective pick = naka-check AT hindi banned (auto-lapse kapag nag-iba
+  // ang size/fabric/lift at naging bawal).
+  const isPicked = (label: string) => !!checkPick[label] && !banReason(label);
+  function toggleCheck(label: string) {
+    if (banReason(label)) return;
+    setCheckPick((p) => {
+      const next = { ...p, [label]: !p[label] };
+      if (next[label]) {
+        // Tig-iisa kada grupo: drawers, pullout, footboard.
+        const clearGroup = (test: (l: string) => boolean) => {
+          for (const a of checks) if (a.label !== label && test(a.label)) next[a.label] = false;
+        };
+        if (isDrawer(label)) clearGroup(isDrawer);
+        if (isPullout(label)) clearGroup(isPullout);
+        if (isFootboard(label)) clearGroup(isFootboard);
+        // Below Queen (lapad < 60): drawers O pullout lang — hindi pareho.
+        if (bedW < 60) {
+          if (isDrawer(label)) clearGroup(isPullout);
+          if (isPullout(label)) clearGroup(isDrawer);
+        }
+      }
+      return next;
+    });
+  }
+
   // ── Presyo ──
   const sizePrice = sizes.find((s) => s.label === size)?.price ?? (sizes.length ? 0 : product.price);
   const pickedChoices = choiceGroups
     .map((g) => g.options.find((o) => o.value === choiceSel[g.name]))
     .filter((o): o is ChoiceOpt => !!o);
   const addonTotal =
-    checks.reduce((sum, a) => (checkPick[a.label] && a.price ? sum + a.price : sum), 0) +
+    checks.reduce((sum, a) => (isPicked(a.label) && a.price ? sum + a.price : sum), 0) +
     pickedChoices.reduce((sum, o) => sum + (o.price ?? 0), 0);
   const total = (sizePrice ?? 0) + addonTotal;
 
   // ── Build summary (cart lines / quote ref) ──
   const pickedAddonLines = [
-    ...checks.filter((a) => checkPick[a.label]).map((a) => ({ label: a.label, price: a.price ?? 0 })),
+    ...checks.filter((a) => isPicked(a.label)).map((a) => ({ label: a.label, price: a.price ?? 0 })),
     ...pickedChoices.map((o) => ({ label: o.full, price: o.price ?? 0 })),
   ];
   const fieldLines = fields
@@ -388,13 +437,17 @@ export default function MtoOptions({ cfg, product, site }: { cfg: MtoItemConfig;
                     .filter((l) => !fabQ.trim() || l.name.toLowerCase().includes(fabQ.trim().toLowerCase()))
                     .map((l) => {
                       const on = l.name === fabric;
+                      // Leather ↔ Lift Storage ban (team rule) — disabled ang
+                      // leather habang naka-Lift.
+                      const leatherBan = liftOn && /leather/i.test(l.name);
                       return (
                         <button
                           key={l.name}
                           type="button"
-                          onClick={() => { setFabric(on ? "" : l.name); setFabOpen(false); }}
-                          title={l.name}
-                          className={`w-[92px] flex-none overflow-hidden rounded-md bg-white text-center ${on ? "border-2 border-cognac ring-2 ring-cognac/20" : "border border-sand hover:border-cognac"}`}
+                          disabled={leatherBan}
+                          onClick={() => { if (leatherBan) return; setFabric(on ? "" : l.name); setFabOpen(false); }}
+                          title={leatherBan ? `${l.name} — not available with Lift Storage` : l.name}
+                          className={`w-[92px] flex-none overflow-hidden rounded-md bg-white text-center ${leatherBan ? "cursor-not-allowed border border-sand opacity-30" : on ? "border-2 border-cognac ring-2 ring-cognac/20" : "border border-sand hover:border-cognac"}`}
                         >
                           <SwatchTile s={l} className="h-9 w-full" />
                           <span className={`block truncate px-1 py-0.5 text-[9px] leading-tight ${on ? "font-bold text-ink" : "text-stone"}`}>
@@ -430,24 +483,30 @@ export default function MtoOptions({ cfg, product, site }: { cfg: MtoItemConfig;
           <p className="mb-2 text-sm">
             Add-ons{" "}
             <span className="rounded bg-cognac/10 px-2 py-0.5 text-[11px] font-bold text-cognac">
-              {checks.filter((a) => checkPick[a.label]).length} selected
+              {checks.filter((a) => isPicked(a.label)).length} selected
             </span>
           </p>
           <div className="space-y-2">
             {checks.map((a) => {
-              const on = !!checkPick[a.label];
+              const ban = banReason(a.label);
+              const on = isPicked(a.label);
               return (
                 <label
                   key={a.label}
-                  className={`flex cursor-pointer items-center gap-3 rounded border px-4 py-3 text-sm transition-colors ${on ? "border-cognac bg-cognac/5" : "border-stone/30 hover:border-stone/60"}`}
+                  className={`flex items-center gap-3 rounded border px-4 py-3 text-sm transition-colors ${ban ? "cursor-not-allowed border-stone/20 opacity-50" : on ? "cursor-pointer border-cognac bg-cognac/5" : "cursor-pointer border-stone/30 hover:border-stone/60"}`}
                 >
                   <input
                     type="checkbox"
                     checked={on}
-                    onChange={() => setCheckPick((p) => ({ ...p, [a.label]: !on }))}
+                    disabled={!!ban}
+                    onChange={() => toggleCheck(a.label)}
                     className="accent-cognac"
                   />
-                  <span className="min-w-0 flex-1">{a.label}</span>
+                  <span className="min-w-0 flex-1">
+                    {/* RED STRIKETHROUGH sa banned — mabilis maintindihang bawal */}
+                    {ban ? <s className="decoration-red-600 decoration-2">{a.label}</s> : a.label}
+                    {ban && <span className="block text-xs text-stone">{ban}</span>}
+                  </span>
                   {(a.price ?? 0) > 0 ? (
                     <span className="shrink-0 font-bold">+{formatPrice(a.price!)}</span>
                   ) : (
@@ -457,6 +516,11 @@ export default function MtoOptions({ cfg, product, site }: { cfg: MtoItemConfig;
               );
             })}
           </div>
+          {liftOn && (
+            <p className="mt-2 rounded bg-linen px-3 py-2 text-xs text-stone">
+              Lift Storage — Platform Style base; drawers/pullout are no longer available (Tufted only).
+            </p>
+          )}
         </div>
       )}
 
