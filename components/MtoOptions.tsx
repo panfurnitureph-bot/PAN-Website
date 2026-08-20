@@ -319,6 +319,9 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   const shipCityList = SHIP_PROVINCES.find((p) => p.name === shipProvince)?.cities ?? [];
   const shipFee = shipCityList.find((c) => c.name === shipCity)?.fee ?? null;
 
+  // Mobile — opsyonal, pero lumalabas sa MTO request/Messenger echo bilang
+  // pangalawang paraan ng pag-contact kung hindi masagot sa Messenger.
+  const [mobile, setMobile] = useState("");
   const [quoteSending, setQuoteSending] = useState(false);
   const [quoteRef, setQuoteRef] = useState<string | null>(null);
   // Live na listahan ng kulang — nag-a-update habang pumipili ang customer,
@@ -382,6 +385,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           category: cfg.category,
           image: product.images[0] ?? null,
           address: where || null,
+          contact: mobile.trim() || null,
           build: { size, fabric, lines: buildLines, total, priced },
         }),
         signal: AbortSignal.timeout(20000),
@@ -839,6 +843,19 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
       ))}
 
       {shipBlock}
+
+      {/* Mobile — opsyonal; sumasama sa request para may pang-tawag ang team. */}
+      <div className="mt-3 grid grid-cols-[110px_1fr] items-center gap-3">
+        <span className="text-sm text-stone">Mobile <span className="text-xs">(optional)</span></span>
+        <input
+          value={mobile}
+          onChange={(e) => setMobile(e.target.value)}
+          inputMode="tel"
+          placeholder="09XX XXX XXXX"
+          className="w-full rounded-lg border border-sand bg-transparent px-3 py-2.5 text-sm focus:border-cognac focus:outline-none"
+        />
+      </div>
+
       {etaCard}
 
       {/* ── QTY + BUY / QUOTE ── */}
