@@ -311,6 +311,14 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
 
   // ── REQUEST A QUOTE (Phase 3): ipadala ang build sa PAN app → MTO ref →
   // Messenger redirect (ref mto_<MTO-000042>; fallback mto_<slug>). ──
+  // Shipping estimator state — nauuna dahil ginagamit ng quote validation.
+  const SHIP_PROVINCES = ((site as unknown as { shipping?: { provinces?: { name: string; cities: { name: string; fee: number }[] }[] } }).shipping?.provinces ?? []);
+  const [shipOpen, setShipOpen] = useState(false);
+  const [shipProvince, setShipProvince] = useState("");
+  const [shipCity, setShipCity] = useState("");
+  const shipCityList = SHIP_PROVINCES.find((p) => p.name === shipProvince)?.cities ?? [];
+  const shipFee = shipCityList.find((c) => c.name === shipCity)?.fee ?? null;
+
   const [quoteSending, setQuoteSending] = useState(false);
   const [quoteRef, setQuoteRef] = useState<string | null>(null);
   // Live na listahan ng kulang — nag-a-update habang pumipili ang customer,
@@ -434,12 +442,6 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   }
 
   // ── Shipping estimator (kapareho ng classic page; rates sa site.json) ──
-  const SHIP_PROVINCES = ((site as unknown as { shipping?: { provinces?: { name: string; cities: { name: string; fee: number }[] }[] } }).shipping?.provinces ?? []);
-  const [shipOpen, setShipOpen] = useState(false);
-  const [shipProvince, setShipProvince] = useState("");
-  const [shipCity, setShipCity] = useState("");
-  const shipCityList = SHIP_PROVINCES.find((p) => p.name === shipProvince)?.cities ?? [];
-  const shipFee = shipCityList.find((c) => c.name === shipCity)?.fee ?? null;
   const shipBlock = (
     <div className="mt-4 text-sm">
       <button type="button" onClick={() => setShipOpen((v) => !v)} className="flex items-center gap-2 text-ink hover:text-cognac transition-colors">
