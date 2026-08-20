@@ -313,8 +313,38 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   // Messenger redirect (ref mto_<MTO-000042>; fallback mto_<slug>). ──
   const [quoteSending, setQuoteSending] = useState(false);
   const [quoteRef, setQuoteRef] = useState<string | null>(null);
+  // REQUIRED BAGO MAG-QUOTE (2026-08-20): kulang ang quotation kapag walang
+  // sukat/tela/opsyon o walang delivery location — hindi malalagyan ng
+  // shipping fee ang quote. Ipinapakita ang kulang bago pa mag-submit.
+  const [quoteErr, setQuoteErr] = useState<string[]>([]);
+  function missingForQuote(): string[] {
+    const miss: string[] = [];
+    if (sizes.length > 0 && !size) miss.push("Size");
+    if (fabrics.length > 0 && !fabric) miss.push("Fabric");
+    for (const g of choiceGroups) if (!choiceSel[g.name]) miss.push(g.name);
+    for (const m of measures) if (!(measVal[m.label] > 0)) miss.push(m.label);
+    for (const f of fields) if (!(fieldVal[f.label] ?? "").trim()) miss.push(f.label.split("—")[0].split(":")[0].trim());
+    let where = shipCity && shipProvince ? `${shipCity}, ${shipProvince}` : "";
+    if (!where) {
+      try {
+        const saved = JSON.parse(localStorage.getItem("pb_ship_loc") ?? "{}") as { province?: string; city?: string };
+        if (saved.city && saved.province) where = `${saved.city}, ${saved.province}`;
+      } catch { /* wala pang napiling lugar */ }
+    }
+    if (!where) miss.push("Delivery location (Estimate your shipping)");
+    return miss;
+  }
+
   async function submitQuote() {
     if (!handle) return;
+    const miss = missingForQuote();
+    if (miss.length) {
+      setQuoteErr(miss);
+      // Buksan ang shipping estimator kapag yun ang kulang.
+      if (miss.some((m) => m.startsWith("Delivery location"))) setShipOpen(true);
+      return;
+    }
+    setQuoteErr([]);
     setQuoteSending(true);
     const buildLines = [
       ...(size ? [{ label: `Size: ${size}`, price: sizes.find((s) => s.label === size)?.price ?? 0 }] : []),
@@ -409,6 +439,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           <circle cx="17" cy="18" r="1.8" />
         </svg>
         <span className="border-b border-ink/40">Estimate your shipping</span>
+        {!shipCity && <span className="rounded bg-cognac/10 px-1.5 py-0.5 text-[10px] font-bold text-cognac">required for a quote</span>}
         <span className="text-stone text-xs">{shipOpen ? "▲" : "▼"}</span>
       </button>
       {shipOpen && (
@@ -832,6 +863,12 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
         )}
         {heartBtn}
       </div>
+      {quoteErr.length > 0 && (
+        <p className="mt-2 rounded border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800">
+          <b>Please complete your build first:</b> {quoteErr.join(", ")}.
+          <span className="mt-0.5 block text-[11px] text-red-700">Every detail is needed for an accurate quotation — including the delivery location, which sets the shipping fee.</span>
+        </p>
+      )}
       {quoteRef && (
         <p className="mt-2 rounded border border-green-200 bg-green-50 px-3 py-2 text-xs font-semibold text-green-800">
           ✓ Quote request sent — {quoteRef} · opening Messenger…
