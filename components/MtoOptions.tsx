@@ -335,14 +335,10 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     for (const g of choiceGroups) if (!choiceSel[g.name]) miss.push(g.name);
     for (const m of measures) if (!(measVal[m.label] > 0)) miss.push(m.label);
     for (const f of fields) if (!(fieldVal[f.label] ?? "").trim()) miss.push(f.label.split("—")[0].split(":")[0].trim());
-    let where = shipCity && shipProvince ? `${shipCity}, ${shipProvince}` : "";
-    if (!where) {
-      try {
-        const saved = JSON.parse(localStorage.getItem("pb_ship_loc") ?? "{}") as { province?: string; city?: string };
-        if (saved.city && saved.province) where = `${saved.city}, ${saved.province}`;
-      } catch { /* wala pang napiling lugar */ }
-    }
-    if (!where) miss.push("Delivery location (Estimate your shipping)");
+    // DITO MISMO dapat pumili ng lugar — HINDI tinatanggap ang naka-save sa
+    // localStorage mula sa dating pagbisita: nakakalusot noon ang request na
+    // blangko ang dropdowns, at iba na ang pwedeng padalhan ngayon.
+    if (!(shipProvince && shipCity)) miss.push("Delivery location (Estimate your shipping)");
     return miss;
   }
 
@@ -371,16 +367,9 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
       ...pickedAddonLines.map((l) => ({ label: l.label, price: l.price })),
       ...fieldLines.map((l) => ({ label: l.label, price: 0 })),
     ];
-    // Kung may napiling lugar sa shipping estimator, isama — nagiging address
-    // hint sa MTO request at basehan ng auto delivery-fee sa quotation.
-    let where = "";
-    if (shipCity && shipProvince) where = `${shipCity}, ${shipProvince}`;
-    else {
-      try {
-        const saved = JSON.parse(localStorage.getItem("pb_ship_loc") ?? "{}") as { province?: string; city?: string };
-        if (saved.city && saved.province) where = `${saved.city}, ${saved.province}`;
-      } catch { /* wala pang napiling lugar */ }
-    }
+    // Ang lugar na PINILI SA PAGE ang ipinapadala — basehan ng auto
+    // delivery-fee sa quotation (required, kaya laging may laman dito).
+    const where = `${shipCity}, ${shipProvince}`;
     let mtoRef: string | null = null;
     try {
       const res = await fetch("/api/send-mto", {
