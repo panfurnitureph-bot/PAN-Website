@@ -313,6 +313,9 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   // Messenger redirect (ref mto_<MTO-000042>; fallback mto_<slug>). ──
   const [quoteSending, setQuoteSending] = useState(false);
   const [quoteRef, setQuoteRef] = useState<string | null>(null);
+  // Live na listahan ng kulang — nag-a-update habang pumipili ang customer,
+  // kaya alam agad kung bakit naka-disable ang Request a Quote.
+  const [missingNow, setMissingNow] = useState<string[]>([]);
   // REQUIRED BAGO MAG-QUOTE (2026-08-20): kulang ang quotation kapag walang
   // sukat/tela/opsyon o walang delivery location — hindi malalagyan ng
   // shipping fee ang quote. Ipinapakita ang kulang bago pa mag-submit.
@@ -334,6 +337,13 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     if (!where) miss.push("Delivery location (Estimate your shipping)");
     return miss;
   }
+
+  // I-recompute sa bawat pagbabago ng pili (localStorage lang ang hindi
+  // reactive, kaya effect — hindi puwedeng derived value lang).
+  useEffect(() => {
+    setMissingNow(missingForQuote());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [size, fabric, choiceSel, measVal, fieldVal, shipCity, shipProvince]);
 
   async function submitQuote() {
     if (!handle) return;
@@ -854,19 +864,22 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
         {handle && (
           <button
             type="button"
-            disabled={quoteSending}
+            // Hindi makakapag-request hangga't kulang ang build/lokasyon.
+            disabled={quoteSending || missingNow.length > 0}
+            title={missingNow.length ? `Still needed: ${missingNow.join(", ")}` : undefined}
             onClick={() => void submitQuote()}
-            className="flex flex-1 items-center justify-center rounded bg-espresso px-4 py-3 text-base font-medium text-cream transition-colors hover:bg-cognac disabled:opacity-60"
+            className="flex flex-1 items-center justify-center rounded bg-espresso px-4 py-3 text-base font-medium text-cream transition-colors hover:bg-cognac disabled:cursor-not-allowed disabled:bg-stone/50 disabled:hover:bg-stone/50"
           >
             {quoteSending ? "Sending…" : "Request a Quote"}
           </button>
         )}
         {heartBtn}
       </div>
-      {quoteErr.length > 0 && (
-        <p className="mt-2 rounded border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800">
-          <b>Please complete your build first:</b> {quoteErr.join(", ")}.
-          <span className="mt-0.5 block text-[11px] text-red-700">Every detail is needed for an accurate quotation — including the delivery location, which sets the shipping fee.</span>
+      {/* Live na paalala kung ano pa ang kulang — bago pa pindutin ang buton. */}
+      {missingNow.length > 0 && (
+        <p className={`mt-2 rounded border px-3 py-2 text-xs ${quoteErr.length ? "border-red-200 bg-red-50 text-red-800" : "border-sand bg-linen text-stone"}`}>
+          <b className={quoteErr.length ? "" : "text-ink"}>Complete your build to request a quote:</b> {missingNow.join(", ")}.
+          <span className="mt-0.5 block text-[11px]">Every detail is needed for an accurate quotation — including the delivery location, which sets the shipping fee.</span>
         </p>
       )}
       {quoteRef && (
