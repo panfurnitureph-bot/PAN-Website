@@ -22,6 +22,7 @@ import { formatPrice, swatchLibrary, type LibrarySwatch, type Product, type Site
 import type { MtoAddon, MtoItemConfig } from "@/lib/content";
 import { messengerHandle, messengerUrl } from "@/lib/messenger";
 import { useStore } from "@/components/store";
+import { WALL_THICKNESSES, frameLabel } from "@/lib/double-walling";
 
 // Kolek­syon mula sa pangalan ng swatch ("New Sahara" = dalawang salita).
 const colOf = (n: string) => {
@@ -220,6 +221,10 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   // Ang Promo Bed ay dalawang kulay lang ang inaalok — walang paghahalo.
   const maxFabrics = /promo/i.test(cfg.category ?? "") ? 1 : 3;
   const FABRIC_PARTS = ["Whole bed", "Headboard", "Frame", "Footboard"];
+  // DOUBLE WALLING — ang kapal ng dingding ang nagdedesisyon ng sukat ng FRAME.
+  const [dwThick, setDwThick] = useState(8);
+  const [dwH, setDwH] = useState("");
+  const [dwPad, setDwPad] = useState("2");
   // Ang unang tela ang siyang "ang tela" sa buod at sa presyo.
   const fabric = fabrics_.length ? fabrics_[0].name : "";
   const [fabOpen, setFabOpen] = useState(false);
@@ -480,7 +485,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   useEffect(() => {
     setMissingNow(missingForQuote());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [size, fabrics_, choiceSel, measVal, fieldVal, shipCity, shipProvince]);
+  }, [size, fabrics_, choiceSel, measVal, fieldVal, shipCity, shipProvince, dwThick, dwH, dwPad, checkPick]);
 
   async function submitQuote() {
     if (!handle) return;
@@ -495,6 +500,14 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     setQuoteSending(true);
     const buildLines = [
       ...(size ? [{ label: `Size: ${size}`, price: sizes.find((s) => s.label === size)?.price ?? 0 }] : []),
+      ...(doubleWallOn
+        ? [
+            { label: `Double Walling: ${dwThick}"`, price: 0 },
+            ...(frameLabel(size, dwThick) ? [{ label: `Frame Dimension: ${frameLabel(size, dwThick)}`, price: 0 }] : []),
+            ...(dwH.trim() ? [{ label: `Wall Height: ${dwH.trim()} in`, price: 0 }] : []),
+            ...(dwPad.trim() ? [{ label: `Padding Thickness: ${dwPad.trim()}"${dwPad.trim() === "2" ? " (standard)" : ""}`, price: 0 }] : []),
+          ]
+        : []),
       ...fabrics_.map((f) => ({
         label: f.part && f.part !== "Whole bed" ? `Fabric — ${f.part}: ${f.name}` : `Fabric: ${f.name}`,
         price: 0,
@@ -1003,6 +1016,53 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           )}
           </div>
           )}
+        </div>
+      )}
+
+      {/* ── DOUBLE WALLING ── ang kapal ng dingding ang nagdedesisyon ng sukat ng
+          FRAME — doon humihiwa ang workshop, hindi sa sukat ng kutson. */}
+      {doubleWallOn && (
+        <div className="mt-3 rounded-lg border-l-4 border-cognac bg-linen/50 py-1 pl-4 pr-3">
+          <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
+            <span className="text-sm text-stone">Wall thickness</span>
+            <div className="flex flex-wrap items-center gap-1.5">
+              {WALL_THICKNESSES.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setDwThick(t)}
+                  className={`rounded-full border px-3 py-1 text-xs font-semibold ${dwThick === t ? "border-cognac bg-cognac text-white" : "border-sand hover:border-cognac"}`}
+                >{t}&quot;</button>
+              ))}
+            </div>
+          </div>
+          {frameLabel(size, dwThick) && (
+            <div className="my-1 rounded-lg border border-cognac/40 bg-white px-3 py-2">
+              <div className="grid grid-cols-[110px_1fr] gap-3 text-xs">
+                <span className="text-stone">Mattress size</span>
+                <span className="font-mono">{size.replace(/^[^\d]*/, "").replace(/X/i, " × ")} in</span>
+              </div>
+              <div className="mt-1 grid grid-cols-[110px_1fr] gap-3 border-t border-dashed border-cognac/40 pt-1">
+                <span className="text-xs font-semibold text-cognac">Frame Dimension</span>
+                <span className="font-mono text-base font-bold">{frameLabel(size, dwThick)!.replace("x", " × ")} <span className="text-[10px] font-normal text-stone">in</span></span>
+              </div>
+            </div>
+          )}
+          <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
+            <span className="text-sm text-stone">Wall height</span>
+            <div className="flex items-center gap-1.5">
+              <input value={dwH} onChange={(e) => setDwH(e.target.value)} inputMode="decimal" placeholder="____" className="w-20 rounded-lg border border-sand bg-transparent px-2 py-1.5 text-sm outline-none focus:border-cognac" />
+              <span className="rounded-lg bg-espresso px-2 py-1.5 text-[10px] font-extrabold text-white">in</span>
+            </div>
+          </div>
+          <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
+            <span className="text-sm text-stone">Padding</span>
+            <div className="flex items-center gap-1.5">
+              <input value={dwPad} onChange={(e) => setDwPad(e.target.value)} inputMode="decimal" placeholder="2" className="w-20 rounded-lg border border-sand bg-transparent px-2 py-1.5 text-sm outline-none focus:border-cognac" />
+              <span className="rounded-lg bg-espresso px-2 py-1.5 text-[10px] font-extrabold text-white">in</span>
+              <span className="text-[11px] text-stone">standard 2&quot;</span>
+            </div>
+          </div>
         </div>
       )}
 
