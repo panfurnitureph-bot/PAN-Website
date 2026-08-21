@@ -228,6 +228,28 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   const [dwW, setDwW] = useState("");
   const [dwNails, setDwNails] = useState("");
   const [dwAccent, setDwAccent] = useState(false);
+
+  // STEPPER — − / halaga / + at unit, kapareho ng guided measurements sa app.
+  // Ang text input ay tumatanggap ng kahit ano; ang stepper ay hindi.
+  function Stepper({ value, onChange, fallback }: { value: string; onChange: (v: string) => void; fallback?: number }) {
+    const cur = Number(value) || fallback || 0;
+    const bump = (d: number) => onChange(String(Math.max(1, cur + d)));
+    const btn = "flex h-9 w-8 items-center justify-center rounded-lg border border-sand text-base font-bold text-stone transition-colors hover:border-cognac hover:bg-linen";
+    return (
+      <span className="inline-flex items-stretch gap-1">
+        <button type="button" onClick={() => bump(-1)} className={btn}>−</button>
+        <input
+          value={value}
+          onChange={(e) => onChange(e.target.value.replace(/[^\d.]/g, ""))}
+          inputMode="decimal"
+          placeholder={fallback ? String(fallback) : "____"}
+          className="h-9 w-16 rounded-lg border border-sand bg-transparent px-2 text-center text-sm font-bold outline-none focus:border-cognac"
+        />
+        <button type="button" onClick={() => bump(1)} className={btn}>+</button>
+        <span className="flex h-9 items-center rounded-lg bg-espresso px-2.5 text-[10px] font-extrabold text-white">in</span>
+      </span>
+    );
+  }
   // Ang unang tela ang siyang "ang tela" sa buod at sa presyo.
   const fabric = fabrics_.length ? fabrics_[0].name : "";
   const [fabOpen, setFabOpen] = useState(false);
@@ -1071,24 +1093,21 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           )}
           <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
             <span className="text-sm text-stone">Wall height</span>
-            <div className="flex items-center gap-1.5">
-              <input value={dwH} onChange={(e) => setDwH(e.target.value)} inputMode="decimal" placeholder="____" className="w-20 rounded-lg border border-sand bg-transparent px-2 py-1.5 text-sm outline-none focus:border-cognac" />
-              <span className="rounded-lg bg-espresso px-2 py-1.5 text-[10px] font-extrabold text-white">in</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <Stepper value={dwH} onChange={setDwH} />
             </div>
           </div>
           <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
             <span className="text-sm text-stone">Padding</span>
-            <div className="flex items-center gap-1.5">
-              <input value={dwPad} onChange={(e) => setDwPad(e.target.value)} inputMode="decimal" placeholder="2" className="w-20 rounded-lg border border-sand bg-transparent px-2 py-1.5 text-sm outline-none focus:border-cognac" />
-              <span className="rounded-lg bg-espresso px-2 py-1.5 text-[10px] font-extrabold text-white">in</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <Stepper value={dwPad} onChange={setDwPad} fallback={2} />
               <span className="text-[11px] text-stone">standard 2&quot;</span>
             </div>
           </div>
           <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
             <span className="text-sm text-stone">Wall width</span>
-            <div className="flex items-center gap-1.5">
-              <input value={dwW} onChange={(e) => setDwW(e.target.value)} inputMode="decimal" placeholder={String(frameFor(size, dwThick)?.w ?? "____")} className="w-20 rounded-lg border border-sand bg-transparent px-2 py-1.5 text-sm outline-none focus:border-cognac" />
-              <span className="rounded-lg bg-espresso px-2 py-1.5 text-[10px] font-extrabold text-white">in</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <Stepper value={dwW} onChange={setDwW} fallback={frameFor(size, dwThick)?.w} />
               <span className="text-[11px] text-stone">{dwW.trim() ? "set by hand" : "follows the frame width"}</span>
             </div>
           </div>
