@@ -49,6 +49,26 @@ export type QuoteBuild = {
     total?: number;
     priced?: boolean;
   };
+  // ANG BUONG KALAGAYAN NG CONFIGURATOR, para tunay na maibalik ng "Edit".
+  // Hindi sapat ang build.lines: ang mga iyon ay tekstong pang-basa
+  // ("2 built-in drawers — Left"), hindi ang mga piniling halaga. Kung ang
+  // Edit ay muling bubuo mula sa teksto, ang bawat pagbabago ng pananalita ay
+  // tahimik na sisira sa pagbabalik — at ang nawawalang add-on ay hindi
+  // mapapansin hangga't hindi na naipadala ang mali.
+  state?: {
+    size?: string;
+    fabrics?: { name: string; part: string }[];
+    choiceSel?: Record<string, string>;
+    checkPick?: Record<string, boolean>;
+    measVal?: Record<string, number>;
+    fieldVal?: Record<string, string>;
+    dwThick?: number;
+    dwH?: string;
+    dwPad?: string;
+    dwW?: string;
+    dwNails?: string;
+    dwAccent?: boolean;
+  };
 };
 
 type StoreState = {

@@ -22,7 +22,6 @@ import { formatPrice, swatchLibrary, type LibrarySwatch, type Product, type Site
 import type { MtoAddon, MtoItemConfig } from "@/lib/content";
 import { messengerHandle, messengerUrl } from "@/lib/messenger";
 import { useStore, type QuoteBuild } from "@/components/store";
-import QuoteRequestPanel from "@/components/QuoteRequestPanel";
 import { WALL_THICKNESSES, frameFor, frameLabel } from "@/lib/double-walling";
 
 // Kolek­syon mula sa pangalan ng swatch ("New Sahara" = dalawang salita).
@@ -619,6 +618,17 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
       category: cfg.category,
       summary: [size, ...fabrics_.map((f) => f.name)].filter(Boolean).join(" · "),
       build: { size, fabric, fabrics: fabrics_, lines: currentBuildLines(), total, priced },
+      // Ang eksaktong kalagayan ng form — ito ang ibinabalik ng Edit, hindi
+      // ang mga linyang pang-basa.
+      state: {
+        size,
+        fabrics: fabrics_,
+        choiceSel,
+        checkPick,
+        measVal,
+        fieldVal,
+        ...(doubleWallOn ? { dwThick, dwH, dwPad, dwW, dwNails, dwAccent } : {}),
+      },
     };
   }
 
@@ -632,19 +642,20 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     }
     setQuoteErr([]);
     addToQuote({ ...currentSlot(), ...(editId ? { id: editId } : {}) });
-    setEditId(null);
+    // PAGKATAPOS MAG-SAVE, BALIK SA LISTAHAN. Ang customer ay galing doon at
+    // may isang bagay lang na inaayos; ang pananatili sa blangkong form ay
+    // parang hindi natanggap ang pagbabago.
+    if (editId) { window.location.href = "/quote-request"; return; }
     setAdded2(true);
     window.setTimeout(() => setAdded2(false), 1600);
   }
 
+  // ISANG PRODUKTO LANG ANG DUMADAAN DITO. Kapag may naka-save nang listahan,
+  // ang buton ay dumadala sa /quote-request — doon ipinapadala ang marami,
+  // pagkatapos makita ang buong laman.
   async function submitQuote() {
     if (!handle) return;
-    // Ang kasalukuyang build ay isasama LANG kapag kumpleto ito. Kapag may
-    // naka-save nang listahan at blangko ang form (kagagaling lang sa Add),
-    // ang listahan ang ipinapadala — hindi ito dapat hadlangan ng form.
-    const buildMiss = missingForBuild();
-    const includeCurrent = quote.length === 0 || buildMiss.length === 0;
-    const miss = includeCurrent ? missingForQuote() : (shipProvince && shipCity ? [] : ["Delivery location (Estimate your shipping)"]);
+    const miss = missingForQuote();
     if (miss.length) {
       setQuoteErr(miss);
       // Buksan ang shipping estimator kapag yun ang kulang.
@@ -653,8 +664,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     }
     setQuoteErr([]);
     setQuoteSending(true);
-    // Ang naka-save na listahan, kasama ang nasa harap ngayon.
-    const slots = [...quote.map(({ id: _id, summary: _s, ...rest }) => rest), ...(includeCurrent ? [(({ summary: _s, ...rest }) => rest)(currentSlot())] : [])];
+    const slots = [(({ summary: _s, state: _st, ...rest }) => rest)(currentSlot())];
     // Ang lugar na PINILI SA PAGE ang ipinapadala — basehan ng auto
     // delivery-fee sa quotation (required, kaya laging may laman dito).
     const where = `${shipCity}, ${shipProvince}`;
@@ -713,6 +723,55 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   useEffect(() => {
     window.dispatchEvent(new CustomEvent("mto-view", { detail: locked ? "ready" : view }));
   }, [view, locked]);
+
+  // ── EDIT: IBALIK ANG BUONG BUILD ──
+  // Ang "Edit" sa /quote-request ay nagbubukas ng pahina ng produkto mismo na
+  // may ?edit=<slot id>. Dito ibinabalik ang EKSAKTONG kalagayan ng form noong
+  // ini-save ito — hindi mula sa build.lines (tekstong pang-basa, na sisira sa
+  // unang pagbabago ng pananalita) kundi mula sa naitalang state.
+  //
+  // MINSAN LANG: ang listahan ay galing sa localStorage kaya blangko sa unang
+  // render at may laman sa pangalawa; kung tatakbo ito tuwing magbabago ang
+  // quote, ibabalik nito ang luma tuwing may ie-edit ang customer.
+  const restored = useRef(false);
+  useEffect(() => {
+    if (restored.current || !quote.length) return;
+    const want = new URLSearchParams(window.location.search).get("edit");
+    if (!want) { restored.current = true; return; }
+    const b = quote.find((x) => x.id === want);
+    // Maling produkto ang pahina (naka-bookmark o binago ang URL) — dalhin sa
+    // tamang isa nang hindi nawawala ang pagka-edit.
+    if (b && b.slug !== product.slug) { window.location.replace(`/products/${b.slug}?edit=${b.id}`); return; }
+    restored.current = true;
+    if (!b) return;
+    setEditId(b.id);
+    setView("mto");
+    const s = b.state;
+    if (s) {
+      if (s.size) setSize(s.size);
+      if (s.fabrics?.length) setFabrics_(s.fabrics);
+      if (s.choiceSel) setChoiceSel(s.choiceSel);
+      if (s.checkPick) setCheckPick(s.checkPick);
+      if (s.measVal) setMeasVal(s.measVal);
+      if (s.fieldVal) setFieldVal(s.fieldVal);
+      if (typeof s.dwThick === "number") setDwThick(s.dwThick);
+      if (s.dwH !== undefined) setDwH(s.dwH);
+      if (s.dwPad !== undefined) setDwPad(s.dwPad);
+      if (s.dwW !== undefined) setDwW(s.dwW);
+      if (s.dwNails !== undefined) setDwNails(s.dwNails);
+      if (typeof s.dwAccent === "boolean") setDwAccent(s.dwAccent);
+    } else {
+      // Slot na na-save bago pa naitala ang state — ang sukat at tela lang ang
+      // maibabalik. Sinasabi ito sa customer sa halip na tahimik na maghubad.
+      if (b.build?.size) setSize(b.build.size);
+      if (b.build?.fabrics?.length) {
+        setFabrics_(b.build.fabrics.map((f, i) => ({ name: f.name, part: f.part ?? (i ? "Headboard" : "Whole bed") })));
+      }
+      setQuoteErr(["This saved build predates the current form — please check every option before saving."]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quote.length]);
+
 
   function handleBuyReady(buyNow: boolean) {
     addToCart(product.slug, "Ready unit — as configured", qty, readyPrice, {
@@ -895,6 +954,15 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
 
   return (
     <div>
+      {/* MALINAW NA NAG-E-EDIT — kung hindi, mukhang bagong build ang nasa
+          harap at ang "Save changes" ay parang nagdadagdag ng pangalawa. */}
+      {editId && (
+        <p className="mb-3 flex items-center gap-2 rounded-full border border-cognac bg-cognac/10 px-3 py-1.5 text-[11px] font-bold text-cognac">
+          <span>✎ Editing item {quote.findIndex((b) => b.id === editId) + 1} of your request</span>
+          <a href="/quote-request" className="ml-auto text-[10px] font-semibold underline">Back to request</a>
+        </p>
+      )}
+
       {/* ── PRICE CARD ── */}
       <div className="flex items-baseline gap-3 flex-wrap">
         {priced ? (
@@ -1307,18 +1375,18 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           karaniwan), walang nadadagdag sa pahina at pareho pa rin ang mga
           hakbang. Ang Edit ay ibinabalik ang build sa form na ito kapag
           parehong produkto; kung iba, dinadala sa sariling pahina nito. */}
-      <QuoteRequestPanel
-        onEdit={(b) => {
-          if (b.slug !== product.slug) { window.location.href = `/products/${b.slug}`; return; }
-          setEditId(b.id);
-          if (b.build?.size) setSize(b.build.size);
-          // Ang unang tela ay para sa buong kama kapag walang naitalang bahagi.
-          if (b.build?.fabrics?.length) {
-            setFabrics_(b.build.fabrics.map((f, i) => ({ name: f.name, part: f.part ?? (i ? "Headboard" : "Whole bed") })));
-          }
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }}
-      />
+      {/* ISANG LINYANG KUMPIRMASYON, HINDI BUONG LISTAHAN. Ang listahan ay
+          lumalaki sa bawat pagdagdag at itinutulak paibaba ang mga buton
+          habang binubuo pa ng customer ang produkto. Ang buong listahan ay
+          nasa /quote-request; ang badge sa header ang paalala. */}
+      {added2 && (
+        <p className="mt-3 flex items-center gap-2 rounded border border-olive/60 bg-olive/10 px-3 py-2 text-xs font-bold text-olive">
+          ✓ Added to your request
+          <a href="/quote-request" className="ml-auto text-[11px] font-semibold text-cognac underline">
+            View request ({quote.length})
+          </a>
+        </p>
+      )}
 
       {/* ── QTY + ADD / QUOTE ── */}
       {/* ADD TO REQUEST — pangalawang landas, kaya dashed at cognac: pareho ng
@@ -1326,11 +1394,13 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           pag-aari iyon ng buong request at itinatanong minsan sa pag-send. */}
       {handle && (
         <div className="mt-3 flex gap-3">
-          <div className="flex items-center rounded border border-stone/40">
-            <button onClick={() => setQty(Math.max(1, qty - 1))} className="px-4 py-3 hover:text-cognac" aria-label="Decrease quantity">−</button>
-            <span className="w-8 text-center text-sm">{qty}</span>
-            <button onClick={() => setQty(qty + 1)} className="px-4 py-3 hover:text-cognac" aria-label="Increase quantity">+</button>
-          </div>
+          {!editId && (
+            <div className="flex items-center rounded border border-stone/40">
+              <button onClick={() => setQty(Math.max(1, qty - 1))} className="px-4 py-3 hover:text-cognac" aria-label="Decrease quantity">−</button>
+              <span className="w-8 text-center text-sm">{qty}</span>
+              <button onClick={() => setQty(qty + 1)} className="px-4 py-3 hover:text-cognac" aria-label="Increase quantity">+</button>
+            </div>
+          )}
           <button
             type="button"
             disabled={quoteSending || buildMissingNow.length > 0}
@@ -1340,11 +1410,23 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           >
             {added2 ? "✓ Added to request" : editId ? "Save changes" : "+ Add to request"}
           </button>
+          {/* Sa pag-e-edit, may paraan palabas na hindi binabago ang naka-save. */}
+          {editId && (
+            <a
+              href="/quote-request"
+              className="flex items-center justify-center rounded border border-stone/40 px-5 py-3 text-xs font-bold uppercase tracking-widest2 text-stone transition-colors hover:border-ink hover:text-ink"
+            >
+              Cancel
+            </a>
+          )}
         </div>
       )}
 
       {/* ── QTY + BUY / QUOTE ── */}
-      <div className={handle ? "mt-2 flex gap-3" : "mt-3 flex gap-3"}>
+      {/* SA PAG-E-EDIT, WALANG "Request a Quote": isang bagay lang ang ginagawa
+          ngayon — binabago ang naka-save na item. Ang pagpapadala ay nasa
+          /quote-request, kung saan nakikita ang buong listahan. */}
+      <div className={editId ? "hidden" : handle ? "mt-2 flex gap-3" : "mt-3 flex gap-3"}>
         {!handle && (
           <div className="flex items-center rounded border border-stone/40">
             <button onClick={() => setQty(Math.max(1, qty - 1))} className="px-4 py-3 hover:text-cognac" aria-label="Decrease quantity">−</button>
@@ -1356,22 +1438,33 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             ipinapadala muna ang BUONG build sa PAN app (MTO request), saka
             nire-redirect sa Messenger na may ref mto_<MTO-number> para
             ma-echo ng IMS ang build sa thread. */}
-        {handle && (
+        {/* MAY NAKA-SAVE NANG LISTAHAN? Ang pagpapadala ay nasa /quote-request,
+            kung saan nakikita ang buong laman bago ito ipadala. Ang pagpapadala
+            mula rito ay magtatanong ng lugar sa pangalawang pagkakataon at
+            magpapadala ng listahang hindi na nakita ng customer. */}
+        {handle && quote.length > 0 && (
+          <a
+            href="/quote-request"
+            className="flex flex-1 items-center justify-center rounded bg-espresso px-4 py-3 text-base font-medium text-cream transition-colors hover:bg-cognac"
+          >
+            Review request · {quoteBtnCount} {quoteBtnCount === 1 ? "item" : "items"}
+          </a>
+        )}
+        {/* MADE TO ORDER = laging Request a Quote (mock behavior) — Phase 3:
+            ipinapadala muna ang BUONG build sa PAN app (MTO request), saka
+            nire-redirect sa Messenger na may ref mto_<MTO-number> para
+            ma-echo ng IMS ang build sa thread. Ang isahang produkto ay
+            dumadaan pa rin dito nang diretso — walang dagdag na hakbang. */}
+        {handle && quote.length === 0 && (
           <button
             type="button"
-            // Hindi makakapag-request hangga't kulang ang build/lokasyon —
-            // maliban kung may naka-save nang listahan: doon, sapat na ang
-            // lugar, at ang blangkong form ay hindi na kailangang punan.
-            disabled={quoteSending || (quote.length ? !(shipProvince && shipCity) : missingNow.length > 0)}
-            title={missingNow.length && !quote.length ? `Still needed: ${missingNow.join(", ")}` : undefined}
+            // Hindi makakapag-request hangga't kulang ang build/lokasyon.
+            disabled={quoteSending || missingNow.length > 0}
+            title={missingNow.length ? `Still needed: ${missingNow.join(", ")}` : undefined}
             onClick={() => void submitQuote()}
             className="flex flex-1 items-center justify-center rounded bg-espresso px-4 py-3 text-base font-medium text-cream transition-colors hover:bg-cognac disabled:cursor-not-allowed disabled:bg-stone/50 disabled:hover:bg-stone/50"
           >
-            {quoteSending
-              ? "Sending…"
-              : quoteBtnCount > 1
-                ? `Request a Quote · ${quoteBtnCount} items`
-                : "Request a Quote"}
+            {quoteSending ? "Sending…" : "Request a Quote"}
           </button>
         )}
         {heartBtn}

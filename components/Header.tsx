@@ -14,7 +14,7 @@ import { useStore } from "@/components/store";
 // Ang `site` (promo banner, pangalan ng brand) ay galing sa layout — server
 // ang kumukuha nito sa Supabase, hindi na ang browser.
 export default function Header({ site }: { site: SiteContent }) {
-  const { cartCount, wishlist } = useStore();
+  const { cartCount, wishlist, quoteCount } = useStore();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -129,6 +129,21 @@ export default function Header({ site }: { site: SiteContent }) {
                 </span>
               )}
             </Link>
+            {/* QUOTE REQUEST — HIWALAY SA CART, at nakikita. Ang bumili agad at
+                ang magpapresyo muna ay magkaibang layunin; ang isang bilang na
+                naghahalo ng dalawa ay walang sinasabing alinman. Lumalabas lang
+                kapag may laman — sa nakararami, walang nadadagdag sa header. */}
+            {quoteCount > 0 && (
+              <Link href="/quote-request" aria-label={`Quote request (${quoteCount})`} className="relative hover:text-cognac">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+                  <path d="M8 4h8a2 2 0 012 2v14l-6-3-6 3V6a2 2 0 012-2z" />
+                  <path d="M9 9h6M9 12.5h4" />
+                </svg>
+                <span className="absolute -top-2 -right-2 bg-cognac text-cream text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
+                  {quoteCount}
+                </span>
+              </Link>
+            )}
             <Link href="/cart" aria-label="Cart" className="relative hover:text-cognac">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
                 <path d="M6 7h12l1 14H5L6 7z" />
