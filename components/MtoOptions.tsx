@@ -1068,27 +1068,27 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             </div>
           </div>
           {frameLabel(size, dwThick) && (
-            <div className="my-1 rounded-lg border border-cognac/40 bg-white px-3 py-2">
-              <div className="grid grid-cols-[110px_1fr] gap-3 text-xs">
-                <span className="text-stone">Mattress size</span>
-                <span className="font-mono">{size.replace(/^[^\d]*/, "").replace(/X/i, " × ")} in</span>
+            <div className="my-1.5 overflow-hidden rounded-lg border border-cognac/50 bg-white">
+              <div className="flex items-center justify-between bg-espresso px-3 py-1.5">
+                <span className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-white/90">Frame dimension</span>
+                <span className="rounded bg-white/15 px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-wider text-white/90">AUTO</span>
               </div>
-              <div className="mt-1 grid grid-cols-[110px_1fr] gap-3 border-t border-dashed border-cognac/40 pt-1">
-                <span className="text-xs font-semibold text-cognac">Frame Dimension</span>
-                <span className="font-mono text-base font-bold">{frameLabel(size, dwThick)!.replace("x", " × ")} <span className="text-[10px] font-normal text-stone">in</span></span>
+              <div className="divide-y divide-sand">
+                <div className="flex items-baseline justify-between gap-3 px-3 py-2">
+                  <span className="text-[11px] font-medium text-stone">Mattress size</span>
+                  <span className="font-mono text-sm tabular-nums text-ink">
+                    {size.replace(/^[^\d]*/, "").replace(/X/i, " × ")}
+                    <span className="ml-1 text-[10px] font-normal text-stone">in</span>
+                  </span>
+                </div>
+                <div className="flex items-baseline justify-between gap-3 bg-linen/60 px-3 py-2.5">
+                  <span className="text-[11px] font-bold uppercase tracking-wide text-cognac">Frame dimension</span>
+                  <span className="font-mono text-xl font-extrabold tabular-nums tracking-tight text-ink">
+                    {frameLabel(size, dwThick)!.replace("x", " × ")}
+                    <span className="ml-1 text-[10px] font-normal text-stone">in</span>
+                  </span>
+                </div>
               </div>
-              {/* Kung gaano lumaki — nagsasabi kung saan galing ang numero. */}
-              {(() => {
-                const f = frameFor(size, dwThick);
-                const m = /(\d+)\s*X\s*(\d+)/i.exec(size);
-                if (!f || !m) return null;
-                return (
-                  <div className="mt-1 grid grid-cols-[110px_1fr] gap-3">
-                    <span className="text-xs text-stone">Growth</span>
-                    <span className="font-mono text-[11px] text-stone">width +{f.w - +m[1]} · length +{f.l - +m[2]}</span>
-                  </div>
-                );
-              })()}
             </div>
           )}
           <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
@@ -1101,14 +1101,12 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             <span className="text-sm text-stone">Padding</span>
             <div className="flex flex-wrap items-center gap-2">
               <Stepper value={dwPad} onChange={setDwPad} fallback={2} />
-              <span className="text-[11px] text-stone">standard 2&quot;</span>
             </div>
           </div>
           <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
             <span className="text-sm text-stone">Wall width</span>
             <div className="flex flex-wrap items-center gap-2">
               <Stepper value={dwW} onChange={setDwW} fallback={frameFor(size, dwThick)?.w} />
-              <span className="text-[11px] text-stone">{dwW.trim() ? "set by hand" : "follows the frame width"}</span>
             </div>
           </div>
           {/* Palamuti — hindi kailangan para maitayo ang dingding. */}
