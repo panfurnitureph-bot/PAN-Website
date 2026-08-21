@@ -301,11 +301,13 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     // Ang storage na napili na ang humaharang sa floating legs at sa insert —
     // hindi kabaligtaran, para hindi mag-away ang dalawang panig.
     const storagePicked = checks.some((a) => isStorage(a.label) && !!checkPick[a.label]);
-    // Ang gilid ng footboard drawer ay walang saysay kung walang drawer, at
-    // ang "Both" ay hindi kasya sa makikitid na sukat (team 2026-08-21).
-    if (/footboard drawer/i.test(group)) {
-      if (!checks.some((a) => isDrawer(a.label) && !!checkPick[a.label])) return "pick a drawer first";
-      if (/both/i.test(value) && bedW <= 48) return `too narrow on ${size.split(" ")[0] || "this size"}`;
+    // SAAN ILALAGAY ANG DRAWER. Ang tanging bawal ay ang hiniling ng team
+    // (2026-08-21): sa Twin at Single, hindi kasya ang DALAWANG drawer sa
+    // footboard — ang gilid ay pwede pa rin, at ang isahang drawer sa
+    // footboard ay pwede rin. Walang ibang harang dito.
+    if (/drawer position|footboard drawer/i.test(group) && /footboard/i.test(value) && bedW <= 48) {
+      const twoDrawers = checks.some((a) => /2 built-in drawers/i.test(a.label) && !!checkPick[a.label]);
+      if (twoDrawers) return `two drawers do not fit the footboard on ${size.split(" ")[0] || "this size"}`;
     }
     if (/leg/i.test(group) && /floating/i.test(value) && storagePicked) {
       return "remove the storage add-on first";
