@@ -22,7 +22,7 @@ import { formatPrice, swatchLibrary, type LibrarySwatch, type Product, type Site
 import type { MtoAddon, MtoItemConfig } from "@/lib/content";
 import { messengerHandle, messengerUrl } from "@/lib/messenger";
 import { useStore } from "@/components/store";
-import { WALL_THICKNESSES, frameLabel } from "@/lib/double-walling";
+import { WALL_THICKNESSES, frameFor, frameLabel } from "@/lib/double-walling";
 
 // Kolek­syon mula sa pangalan ng swatch ("New Sahara" = dalawang salita).
 const colOf = (n: string) => {
@@ -225,6 +225,9 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   const [dwThick, setDwThick] = useState(8);
   const [dwH, setDwH] = useState("");
   const [dwPad, setDwPad] = useState("2");
+  const [dwW, setDwW] = useState("");
+  const [dwNails, setDwNails] = useState("");
+  const [dwAccent, setDwAccent] = useState(false);
   // Ang unang tela ang siyang "ang tela" sa buod at sa presyo.
   const fabric = fabrics_.length ? fabrics_[0].name : "";
   const [fabOpen, setFabOpen] = useState(false);
@@ -485,7 +488,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   useEffect(() => {
     setMissingNow(missingForQuote());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [size, fabrics_, choiceSel, measVal, fieldVal, shipCity, shipProvince, dwThick, dwH, dwPad, checkPick]);
+  }, [size, fabrics_, choiceSel, measVal, fieldVal, shipCity, shipProvince, dwThick, dwH, dwW, dwPad, dwNails, dwAccent, checkPick]);
 
   async function submitQuote() {
     if (!handle) return;
@@ -505,7 +508,13 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             { label: `Double Walling: ${dwThick}"`, price: 0 },
             ...(frameLabel(size, dwThick) ? [{ label: `Frame Dimension: ${frameLabel(size, dwThick)}`, price: 0 }] : []),
             ...(dwH.trim() ? [{ label: `Wall Height: ${dwH.trim()} in`, price: 0 }] : []),
+            ...(() => {
+              const w = dwW.trim() || frameFor(size, dwThick)?.w;
+              return w ? [{ label: `Wall Width: ${w} in`, price: 0 }] : [];
+            })(),
             ...(dwPad.trim() ? [{ label: `Padding Thickness: ${dwPad.trim()}"${dwPad.trim() === "2" ? " (standard)" : ""}`, price: 0 }] : []),
+            ...(dwNails ? [{ label: `Decorative Nails: ${dwNails}`, price: 0 }] : []),
+            ...(dwAccent ? [{ label: "Gold Accent: Yes", price: 0 }] : []),
           ]
         : []),
       ...fabrics_.map((f) => ({
@@ -1046,6 +1055,18 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                 <span className="text-xs font-semibold text-cognac">Frame Dimension</span>
                 <span className="font-mono text-base font-bold">{frameLabel(size, dwThick)!.replace("x", " × ")} <span className="text-[10px] font-normal text-stone">in</span></span>
               </div>
+              {/* Kung gaano lumaki — nagsasabi kung saan galing ang numero. */}
+              {(() => {
+                const f = frameFor(size, dwThick);
+                const m = /(\d+)\s*X\s*(\d+)/i.exec(size);
+                if (!f || !m) return null;
+                return (
+                  <div className="mt-1 grid grid-cols-[110px_1fr] gap-3">
+                    <span className="text-xs text-stone">Growth</span>
+                    <span className="font-mono text-[11px] text-stone">width +{f.w - +m[1]} · length +{f.l - +m[2]}</span>
+                  </div>
+                );
+              })()}
             </div>
           )}
           <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
@@ -1061,6 +1082,45 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
               <input value={dwPad} onChange={(e) => setDwPad(e.target.value)} inputMode="decimal" placeholder="2" className="w-20 rounded-lg border border-sand bg-transparent px-2 py-1.5 text-sm outline-none focus:border-cognac" />
               <span className="rounded-lg bg-espresso px-2 py-1.5 text-[10px] font-extrabold text-white">in</span>
               <span className="text-[11px] text-stone">standard 2&quot;</span>
+            </div>
+          </div>
+          <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
+            <span className="text-sm text-stone">Wall width</span>
+            <div className="flex items-center gap-1.5">
+              <input value={dwW} onChange={(e) => setDwW(e.target.value)} inputMode="decimal" placeholder={String(frameFor(size, dwThick)?.w ?? "____")} className="w-20 rounded-lg border border-sand bg-transparent px-2 py-1.5 text-sm outline-none focus:border-cognac" />
+              <span className="rounded-lg bg-espresso px-2 py-1.5 text-[10px] font-extrabold text-white">in</span>
+              <span className="text-[11px] text-stone">{dwW.trim() ? "set by hand" : "follows the frame width"}</span>
+            </div>
+          </div>
+          {/* Palamuti — hindi kailangan para maitayo ang dingding. */}
+          <div className="mt-1 flex items-center gap-2 border-t border-sand pt-1.5">
+            <span className="text-[10px] font-extrabold uppercase tracking-widest text-cognac">Add-ons</span>
+            <span className="text-[10px] text-stone">optional trim</span>
+          </div>
+          <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
+            <span className="text-sm text-stone">Decorative nails</span>
+            <div className="flex flex-wrap items-center gap-1.5">
+              {[["Gold", "linear-gradient(140deg,#d4af37,#f0d97a,#b8860b)"], ["Silver", "linear-gradient(140deg,#9aa0a6,#e2e5e8,#7d8388)"]].map(([n, css]) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setDwNails(dwNails === n ? "" : n)}
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${dwNails === n ? "border-cognac bg-cognac text-white" : "border-sand hover:border-cognac"}`}
+                >
+                  <span className="h-3 w-3 shrink-0 rounded-full border border-black/15" style={{ background: css }} />
+                  {n}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
+            <span className="text-sm text-stone">Gold accent</span>
+            <div>
+              <button
+                type="button"
+                onClick={() => setDwAccent((v) => !v)}
+                className={`rounded-full border px-3 py-1 text-xs font-semibold ${dwAccent ? "border-cognac bg-cognac text-white" : "border-sand hover:border-cognac"}`}
+              >Gold accent{dwAccent ? " ✓" : ""}</button>
             </div>
           </div>
         </div>
