@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
+import StreetSuggest from "@/components/StreetSuggest";
 import { useStore } from "@/components/store";
 import { formatPrice, type SiteContent } from "@/lib/products";
 import { messengerHandle, messengerUrl } from "@/lib/messenger";
@@ -49,6 +51,28 @@ function groupLines(lines: { label: string; price?: number }[]) {
   ].filter((g) => g.lines.length);
 }
 
+// Map = client-only (Leaflet umaasa sa window) — walang SSR. Kapareho ng
+// checkout: doon lang ito naka-import, kaya walang dagdag na bigat sa ibang
+// pahina.
+const LocationPicker = dynamic(() => import("@/components/LocationPicker"), {
+  ssr: false,
+  loading: () => (
+    <div className="mb-3 flex h-64 w-full items-center justify-center rounded border border-stone/40 bg-sand/40 text-sm text-stone">
+      Loading map…
+    </div>
+  ),
+});
+
+// Ang region ay hinahango sa province — kapareho ng checkout, para iisa ang
+// gawi ng dalawang form. Kapag naghiwalay sila, ang customer na dumaan sa
+// dalawa ay makakakita ng dalawang magkaibang paraan ng paglalagay ng address.
+const REGION_OF: Record<string, string> = {
+  "Laguna": "CALABARZON (Region IV-A)", "Batangas": "CALABARZON (Region IV-A)",
+  "Cavite": "CALABARZON (Region IV-A)", "Rizal": "CALABARZON (Region IV-A)",
+  "Quezon": "CALABARZON (Region IV-A)",
+  "Metro Manila (NCR)": "Metro Manila (NCR)", "Bulacan": "Central Luzon (Region III)",
+};
+
 function Field({
   label, value, onChange, placeholder, inputMode, err,
 }: {
@@ -78,8 +102,17 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => setHydrated(true), []);
 
-  const [name, setName] = useState("");
+  // HATI ANG PANGALAN, kapareho ng checkout — ganoon din ang hinihingi ng
+  // delivery paperwork, at ang isang field na "Maria Clara Santos" ay hindi
+  // masasabi kung alin ang apelyido.
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [mobile, setMobile] = useState("");
+  // Ang FB name ay REQUIRED sa checkout; dito ay hindi — ang request ay
+  // nagbubukas ng Messenger thread, kaya nariyan na ang FB identity. Ang
+  // paghadlang dito ay paghingi ng bagay na nasa kamay na natin.
+  const [fbName, setFbName] = useState("");
+  const [fbLink, setFbLink] = useState("");
   const [province, setProvince] = useState("");
   const [city, setCity] = useState("");
   // BUONG ADDRESS, hindi lang province/city. Dito na ipinapadala ang request,
@@ -89,6 +122,10 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
   const [street, setStreet] = useState("");
   const [postal, setPostal] = useState("");
   const [landmark, setLandmark] = useState("");
+  const [region, setRegion] = useState("");
+  // Ang eksaktong tuldok sa mapa — ang "9173 Brgy Maduya" ay hindi mahahanap
+  // ng driver; ang pin ay mahahanap.
+  const [pin, setPin] = useState<{ lat: number; lng: number; address: string; postcode?: string } | null>(null);
   // Opisyal na PSGC barangay list bawat "Province|City" — static file sa
   // /public, pareho ng checkout.
   const [brgyData, setBrgyData] = useState<Record<string, string[]>>({});
@@ -116,7 +153,8 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
     // request, at ang eksaktong address ang nagtatakda ng delivery fee sa
     // quotation. Wala nang ibang pagkakataong itanong ito.
     const e: Record<string, string> = {};
-    if (!name.trim()) e.name = "Required";
+    if (!firstName.trim()) e.firstName = "Required";
+    if (!lastName.trim()) e.lastName = "Required";
     if (!mobile.trim()) e.mobile = "Required";
     if (!province) e.province = "Required";
     if (!city) e.city = "Required";
@@ -146,7 +184,12 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
           // gumagana pa rin ito sa mas mahabang teksto.
           address: landmark.trim() ? `${fullAddress} (${landmark.trim()})` : fullAddress,
           contact: mobile.trim() || null,
-          customer: name.trim() || null,
+          customer: [firstName.trim(), lastName.trim()].filter(Boolean).join(" ") || null,
+          fb_name: fbName.trim() || null,
+          fb_link: fbLink.trim() || null,
+          // Ang tuldok sa mapa — ito ang mahahanap ng driver, hindi ang teksto.
+          address_lat: pin?.lat ?? null,
+          address_lng: pin?.lng ?? null,
           build: slots[0]?.build,
           builds: slots,
         }),
@@ -283,18 +326,55 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
           <div className="rounded-lg border border-sand p-4">
             <p className="mb-2 text-[10px] font-extrabold uppercase tracking-widest2 text-cognac">Where to deliver</p>
 
-            <Field label="Name" value={name} onChange={setName} placeholder="Your name" err={errs.name} />
+            <div className="grid grid-cols-2 gap-2">
+              <Field label="First name" value={firstName} onChange={setFirstName} placeholder="First name" err={errs.firstName} />
+              <Field label="Last name" value={lastName} onChange={setLastName} placeholder="Last name" err={errs.lastName} />
+            </div>
             <Field label="Mobile" value={mobile} onChange={setMobile} placeholder="09XX XXX XXXX" inputMode="tel" err={errs.mobile} />
+
+            {/* Naka-lock sa Philippines, gaya ng checkout — doon lang tayo
+                naghahatid, at ang pagpapakita nito ay nagsasabi niyon nang
+                hindi kailangang itanong. */}
+            <div className="py-1">
+              <span className="mb-1 block text-[11px] font-bold text-stone">Country</span>
+              <select value="PH" disabled className="w-full rounded-lg border border-sand bg-sand/40 px-3 py-2 text-sm text-stone">
+                <option value="PH">Philippines</option>
+              </select>
+            </div>
+
+            {/* EKSAKTONG HANAY NG CHECKOUT: Region → Province → City → Barangay
+                → Street → Postal. Ang region ay hinahango sa province, kaya
+                ang pagpili ng alinman sa dalawa ay nagtatakda ng isa pa. */}
+            <div className="py-1">
+              <span className="mb-1 block text-[11px] font-bold text-stone">Region</span>
+              <select
+                value={region}
+                onChange={(e) => { setRegion(e.target.value); setProvince(""); setCity(""); setBarangay(""); }}
+                className="w-full rounded-lg border border-sand bg-transparent px-3 py-2 text-sm focus:border-cognac focus:outline-none"
+              >
+                <option value="">— Select —</option>
+                {Array.from(new Set(PROVINCES.map((p) => REGION_OF[p.name] ?? "Other"))).map((r) => (
+                  <option key={r} value={r}>{r}</option>
+                ))}
+              </select>
+            </div>
 
             <div className="py-1">
               <span className="mb-1 block text-[11px] font-bold text-stone">Province</span>
               <select
                 value={province}
-                onChange={(e) => { setProvince(e.target.value); setCity(""); setBarangay(""); }}
+                onChange={(e) => {
+                  setProvince(e.target.value);
+                  setCity("");
+                  setBarangay("");
+                  if (e.target.value) setRegion(REGION_OF[e.target.value] ?? "");
+                }}
                 className={`w-full rounded-lg border bg-transparent px-3 py-2 text-sm focus:border-cognac focus:outline-none ${errs.province ? "border-red-500" : "border-sand"}`}
               >
                 <option value="">— Select —</option>
-                {PROVINCES.map((p) => (<option key={p.name} value={p.name}>{p.name}</option>))}
+                {PROVINCES.filter((p) => !region || (REGION_OF[p.name] ?? "Other") === region).map((p) => (
+                  <option key={p.name} value={p.name}>{p.name}</option>
+                ))}
               </select>
             </div>
 
@@ -336,7 +416,21 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
               )}
             </div>
 
-            <Field label="Street / House no." value={street} onChange={setStreet} placeholder="House no., street, subdivision" err={errs.street} />
+            {/* Typeahead ng kalye — naka-scope sa napiling barangay/city, at
+                inililipat ang pin kapag pumili. Parehong bahagi ng checkout. */}
+            <div className="py-1">
+              <StreetSuggest
+                label="Street / House no."
+                value={street}
+                onChange={setStreet}
+                onPick={(loc) => { setPin({ lat: loc.lat, lng: loc.lng, address: loc.address }); setErrs((e) => ({ ...e, street: "" })); }}
+                context={[barangay, city, province].filter(Boolean).join(", ")}
+                bias={pin}
+                placeholder="House no., street, subdivision"
+                error={errs.street}
+              />
+            </div>
+
             <Field label="Postal code" value={postal} onChange={setPostal} placeholder="4024" inputMode="numeric" err={errs.postal} />
             <Field
               label="Landmark / delivery notes (optional)"
@@ -344,6 +438,15 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
               onChange={setLandmark}
               placeholder="e.g. blue gate, across the sari-sari store, call on arrival"
             />
+            {/* OPTIONAL, hindi tulad ng checkout. Ang request ay nagbubukas ng
+                Messenger thread, kaya nariyan na ang FB identity — ang
+                paghingi nito bilang kailangan ay paghadlang para sa bagay na
+                hawak na natin. Nariyan pa rin para sa taong mas gustong
+                sabihin ito nang maaga. */}
+            <div className="grid grid-cols-2 gap-2">
+              <Field label="Facebook name (optional)" value={fbName} onChange={setFbName} placeholder="Name on Facebook" />
+              <Field label="Profile link (optional)" value={fbLink} onChange={setFbLink} placeholder="facebook.com/username" />
+            </div>
 
             {shipFee !== null && (
               <p className="mt-2 flex items-baseline gap-2 rounded bg-linen px-3 py-2 text-xs">
@@ -356,6 +459,28 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
               confirmed after we check your exact address.
             </p>
           </div>
+
+          {/* MAPA — ang eksaktong lokasyon, hindi lang ang address. Ang
+              "9173 Brgy Maduya" ay hindi mahahanap ng driver; ang pin ay
+              mahahanap. Lumalabas lang kapag kumpleto na ang address, dahil
+              wala itong mailalapit kung saan man bago iyon. */}
+          {province && city && barangay ? (
+            <div className="mt-3">
+              <LocationPicker
+                value={pin}
+                flyTo={`${barangay}, ${city}, ${province}, Philippines`}
+                onChange={(loc) => {
+                  setPin(loc);
+                  if (loc.postcode && !postal.trim()) setPostal(loc.postcode);
+                }}
+              />
+            </div>
+          ) : (
+            <p className="mt-3 rounded bg-linen px-3 py-2 text-[11px] text-stone">
+              Complete your address and a map will appear — drag the pin to your exact house so our
+              driver finds you easily.
+            </p>
+          )}
 
           {Object.keys(errs).length > 0 && (
             <p className="mt-3 rounded border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800">
