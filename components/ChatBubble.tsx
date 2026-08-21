@@ -4,6 +4,12 @@
 // tindahan — doon sila tunay na sinasagot, at nananatili ang usapan sa inbox
 // ng page kaya may history.
 //
+// ITSURA NG CHAT, HINDI TUNAY NA CHAT (2026-08-22). May header, bubble ng
+// pagbati at form ng pangalan/numero — pero WALANG AI at walang sagot dito.
+// Ang team pa rin ang sumasagot, sa Messenger. Ang porma ay kilala na ng
+// customer, kaya alam nila kung ano ang gagawin; ang pangalan at numero ay
+// dinadala sa thread para hindi na itanong muli.
+//
 // Kapag walang naka-set na Facebook page sa admin, bumabalik ito sa email at
 // telepono — mas mabuti nang may makontak kaysa may butong papunta sa mali.
 
@@ -15,62 +21,156 @@ import { messengerHandle, messengerUrl } from "@/lib/messenger";
 // dahil sa browser ay luma pa ang naka-bundle na JSON.
 export default function ChatBubble({ site }: { site: SiteContent }) {
   const [open, setOpen] = useState(false);
-  const handle = messengerHandle((site as any).social?.facebook);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const handle = messengerHandle((site as unknown as { social?: { facebook?: string } }).social?.facebook);
+
+  // Ang pangalan at numero ay isinasama sa ref para makita ng bot sa pagbukas
+  // ng thread — kaya hindi na itinatanong muli ang kakatipa lang nila.
+  //
+  // Ang ref ay teksto lang na ipinapasa ni Meta sa page; walang espasyo at
+  // walang bantas na kayang dalhin nang buo, kaya sinasalà ito.
+  const start = () => {
+    if (!handle) return;
+    const who = name.trim().replace(/[^a-zA-Z0-9]+/g, "_").replace(/^_|_$/g, "").slice(0, 30);
+    const num = phone.replace(/\D/g, "").slice(0, 13);
+    const ref = [who && `n-${who}`, num && `m-${num}`].filter(Boolean).join("__");
+    window.open(messengerUrl(handle, ref || undefined), "_blank", "noopener,noreferrer");
+    setOpen(false);
+  };
 
   return (
     <div data-floating className="fixed bottom-5 right-5 z-50">
       {open && (
-        <div className="absolute bottom-16 right-0 w-72 bg-white shadow-xl border border-sand p-5 rounded-lg">
-          <p className="font-bold text-ink">{site.brand.name}</p>
-
-          {handle ? (
-            <>
-              <p className="text-sm text-stone mt-2">
-                Message us on Facebook — we usually reply within business hours.
+        <div className="absolute bottom-16 right-0 w-[21rem] max-w-[calc(100vw-2.5rem)] overflow-hidden rounded-xl border border-sand bg-white shadow-2xl">
+          {/* ── HEADER ── */}
+          <div className="flex items-center gap-3 bg-stone-200/70 px-4 py-3">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[15px] font-semibold text-ink">{site.brand.name}</p>
+              <p className="flex items-center gap-1.5 text-[11px] text-stone">
+                <span className="inline-block h-2 w-2 rounded-full bg-green-500" />
+                {handle ? "We reply on Messenger" : "Leave us a message"}
               </p>
-              <a
-                href={messengerUrl(handle)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-3 flex items-center justify-center gap-2 bg-[#0084FF] text-white rounded py-2.5 text-sm font-bold hover:opacity-90 transition-opacity"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M12 2C6.36 2 2 6.13 2 11.7c0 3.19 1.44 6.03 3.69 7.88V24l3.38-1.86c.9.25 1.86.38 2.93.38 5.64 0 10-4.13 10-9.7S17.64 2 12 2zm1.01 13.06l-2.55-2.72-4.97 2.72 5.47-5.81 2.61 2.72 4.9-2.72-5.46 5.81z" />
-                </svg>
-                CHAT ON MESSENGER
-              </a>
-              <p className="text-xs text-stone mt-3">
-                Or email{" "}
-                <a href={`mailto:${site.contact.email}`} className="text-cognac underline">
-                  {site.contact.email}
-                </a>
-              </p>
-            </>
-          ) : (
-            <p className="text-sm text-stone mt-2">
-              Reach us at{" "}
-              <a href={`mailto:${site.contact.email}`} className="text-cognac underline">
-                {site.contact.email}
-              </a>{" "}
-              or {site.contact.phone}.
-            </p>
-          )}
+            </div>
+            <button
+              onClick={() => setOpen(false)}
+              aria-label="Close chat"
+              className="shrink-0 text-stone hover:text-ink"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
 
-          <p className="text-xs text-stone mt-2">{site.contact.hours}</p>
+          <div className="max-h-[26rem] overflow-y-auto px-4 py-4">
+            {/* Hati na may petsa — porma ng chat, kaya kilala agad. */}
+            <div className="mb-3 flex items-center gap-3">
+              <span className="h-px flex-1 bg-sand" />
+              <span className="text-[11px] text-stone">Today</span>
+              <span className="h-px flex-1 bg-sand" />
+            </div>
+
+            {handle ? (
+              <>
+                {/* PAGBATI — hindi nagsasabing AI ito; ang team ang sasagot. */}
+                <div className="mb-3 flex gap-2">
+                  <Avatar />
+                  <p className="rounded-lg rounded-tl-none bg-linen px-3 py-2 text-[13px] leading-snug text-ink">
+                    Hello 👋 Send us your build or question and our team will reply on Messenger.
+                  </p>
+                </div>
+
+                <div className="flex gap-2">
+                  <Avatar />
+                  <div className="min-w-0 flex-1 rounded-lg rounded-tl-none bg-linen px-3 py-3">
+                    <p className="mb-2 text-[13px] leading-snug text-ink">
+                      Tell us who you are so we can keep you updated with our replies.
+                    </p>
+                    <input
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && start()}
+                      placeholder="Name"
+                      className="mb-2 w-full rounded-lg border border-sand bg-white px-3 py-2.5 text-sm focus:border-cognac focus:outline-none"
+                    />
+                    <div className="mb-2 flex gap-2">
+                      <span className="flex shrink-0 items-center gap-1 rounded-lg border border-sand bg-white px-2.5 text-sm">
+                        🇵🇭
+                      </span>
+                      <input
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && start()}
+                        inputMode="tel"
+                        placeholder="+63"
+                        className="w-full min-w-0 rounded-lg border border-sand bg-white px-3 py-2.5 text-sm focus:border-cognac focus:outline-none"
+                      />
+                    </div>
+                    <p className="mb-2.5 text-[11px] leading-snug text-stone">
+                      By sending us a message, you agree to our{" "}
+                      <a href="/privacy" className="text-cognac underline">privacy policy</a>.
+                    </p>
+                    {/* WALANG HINIHINGING SAGOT: ang pangalan ay para lang sa
+                        pagbati sa thread. Ang paghahadlang dito ay
+                        pumipigil sa taong gustong magtanong agad. */}
+                    <button
+                      onClick={start}
+                      className="w-full rounded-lg bg-[#0084FF] py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
+                    >
+                      Start chat
+                    </button>
+                  </div>
+                </div>
+
+                <p className="mt-3 text-center text-[11px] text-stone">
+                  Or email{" "}
+                  <a href={`mailto:${site.contact.email}`} className="text-cognac underline">
+                    {site.contact.email}
+                  </a>
+                </p>
+              </>
+            ) : (
+              <div className="flex gap-2">
+                <Avatar />
+                <p className="rounded-lg rounded-tl-none bg-linen px-3 py-2 text-[13px] leading-snug text-ink">
+                  Reach us at{" "}
+                  <a href={`mailto:${site.contact.email}`} className="text-cognac underline">
+                    {site.contact.email}
+                  </a>{" "}
+                  or {site.contact.phone}.
+                </p>
+              </div>
+            )}
+
+            <p className="mt-2 text-center text-[11px] text-stone">{site.contact.hours}</p>
+          </div>
         </div>
       )}
+
       <button
         onClick={() => setOpen(!open)}
         aria-label="Chat with us"
-        className="relative w-14 h-14 rounded-full bg-ink text-cream shadow-lg flex items-center justify-center hover:bg-cognac transition-colors"
+        className="relative flex h-14 w-14 items-center justify-center rounded-full bg-ink text-cream shadow-lg transition-colors hover:bg-cognac"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
           <path d="M21 12a8 8 0 01-8 8H5l-2 2V12a8 8 0 018-8h2a8 8 0 018 8z" />
         </svg>
-        <span className="absolute -top-1 -right-1 bg-red-500 text-cream text-[10px] rounded-full w-5 h-5 flex items-center justify-center">
-          1
-        </span>
+        {!open && (
+          <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] text-cream">
+            1
+          </span>
+        )}
       </button>
     </div>
+  );
+}
+
+// Maliit na monogram sa tabi ng bawat bubble — porma ng chat.
+function Avatar() {
+  return (
+    <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-sand bg-white text-[10px] font-bold tracking-tight text-ink">
+      PF
+    </span>
   );
 }
