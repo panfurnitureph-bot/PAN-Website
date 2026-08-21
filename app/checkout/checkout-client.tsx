@@ -15,6 +15,8 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { groupBuildLines } from "@/lib/build-groups";
+import { pinMismatch } from "@/lib/pin-match";
+import type { PickedLocation } from "@/components/LocationPicker";
 import { formatPrice, type Product, type SiteContent } from "@/lib/products";
 import { useStore } from "@/components/store";
 import CardForm from "@/components/CardForm";
@@ -260,7 +262,9 @@ export default function CheckoutClient({
   const [fbName, setFbName] = useState("");
   const [landmark, setLandmark] = useState("");
   const [fbLink, setFbLink] = useState("");
-  const [pin, setPin] = useState<{ lat: number; lng: number; address: string } | null>(null);
+  // Ang BUONG sagot ng picker, hindi lang ang coordinates: kailangan ang
+  // bayan at lalawigan para masabi kung tugma ito sa mga dropdown.
+  const [pin, setPin] = useState<PickedLocation | null>(null);
   // Paano magbabayad ng 30% downpayment: QR Ph (GCash/GoTyme/bank app)
   // o card (CardForm — tinotokenize sa browser, sinisingil ng app)
   const [payMethod, setPayMethod] = useState<"qr" | "card">("qr");
@@ -885,6 +889,15 @@ export default function CheckoutClient({
           {/* Interactive map pin — eksaktong lokasyon para sa delivery.
               Lumilipat kapag pumili ng province+city; pinupunan ang Address
               field kapag naka-pin na. */}
+          {/* Tingnan ang paliwanag sa /quote-request — parehong bitag: ang
+              bayad ay galing sa dropdown, hindi sa pin. */}
+          {pinMismatch(pin, { city, province }) && (
+            <p className="mb-3 rounded border border-[#caa45a] bg-linen px-3 py-2 text-xs leading-snug text-olive">
+              <b>Your pin is in {pinMismatch(pin, { city, province })}</b> but you selected {city}, {province}.
+              The shipping fee follows the selection — change it above if the pin is right.
+            </p>
+          )}
+
           {province && city && barangay ? (
             <LocationPicker
               value={pin}

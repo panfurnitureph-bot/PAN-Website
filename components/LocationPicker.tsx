@@ -25,6 +25,13 @@ export type PickedLocation = {
   // isinalpak iyon sa Street field, madodoble ang bayan at lalawigan na nasa
   // dropdowns na. Ito ang bahaging tunay na napupunta sa kahon na iyon.
   street?: string;
+  // ANG LUGAR NA ITINURO, para masabi ng tumatawag kung tugma ito sa mga
+  // dropdown. Kapag hindi, ang shipping fee ay sa MALING bayan galing — ang
+  // pin sa San Pedro habang nakatakda ang Paete ay nagbibigay ng ₱1 na
+  // pamasahe para sa biyaheng hindi ganoon.
+  city?: string;
+  province?: string;
+  barangay?: string;
 };
 
 export default function LocationPicker({
@@ -70,7 +77,19 @@ export default function LocationPicker({
         area && area !== road ? area : "",
       ].filter(Boolean).join(", ");
       setAddress(addr);
-      onChange({ lat, lng, address: addr, postcode, street: street || undefined });
+      // Ang Nominatim ay may iba't ibang antas depende sa uri ng lugar: ang
+      // lungsod ay `city`, ang bayan ay `town`, ang maliit ay `municipality`.
+      const cityName = a.city || a.town || a.municipality || a.village || "";
+      // Ang `state` ay ang lalawigan sa PH; ang `region` ay CALABARZON atbp.
+      const provinceName = a.state || a.province || "";
+      const brgy = a.suburb || a.quarter || a.neighbourhood || a.village || "";
+      onChange({
+        lat, lng, address: addr, postcode,
+        street: street || undefined,
+        city: cityName || undefined,
+        province: provinceName || undefined,
+        barangay: brgy || undefined,
+      });
     } catch {
       const addr = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
       setAddress(addr);

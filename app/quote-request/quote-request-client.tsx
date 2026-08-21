@@ -6,6 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 import StreetSuggest from "@/components/StreetSuggest";
 import { groupBuildLines } from "@/lib/build-groups";
+import { pinMismatch } from "@/lib/pin-match";
+import type { PickedLocation } from "@/components/LocationPicker";
 import { useStore } from "@/components/store";
 import { formatPrice, type SiteContent } from "@/lib/products";
 import { messengerHandle, messengerUrl } from "@/lib/messenger";
@@ -84,7 +86,9 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
   const [region, setRegion] = useState("");
   // Ang eksaktong tuldok sa mapa — ang "9173 Brgy Maduya" ay hindi mahahanap
   // ng driver; ang pin ay mahahanap.
-  const [pin, setPin] = useState<{ lat: number; lng: number; address: string; postcode?: string } | null>(null);
+  // Ang BUONG sagot ng picker, hindi lang ang coordinates: kailangan ang
+  // bayan at lalawigan para masabi kung tugma ito sa mga dropdown.
+  const [pin, setPin] = useState<PickedLocation | null>(null);
   // Opisyal na PSGC barangay list bawat "Province|City" — static file sa
   // /public, pareho ng checkout.
   const [brgyData, setBrgyData] = useState<Record<string, string[]>>({});
@@ -423,14 +427,27 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
               "9173 Brgy Maduya" ay hindi mahahanap ng driver; ang pin ay
               mahahanap. Lumalabas lang kapag kumpleto na ang address, dahil
               wala itong mailalapit kung saan man bago iyon. */}
+          {/* HINDI TUGMA ANG PIN SA NAPILI? Ang shipping fee ay galing sa
+              dropdown, hindi sa pin — kaya ang pin sa San Pedro habang
+              nakatakda ang Paete ay naniningil para sa maling biyahe. Ang
+              senyales lang ang ibinibigay: baka nga roon ipapadala at ang pin
+              ang mali, at ang pagpapalit ng bayan sa ilalim nila ay
+              nagbabago ng presyo nang hindi nila napapansin. */}
+          {pinMismatch(pin, { city, province }) && (
+            <p className="mt-3 rounded-lg border border-[#caa45a] bg-linen px-3 py-2 text-[11px] leading-snug text-olive">
+              <b>Your pin is in {pinMismatch(pin, { city, province })}</b> but you selected {city}, {province}.
+              The shipping fee follows the selection — change it above if the pin is right.
+            </p>
+          )}
+
           {province && city && barangay ? (
             <div className="mt-3">
               <LocationPicker
                 value={pin}
                 flyTo={`${barangay}, ${city}, ${province}, Philippines`}
                 onChange={(loc) => {
-                setPin(loc);
-                  if (loc.postcode && !postal.trim()) setPostal(loc.postcode); // auto postal
+                  setPin(loc);
+                  if (loc.postcode && !postal.trim()) setPostal(loc.postcode);
                   // ANG KALYE MULA SA PIN. Ang inilagay na tuldok ang alam ng
                   // customer; ang pagpapatipa pa ng kalyeng itinuro na niya sa
                   // mapa ay paghingi ng parehong bagay nang dalawang beses.
