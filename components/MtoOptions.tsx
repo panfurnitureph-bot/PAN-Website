@@ -153,8 +153,12 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   // ── Options mula sa config ──
   const sizes = cfg.sizes.filter((s) => s.on && s.label.trim());
   const addons = cfg.addons.filter((a) => a.on && a.label.trim());
-  const choices = addons.filter((a) => a.type === "CHOICE");
-  const checks = addons.filter((a) => a.type === "ADD-ON");
+  // Ang mga detalye ng dingding ay ipinapakita ng Double Walling block mismo,
+  // kaya hindi na sila inuulit sa pangkalahatang listahan — iisang tanong,
+  // iisang bayad. Ang presyo nila ay binabasa pa rin mula sa config.
+  const isWallDetail = (l: string) => /^(wall thickness|decorative nails|gold accent)/i.test(l);
+  const choices = addons.filter((a) => a.type === "CHOICE" && !isWallDetail(a.label));
+  const checks = addons.filter((a) => a.type === "ADD-ON" && !isWallDetail(a.label));
   const fixed = addons.filter((a) => a.type === "FIXED");
 
   // CHOICE GROUPING (2026-08-20): ang "Legs: Standard" at "Legs: Round" ay
@@ -228,6 +232,16 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   const [dwW, setDwW] = useState("");
   const [dwNails, setDwNails] = useState("");
   const [dwAccent, setDwAccent] = useState(false);
+
+  // PRESYO MULA SA CONFIGURATOR, hindi hard-coded — ang mga detalye ng dingding
+  // ay tunay na option sa MTO Configurator, kaya doon nagmumula ang halaga.
+  const dwOpt = (group: string) => cfg.addons.find((a) => a.on !== false && new RegExp(`^${group}`, "i").test(a.label));
+  const dwPriceAt = (group: string, i: number) => {
+    const a = dwOpt(group);
+    if (!a) return 0;
+    const per = a.prices?.[i];
+    return (per !== undefined && per !== null ? per : a.price) ?? 0;
+  };
 
   // STEPPER — − / halaga / + at unit, kapareho ng guided measurements sa app.
   // Ang text input ay tumatanggap ng kahit ano; ang stepper ay hindi.
@@ -438,9 +452,18 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   const pickedChoices = choiceGroups
     .map((g) => g.options.find((o) => o.value === choiceSel[g.name]))
     .filter((o): o is ChoiceOpt => !!o);
+  // Ang mga detalye ng dingding ay wala sa `checks`/`choices` (tingnan ang
+  // isWallDetail), kaya sila ang idinadagdag dito nang hiwalay — binabayaran
+  // pa rin sila.
+  const wallTotal = doubleWallOn
+    ? dwPriceAt("wall thickness", WALL_THICKNESSES.indexOf(dwThick as (typeof WALL_THICKNESSES)[number])) +
+      (dwNails ? dwPriceAt("decorative nails", dwNails === "Gold" ? 0 : 1) : 0) +
+      (dwAccent ? (dwOpt("gold accent")?.price ?? 0) : 0)
+    : 0;
   const addonTotal =
     checks.reduce((sum, a) => (isPicked(a.label) && a.price ? sum + a.price : sum), 0) +
-    pickedChoices.reduce((sum, o) => sum + (o.price ?? 0), 0);
+    pickedChoices.reduce((sum, o) => sum + (o.price ?? 0), 0) +
+    wallTotal;
   const total = (sizePrice ?? 0) + addonTotal;
 
   // ── Build summary (cart lines / quote ref) ──
@@ -548,7 +571,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
       ...pickedAddonLines.map((l) => ({ label: l.label, price: l.price })),
       ...(doubleWallOn
         ? [
-            { label: `Double Walling: ${dwThick}"`, price: 0 },
+            { label: `Wall Thickness: ${dwThick}"`, price: dwPriceAt("wall thickness", WALL_THICKNESSES.indexOf(dwThick as (typeof WALL_THICKNESSES)[number])) },
             ...(frameLabel(size, dwThick) ? [{ label: `Frame Dimension: ${frameLabel(size, dwThick)}`, price: 0 }] : []),
             // Ang zero ay walang sukat — hindi ito isinusulat, gaya ng blangko.
             // parseHalf, hindi Number: ang "2 ½" ay NaN sa Number().
@@ -557,8 +580,8 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             ...(parseHalf(dwH) > 0 ? [{ label: `Height: ${dwH.trim()} in`, price: 0 }] : []),
             ...(parseHalf(dwPad) > 0 ? [{ label: `Thickness: ${dwPad.trim()} in`, price: 0 }] : []),
             ...(parseHalf(dwW) > 0 ? [{ label: `Width: ${dwW.trim()} in`, price: 0 }] : []),
-            ...(dwNails ? [{ label: `Decorative Nails: ${dwNails}`, price: 0 }] : []),
-            ...(dwAccent ? [{ label: "Gold Accent: Yes", price: 0 }] : []),
+            ...(dwNails ? [{ label: `Decorative Nails: ${dwNails}`, price: dwPriceAt("decorative nails", dwNails === "Gold" ? 0 : 1) }] : []),
+            ...(dwAccent ? [{ label: "Gold Accent: Yes", price: dwOpt("gold accent")?.price ?? 0 }] : []),
           ]
         : []),
       ...fieldLines.map((l) => ({ label: l.label, price: 0 })),
@@ -1076,13 +1099,18 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                 dahil may Thickness na sa ibaba para sa padding. */}
             <span className="text-sm text-stone">Double Walling</span>
             <div className="flex flex-wrap items-center gap-1.5">
-              {WALL_THICKNESSES.map((t) => (
+              {WALL_THICKNESSES.map((t, i) => (
                 <button
                   key={t}
                   type="button"
                   onClick={() => setDwThick(t)}
                   className={`rounded-full border px-3 py-1 text-xs font-semibold ${dwThick === t ? "border-cognac bg-cognac text-white" : "border-sand hover:border-cognac"}`}
-                >{t}&quot;</button>
+                >
+                  {t}&quot;
+                  {dwPriceAt("wall thickness", i) > 0 && (
+                    <span className={`ml-1 text-[10px] font-medium ${dwThick === t ? "text-white/80" : "text-stone"}`}>+{formatPrice(dwPriceAt("wall thickness", i))}</span>
+                  )}
+                </button>
               ))}
             </div>
           </div>
@@ -1135,7 +1163,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
             <span className="text-sm text-stone">Decorative nails</span>
             <div className="flex flex-wrap items-center gap-1.5">
-              {[["Gold", "linear-gradient(140deg,#d4af37,#f0d97a,#b8860b)"], ["Silver", "linear-gradient(140deg,#9aa0a6,#e2e5e8,#7d8388)"]].map(([n, css]) => (
+              {[["Gold", "linear-gradient(140deg,#d4af37,#f0d97a,#b8860b)"], ["Silver", "linear-gradient(140deg,#9aa0a6,#e2e5e8,#7d8388)"]].map(([n, css], i) => (
                 <button
                   key={n}
                   type="button"
@@ -1144,6 +1172,9 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                 >
                   <span className="h-3 w-3 shrink-0 rounded-full border border-black/15" style={{ background: css }} />
                   {n}
+                  {dwPriceAt("decorative nails", i) > 0 && (
+                    <span className={`text-[10px] font-medium ${dwNails === n ? "text-white/80" : "text-stone"}`}>+{formatPrice(dwPriceAt("decorative nails", i))}</span>
+                  )}
                 </button>
               ))}
             </div>
@@ -1155,7 +1186,12 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                 type="button"
                 onClick={() => setDwAccent((v) => !v)}
                 className={`rounded-full border px-3 py-1 text-xs font-semibold ${dwAccent ? "border-cognac bg-cognac text-white" : "border-sand hover:border-cognac"}`}
-              >Gold accent{dwAccent ? " ✓" : ""}</button>
+              >
+                Gold accent{dwAccent ? " ✓" : ""}
+                {(dwOpt("gold accent")?.price ?? 0) > 0 && (
+                  <span className={`ml-1 text-[10px] font-medium ${dwAccent ? "text-white/80" : "text-stone"}`}>+{formatPrice(dwOpt("gold accent")!.price!)}</span>
+                )}
+              </button>
             </div>
           </div>
         </div>
