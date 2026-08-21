@@ -5,51 +5,10 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import StreetSuggest from "@/components/StreetSuggest";
+import { groupBuildLines } from "@/lib/build-groups";
 import { useStore } from "@/components/store";
 import { formatPrice, type SiteContent } from "@/lib/products";
 import { messengerHandle, messengerUrl } from "@/lib/messenger";
-
-// PANGKAT-PANGKAT ANG BUILD, hindi isang mahabang listahan — parehong hati ng
-// quotation at ng Messenger echo, kaya kilala na ng customer ang porma bago
-// pa dumating ang dokumento: ang bagay, ang idinagdag dito, at ang dingding na
-// may sariling sukat.
-//
-// WALANG Size/Fabric ANG IBANG PRODUKTO (ang side table ay taas at kulay ng
-// kahoy lang). Doon, ang mga natitira ANG produkto — hindi "Add-ons", na
-// parang may pangunahing bahagi pang nawawala.
-function groupLines(lines: { label: string; price?: number }[]) {
-  const seen = new Set<string>();
-  const raw = lines
-    .map((l) => ({ ...l, label: String(l.label).replace(/^[•·-]\s*/, "").trim() }))
-    .filter((l) => {
-      const k = l.label.toLowerCase();
-      if (!l.label || seen.has(k)) return false;
-      seen.add(k);
-      return true;
-    });
-  const hasWall = raw.some((l) => /^double walling\b/i.test(l.label));
-  const isWall = (l: string) =>
-    hasWall && /^(double walling|frame dimension|height|thickness|width|decorative nails|gold accent)\b/i.test(l);
-  // Ang mga SUKAT ay bahagi ng bagay mismo, hindi idinagdag dito: ang taas at
-  // lalim ng sofa ang sofa. Sa "Add-ons", parang may pinili pang dagdag ang
-  // customer gayong sinusukat lang niya ang binibili.
-  const isMeasure = (l: string) => /\b\d/.test(l) && /^(total |armrest |backrest |seat |headboard )?(height|width|thickness|depth|length)\b/i.test(l);
-  const wallLines = raw.filter((l) => isWall(l.label));
-  const nonWall = raw.filter((l) => !isWall(l.label));
-  // ANG Size/Fabric ANG TANDA NA MAY PANGKAT. Kapag wala ang alinman, ang
-  // buong listahan ANG produkto — ang side table ay taas at kulay ng kahoy,
-  // at ang paghahati niyon ay naglalagay ng magkapatid na linya sa magkaibang
-  // pangkat na parang may pinili pang dagdag ang customer.
-  const core = nonWall.some((l) => /^(size|fabric)\b/i.test(l.label));
-  const isItem = (l: string) => /^(size|fabric)\b/i.test(l) || isMeasure(l);
-  const itemLines = core ? nonWall.filter((l) => isItem(l.label)) : nonWall;
-  const rest = core ? nonWall.filter((l) => !isItem(l.label)) : [];
-  return [
-    { title: "The item", lines: itemLines },
-    ...(rest.length ? [{ title: "Add-ons", lines: rest }] : []),
-    ...(wallLines.length ? [{ title: "Double walling", lines: wallLines }] : []),
-  ].filter((g) => g.lines.length);
-}
 
 // Map = client-only (Leaflet umaasa sa window) — walang SSR. Kapareho ng
 // checkout: doon lang ito naka-import, kaya walang dagdag na bigat sa ibang
@@ -285,7 +244,7 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
 
                 {/* BAWAT LINYA, hindi pinutol na buod — dito tinitingnan ng
                     customer kung tama ang pagkakabuo ng pangalawang kama. */}
-                {groupLines(b.build?.lines ?? []).map((g) => (
+                {groupBuildLines(b.build?.lines ?? []).map((g) => (
                   <div key={g.title} className="mt-2">
                     <p className="text-[9px] font-extrabold uppercase tracking-widest2 text-cognac">{g.title}</p>
                     <ul className="mt-0.5 space-y-0.5">

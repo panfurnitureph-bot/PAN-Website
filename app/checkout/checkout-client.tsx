@@ -14,6 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
+import { groupBuildLines } from "@/lib/build-groups";
 import { formatPrice, type Product, type SiteContent } from "@/lib/products";
 import { useStore } from "@/components/store";
 import CardForm from "@/components/CardForm";
@@ -592,26 +593,40 @@ export default function CheckoutClient({
                 {it.baseLabel ?? it.color.split(" + ")[0]}
               </p>
 
-              {/* Breakdown ng bawat bahagi */}
+              {/* Breakdown ng bawat bahagi — nakapangkat, tugma sa Order
+                  Summary at sa /quote-request. Ito ang kumpirmasyon
+                  pagkatapos mag-order: ang parehong build ay hindi dapat
+                  magbago ng anyo pagkalipat ng isang screen. */}
               {it.addOns && it.addOns.length > 0 && (
-                <div className="mt-2.5 pt-2.5 border-t border-sand/70 space-y-1.5">
+                <div className="mt-2.5 space-y-1.5 border-t border-sand/70 pt-2.5">
                   <div className="flex justify-between text-sm">
                     <span>Bed frame</span>
                     <span>{formatPrice(it.basePrice ?? 0)}</span>
                   </div>
-                  {it.addOns.map((a, j) => (
-                    <div key={j} className="flex justify-between text-sm gap-3">
-                      <span>
-                        {a.label}
-                        {a.note && (
-                          <span className="block text-xs text-cognac mt-0.5">
-                            {a.note}
-                          </span>
-                        )}
-                      </span>
-                      <span className="whitespace-nowrap">
-                        {a.price > 0 ? `+${formatPrice(a.price)}` : "TBC"}
-                      </span>
+                  {groupBuildLines(it.addOns).map((g) => (
+                    <div key={g.title} className="pt-1">
+                      <p className="mb-1 text-[10px] font-extrabold uppercase tracking-widest2 text-cognac">
+                        {g.title}
+                      </p>
+                      <div className="space-y-1">
+                        {g.lines.map((a, j) => (
+                          <div key={j} className="flex justify-between gap-3 text-[13px]">
+                            <span className="text-stone">
+                              {a.label}
+                              {(a as { note?: string }).note && (
+                                <span className="mt-0.5 block text-xs text-cognac">
+                                  {(a as { note?: string }).note}
+                                </span>
+                              )}
+                            </span>
+                            {Number(a.price) > 0 && (
+                              <span className="whitespace-nowrap font-semibold text-cognac">
+                                +{formatPrice(Number(a.price))}
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -984,28 +999,45 @@ export default function CheckoutClient({
                   </div>
                 )}
 
-                {/* Breakdown: bed frame + bawat add-on, hiwa-hiwalay */}
+                {/* BREAKDOWN, NAKAPANGKAT — parehong hati ng /quote-request,
+                    ng quotation at ng Messenger echo. Patag na listahan ito
+                    noon, kaya ang parehong build ay may dalawang mukha
+                    depende kung saan tinitingnan.
+
+                    Ang "TBC" sa bawat walang presyong linya ay tinanggal din:
+                    ang Size at Fabric ay bahagi ng presyo ng bed frame, hindi
+                    dagdag na sisingilin — ang kolum ng "TBC" katapat ng bawat
+                    isa ay nagmumukhang may siyam pang hindi alam na halaga. */}
                 {item.addOns && item.addOns.length > 0 && (
                   <div className="mt-3 space-y-2 border-t border-sand pt-3">
                     <div className="flex justify-between text-sm">
                       <span className="text-ink">Bed frame</span>
-                      <span className="text-ink">
-                        {formatPrice(item.basePrice ?? 0)}
-                      </span>
+                      <span className="text-ink">{formatPrice(item.basePrice ?? 0)}</span>
                     </div>
-                    {item.addOns.map((a, i) => (
-                      <div key={i} className="flex justify-between text-sm gap-3">
-                        <span className="text-ink">
-                          {a.label}
-                          {a.note && (
-                            <span className="block text-xs text-cognac mt-0.5">
-                              {a.note}
-                            </span>
-                          )}
-                        </span>
-                        <span className="text-ink whitespace-nowrap">
-                          {a.price > 0 ? `+${formatPrice(a.price)}` : "TBC"}
-                        </span>
+                    {groupBuildLines(item.addOns).map((g) => (
+                      <div key={g.title} className="pt-1">
+                        <p className="mb-1 text-[10px] font-extrabold uppercase tracking-widest2 text-cognac">
+                          {g.title}
+                        </p>
+                        <div className="space-y-1">
+                          {g.lines.map((a, i) => (
+                            <div key={i} className="flex justify-between gap-3 text-[13px]">
+                              <span className="text-stone">
+                                {a.label}
+                                {(a as { note?: string }).note && (
+                                  <span className="mt-0.5 block text-xs text-cognac">
+                                    {(a as { note?: string }).note}
+                                  </span>
+                                )}
+                              </span>
+                              {Number(a.price) > 0 && (
+                                <span className="whitespace-nowrap font-semibold text-cognac">
+                                  +{formatPrice(Number(a.price))}
+                                </span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     ))}
                   </div>
