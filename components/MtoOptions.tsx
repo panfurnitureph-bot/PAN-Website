@@ -224,7 +224,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   // DOUBLE WALLING — ang kapal ng dingding ang nagdedesisyon ng sukat ng FRAME.
   const [dwThick, setDwThick] = useState(8);
   const [dwH, setDwH] = useState("");
-  const [dwPad, setDwPad] = useState("2");
+  const [dwPad, setDwPad] = useState("");
   const [dwW, setDwW] = useState("");
   const [dwNails, setDwNails] = useState("");
   const [dwAccent, setDwAccent] = useState(false);
@@ -233,17 +233,18 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   // Ang text input ay tumatanggap ng kahit ano; ang stepper ay hindi.
   function Stepper({ value, onChange, fallback }: { value: string; onChange: (v: string) => void; fallback?: number }) {
     const cur = Number(value) || fallback || 0;
-    const bump = (d: number) => onChange(String(Math.max(1, cur + d)));
+    const bump = (d: number) => onChange(String(Math.max(0, cur + d)));
     const btn = "flex h-9 w-8 items-center justify-center rounded-lg border border-sand text-base font-bold text-stone transition-colors hover:border-cognac hover:bg-linen";
     return (
       <span className="inline-flex items-stretch gap-1">
         <button type="button" onClick={() => bump(-1)} className={btn}>−</button>
         <input
-          value={value}
+          value={value === "" ? String(fallback ?? 0) : value}
           onChange={(e) => onChange(e.target.value.replace(/[^\d.]/g, ""))}
           inputMode="decimal"
-          placeholder={fallback ? String(fallback) : "____"}
-          className="h-9 w-16 rounded-lg border border-sand bg-transparent px-2 text-center text-sm font-bold outline-none focus:border-cognac"
+          // Ang blangko ay ipinapakitang 0 (o ang sinusundan nitong sukat), hindi
+          // placeholder — ang halagang nakikita ang siyang naitatala.
+          className={`h-9 w-16 rounded-lg border border-sand bg-transparent px-2 text-center text-sm font-bold outline-none focus:border-cognac ${value === "" ? "text-stone/60" : ""}`}
         />
         <button type="button" onClick={() => bump(1)} className={btn}>+</button>
         <span className="flex h-9 items-center rounded-lg bg-espresso px-2.5 text-[10px] font-extrabold text-white">in</span>
@@ -529,12 +530,13 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
         ? [
             { label: `Double Walling: ${dwThick}"`, price: 0 },
             ...(frameLabel(size, dwThick) ? [{ label: `Frame Dimension: ${frameLabel(size, dwThick)}`, price: 0 }] : []),
-            ...(dwH.trim() ? [{ label: `Wall Height: ${dwH.trim()} in`, price: 0 }] : []),
+            // Ang zero ay walang sukat — hindi ito isinusulat, gaya ng blangko.
+            ...(Number(dwH) > 0 ? [{ label: `Wall Height: ${dwH.trim()} in`, price: 0 }] : []),
             ...(() => {
-              const w = dwW.trim() || frameFor(size, dwThick)?.w;
+              const w = Number(dwW) > 0 ? dwW.trim() : frameFor(size, dwThick)?.w;
               return w ? [{ label: `Wall Width: ${w} in`, price: 0 }] : [];
             })(),
-            ...(dwPad.trim() ? [{ label: `Padding Thickness: ${dwPad.trim()}"${dwPad.trim() === "2" ? " (standard)" : ""}`, price: 0 }] : []),
+            ...(Number(dwPad) > 0 ? [{ label: `Padding Thickness: ${dwPad.trim()}"`, price: 0 }] : []),
             ...(dwNails ? [{ label: `Decorative Nails: ${dwNails}`, price: 0 }] : []),
             ...(dwAccent ? [{ label: "Gold Accent: Yes", price: 0 }] : []),
           ]
