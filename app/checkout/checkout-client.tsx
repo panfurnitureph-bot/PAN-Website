@@ -412,49 +412,44 @@ export default function CheckoutClient({
                 amount: shippingCost,
               }
             : null,
-          // Bawat bed frame at add-on ay sariling line item
-          items: rows.flatMap(({ item, product }) => {
-            const lines: {
-              qty: number;
-              description: string;
-              unitPrice: number;
-              image: string | null;
-              product_name?: string;
-              sku?: string;
-              color?: string;
-              dimension?: string;
-              category?: string;
-            }[] = [
-              {
-                qty: item.qty,
-                // Pangalan sa unang linya, tapos bullet bawat detalye —
-                // kulay, sukat, kategorya — para mabasa agad sa order.
-                description: [
-                  product!.name,
-                  ...describeVariant(item, product!).map((d) => `• ${d}`),
-                ].join("\n"),
-                unitPrice: item.basePrice ?? item.unitPrice ?? product!.price,
-                image: absoluteUrl(product!.images[0]),
-                // Structured — dito hinahanap ng app ang katugmang produkto sa
-                // Product Management; kung wala pa, dito nito ibabatay ang
-                // bagong record (preorder).
-                product_name: product!.name,
-                sku: (product as { sku?: string }).sku || undefined,
-                color: variantColor(item),
-                dimension: variantDimension(item, product!),
-                category: prettyCategory(product!.category),
-              },
-            ];
-            for (const a of item.addOns ?? []) {
-              lines.push({
-                qty: item.qty,
-                description: a.note ? `${a.label} — ${a.note}` : a.label,
-                unitPrice: a.price,
-                image: null,
-              });
-            }
-            return lines;
-          }),
+          // ISANG LINE ITEM KADA PRODUKTO — ang mga opsyon ay bullet sa loob
+          // nito, hindi sariling hilera.
+          //
+          // Dating flatMap: bawat add-on ay itinutulak bilang hiwalay na item,
+          // kaya ang kamang may labing-isang opsyon ay dumarating sa IMS bilang
+          // labindalawang hilera, labing-isa niyon ay ₱0.00. Sa Edit Order,
+          // ang hilerang "Size: SINGLE 36X75" ay mukhang line item — kaya
+          // nabuburang parang line item, at tahimik na nawawala ang sukat sa
+          // order. Ganito na ang porma ng quotation/MTO; ito ang sinusundan.
+          items: rows.map(({ item, product }) => ({
+            qty: item.qty,
+            // Pangalan sa unang linya, tapos bullet bawat detalye —
+            // kulay, sukat, kategorya, saka ang mga add-on na may presyo.
+            description: [
+              product!.name,
+              ...describeVariant(item, product!).map((d) => `• ${d}`),
+              ...(item.addOns ?? []).map((a) => {
+                const label = a.note ? `${a.label} — ${a.note}` : a.label;
+                // Ang presyo ay nasa bullet para makita kung saan galing ang
+                // kabuuan ng hilera — nawawala iyon kapag pinagsama lang.
+                return a.price > 0 ? `• ${label} (+${formatPrice(a.price)})` : `• ${label}`;
+              }),
+            ].join("\n"),
+            // Buo ang presyo ng produkto: base kasama ang mga add-on nito.
+            // Pareho ang kabuuan ng order — nakatipon lang sa isang hilera.
+            unitPrice:
+              (item.basePrice ?? item.unitPrice ?? product!.price) +
+              (item.addOns ?? []).reduce((s, a) => s + (Number(a.price) || 0), 0),
+            image: absoluteUrl(product!.images[0]),
+            // Structured — dito hinahanap ng app ang katugmang produkto sa
+            // Product Management; kung wala pa, dito nito ibabatay ang
+            // bagong record (preorder).
+            product_name: product!.name,
+            sku: (product as { sku?: string }).sku || undefined,
+            color: variantColor(item),
+            dimension: variantDimension(item, product!),
+            category: prettyCategory(product!.category),
+          })),
         }),
       });
 
