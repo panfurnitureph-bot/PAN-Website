@@ -519,9 +519,6 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   const shipCityList = SHIP_PROVINCES.find((p) => p.name === shipProvince)?.cities ?? [];
   const shipFee = shipCityList.find((c) => c.name === shipCity)?.fee ?? null;
 
-  // Mobile — opsyonal, pero lumalabas sa MTO request/Messenger echo bilang
-  // pangalawang paraan ng pag-contact kung hindi masagot sa Messenger.
-  const [mobile, setMobile] = useState("");
   const [quoteSending, setQuoteSending] = useState(false);
   // Live na listahan ng kulang — nag-a-update habang pumipili ang customer,
   // kaya alam agad kung bakit naka-disable ang Request a Quote.
@@ -557,7 +554,9 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   useEffect(() => {
     setMissingNow(missingForBuild());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [size, fabrics_, choiceSel, measVal, fieldVal, shipCity, shipProvince, dwThick, dwH, dwW, dwPad, dwNails, dwAccent, checkPick]);
+    // Wala nang shipCity/shipProvince: hindi na binabasa ng missingForBuild
+    // ang lugar — sa /quote-request na iyon tinatanong.
+  }, [size, fabrics_, choiceSel, measVal, fieldVal, dwThick, dwH, dwW, dwPad, dwNails, dwAccent, checkPick]);
 
   // ANG PAGKAKASUNOD-SUNOD AY AYON SA URI, hindi ayon sa pagkakasulat sa
   // form: sukat muna, tapos tela, mga sukat ng bahagi, ang mga add-on, at
@@ -730,12 +729,13 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           <circle cx="6" cy="18" r="1.8" />
           <circle cx="17" cy="18" r="1.8" />
         </svg>
-        {/* PAGTATAYA LANG ITO NGAYON, hindi na kailangan: ang address ay
-            tinatanong nang buo sa /quote-request bago ipadala. Ang "required
-            for a quote" dito ay nagtatanong ng parehong bagay nang dalawang
-            beses at humaharang sa "Add to request" nang walang dahilan. */}
+        {/* READY-UNIT VIEW LANG ITO NGAYON (2026-08-22) — doon ay diretso sa
+            checkout, kaya kailangang makita ang pamasahe bago mag-add to cart.
+            Sa made-to-order, ang address ay tinatanong nang buo sa
+            /quote-request; ang pagtatanong dito rin ay dalawang beses na
+            paghingi ng parehong bagay. Kaya wala nang "optional" na tanda:
+            walang hinihinging sagot, pagtataya lang ito. */}
         <span className="border-b border-ink/40">Estimate your shipping</span>
-        <span className="rounded bg-linen px-1.5 py-0.5 text-[10px] font-bold text-stone">optional</span>
         <span className="text-stone text-xs">{shipOpen ? "▲" : "▼"}</span>
       </button>
       {shipOpen && (
@@ -1293,20 +1293,13 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
         </div>
       ))}
 
-      {shipBlock}
-
-      {/* Mobile — opsyonal; sumasama sa request para may pang-tawag ang team. */}
-      <div className="mt-3 grid grid-cols-[110px_1fr] items-center gap-3">
-        <span className="text-sm text-stone">Mobile <span className="text-xs">(optional)</span></span>
-        <input
-          value={mobile}
-          onChange={(e) => setMobile(e.target.value)}
-          inputMode="tel"
-          placeholder="09XX XXX XXXX"
-          className="w-full rounded-lg border border-sand bg-transparent px-3 py-2.5 text-sm focus:border-cognac focus:outline-none"
-        />
-      </div>
-
+      {/* WALANG SHIPPING AT MOBILE DITO (2026-08-22). Ang dalawang ito ay
+          tinatanong sa /quote-request bago ipadala — kasama ang buong address,
+          na hindi kayang ibigay ng estimator. Ang pagtatanong dito rin ay
+          paghingi ng parehong bagay nang dalawang beses, at magkaiba pa ang
+          haba ng sagot. Ang READY-UNIT view ay may estimator pa rin: diretso
+          sa checkout iyon, kaya kailangang makita ang pamasahe bago mag-add
+          to cart. */}
       {etaCard}
 
       {/* ── ANG LISTAHAN NG REQUEST ──
