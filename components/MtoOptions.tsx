@@ -1069,15 +1069,17 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           </div>
           {frameLabel(size, dwThick) && (
             <div className="my-1.5 overflow-hidden rounded-lg border border-cognac/50 bg-white">
-              <div className="flex items-center justify-between bg-espresso px-3 py-1.5">
-                <span className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-white/90">Frame dimension</span>
-                <span className="rounded bg-white/15 px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-wider text-white/90">AUTO</span>
-              </div>
               <div className="divide-y divide-sand">
                 <div className="flex items-baseline justify-between gap-3 px-3 py-2">
                   <span className="text-[11px] font-medium text-stone">Mattress size</span>
                   <span className="font-mono text-sm tabular-nums text-ink">
-                    {size.replace(/^[^\d]*/, "").replace(/X/i, " × ")}
+                    {(() => {
+                      // Ang SUKAT ang kinukuha, hindi ang natitira matapos alisin
+                      // ang mga letra — ang "King 2 72X78" ay may numero sa
+                      // pangalan, at yaon ang dating nadadala.
+                      const m = /(\d+)\s*[xX]\s*(\d+)/.exec(size);
+                      return m ? `${m[1]} × ${m[2]}` : size;
+                    })()}
                     <span className="ml-1 text-[10px] font-normal text-stone">in</span>
                   </span>
                 </div>
