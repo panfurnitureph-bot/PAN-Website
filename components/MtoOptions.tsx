@@ -273,6 +273,9 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   const noHeadboard = /none/i.test(pickFull("headboard"));
   const isStorage = (l: string) => isLift(l) || isDrawer(l) || isPullout(l);
   const doubleWallOn = checks.some((a) => isDoubleWall(a.label) && checkPick[a.label]);
+  // Ang double walling ay platform ang pagkakagawa — walang ibang paa ang
+  // pumapasok dito (team, 2026-08-21). Hindi ito pinipili; sinusunod.
+  const platformForced = doubleWallOn;
 
   function banReason(label: string): string | null {
     if (isLift(label) && leatherFabric) return "not available with leather fabric — change the fabric first";
@@ -281,8 +284,6 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     if (isStorage(label) && doubleWallOn) return "not available with double walling — the inner wall takes the depth";
     if (isDoubleWall(label) && checks.some((a) => isStorage(a.label) && checkPick[a.label])) return "remove the storage add-on first";
     if (isStorage(label) && mattressInsert) return "not available with a mattress insert — the insert takes the depth";
-    // TWIN at SINGLE: masyadong makitid ang footboard para sa dalawang drawer.
-    if (bedW <= 48 && /2 built-in drawers/i.test(label)) return "too narrow for two drawers on this size — pick a single drawer";
     if (isPullout(label)) {
       const m = /(\d+)\s*X\s*\d+/i.exec(label);
       if (m && +m[1] >= bedW) return `does not fit ${size.split(" ")[0] || "this size"}`;
@@ -297,6 +298,12 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     // lumagpas dito (team, 2026-08-21).
     if (/wing/i.test(group) && /wing/i.test(value) && !/not|without|none/i.test(value) && noHeadboard) {
       return "needs a headboard";
+    }
+    // WALANG HEADBOARD = walang lalagpasan.
+    if (/exceed/i.test(group) && noHeadboard) return "needs a headboard";
+    // DOUBLE WALLING = platform ang pagkakagawa; wala nang ibang paa.
+    if (/leg/i.test(group) && !/platform/i.test(value) && platformForced) {
+      return "double walling is platform style";
     }
     // Ang storage na napili na ang humaharang sa floating legs at sa insert —
     // hindi kabaligtaran, para hindi mag-away ang dalawang panig.
@@ -328,6 +335,19 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [noHeadboard, floatingLegs, mattressInsert, doubleWallOn, checkPick]);
+
+  // DOUBLE WALLING → Platform Style. Hiniling ng team na awtomatiko ito
+  // ("matic din po sana"), hindi lang bawal ang iba — kaya itinatakda mismo.
+  useEffect(() => {
+    if (!platformForced) return;
+    const g = choiceGroups.find((x) => /leg/i.test(x.name));
+    if (!g) return;
+    const platform = g.options.find((o) => /platform/i.test(o.value));
+    if (platform && choiceSel[g.name] !== platform.value) {
+      setChoiceSel((p) => ({ ...p, [g.name]: platform.value }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [platformForced]);
 
 
   // Effective pick = naka-check AT hindi banned (auto-lapse kapag nag-iba
