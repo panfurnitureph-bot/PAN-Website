@@ -20,7 +20,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatPrice, swatchLibrary, type LibrarySwatch, type Product, type SiteContent } from "@/lib/products";
 import type { MtoAddon, MtoItemConfig } from "@/lib/content";
-import { messengerHandle, messengerUrl } from "@/lib/messenger";
+import { messengerHandle } from "@/lib/messenger";
 import { useStore, type QuoteBuild } from "@/components/store";
 import { WALL_THICKNESSES, frameFor, frameLabel } from "@/lib/double-walling";
 
@@ -523,7 +523,6 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   // pangalawang paraan ng pag-contact kung hindi masagot sa Messenger.
   const [mobile, setMobile] = useState("");
   const [quoteSending, setQuoteSending] = useState(false);
-  const [quoteRef, setQuoteRef] = useState<string | null>(null);
   // Live na listahan ng kulang — nag-a-update habang pumipili ang customer,
   // kaya alam agad kung bakit naka-disable ang Request a Quote.
   const [missingNow, setMissingNow] = useState<string[]>([]);
@@ -544,15 +543,6 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     return miss;
   }
 
-  function missingForQuote(): string[] {
-    const miss = missingForBuild();
-    // DITO MISMO dapat pumili ng lugar — HINDI tinatanggap ang naka-save sa
-    // localStorage mula sa dating pagbisita: nakakalusot noon ang request na
-    // blangko ang dropdowns, at iba na ang pwedeng padalhan ngayon.
-    if (!(shipProvince && shipCity)) miss.push("Delivery location (Estimate your shipping)");
-    return miss;
-  }
-
   // DITO, HINDI SA ITAAS NG COMPONENT: binabasa nito ang sizes/fabrics/
   // choiceGroups/measures/fields, na mga const na naideklara sa ibaba ng mga
   // hook. Ang tawag bago sila mabuo ay temporal-dead-zone error na bumabagsak
@@ -565,7 +555,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   // I-recompute sa bawat pagbabago ng pili (localStorage lang ang hindi
   // reactive, kaya effect — hindi puwedeng derived value lang).
   useEffect(() => {
-    setMissingNow(missingForQuote());
+    setMissingNow(missingForBuild());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [size, fabrics_, choiceSel, measVal, fieldVal, shipCity, shipProvince, dwThick, dwH, dwW, dwPad, dwNails, dwAccent, checkPick]);
 
@@ -648,61 +638,6 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     if (editId) { window.location.href = "/quote-request"; return; }
     setAdded2(true);
     window.setTimeout(() => setAdded2(false), 1600);
-  }
-
-  // ISANG PRODUKTO LANG ANG DUMADAAN DITO. Kapag may naka-save nang listahan,
-  // ang buton ay dumadala sa /quote-request — doon ipinapadala ang marami,
-  // pagkatapos makita ang buong laman.
-  async function submitQuote() {
-    if (!handle) return;
-    const miss = missingForQuote();
-    if (miss.length) {
-      setQuoteErr(miss);
-      // Buksan ang shipping estimator kapag yun ang kulang.
-      if (miss.some((m) => m.startsWith("Delivery location"))) setShipOpen(true);
-      return;
-    }
-    setQuoteErr([]);
-    setQuoteSending(true);
-    const slots = [(({ summary: _s, state: _st, ...rest }) => rest)(currentSlot())];
-    // Ang lugar na PINILI SA PAGE ang ipinapadala — basehan ng auto
-    // delivery-fee sa quotation (required, kaya laging may laman dito).
-    const where = `${shipCity}, ${shipProvince}`;
-    let mtoRef: string | null = null;
-    try {
-      const res = await fetch("/api/send-mto", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          // Ang unang produkto ay nasa ugat pa rin: may lumang IMS build sa
-          // gitna ng deploy na `build` lang ang binabasa, at hindi dapat
-          // mawala ang request dahil doon.
-          sku: slots[0].sku,
-          slug: slots[0].slug,
-          name: slots[0].name,
-          category: slots[0].category,
-          image: slots[0].image ?? null,
-          address: where || null,
-          contact: mobile.trim() || null,
-          build: slots[0].build,
-          builds: slots,
-        }),
-        signal: AbortSignal.timeout(20000),
-      });
-      const data = (await res.json().catch(() => ({}))) as { ok?: boolean; mto_number?: string };
-      if (data.ok && data.mto_number) mtoRef = data.mto_number;
-    } catch {
-      /* relay down — Messenger link pa rin ang fallback */
-    }
-    setQuoteSending(false);
-    setQuoteRef(mtoRef);
-    // Naipadala na — linisin ang listahan para hindi ito maisama sa susunod na
-    // request. Ang naipadala ay nasa Messenger thread at sa MTO Requests na.
-    clearQuote();
-    setEditId(null);
-    const url = messengerUrl(handle, mtoRef ? `mto_${mtoRef}` : `mto_${product.slug}`);
-    if (/Android|iPhone|iPad/i.test(navigator.userAgent)) window.location.href = url;
-    else window.open(url, "_blank", "noopener,noreferrer");
   }
 
   // ── READY UNIT (Buy Now — ships this week) ──
@@ -795,8 +730,12 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           <circle cx="6" cy="18" r="1.8" />
           <circle cx="17" cy="18" r="1.8" />
         </svg>
+        {/* PAGTATAYA LANG ITO NGAYON, hindi na kailangan: ang address ay
+            tinatanong nang buo sa /quote-request bago ipadala. Ang "required
+            for a quote" dito ay nagtatanong ng parehong bagay nang dalawang
+            beses at humaharang sa "Add to request" nang walang dahilan. */}
         <span className="border-b border-ink/40">Estimate your shipping</span>
-        {!shipCity && <span className="rounded bg-cognac/10 px-1.5 py-0.5 text-[10px] font-bold text-cognac">required for a quote</span>}
+        <span className="rounded bg-linen px-1.5 py-0.5 text-[10px] font-bold text-stone">optional</span>
         <span className="text-stone text-xs">{shipOpen ? "▲" : "▼"}</span>
       </button>
       {shipOpen && (
@@ -1434,37 +1373,23 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             <button onClick={() => setQty(qty + 1)} className="px-4 py-3 hover:text-cognac" aria-label="Increase quantity">+</button>
           </div>
         )}
-        {/* MADE TO ORDER = laging Request a Quote (mock behavior) — Phase 3:
-            ipinapadala muna ang BUONG build sa PAN app (MTO request), saka
-            nire-redirect sa Messenger na may ref mto_<MTO-number> para
-            ma-echo ng IMS ang build sa thread. */}
-        {/* MAY NAKA-SAVE NANG LISTAHAN? Ang pagpapadala ay nasa /quote-request,
-            kung saan nakikita ang buong laman bago ito ipadala. Ang pagpapadala
-            mula rito ay magtatanong ng lugar sa pangalawang pagkakataon at
-            magpapadala ng listahang hindi na nakita ng customer. */}
-        {handle && quote.length > 0 && (
-          <a
-            href="/quote-request"
-            className="flex flex-1 items-center justify-center rounded bg-espresso px-4 py-3 text-base font-medium text-cream transition-colors hover:bg-cognac"
-          >
-            Review request · {quoteBtnCount} {quoteBtnCount === 1 ? "item" : "items"}
-          </a>
-        )}
-        {/* MADE TO ORDER = laging Request a Quote (mock behavior) — Phase 3:
-            ipinapadala muna ang BUONG build sa PAN app (MTO request), saka
-            nire-redirect sa Messenger na may ref mto_<MTO-number> para
-            ma-echo ng IMS ang build sa thread. Ang isahang produkto ay
-            dumadaan pa rin dito nang diretso — walang dagdag na hakbang. */}
-        {handle && quote.length === 0 && (
+        {/* IISANG LANDAS PARA SA LAHAT: idinadagdag ang nasa harap sa
+            listahan, tapos sa /quote-request ipinapadala. Ang address ay
+            tinatanong doon nang buo (barangay, kalye, postal) — kung
+            magpapadala rin dito, dalawang beses itatanong ang parehong bagay
+            at magkaiba pa ang haba ng sagot. */}
+        {handle && (
           <button
             type="button"
-            // Hindi makakapag-request hangga't kulang ang build/lokasyon.
-            disabled={quoteSending || missingNow.length > 0}
-            title={missingNow.length ? `Still needed: ${missingNow.join(", ")}` : undefined}
-            onClick={() => void submitQuote()}
+            disabled={quoteSending || (quote.length === 0 && buildMissingNow.length > 0)}
+            title={quote.length === 0 && buildMissingNow.length ? `Still needed: ${buildMissingNow.join(", ")}` : undefined}
+            onClick={() => {
+              if (buildMissingNow.length === 0) addToQuote(currentSlot());
+              window.location.href = "/quote-request";
+            }}
             className="flex flex-1 items-center justify-center rounded bg-espresso px-4 py-3 text-base font-medium text-cream transition-colors hover:bg-cognac disabled:cursor-not-allowed disabled:bg-stone/50 disabled:hover:bg-stone/50"
           >
-            {quoteSending ? "Sending…" : "Request a Quote"}
+            {quoteBtnCount > 1 ? `Request a Quote · ${quoteBtnCount} items` : "Request a Quote"}
           </button>
         )}
         {heartBtn}
@@ -1474,11 +1399,6 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
         <p className={`mt-2 rounded border px-3 py-2 text-xs ${quoteErr.length ? "border-red-200 bg-red-50 text-red-800" : "border-sand bg-linen text-stone"}`}>
           <b className={quoteErr.length ? "" : "text-ink"}>Complete your build to request a quote:</b> {missingNow.join(", ")}.
           <span className="mt-0.5 block text-[11px]">Every detail is needed for an accurate quotation — including the delivery location, which sets the shipping fee.</span>
-        </p>
-      )}
-      {quoteRef && (
-        <p className="mt-2 rounded border border-green-200 bg-green-50 px-3 py-2 text-xs font-semibold text-green-800">
-          ✓ Quote request sent — {quoteRef} · opening Messenger…
         </p>
       )}
       <p className="mt-2 rounded bg-linen px-3 py-2 text-xs text-stone">

@@ -49,6 +49,30 @@ function groupLines(lines: { label: string; price?: number }[]) {
   ].filter((g) => g.lines.length);
 }
 
+function Field({
+  label, value, onChange, placeholder, inputMode, err,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  inputMode?: "tel" | "numeric";
+  err?: string;
+}) {
+  return (
+    <div className="py-1">
+      <span className="mb-1 block text-[11px] font-bold text-stone">{label}</span>
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        inputMode={inputMode}
+        className={`w-full rounded-lg border bg-transparent px-3 py-2 text-sm focus:border-cognac focus:outline-none ${err ? "border-red-500" : "border-sand"}`}
+      />
+    </div>
+  );
+}
+
 export default function QuoteRequestClient({ site }: { site: SiteContent }) {
   const { quote, removeFromQuote, quoteTotal, clearQuote } = useStore();
   const [hydrated, setHydrated] = useState(false);
@@ -58,25 +82,49 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
   const [mobile, setMobile] = useState("");
   const [province, setProvince] = useState("");
   const [city, setCity] = useState("");
+  // BUONG ADDRESS, hindi lang province/city. Dito na ipinapadala ang request,
+  // at ang eksaktong lugar ang nagtatakda ng delivery fee sa quotation —
+  // "Biñan, Laguna" lang ay hindi sapat para ma-ruta ng team.
+  const [barangay, setBarangay] = useState("");
+  const [street, setStreet] = useState("");
+  const [postal, setPostal] = useState("");
+  const [landmark, setLandmark] = useState("");
+  // Opisyal na PSGC barangay list bawat "Province|City" — static file sa
+  // /public, pareho ng checkout.
+  const [brgyData, setBrgyData] = useState<Record<string, string[]>>({});
+  useEffect(() => {
+    fetch("/barangays.json").then((r) => r.json()).then(setBrgyData).catch(() => {});
+  }, []);
   const [sending, setSending] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
+  const [errs, setErrs] = useState<Record<string, string>>({});
 
   const PROVINCES =
     (site as unknown as { shipping?: { provinces?: { name: string; cities: { name: string; fee: number }[] }[] } }).shipping
       ?.provinces ?? [];
   const cityList = PROVINCES.find((p) => p.name === province)?.cities ?? [];
   const shipFee = cityList.find((c) => c.name === city)?.fee ?? null;
+  const brgyOptions = brgyData[`${province}|${city}`] ?? [];
   const handle = messengerHandle((site as unknown as { social?: { facebook?: string } }).social?.facebook);
+
+  // Ang buong address, sa pagkakasunod na sinusulat sa Pilipinas — ito ang
+  // napupunta sa quotation at siyang binabasa ng delivery team.
+  const fullAddress = [street.trim(), barangay, city, province, postal.trim()].filter(Boolean).join(", ");
 
   async function send() {
     if (!handle) return;
-    // Ang lugar ang nagtatakda ng shipping fee sa quotation, kaya ito lang ang
-    // talagang kailangan — ang pangalan at mobile ay nakukuha rin sa Messenger.
-    if (!(province && city)) {
-      setErr("Please choose your delivery location — it sets the shipping fee on your quotation.");
-      return;
-    }
-    setErr(null);
+    // LAHAT KAILANGAN dito (maliban sa landmark): dito na ipinapadala ang
+    // request, at ang eksaktong address ang nagtatakda ng delivery fee sa
+    // quotation. Wala nang ibang pagkakataong itanong ito.
+    const e: Record<string, string> = {};
+    if (!name.trim()) e.name = "Required";
+    if (!mobile.trim()) e.mobile = "Required";
+    if (!province) e.province = "Required";
+    if (!city) e.city = "Required";
+    if (!barangay.trim()) e.barangay = "Required";
+    if (!street.trim()) e.street = "Required";
+    if (!postal.trim()) e.postal = "Required";
+    setErrs(e);
+    if (Object.keys(e).length) return;
     setSending(true);
     const slots = quote.map(({ id: _id, summary: _s, state: _st, ...rest }) => rest);
     let mtoRef: string | null = null;
@@ -92,7 +140,11 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
           name: slots[0]?.name,
           category: slots[0]?.category,
           image: slots[0]?.image ?? null,
-          address: `${city}, ${province}`,
+          // BUONG ADDRESS, hindi "City, Province" lang — ito ang idinidikit sa
+          // quotation at ginagamit sa pagruruta. Ang auto delivery-fee match sa
+          // IMS ay naghahanap ng pangalan ng city/province sa loob nito, kaya
+          // gumagana pa rin ito sa mas mahabang teksto.
+          address: landmark.trim() ? `${fullAddress} (${landmark.trim()})` : fullAddress,
           contact: mobile.trim() || null,
           customer: name.trim() || null,
           build: slots[0]?.build,
@@ -222,51 +274,76 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
           </p>
         </div>
 
-        {/* ── TINATANONG MINSAN, HINDI KADA PRODUKTO ── */}
+        {/* ── TINATANONG MINSAN, HINDI KADA PRODUKTO ──
+            LAHAT KAILANGAN (maliban sa landmark): dito na ipinapadala ang
+            request at wala nang ibang pagkakataong itanong ito. Ang eksaktong
+            address ang nagtatakda ng delivery fee sa quotation at siyang
+            binabasa ng delivery team — hindi sapat ang "City, Province". */}
         <div className="lg:sticky lg:top-6 lg:self-start">
           <div className="rounded-lg border border-sand p-4">
-            <div className="grid grid-cols-[74px_1fr] items-center gap-3 py-1">
-              <span className="text-sm text-stone">Name</span>
-              <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Your name"
-                className="w-full rounded-lg border border-sand bg-transparent px-3 py-2 text-sm focus:border-cognac focus:outline-none"
-              />
-            </div>
-            <div className="grid grid-cols-[74px_1fr] items-center gap-3 py-1">
-              <span className="text-sm text-stone">Mobile</span>
-              <input
-                value={mobile}
-                onChange={(e) => setMobile(e.target.value)}
-                inputMode="tel"
-                placeholder="09XX XXX XXXX"
-                className="w-full rounded-lg border border-sand bg-transparent px-3 py-2 text-sm focus:border-cognac focus:outline-none"
-              />
-            </div>
-            <div className="grid grid-cols-[74px_1fr] items-center gap-3 py-1">
-              <span className="text-sm text-stone">Province</span>
+            <p className="mb-2 text-[10px] font-extrabold uppercase tracking-widest2 text-cognac">Where to deliver</p>
+
+            <Field label="Name" value={name} onChange={setName} placeholder="Your name" err={errs.name} />
+            <Field label="Mobile" value={mobile} onChange={setMobile} placeholder="09XX XXX XXXX" inputMode="tel" err={errs.mobile} />
+
+            <div className="py-1">
+              <span className="mb-1 block text-[11px] font-bold text-stone">Province</span>
               <select
                 value={province}
-                onChange={(e) => { setProvince(e.target.value); setCity(""); }}
-                className="w-full rounded-lg border border-sand bg-transparent px-3 py-2 text-sm focus:border-cognac focus:outline-none"
+                onChange={(e) => { setProvince(e.target.value); setCity(""); setBarangay(""); }}
+                className={`w-full rounded-lg border bg-transparent px-3 py-2 text-sm focus:border-cognac focus:outline-none ${errs.province ? "border-red-500" : "border-sand"}`}
               >
-                <option value="">Select province…</option>
+                <option value="">— Select —</option>
                 {PROVINCES.map((p) => (<option key={p.name} value={p.name}>{p.name}</option>))}
               </select>
             </div>
-            <div className="grid grid-cols-[74px_1fr] items-center gap-3 py-1">
-              <span className="text-sm text-stone">City</span>
+
+            <div className="py-1">
+              <span className="mb-1 block text-[11px] font-bold text-stone">City / Town</span>
               <select
                 value={city}
-                onChange={(e) => setCity(e.target.value)}
+                onChange={(e) => { setCity(e.target.value); setBarangay(""); }}
                 disabled={!province}
-                className="w-full rounded-lg border border-sand bg-transparent px-3 py-2 text-sm focus:border-cognac focus:outline-none disabled:opacity-50"
+                className={`w-full rounded-lg border bg-transparent px-3 py-2 text-sm focus:border-cognac focus:outline-none disabled:opacity-50 ${errs.city ? "border-red-500" : "border-sand"}`}
               >
-                <option value="">{province ? "Select city…" : "Choose a province first"}</option>
+                <option value="">{province ? "— Select —" : "Select a province first"}</option>
                 {cityList.map((c) => (<option key={c.name} value={c.name}>{c.name}</option>))}
               </select>
             </div>
+
+            {/* Opisyal na PSGC list kapag alam ang city; kung wala, tinitipa —
+                huwag hadlangan ang customer sa listahang hindi kumpleto. */}
+            <div className="py-1">
+              <span className="mb-1 block text-[11px] font-bold text-stone">Barangay</span>
+              {brgyOptions.length > 0 ? (
+                <select
+                  value={barangay}
+                  onChange={(e) => setBarangay(e.target.value)}
+                  disabled={!city}
+                  className={`w-full rounded-lg border bg-transparent px-3 py-2 text-sm focus:border-cognac focus:outline-none disabled:opacity-50 ${errs.barangay ? "border-red-500" : "border-sand"}`}
+                >
+                  <option value="">{city ? "— Select —" : "Select a city first"}</option>
+                  {brgyOptions.map((b) => (<option key={b} value={b}>{b}</option>))}
+                </select>
+              ) : (
+                <input
+                  value={barangay}
+                  onChange={(e) => setBarangay(e.target.value)}
+                  disabled={!city}
+                  placeholder={city ? "Type your barangay" : "Select a city first"}
+                  className={`w-full rounded-lg border bg-transparent px-3 py-2 text-sm focus:border-cognac focus:outline-none disabled:opacity-50 ${errs.barangay ? "border-red-500" : "border-sand"}`}
+                />
+              )}
+            </div>
+
+            <Field label="Street / House no." value={street} onChange={setStreet} placeholder="House no., street, subdivision" err={errs.street} />
+            <Field label="Postal code" value={postal} onChange={setPostal} placeholder="4024" inputMode="numeric" err={errs.postal} />
+            <Field
+              label="Landmark / delivery notes (optional)"
+              value={landmark}
+              onChange={setLandmark}
+              placeholder="e.g. blue gate, across the sari-sari store, call on arrival"
+            />
 
             {shipFee !== null && (
               <p className="mt-2 flex items-baseline gap-2 rounded bg-linen px-3 py-2 text-xs">
@@ -280,8 +357,10 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
             </p>
           </div>
 
-          {err && (
-            <p className="mt-3 rounded border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800">{err}</p>
+          {Object.keys(errs).length > 0 && (
+            <p className="mt-3 rounded border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800">
+              Please complete the highlighted fields — your quotation is priced and delivered to this address.
+            </p>
           )}
 
           {handle && (
