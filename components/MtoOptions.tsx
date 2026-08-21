@@ -1097,7 +1097,11 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             {/* Ang kapal ng dingding ang nagtatakda ng sukat ng frame — unang
                 tanong ng bloke, at hindi na kailangang pangalanang "thickness"
                 dahil may Thickness na sa ibaba para sa padding. */}
-            <span className="text-sm text-stone">Double Walling</span>
+            {/* WALANG PANGALAN: ang Double Walling ay nasa checkbox na sa itaas,
+                at ang "Thickness" ay pag-aari ng padding sa ibaba. Ang mga chip
+                ang nagsasabi kung ano sila — ang kapal ng dingding, na siyang
+                nagtatakda ng sukat ng frame sa card sa ilalim nito. */}
+            <span className="text-sm text-stone">Wall</span>
             <div className="flex flex-wrap items-center gap-1.5">
               {WALL_THICKNESSES.map((t, i) => (
                 <button
