@@ -231,15 +231,15 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
 
   // STEPPER — − / halaga / + at unit, kapareho ng guided measurements sa app.
   // Ang text input ay tumatanggap ng kahit ano; ang stepper ay hindi.
-  function Stepper({ value, onChange, fallback }: { value: string; onChange: (v: string) => void; fallback?: number }) {
-    const cur = Number(value) || fallback || 0;
+  function Stepper({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+    const cur = Number(value) || 0;
     const bump = (d: number) => onChange(String(Math.max(0, cur + d)));
     const btn = "flex h-9 w-8 items-center justify-center rounded-lg border border-sand text-base font-bold text-stone transition-colors hover:border-cognac hover:bg-linen";
     return (
       <span className="inline-flex items-stretch gap-1">
         <button type="button" onClick={() => bump(-1)} className={btn}>−</button>
         <input
-          value={value === "" ? String(fallback ?? 0) : value}
+          value={value === "" ? "0" : value}
           onChange={(e) => onChange(e.target.value.replace(/[^\d.]/g, ""))}
           inputMode="decimal"
           // Ang blangko ay ipinapakitang 0 (o ang sinusundan nitong sukat), hindi
@@ -532,10 +532,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             ...(frameLabel(size, dwThick) ? [{ label: `Frame Dimension: ${frameLabel(size, dwThick)}`, price: 0 }] : []),
             // Ang zero ay walang sukat — hindi ito isinusulat, gaya ng blangko.
             ...(Number(dwH) > 0 ? [{ label: `Wall Height: ${dwH.trim()} in`, price: 0 }] : []),
-            ...(() => {
-              const w = Number(dwW) > 0 ? dwW.trim() : frameFor(size, dwThick)?.w;
-              return w ? [{ label: `Wall Width: ${w} in`, price: 0 }] : [];
-            })(),
+            ...(Number(dwW) > 0 ? [{ label: `Wall Width: ${dwW.trim()} in`, price: 0 }] : []),
             ...(Number(dwPad) > 0 ? [{ label: `Padding Thickness: ${dwPad.trim()}"`, price: 0 }] : []),
             ...(dwNails ? [{ label: `Decorative Nails: ${dwNails}`, price: 0 }] : []),
             ...(dwAccent ? [{ label: "Gold Accent: Yes", price: 0 }] : []),
@@ -1104,13 +1101,13 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
             <span className="text-sm text-stone">Thickness</span>
             <div className="flex flex-wrap items-center gap-2">
-              <Stepper value={dwPad} onChange={setDwPad} fallback={2} />
+              <Stepper value={dwPad} onChange={setDwPad} />
             </div>
           </div>
           <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
             <span className="text-sm text-stone">Width</span>
             <div className="flex flex-wrap items-center gap-2">
-              <Stepper value={dwW} onChange={setDwW} fallback={frameFor(size, dwThick)?.w} />
+              <Stepper value={dwW} onChange={setDwW} />
             </div>
           </div>
           {/* Palamuti — hindi kailangan para maitayo ang dingding. */}
