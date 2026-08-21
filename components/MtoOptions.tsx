@@ -289,14 +289,15 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   const doubleWallOn = checks.some((a) => isDoubleWall(a.label) && checkPick[a.label]);
   // Ang double walling ay platform ang pagkakagawa — walang ibang paa ang
   // pumapasok dito (team, 2026-08-21). Hindi ito pinipili; sinusunod.
-  const platformForced = doubleWallOn;
+  // Ang Lift Storage at ang Double Walling ay parehong platform ang
+  // pagkakagawa (team, 2026-08-21). Pwede silang magkasama; alinman sa kanila
+  // ang nagtatakda ng legs.
+  const platformForced = doubleWallOn || liftOn;
 
   function banReason(label: string): string | null {
     if (isLift(label) && leatherFabric) return "not available with leather fabric — change the fabric first";
     if ((isDrawer(label) || isPullout(label)) && liftOn) return "not available with Lift Storage (Tufted only)";
     if (isStorage(label) && floatingLegs) return "not available with floating legs — nothing to mount it on";
-    if (isStorage(label) && doubleWallOn) return "not available with double walling — the inner wall takes the depth";
-    if (isDoubleWall(label) && checks.some((a) => isStorage(a.label) && checkPick[a.label])) return "remove the storage add-on first";
     if (isStorage(label) && mattressInsert) return "not available with a mattress insert — the insert takes the depth";
     if (isPullout(label)) {
       const m = /(\d+)\s*X\s*\d+/i.exec(label);
@@ -317,7 +318,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     if (/^exceed/i.test(group) && noHeadboard) return "needs a headboard";
     // DOUBLE WALLING = platform ang pagkakagawa; wala nang ibang paa.
     if (/leg/i.test(group) && !/platform/i.test(value) && platformForced) {
-      return "double walling is platform style";
+      return doubleWallOn ? "double walling is platform style" : "lift storage is platform style";
     }
     // Ang storage na napili na ang humaharang sa floating legs at sa insert —
     // hindi kabaligtaran, para hindi mag-away ang dalawang panig.
