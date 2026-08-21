@@ -1387,17 +1387,16 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
         )}
         {heartBtn}
       </div>
-      {/* Live na paalala kung ano pa ang kulang — bago pa pindutin ang buton. */}
+      {/* Ano pa ang kulang — lumalabas LANG kapag may kulang, at ang listahan
+          lang. Ang dating pangalawang linya ay nagbabanggit ng delivery
+          location; hindi na iyon tinatanong dito kundi sa /quote-request.
+          Ang paalalang "ipapadala ito sa Messenger" ay tinanggal din — sinasabi
+          na iyon ng buton mismo, at nasa /quote-request bago ipadala. */}
       {missingNow.length > 0 && (
         <p className={`mt-2 rounded border px-3 py-2 text-xs ${quoteErr.length ? "border-red-200 bg-red-50 text-red-800" : "border-sand bg-linen text-stone"}`}>
-          <b className={quoteErr.length ? "" : "text-ink"}>Complete your build to request a quote:</b> {missingNow.join(", ")}.
-          <span className="mt-0.5 block text-[11px]">Every detail is needed for an accurate quotation — including the delivery location, which sets the shipping fee.</span>
+          <b className={quoteErr.length ? "" : "text-ink"}>Still needed:</b> {missingNow.join(", ")}.
         </p>
       )}
-      <p className="mt-2 rounded bg-linen px-3 py-2 text-xs text-stone">
-        Your build ({[size, fabric].filter(Boolean).join(" · ") || "current selections"}) will be sent to our team on
-        Messenger — we&apos;ll reply with a formal quotation{priced ? " confirming the final total" : ""}.
-      </p>
       {/* Balik sa yari nang unit — same button style ng CUSTOMIZE */}
       {readyAvail && (
         <button
