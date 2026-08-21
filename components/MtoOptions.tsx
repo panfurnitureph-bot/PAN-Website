@@ -153,9 +153,6 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   // magdagdag ng pangalawang kopya.
   const [editId, setEditId] = useState<string | null>(null);
   const [added2, setAdded2] = useState(false);
-  // Bilang na nakasulat sa buton: ang naka-save, kasama ang nasa harap ngayon
-  // kapag kumpleto ito — iyon ang talagang ipapadala.
-  const quoteBtnCount = quote.length + (quote.length && missingForBuild().length ? 0 : quote.length ? 1 : 0);
   const router = useRouter();
   const wished = wishlist.includes(product.slug);
 
@@ -556,6 +553,15 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     if (!(shipProvince && shipCity)) miss.push("Delivery location (Estimate your shipping)");
     return miss;
   }
+
+  // DITO, HINDI SA ITAAS NG COMPONENT: binabasa nito ang sizes/fabrics/
+  // choiceGroups/measures/fields, na mga const na naideklara sa ibaba ng mga
+  // hook. Ang tawag bago sila mabuo ay temporal-dead-zone error na bumabagsak
+  // ang BUONG page, hindi lang ang buton.
+  const buildMissingNow = missingForBuild();
+  // Bilang na nakasulat sa buton: ang naka-save, kasama ang nasa harap ngayon
+  // kapag kumpleto ito — iyon ang talagang ipapadala.
+  const quoteBtnCount = quote.length + (quote.length && buildMissingNow.length === 0 ? 1 : 0);
 
   // I-recompute sa bawat pagbabago ng pili (localStorage lang ang hindi
   // reactive, kaya effect — hindi puwedeng derived value lang).
@@ -1327,8 +1333,8 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           </div>
           <button
             type="button"
-            disabled={quoteSending || missingForBuild().length > 0}
-            title={missingForBuild().length ? `Still needed: ${missingForBuild().join(", ")}` : undefined}
+            disabled={quoteSending || buildMissingNow.length > 0}
+            title={buildMissingNow.length ? `Still needed: ${buildMissingNow.join(", ")}` : undefined}
             onClick={addToRequest}
             className="flex flex-1 items-center justify-center rounded border-[1.5px] border-dashed border-cognac bg-linen px-4 py-3 text-sm font-bold text-cognac transition-colors hover:bg-cognac hover:text-cream disabled:cursor-not-allowed disabled:border-stone/40 disabled:bg-transparent disabled:text-stone/60 disabled:hover:bg-transparent disabled:hover:text-stone/60"
           >
