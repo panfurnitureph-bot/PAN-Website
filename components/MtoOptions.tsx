@@ -571,7 +571,10 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
       ...pickedAddonLines.map((l) => ({ label: l.label, price: l.price })),
       ...(doubleWallOn
         ? [
-            { label: `Wall Thickness: ${dwThick}"`, price: dwPriceAt("wall thickness", WALL_THICKNESSES.indexOf(dwThick as (typeof WALL_THICKNESSES)[number])) },
+            // "Double Walling" ang pangalan sa sheet, at ang kapal ang sagot —
+            // walang hiwalay na linyang "Wall Thickness", kung hindi dalawang
+            // beses ipapakita ang parehong bagay.
+            { label: `Double Walling: ${dwThick}"`, price: dwPriceAt("wall thickness", WALL_THICKNESSES.indexOf(dwThick as (typeof WALL_THICKNESSES)[number])) },
             ...(frameLabel(size, dwThick) ? [{ label: `Frame Dimension: ${frameLabel(size, dwThick)}`, price: 0 }] : []),
             // Ang zero ay walang sukat — hindi ito isinusulat, gaya ng blangko.
             // parseHalf, hindi Number: ang "2 ½" ay NaN sa Number().
