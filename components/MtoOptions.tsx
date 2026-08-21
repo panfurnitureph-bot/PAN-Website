@@ -21,7 +21,8 @@ import { useRouter } from "next/navigation";
 import { formatPrice, swatchLibrary, type LibrarySwatch, type Product, type SiteContent } from "@/lib/products";
 import type { MtoAddon, MtoItemConfig } from "@/lib/content";
 import { messengerHandle, messengerUrl } from "@/lib/messenger";
-import { useStore } from "@/components/store";
+import { useStore, type QuoteBuild } from "@/components/store";
+import QuoteRequestPanel from "@/components/QuoteRequestPanel";
 import { WALL_THICKNESSES, frameFor, frameLabel } from "@/lib/double-walling";
 
 // Kolek­syon mula sa pangalan ng swatch ("New Sahara" = dalawang salita).
@@ -146,7 +147,15 @@ function Dropdown({
 }
 
 export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoItemConfig; product: Product; site: SiteContent; locked?: boolean }) {
-  const { addToCart, toggleWishlist, wishlist } = useStore();
+  const { addToCart, toggleWishlist, wishlist, quote, addToQuote, clearQuote } = useStore();
+  // MARAMING PRODUKTO KADA REQUEST (2026-08-21). Ang editId ay may laman kapag
+  // binubuksang muli ang naka-save nang build — pinapalitan ito imbes na
+  // magdagdag ng pangalawang kopya.
+  const [editId, setEditId] = useState<string | null>(null);
+  const [added2, setAdded2] = useState(false);
+  // Bilang na nakasulat sa buton: ang naka-save, kasama ang nasa harap ngayon
+  // kapag kumpleto ito — iyon ang talagang ipapadala.
+  const quoteBtnCount = quote.length + (quote.length && missingForBuild().length ? 0 : quote.length ? 1 : 0);
   const router = useRouter();
   const wished = wishlist.includes(product.slug);
 
@@ -526,13 +535,21 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   // sukat/tela/opsyon o walang delivery location — hindi malalagyan ng
   // shipping fee ang quote. Ipinapakita ang kulang bago pa mag-submit.
   const [quoteErr, setQuoteErr] = useState<string[]>([]);
-  function missingForQuote(): string[] {
+  // Kulang sa BUILD lang — walang delivery. Ito ang sinusuri ng "Add to
+  // request": ang lugar ay pag-aari ng buong request, hindi ng bawat produkto,
+  // kaya walang saysay itanong sa bawat pagdagdag.
+  function missingForBuild(): string[] {
     const miss: string[] = [];
     if (sizes.length > 0 && !size) miss.push("Size");
     if (fabrics.length > 0 && !fabric) miss.push("Fabric");
     for (const g of choiceGroups) if (!choiceSel[g.name]) miss.push(g.name);
     for (const m of measures) if (!(measVal[m.label] > 0)) miss.push(m.label);
     for (const f of fields) if (!(fieldVal[f.label] ?? "").trim()) miss.push(f.label.split("—")[0].split(":")[0].trim());
+    return miss;
+  }
+
+  function missingForQuote(): string[] {
+    const miss = missingForBuild();
     // DITO MISMO dapat pumili ng lugar — HINDI tinatanggap ang naka-save sa
     // localStorage mula sa dating pagbisita: nakakalusot noon ang request na
     // blangko ang dropdowns, at iba na ang pwedeng padalhan ngayon.
@@ -547,21 +564,15 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [size, fabrics_, choiceSel, measVal, fieldVal, shipCity, shipProvince, dwThick, dwH, dwW, dwPad, dwNails, dwAccent, checkPick]);
 
-  async function submitQuote() {
-    if (!handle) return;
-    const miss = missingForQuote();
-    if (miss.length) {
-      setQuoteErr(miss);
-      // Buksan ang shipping estimator kapag yun ang kulang.
-      if (miss.some((m) => m.startsWith("Delivery location"))) setShipOpen(true);
-      return;
-    }
-    setQuoteErr([]);
-    setQuoteSending(true);
-    // ANG PAGKAKASUNOD-SUNOD AY AYON SA URI, hindi ayon sa pagkakasulat sa
-    // form: sukat muna, tapos tela, mga sukat ng bahagi, ang mga add-on, at
-    // panghuli ang dingding — magkakasama ang magkakauri kaya nababasa.
-    const buildLines = [
+  // ANG PAGKAKASUNOD-SUNOD AY AYON SA URI, hindi ayon sa pagkakasulat sa
+  // form: sukat muna, tapos tela, mga sukat ng bahagi, ang mga add-on, at
+  // panghuli ang dingding — magkakasama ang magkakauri kaya nababasa.
+  //
+  // HIWALAY NA FUNCTION (2026-08-21): ginagamit ng "Add to request" at ng
+  // "Request a Quote". Kapag dinoble ang kodigo, isa lang ang naaayos sa
+  // susunod na pagbabago ng patakaran at tahimik na maghihiwalay sila.
+  function currentBuildLines(): { label: string; price: number }[] {
+    return [
       ...(size ? [{ label: `Size: ${size}`, price: sizes.find((s) => s.label === size)?.price ?? 0 }] : []),
       ...fabrics_.map((f) => ({
         label: f.part && f.part !== "Whole bed" ? `Fabric — ${f.part}: ${f.name}` : `Fabric: ${f.name}`,
@@ -589,6 +600,55 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
         : []),
       ...fieldLines.map((l) => ({ label: l.label, price: 0 })),
     ];
+  }
+
+  // Ang kasalukuyang build bilang slot ng request. Ang summary ang nasa panel —
+  // sapat para makilala kung alin ito nang hindi binubuksan muli.
+  function currentSlot(): Omit<QuoteBuild, "id"> {
+    return {
+      slug: product.slug,
+      sku: cfg.sku,
+      name: product.name,
+      image: product.images[0] ?? null,
+      category: cfg.category,
+      summary: [size, ...fabrics_.map((f) => f.name)].filter(Boolean).join(" · "),
+      build: { size, fabric, fabrics: fabrics_, lines: currentBuildLines(), total, priced },
+    };
+  }
+
+  // Idagdag sa listahan at ilinis ang form — nananatili ang customer sa pahina
+  // at nakakapili ng susunod na produkto. WALANG delivery na tinatanong dito.
+  function addToRequest() {
+    const miss = missingForBuild();
+    if (miss.length) {
+      setQuoteErr(miss);
+      return;
+    }
+    setQuoteErr([]);
+    addToQuote({ ...currentSlot(), ...(editId ? { id: editId } : {}) });
+    setEditId(null);
+    setAdded2(true);
+    window.setTimeout(() => setAdded2(false), 1600);
+  }
+
+  async function submitQuote() {
+    if (!handle) return;
+    // Ang kasalukuyang build ay isasama LANG kapag kumpleto ito. Kapag may
+    // naka-save nang listahan at blangko ang form (kagagaling lang sa Add),
+    // ang listahan ang ipinapadala — hindi ito dapat hadlangan ng form.
+    const buildMiss = missingForBuild();
+    const includeCurrent = quote.length === 0 || buildMiss.length === 0;
+    const miss = includeCurrent ? missingForQuote() : (shipProvince && shipCity ? [] : ["Delivery location (Estimate your shipping)"]);
+    if (miss.length) {
+      setQuoteErr(miss);
+      // Buksan ang shipping estimator kapag yun ang kulang.
+      if (miss.some((m) => m.startsWith("Delivery location"))) setShipOpen(true);
+      return;
+    }
+    setQuoteErr([]);
+    setQuoteSending(true);
+    // Ang naka-save na listahan, kasama ang nasa harap ngayon.
+    const slots = [...quote.map(({ id: _id, summary: _s, ...rest }) => rest), ...(includeCurrent ? [(({ summary: _s, ...rest }) => rest)(currentSlot())] : [])];
     // Ang lugar na PINILI SA PAGE ang ipinapadala — basehan ng auto
     // delivery-fee sa quotation (required, kaya laging may laman dito).
     const where = `${shipCity}, ${shipProvince}`;
@@ -598,14 +658,18 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          sku: cfg.sku,
-          slug: product.slug,
-          name: product.name,
-          category: cfg.category,
-          image: product.images[0] ?? null,
+          // Ang unang produkto ay nasa ugat pa rin: may lumang IMS build sa
+          // gitna ng deploy na `build` lang ang binabasa, at hindi dapat
+          // mawala ang request dahil doon.
+          sku: slots[0].sku,
+          slug: slots[0].slug,
+          name: slots[0].name,
+          category: slots[0].category,
+          image: slots[0].image ?? null,
           address: where || null,
           contact: mobile.trim() || null,
-          build: { size, fabric, fabrics: fabrics_, lines: buildLines, total, priced },
+          build: slots[0].build,
+          builds: slots,
         }),
         signal: AbortSignal.timeout(20000),
       });
@@ -616,6 +680,10 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     }
     setQuoteSending(false);
     setQuoteRef(mtoRef);
+    // Naipadala na — linisin ang listahan para hindi ito maisama sa susunod na
+    // request. Ang naipadala ay nasa Messenger thread at sa MTO Requests na.
+    clearQuote();
+    setEditId(null);
     const url = messengerUrl(handle, mtoRef ? `mto_${mtoRef}` : `mto_${product.slug}`);
     if (/Android|iPhone|iPad/i.test(navigator.userAgent)) window.location.href = url;
     else window.open(url, "_blank", "noopener,noreferrer");
@@ -1228,13 +1296,56 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
 
       {etaCard}
 
-      {/* ── QTY + BUY / QUOTE ── */}
-      <div className="mt-3 flex gap-3">
-        <div className="flex items-center rounded border border-stone/40">
-          <button onClick={() => setQty(Math.max(1, qty - 1))} className="px-4 py-3 hover:text-cognac" aria-label="Decrease quantity">−</button>
-          <span className="w-8 text-center text-sm">{qty}</span>
-          <button onClick={() => setQty(qty + 1)} className="px-4 py-3 hover:text-cognac" aria-label="Increase quantity">+</button>
+      {/* ── ANG LISTAHAN NG REQUEST ──
+          Lumalabas lang kapag may laman: sa nag-iisang produkto (ang
+          karaniwan), walang nadadagdag sa pahina at pareho pa rin ang mga
+          hakbang. Ang Edit ay ibinabalik ang build sa form na ito kapag
+          parehong produkto; kung iba, dinadala sa sariling pahina nito. */}
+      <QuoteRequestPanel
+        onEdit={(b) => {
+          if (b.slug !== product.slug) { window.location.href = `/products/${b.slug}`; return; }
+          setEditId(b.id);
+          if (b.build?.size) setSize(b.build.size);
+          // Ang unang tela ay para sa buong kama kapag walang naitalang bahagi.
+          if (b.build?.fabrics?.length) {
+            setFabrics_(b.build.fabrics.map((f, i) => ({ name: f.name, part: f.part ?? (i ? "Headboard" : "Whole bed") })));
+          }
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
+      />
+
+      {/* ── QTY + ADD / QUOTE ── */}
+      {/* ADD TO REQUEST — pangalawang landas, kaya dashed at cognac: pareho ng
+          "MADE TO ORDER — CUSTOMIZE". Ang delivery ay HINDI tinatanong dito;
+          pag-aari iyon ng buong request at itinatanong minsan sa pag-send. */}
+      {handle && (
+        <div className="mt-3 flex gap-3">
+          <div className="flex items-center rounded border border-stone/40">
+            <button onClick={() => setQty(Math.max(1, qty - 1))} className="px-4 py-3 hover:text-cognac" aria-label="Decrease quantity">−</button>
+            <span className="w-8 text-center text-sm">{qty}</span>
+            <button onClick={() => setQty(qty + 1)} className="px-4 py-3 hover:text-cognac" aria-label="Increase quantity">+</button>
+          </div>
+          <button
+            type="button"
+            disabled={quoteSending || missingForBuild().length > 0}
+            title={missingForBuild().length ? `Still needed: ${missingForBuild().join(", ")}` : undefined}
+            onClick={addToRequest}
+            className="flex flex-1 items-center justify-center rounded border-[1.5px] border-dashed border-cognac bg-linen px-4 py-3 text-sm font-bold text-cognac transition-colors hover:bg-cognac hover:text-cream disabled:cursor-not-allowed disabled:border-stone/40 disabled:bg-transparent disabled:text-stone/60 disabled:hover:bg-transparent disabled:hover:text-stone/60"
+          >
+            {added2 ? "✓ Added to request" : editId ? "Save changes" : "+ Add to request"}
+          </button>
         </div>
+      )}
+
+      {/* ── QTY + BUY / QUOTE ── */}
+      <div className={handle ? "mt-2 flex gap-3" : "mt-3 flex gap-3"}>
+        {!handle && (
+          <div className="flex items-center rounded border border-stone/40">
+            <button onClick={() => setQty(Math.max(1, qty - 1))} className="px-4 py-3 hover:text-cognac" aria-label="Decrease quantity">−</button>
+            <span className="w-8 text-center text-sm">{qty}</span>
+            <button onClick={() => setQty(qty + 1)} className="px-4 py-3 hover:text-cognac" aria-label="Increase quantity">+</button>
+          </div>
+        )}
         {/* MADE TO ORDER = laging Request a Quote (mock behavior) — Phase 3:
             ipinapadala muna ang BUONG build sa PAN app (MTO request), saka
             nire-redirect sa Messenger na may ref mto_<MTO-number> para
@@ -1242,13 +1353,19 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
         {handle && (
           <button
             type="button"
-            // Hindi makakapag-request hangga't kulang ang build/lokasyon.
-            disabled={quoteSending || missingNow.length > 0}
-            title={missingNow.length ? `Still needed: ${missingNow.join(", ")}` : undefined}
+            // Hindi makakapag-request hangga't kulang ang build/lokasyon —
+            // maliban kung may naka-save nang listahan: doon, sapat na ang
+            // lugar, at ang blangkong form ay hindi na kailangang punan.
+            disabled={quoteSending || (quote.length ? !(shipProvince && shipCity) : missingNow.length > 0)}
+            title={missingNow.length && !quote.length ? `Still needed: ${missingNow.join(", ")}` : undefined}
             onClick={() => void submitQuote()}
             className="flex flex-1 items-center justify-center rounded bg-espresso px-4 py-3 text-base font-medium text-cream transition-colors hover:bg-cognac disabled:cursor-not-allowed disabled:bg-stone/50 disabled:hover:bg-stone/50"
           >
-            {quoteSending ? "Sending…" : "Request a Quote"}
+            {quoteSending
+              ? "Sending…"
+              : quoteBtnCount > 1
+                ? `Request a Quote · ${quoteBtnCount} items`
+                : "Request a Quote"}
           </button>
         )}
         {heartBtn}

@@ -24,9 +24,42 @@ export type CartItem = {
   addOns?: { label: string; price: number; note?: string }[];
 };
 
+// QUOTE REQUEST — hiwalay sa cart. Ang bumili agad at ang magpapresyo muna ay
+// magkaibang layunin; ang gumagawa ng dalawa nang sabay ay hindi dapat makita
+// silang naghahalo. Isang made-to-order build kada slot, walang takda ang dami.
+export type QuoteBuild = {
+  // SARILING ID, HINDI slug+color. Ang cart ay naka-key sa slug+color kaya ang
+  // dalawang entry ng iisang produkto ay nagpapatong; dito, ordinaryo ang
+  // parehong kama sa magkaibang tela (master at guest), kaya kailangan nila ng
+  // sariling pagkakakilanlan.
+  id: string;
+  slug: string;
+  sku?: string | null;
+  name: string;
+  image?: string | null;
+  category?: string | null;
+  // Buod para sa panel — hindi na kailangang buksan ang buong build para makita
+  // kung alin ito.
+  summary?: string;
+  build: {
+    size?: string;
+    fabric?: string;
+    fabrics?: { name: string; part?: string }[];
+    lines?: { label: string; price?: number }[];
+    total?: number;
+    priced?: boolean;
+  };
+};
+
 type StoreState = {
   cart: CartItem[];
   wishlist: string[]; // product slugs
+  quote: QuoteBuild[];
+  addToQuote: (b: Omit<QuoteBuild, "id"> & { id?: string }) => string;
+  removeFromQuote: (id: string) => void;
+  clearQuote: () => void;
+  quoteCount: number;
+  quoteTotal: number;
   addToCart: (
     slug: string,
     color: string,
@@ -45,10 +78,12 @@ const StoreContext = createContext<StoreState | null>(null);
 
 const CART_KEY = "pb_cart";
 const WISHLIST_KEY = "pb_wishlist";
+const QUOTE_KEY = "pb_quote";
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<string[]>([]);
+  const [quote, setQuote] = useState<QuoteBuild[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
   // I-load mula localStorage sa unang render (client lang)
@@ -56,8 +91,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     try {
       const c = localStorage.getItem(CART_KEY);
       const w = localStorage.getItem(WISHLIST_KEY);
+      const q = localStorage.getItem(QUOTE_KEY);
       if (c) setCart(JSON.parse(c));
       if (w) setWishlist(JSON.parse(w));
+      if (q) setQuote(JSON.parse(q));
     } catch {
       // sira ang stored data — balewalain, magsimula sa wala
     }
@@ -72,6 +109,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (hydrated) localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
   }, [wishlist, hydrated]);
+
+  useEffect(() => {
+    if (hydrated) localStorage.setItem(QUOTE_KEY, JSON.stringify(quote));
+  }, [quote, hydrated]);
 
   function addToCart(
     slug: string,
@@ -108,6 +149,31 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setCart([]);
   }
 
+  // Nagbabalik ng id ng slot — ginagamit ng "Edit" para malaman kung alin ang
+  // binabago (pinapalitan, hindi dinadagdag).
+  function addToQuote(b: Omit<QuoteBuild, "id"> & { id?: string }) {
+    // Walang crypto.randomUUID sa lumang WebView (Huawei/Chrome<99) — ang app
+    // ay tumatakbo doon, kaya hindi ito maaasahan.
+    const id = b.id ?? `q${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
+    setQuote((prev) => {
+      const i = prev.findIndex((x) => x.id === id);
+      const next = { ...b, id } as QuoteBuild;
+      if (i === -1) return [...prev, next];
+      const copy = [...prev];
+      copy[i] = next;
+      return copy;
+    });
+    return id;
+  }
+
+  function removeFromQuote(id: string) {
+    setQuote((prev) => prev.filter((b) => b.id !== id));
+  }
+
+  function clearQuote() {
+    setQuote([]);
+  }
+
   function toggleWishlist(slug: string) {
     setWishlist((prev) =>
       prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]
@@ -115,18 +181,26 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }
 
   const cartCount = cart.reduce((sum, i) => sum + i.qty, 0);
+  const quoteCount = quote.length;
+  const quoteTotal = quote.reduce((sum, b) => sum + (Number(b.build?.total) || 0), 0);
 
   return (
     <StoreContext.Provider
       value={{
         cart,
         wishlist,
+        quote,
         addToCart,
         removeFromCart,
         setQty,
         clearCart,
+        addToQuote,
+        removeFromQuote,
+        clearQuote,
         toggleWishlist,
         cartCount,
+        quoteCount,
+        quoteTotal,
       }}
     >
       {children}
