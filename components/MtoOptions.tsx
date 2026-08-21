@@ -248,16 +248,24 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   // o "Floating Legs" lang (group = "Floating Legs"), kaya sinasapat na
   // makapaloob ang salita. Kung eksakto ang hinahanap, tahimik na hindi
   // tumatalab ang restriction sa mga item na iba ang pagkakasulat.
+  // Ang EKSAKTONG tugma ang nauuna bago ang naglalaman lang: ang "Exceed
+  // Headboard" ay naglalaman din ng "headboard", at kung ito ang unang
+  // makikita, ang sagot doon ang mababasa bilang sagot sa Headboard —
+  // "Exceed: None" ay magiging "walang headboard".
+  const findGroup = (q: string) => {
+    const t = q.toLowerCase();
+    return choiceGroups.find((x) => x.name.toLowerCase() === t)
+      ?? choiceGroups.find((x) => x.name.toLowerCase().startsWith(t))
+      ?? choiceGroups.find((x) => x.name.toLowerCase().includes(t));
+  };
   const pick = (group: string) => {
-    const q = group.toLowerCase();
-    const g = choiceGroups.find((x) => x.name.toLowerCase().includes(q));
+    const g = findGroup(group);
     return g ? (choiceSel[g.name] ?? "") : "";
   };
   // Ang buong tekstong sinasagot ng isang grupo — kasama ang pangalan nito,
   // dahil sa "None Headboard" ay ang PANGALAN mismo ang nagsasabi ng sagot.
   const pickFull = (group: string) => {
-    const q = group.toLowerCase();
-    const g = choiceGroups.find((x) => x.name.toLowerCase().includes(q));
+    const g = findGroup(group);
     if (!g) return "";
     const v = choiceSel[g.name] ?? "";
     return v ? `${g.name} ${v}` : "";
@@ -300,7 +308,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
       return "needs a headboard";
     }
     // WALANG HEADBOARD = walang lalagpasan.
-    if (/exceed/i.test(group) && noHeadboard) return "needs a headboard";
+    if (/^exceed/i.test(group) && noHeadboard) return "needs a headboard";
     // DOUBLE WALLING = platform ang pagkakagawa; wala nang ibang paa.
     if (/leg/i.test(group) && !/platform/i.test(value) && platformForced) {
       return "double walling is platform style";
