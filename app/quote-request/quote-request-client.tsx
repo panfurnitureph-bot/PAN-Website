@@ -429,8 +429,14 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
                 value={pin}
                 flyTo={`${barangay}, ${city}, ${province}, Philippines`}
                 onChange={(loc) => {
-                  setPin(loc);
-                  if (loc.postcode && !postal.trim()) setPostal(loc.postcode);
+                setPin(loc);
+                  if (loc.postcode && !postal.trim()) setPostal(loc.postcode); // auto postal
+                  // ANG KALYE MULA SA PIN. Ang inilagay na tuldok ang alam ng
+                  // customer; ang pagpapatipa pa ng kalyeng itinuro na niya sa
+                  // mapa ay paghingi ng parehong bagay nang dalawang beses.
+                  // Hindi pinapatungan ang naitipa na — ang "Blk 7 Lot 12" ay
+                  // mas tiyak kaysa sa pangalan ng kalye.
+                  if (loc.street && !street.trim()) setStreet(loc.street);
                 }}
               />
             </div>

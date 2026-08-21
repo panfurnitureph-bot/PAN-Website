@@ -17,7 +17,15 @@ const PIN_SVG =
     </svg>`
   );
 
-export type PickedLocation = { lat: number; lng: number; address: string; postcode?: string };
+export type PickedLocation = {
+  lat: number; lng: number; address: string; postcode?: string;
+  // ANG KALYE LANG, hiwalay sa buong address. Ang `address` ay ang buong
+  // display_name ("Bulalo, Tanauan-Talisay-Tagaytay Road, Poblacion 5, Banga,
+  // Miranda, Talisay, Batangas, Calabarzon, 4220, Philippines") — kapag
+  // isinalpak iyon sa Street field, madodoble ang bayan at lalawigan na nasa
+  // dropdowns na. Ito ang bahaging tunay na napupunta sa kahon na iyon.
+  street?: string;
+};
 
 export default function LocationPicker({
   value,
@@ -49,9 +57,20 @@ export default function LocationPicker({
       );
       const j = await r.json();
       const addr = j.display_name ?? `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-      const postcode = j.address?.postcode as string | undefined;
+      const a = (j.address ?? {}) as Record<string, string | undefined>;
+      const postcode = a.postcode;
+      // Numero muna kung meron, tapos ang kalye. Ang Nominatim ay may
+      // magkakaibang pangalan para sa kalye depende sa uri ng lugar, kaya
+      // sinusubukan ang mga ito ayon sa pagiging tiyak — ang subdivision o
+      // purok ay isinasama bilang pangalawang bahagi kung iba ito.
+      const road = a.road || a.pedestrian || a.footway || a.residential || a.neighbourhood || "";
+      const area = a.hamlet || a.suburb || a.quarter || "";
+      const street = [
+        [a.house_number, road].filter(Boolean).join(" "),
+        area && area !== road ? area : "",
+      ].filter(Boolean).join(", ");
       setAddress(addr);
-      onChange({ lat, lng, address: addr, postcode });
+      onChange({ lat, lng, address: addr, postcode, street: street || undefined });
     } catch {
       const addr = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
       setAddress(addr);
