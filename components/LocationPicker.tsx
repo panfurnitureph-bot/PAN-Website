@@ -72,9 +72,15 @@ export default function LocationPicker({
       // purok ay isinasama bilang pangalawang bahagi kung iba ito.
       const road = a.road || a.pedestrian || a.footway || a.residential || a.neighbourhood || "";
       const area = a.hamlet || a.suburb || a.quarter || "";
+      // ANG PALATANDAAN ANG UNANG SINASABI NG TAO. Kapag ang pin ay nasa isang
+      // gusali — paaralan, simbahan, mall — iyon ang tinutukoy nila, hindi ang
+      // kalye: "sa tapat ng Carmona National High School". Ang Nominatim ay
+      // nagbabalik nito bilang amenity/building/shop, hiwalay sa `road`.
+      const place = a.amenity || a.building || a.shop || a.office || a.tourism || "";
       const street = [
+        place,
         [a.house_number, road].filter(Boolean).join(" "),
-        area && area !== road ? area : "",
+        area && area !== road && area !== place ? area : "",
       ].filter(Boolean).join(", ");
       setAddress(addr);
       // Ang Nominatim ay may iba't ibang antas depende sa uri ng lugar: ang
