@@ -74,7 +74,10 @@ function Dropdown({
   label: string;
   value: string;
   placeholder: string;
-  options: { label: string; note?: string }[];
+  // `ban`: dahilan kung bakit hindi pwede ang option na ito ngayon. Ipinapakita
+  // pa rin ito — ang nakadimming na pagpipilian ay nagsasabi kung ano ang
+  // magagawa kapag inalis ang humaharang; ang tahimik na pagtatago ay hindi.
+  options: { label: string; note?: string; ban?: string | null }[];
   onPick: (v: string) => void;
   clearable?: boolean;
 }) {
@@ -122,11 +125,14 @@ function Dropdown({
                 <button
                   key={o.label}
                   type="button"
-                  onClick={() => { onPick(o.label); setOpen(false); }}
-                  className={`relative w-full rounded-md px-8 py-2 text-center text-sm hover:bg-linen ${on ? "bg-linen font-bold" : ""}`}
+                  disabled={!!o.ban}
+                  title={o.ban ?? undefined}
+                  onClick={() => { if (o.ban) return; onPick(o.label); setOpen(false); }}
+                  className={`relative w-full rounded-md px-8 py-2 text-center text-sm ${o.ban ? "cursor-not-allowed opacity-40" : "hover:bg-linen"} ${on ? "bg-linen font-bold" : ""}`}
                 >
                   {o.label}
-                  {o.note && <span className="ml-1.5 text-xs text-stone">{o.note}</span>}
+                  {o.note && !o.ban && <span className="ml-1.5 text-xs text-stone">{o.note}</span>}
+                  {o.ban && <span className="ml-1.5 text-[11px] text-stone/70">— {o.ban}</span>}
                   {on && <span className="absolute right-2.5 top-1/2 -translate-y-1/2 font-bold text-cognac">✓</span>}
                 </button>
               );
@@ -233,17 +239,79 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   const isDrawer = (l: string) => /drawer/i.test(l);
   const isPullout = (l: string) => /pullout/i.test(l);
   const isFootboard = (l: string) => /tufted|footboard/i.test(l);
+  const isDoubleWall = (l: string) => /double wall/i.test(l);
   const liftOn = checks.some((a) => isLift(a.label) && checkPick[a.label]);
   const leatherFabric = /leather/i.test(fabric);
+
+  // Ang piniling halaga ng isang choice group, hal. pick("Legs") → "Floating".
+  const pick = (group: string) => {
+    const g = choiceGroups.find((x) => x.name.toLowerCase() === group.toLowerCase());
+    return g ? (choiceSel[g.name] ?? "") : "";
+  };
+  // FLOATING LEGS = nakabitin ang frame, kaya walang mapaglalagyan ng anumang
+  // storage (team, 2026-08-21).
+  const floatingLegs = /floating/i.test(pick("Legs"));
+  // MATTRESS INSERT = ang kutson ay nakalubog sa frame; nauubos nito ang lalim
+  // na kailangan ng drawer o pullout. Ang "None" ay hindi insert.
+  const mattressInsert = /^\s*(4|5|6)/.test(pick("Mattress Insert"));
+  const noHeadboard = /none/i.test(pick("Headboard"));
+  const isStorage = (l: string) => isLift(l) || isDrawer(l) || isPullout(l);
+  const doubleWallOn = checks.some((a) => isDoubleWall(a.label) && checkPick[a.label]);
+
   function banReason(label: string): string | null {
     if (isLift(label) && leatherFabric) return "not available with leather fabric — change the fabric first";
     if ((isDrawer(label) || isPullout(label)) && liftOn) return "not available with Lift Storage (Tufted only)";
+    if (isStorage(label) && floatingLegs) return "not available with floating legs — nothing to mount it on";
+    if (isStorage(label) && doubleWallOn) return "not available with double walling — the inner wall takes the depth";
+    if (isDoubleWall(label) && checks.some((a) => isStorage(a.label) && checkPick[a.label])) return "remove the storage add-on first";
+    if (isStorage(label) && mattressInsert) return "not available with a mattress insert — the insert takes the depth";
+    // TWIN at SINGLE: masyadong makitid ang footboard para sa dalawang drawer.
+    if (bedW <= 48 && /2 built-in drawers/i.test(label)) return "too narrow for two drawers on this size — pick a single drawer";
     if (isPullout(label)) {
       const m = /(\d+)\s*X\s*\d+/i.exec(label);
       if (m && +m[1] >= bedW) return `does not fit ${size.split(" ")[0] || "this size"}`;
     }
     return null;
   }
+
+  // BAWAL NA CHOICE OPTION. Ang mga choice ay dropdown, kaya ang bawal ay
+  // hindi ipinapakita bilang pagpipilian sa halip na tanggihan pagka-pindot.
+  function choiceBan(group: string, value: string): string | null {
+    // WALANG HEADBOARD = walang mabibigyan ng pakpak, at wala ring maaaring
+    // lumagpas dito (team, 2026-08-21).
+    if (/^winged$/i.test(group) && /^winged$/i.test(value) && noHeadboard) {
+      return "needs a headboard";
+    }
+    // Ang storage na napili na ang humaharang sa floating legs at sa insert —
+    // hindi kabaligtaran, para hindi mag-away ang dalawang panig.
+    const storagePicked = checks.some((a) => isStorage(a.label) && !!checkPick[a.label]);
+    // Ang gilid ng footboard drawer ay walang saysay kung walang drawer, at
+    // ang "Both" ay hindi kasya sa makikitid na sukat (team 2026-08-21).
+    if (/^footboard drawer$/i.test(group)) {
+      if (!checks.some((a) => isDrawer(a.label) && !!checkPick[a.label])) return "pick a drawer first";
+      if (/both/i.test(value) && bedW <= 48) return `too narrow on ${size.split(" ")[0] || "this size"}`;
+    }
+    if (/^legs$/i.test(group) && /floating/i.test(value) && storagePicked) {
+      return "remove the storage add-on first";
+    }
+    if (/^mattress insert$/i.test(group) && /^(4|5|6)/.test(value) && storagePicked) {
+      return "remove the storage add-on first";
+    }
+    return null;
+  }
+
+  // AUTO-LAPSE: kapag naging bawal ang isang napiling choice dahil sa ibang
+  // pagbabago (hal. inalis ang headboard habang naka-Winged), inaalis ito —
+  // kung hindi, tahimik itong pumapasok sa build at sa presyo.
+  useEffect(() => {
+    for (const g of choiceGroups) {
+      const v = choiceSel[g.name];
+      if (v && choiceBan(g.name, v)) setChoiceSel((p) => ({ ...p, [g.name]: "" }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [noHeadboard, floatingLegs, mattressInsert, doubleWallOn, checkPick]);
+
+
   // Effective pick = naka-check AT hindi banned (auto-lapse kapag nag-iba
   // ang size/fabric/lift at naging bawal).
   const isPicked = (label: string) => !!checkPick[label] && !banReason(label);
@@ -684,7 +752,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           label={g.name}
           value={choiceSel[g.name] ?? ""}
           placeholder={`Select ${g.name.toLowerCase()}…`}
-          options={g.options.map((o) => ({ label: o.value, note: (o.price ?? 0) > 0 ? `+${formatPrice(o.price!)}` : undefined }))}
+          options={g.options.map((o) => ({ label: o.value, note: (o.price ?? 0) > 0 ? `+${formatPrice(o.price!)}` : undefined, ban: choiceBan(g.name, o.value) }))}
           onPick={(v) => setChoiceSel((p) => ({ ...p, [g.name]: v }))}
           clearable
         />
