@@ -232,15 +232,18 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   // STEPPER — − / halaga / + at unit, kapareho ng guided measurements sa app.
   // Ang text input ay tumatanggap ng kahit ano; ang stepper ay hindi.
   function Stepper({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-    const cur = Number(value) || 0;
-    const bump = (d: number) => onChange(String(Math.max(0, cur + d)));
+    // KALAHATING PULGADA ang hakbang, gaya ng ibang measurement dito — ang
+    // kapal ng dingding ay bihirang buong pulgada.
+    const cur = parseHalf(value) || 0;
+    const bump = (d: number) => onChange(fmtHalf(Math.max(0, cur + d * 0.5)));
     const btn = "flex h-9 w-8 items-center justify-center rounded-lg border border-sand text-base font-bold text-stone transition-colors hover:border-cognac hover:bg-linen";
     return (
       <span className="inline-flex items-stretch gap-1">
         <button type="button" onClick={() => bump(-1)} className={btn}>−</button>
         <input
           value={value === "" ? "0" : value}
-          onChange={(e) => onChange(e.target.value.replace(/[^\d.]/g, ""))}
+          // Tinatanggap ang "3", "3.5", "3 ½" at "3 1/2".
+          onChange={(e) => onChange(e.target.value.replace(/[^\d.½/ ]/g, ""))}
           inputMode="decimal"
           // Ang blangko ay ipinapakitang 0 (o ang sinusundan nitong sukat), hindi
           // placeholder — ang halagang nakikita ang siyang naitatala.
@@ -531,9 +534,10 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             { label: `Double Walling: ${dwThick}"`, price: 0 },
             ...(frameLabel(size, dwThick) ? [{ label: `Frame Dimension: ${frameLabel(size, dwThick)}`, price: 0 }] : []),
             // Ang zero ay walang sukat — hindi ito isinusulat, gaya ng blangko.
-            ...(Number(dwH) > 0 ? [{ label: `Wall Height: ${dwH.trim()} in`, price: 0 }] : []),
-            ...(Number(dwW) > 0 ? [{ label: `Wall Width: ${dwW.trim()} in`, price: 0 }] : []),
-            ...(Number(dwPad) > 0 ? [{ label: `Padding Thickness: ${dwPad.trim()}"`, price: 0 }] : []),
+            // parseHalf, hindi Number: ang "2 ½" ay NaN sa Number().
+            ...(parseHalf(dwH) > 0 ? [{ label: `Wall Height: ${dwH.trim()} in`, price: 0 }] : []),
+            ...(parseHalf(dwW) > 0 ? [{ label: `Wall Width: ${dwW.trim()} in`, price: 0 }] : []),
+            ...(parseHalf(dwPad) > 0 ? [{ label: `Padding Thickness: ${dwPad.trim()}"`, price: 0 }] : []),
             ...(dwNails ? [{ label: `Decorative Nails: ${dwNails}`, price: 0 }] : []),
             ...(dwAccent ? [{ label: "Gold Accent: Yes", price: 0 }] : []),
           ]
