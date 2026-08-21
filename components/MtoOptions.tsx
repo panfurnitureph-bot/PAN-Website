@@ -552,9 +552,11 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             ...(frameLabel(size, dwThick) ? [{ label: `Frame Dimension: ${frameLabel(size, dwThick)}`, price: 0 }] : []),
             // Ang zero ay walang sukat — hindi ito isinusulat, gaya ng blangko.
             // parseHalf, hindi Number: ang "2 ½" ay NaN sa Number().
-            ...(parseHalf(dwH) > 0 ? [{ label: `Wall Height: ${dwH.trim()} in`, price: 0 }] : []),
-            ...(parseHalf(dwW) > 0 ? [{ label: `Wall Width: ${dwW.trim()} in`, price: 0 }] : []),
-            ...(parseHalf(dwPad) > 0 ? [{ label: `Padding Thickness: ${dwPad.trim()}"`, price: 0 }] : []),
+            // Parehong pangalan at parehong pagkakasunod ng nasa form — kung
+            // hindi, hindi mapaghahambing ng team ang inorder sa nasa sheet.
+            ...(parseHalf(dwH) > 0 ? [{ label: `Height: ${dwH.trim()} in`, price: 0 }] : []),
+            ...(parseHalf(dwPad) > 0 ? [{ label: `Thickness: ${dwPad.trim()} in`, price: 0 }] : []),
+            ...(parseHalf(dwW) > 0 ? [{ label: `Width: ${dwW.trim()} in`, price: 0 }] : []),
             ...(dwNails ? [{ label: `Decorative Nails: ${dwNails}`, price: 0 }] : []),
             ...(dwAccent ? [{ label: "Gold Accent: Yes", price: 0 }] : []),
           ]
