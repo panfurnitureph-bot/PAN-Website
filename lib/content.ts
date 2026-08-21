@@ -83,6 +83,9 @@ export type MtoAddon = {
   label: string;
   type: "ADD-ON" | "CHOICE" | "FIELD" | "FIXED";
   price: number | null;
+  // CHOICE lang: presyo KADA pagpipilian, naka-index sa pagkakasunod ng
+  // "A/B/C" sa label. Kapag wala, ang `price` ang para sa lahat.
+  prices?: (number | null)[];
   on: boolean;
 };
 export type MtoMeasure = { label: string; def: number | null; unit: string; on: boolean };

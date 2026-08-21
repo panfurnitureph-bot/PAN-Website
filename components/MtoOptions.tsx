@@ -170,7 +170,13 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
       g = { name: gname, options: [] };
       choiceGroups.push(g);
     }
-    for (const o of optsRaw) g.options.push({ value: o, full: m ? `${gname}: ${o}` : c.label, price: c.price ?? null });
+    // Ang bawat pagpipilian ay may sariling presyo kapag may `prices`; kung
+    // wala, ang iisang `price` ang para sa lahat — na tama sa "Winged/Not
+    // winged" pero mali sa "None/2\"/4\"": doon, ang None ay dapat libre.
+    optsRaw.forEach((o, i) => {
+      const per = c.prices?.[i];
+      g!.options.push({ value: o, full: m ? `${gname}: ${o}` : c.label, price: per !== undefined ? per : (c.price ?? null) });
+    });
   }
 
   // Priced mode: LAHAT ng on-sizes may presyo (>0). Kung walang size rows,
