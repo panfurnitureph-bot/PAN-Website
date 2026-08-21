@@ -1057,7 +1057,10 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
       {doubleWallOn && (
         <div className="mt-3 rounded-lg border-l-4 border-cognac bg-linen/50 py-1 pl-4 pr-3">
           <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
-            <span className="text-sm text-stone">Wall thickness</span>
+            {/* Ang kapal ng dingding ang nagtatakda ng sukat ng frame — unang
+                tanong ng bloke, at hindi na kailangang pangalanang "thickness"
+                dahil may Thickness na sa ibaba para sa padding. */}
+            <span className="text-sm text-stone">Double Walling</span>
             <div className="flex flex-wrap items-center gap-1.5">
               {WALL_THICKNESSES.map((t) => (
                 <button
@@ -1096,19 +1099,19 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             </div>
           )}
           <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
-            <span className="text-sm text-stone">Wall height</span>
+            <span className="text-sm text-stone">Height</span>
             <div className="flex flex-wrap items-center gap-2">
               <Stepper value={dwH} onChange={setDwH} />
             </div>
           </div>
           <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
-            <span className="text-sm text-stone">Padding</span>
+            <span className="text-sm text-stone">Thickness</span>
             <div className="flex flex-wrap items-center gap-2">
               <Stepper value={dwPad} onChange={setDwPad} fallback={2} />
             </div>
           </div>
           <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
-            <span className="text-sm text-stone">Wall width</span>
+            <span className="text-sm text-stone">Width</span>
             <div className="flex flex-wrap items-center gap-2">
               <Stepper value={dwW} onChange={setDwW} fallback={frameFor(size, dwThick)?.w} />
             </div>
