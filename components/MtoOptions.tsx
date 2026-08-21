@@ -212,7 +212,16 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   const [choiceSel, setChoiceSel] = useState<Record<string, string>>({});
   const [checkPick, setCheckPick] = useState<Record<string, boolean>>({});
   const [fieldVal, setFieldVal] = useState<Record<string, string>>({});
-  const [fabric, setFabric] = useState("");
+  // MARAMIHANG TELA (team, 2026-08-21): iisang tela ang dating kaya, kaya ang
+  // kamang may ibang tela sa headboard ay hindi maisusulat. Bawat pili ay may
+  // katabing parte, para hindi maghula ang workshop kung saan napupunta ang
+  // pangalawang tela.
+  const [fabrics_, setFabrics_] = useState<{ name: string; part: string }[]>([]);
+  // Ang Promo Bed ay dalawang kulay lang ang inaalok — walang paghahalo.
+  const maxFabrics = /promo/i.test(cfg.category ?? "") ? 1 : 3;
+  const FABRIC_PARTS = ["Whole bed", "Headboard", "Frame", "Footboard"];
+  // Ang unang tela ang siyang "ang tela" sa buod at sa presyo.
+  const fabric = fabrics_.length ? fabrics_[0].name : "";
   const [fabOpen, setFabOpen] = useState(false);
   const [fabQ, setFabQ] = useState("");
   const [fabCol, setFabCol] = useState("");
@@ -247,7 +256,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   const isFootboard = (l: string) => /tufted|footboard/i.test(l);
   const isDoubleWall = (l: string) => /double wall/i.test(l);
   const liftOn = checks.some((a) => isLift(a.label) && checkPick[a.label]);
-  const leatherFabric = /leather/i.test(fabric);
+  const leatherFabric = fabrics_.some((f) => /leather/i.test(f.name));
 
   // Ang piniling halaga ng isang choice group. Ang paghahanap ay HINDI eksakto:
   // ang team ay maaaring "Legs: Standard/Floating" ang isulat (group = "Legs")
@@ -471,7 +480,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   useEffect(() => {
     setMissingNow(missingForQuote());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [size, fabric, choiceSel, measVal, fieldVal, shipCity, shipProvince]);
+  }, [size, fabrics_, choiceSel, measVal, fieldVal, shipCity, shipProvince]);
 
   async function submitQuote() {
     if (!handle) return;
@@ -486,7 +495,10 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     setQuoteSending(true);
     const buildLines = [
       ...(size ? [{ label: `Size: ${size}`, price: sizes.find((s) => s.label === size)?.price ?? 0 }] : []),
-      ...(fabric ? [{ label: `Fabric: ${fabric}`, price: 0 }] : []),
+      ...fabrics_.map((f) => ({
+        label: f.part && f.part !== "Whole bed" ? `Fabric — ${f.part}: ${f.name}` : `Fabric: ${f.name}`,
+        price: 0,
+      })),
       ...measureLines.map((l) => ({ label: l.label, price: 0 })),
       ...pickedAddonLines.map((l) => ({ label: l.label, price: l.price })),
       ...fieldLines.map((l) => ({ label: l.label, price: 0 })),
@@ -507,7 +519,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           image: product.images[0] ?? null,
           address: where || null,
           contact: mobile.trim() || null,
-          build: { size, fabric, lines: buildLines, total, priced },
+          build: { size, fabric, fabrics: fabrics_, lines: buildLines, total, priced },
         }),
         signal: AbortSignal.timeout(20000),
       });
@@ -823,13 +835,18 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
               onClick={() => setFabOpen((v) => !v)}
               className={`relative flex w-full items-center justify-center gap-2 rounded-lg border bg-transparent px-9 py-2.5 text-sm font-semibold transition-colors ${fabOpen ? "border-cognac ring-2 ring-cognac/20" : "border-sand hover:border-stone/50"}`}
             >
-              {selFabric ? (
+              {fabrics_.length ? (
                 <>
-                  <SwatchTile s={selFabric} className="h-[18px] w-[18px] shrink-0 overflow-hidden rounded border border-black/10" />
-                  <span className="truncate">{selFabric.name}</span>
+                  {fabrics_.slice(0, 3).map((f) => {
+                    const lib = fabrics.find((x) => x.name === f.name);
+                    return lib ? <SwatchTile key={f.name} s={lib} className="h-[18px] w-[18px] shrink-0 overflow-hidden rounded border border-black/10" /> : null;
+                  })}
+                  <span className="truncate">
+                    {fabrics_.length === 1 ? fabrics_[0].name : `${fabrics_.length} fabrics`}
+                  </span>
                 </>
               ) : (
-                <span className="font-normal text-stone/70">Select fabric…</span>
+                <span className="font-normal text-stone/70">{maxFabrics > 1 ? "Select fabric… (up to " + maxFabrics + ")" : "Select fabric…"}</span>
               )}
               <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-stone transition-transform ${fabOpen ? "rotate-180" : ""}`}>▾</span>
             </button>
@@ -861,7 +878,8 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                     .filter((l) => !fabCol || colOf(l.name) === fabCol)
                     .filter((l) => !fabQ.trim() || l.name.toLowerCase().includes(fabQ.trim().toLowerCase()))
                     .map((l) => {
-                      const on = l.name === fabric;
+                      const on = fabrics_.some((f) => f.name === l.name);
+                      const full = !on && fabrics_.length >= maxFabrics;
                       // Leather ↔ Lift Storage ban (team rule) — disabled ang
                       // leather habang naka-Lift.
                       const leatherBan = liftOn && /leather/i.test(l.name);
@@ -869,10 +887,15 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                         <button
                           key={l.name}
                           type="button"
-                          disabled={leatherBan}
-                          onClick={() => { if (leatherBan) return; setFabric(on ? "" : l.name); setFabOpen(false); }}
-                          title={leatherBan ? `${l.name} — not available with Lift Storage` : l.name}
-                          className={`w-[92px] flex-none overflow-hidden rounded-md bg-white text-center ${leatherBan ? "cursor-not-allowed border border-sand opacity-30" : on ? "border-2 border-cognac ring-2 ring-cognac/20" : "border border-sand hover:border-cognac"}`}
+                          disabled={leatherBan || full}
+                          onClick={() => {
+                            if (leatherBan || full) return;
+                            setFabrics_((p) => (on ? p.filter((f) => f.name !== l.name) : [...p, { name: l.name, part: p.length ? "Headboard" : "Whole bed" }]));
+                            // Isang tela lang ang pinapayagan? Isara agad — tapos na.
+                            if (maxFabrics === 1) setFabOpen(false);
+                          }}
+                          title={leatherBan ? `${l.name} — not available with Lift Storage` : full ? `Up to ${maxFabrics} fabrics` : l.name}
+                          className={`w-[92px] flex-none overflow-hidden rounded-md bg-white text-center ${leatherBan || full ? "cursor-not-allowed border border-sand opacity-30" : on ? "border-2 border-cognac ring-2 ring-cognac/20" : "border border-sand hover:border-cognac"}`}
                         >
                           <SwatchTile s={l} className="h-9 w-full" />
                           <span className={`block truncate px-1 py-0.5 text-[9px] leading-tight ${on ? "font-bold text-ink" : "text-stone"}`}>
@@ -883,6 +906,34 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                       );
                     })}
                 </div>
+              </div>
+            )}
+            {/* SAAN NAPUPUNTA ANG BAWAT TELA. Lumalabas lang kapag mahigit isa
+                ang napili — sa iisang tela, walang itatanong. */}
+            {fabrics_.length > 1 && (
+              <div className="mt-2 space-y-1">
+                {fabrics_.map((f) => {
+                  const lib = fabrics.find((x) => x.name === f.name);
+                  return (
+                    <div key={f.name} className="flex items-center gap-2 rounded-lg border border-sand px-2 py-1.5">
+                      {lib && <SwatchTile s={lib} className="h-[18px] w-[18px] shrink-0 overflow-hidden rounded border border-black/10" />}
+                      <span className="min-w-0 flex-1 truncate text-xs">{f.name}</span>
+                      <select
+                        value={f.part}
+                        onChange={(e) => setFabrics_((p) => p.map((x) => (x.name === f.name ? { ...x, part: e.target.value } : x)))}
+                        className="rounded-md border border-sand bg-transparent px-1.5 py-1 text-[11px] font-semibold outline-none focus:border-cognac"
+                      >
+                        {FABRIC_PARTS.map((pt) => <option key={pt} value={pt}>{pt}</option>)}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => setFabrics_((p) => p.filter((x) => x.name !== f.name))}
+                        title="Remove this fabric"
+                        className="shrink-0 px-1 text-stone hover:text-ink"
+                      >✕</button>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
