@@ -243,18 +243,34 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   const liftOn = checks.some((a) => isLift(a.label) && checkPick[a.label]);
   const leatherFabric = /leather/i.test(fabric);
 
-  // Ang piniling halaga ng isang choice group, hal. pick("Legs") → "Floating".
+  // Ang piniling halaga ng isang choice group. Ang paghahanap ay HINDI eksakto:
+  // ang team ay maaaring "Legs: Standard/Floating" ang isulat (group = "Legs")
+  // o "Floating Legs" lang (group = "Floating Legs"), kaya sinasapat na
+  // makapaloob ang salita. Kung eksakto ang hinahanap, tahimik na hindi
+  // tumatalab ang restriction sa mga item na iba ang pagkakasulat.
   const pick = (group: string) => {
-    const g = choiceGroups.find((x) => x.name.toLowerCase() === group.toLowerCase());
+    const q = group.toLowerCase();
+    const g = choiceGroups.find((x) => x.name.toLowerCase().includes(q));
     return g ? (choiceSel[g.name] ?? "") : "";
+  };
+  // Ang buong tekstong sinasagot ng isang grupo — kasama ang pangalan nito,
+  // dahil sa "None Headboard" ay ang PANGALAN mismo ang nagsasabi ng sagot.
+  const pickFull = (group: string) => {
+    const q = group.toLowerCase();
+    const g = choiceGroups.find((x) => x.name.toLowerCase().includes(q));
+    if (!g) return "";
+    const v = choiceSel[g.name] ?? "";
+    return v ? `${g.name} ${v}` : "";
   };
   // FLOATING LEGS = nakabitin ang frame, kaya walang mapaglalagyan ng anumang
   // storage (team, 2026-08-21).
-  const floatingLegs = /floating/i.test(pick("Legs"));
+  const floatingLegs = /floating/i.test(pickFull("legs"));
   // MATTRESS INSERT = ang kutson ay nakalubog sa frame; nauubos nito ang lalim
   // na kailangan ng drawer o pullout. Ang "None" ay hindi insert.
-  const mattressInsert = /^\s*(4|5|6)/.test(pick("Mattress Insert"));
-  const noHeadboard = /none/i.test(pick("Headboard"));
+  const mattressInsert = /(^|\s)(4|5|6)"/.test(pickFull("mattress insert"));
+  // Totoo kapag "None" ang sagot sa headboard, kahit "None Headboard" ang
+  // buong pangalan ng grupo at iyon din ang tanging pagpipilian.
+  const noHeadboard = /none/i.test(pickFull("headboard"));
   const isStorage = (l: string) => isLift(l) || isDrawer(l) || isPullout(l);
   const doubleWallOn = checks.some((a) => isDoubleWall(a.label) && checkPick[a.label]);
 
@@ -279,7 +295,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   function choiceBan(group: string, value: string): string | null {
     // WALANG HEADBOARD = walang mabibigyan ng pakpak, at wala ring maaaring
     // lumagpas dito (team, 2026-08-21).
-    if (/^winged$/i.test(group) && /^winged$/i.test(value) && noHeadboard) {
+    if (/wing/i.test(group) && /wing/i.test(value) && !/not|without|none/i.test(value) && noHeadboard) {
       return "needs a headboard";
     }
     // Ang storage na napili na ang humaharang sa floating legs at sa insert —
@@ -287,14 +303,14 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     const storagePicked = checks.some((a) => isStorage(a.label) && !!checkPick[a.label]);
     // Ang gilid ng footboard drawer ay walang saysay kung walang drawer, at
     // ang "Both" ay hindi kasya sa makikitid na sukat (team 2026-08-21).
-    if (/^footboard drawer$/i.test(group)) {
+    if (/footboard drawer/i.test(group)) {
       if (!checks.some((a) => isDrawer(a.label) && !!checkPick[a.label])) return "pick a drawer first";
       if (/both/i.test(value) && bedW <= 48) return `too narrow on ${size.split(" ")[0] || "this size"}`;
     }
-    if (/^legs$/i.test(group) && /floating/i.test(value) && storagePicked) {
+    if (/leg/i.test(group) && /floating/i.test(value) && storagePicked) {
       return "remove the storage add-on first";
     }
-    if (/^mattress insert$/i.test(group) && /^(4|5|6)/.test(value) && storagePicked) {
+    if (/mattress insert/i.test(group) && /^(4|5|6)/.test(value) && storagePicked) {
       return "remove the storage add-on first";
     }
     return null;
