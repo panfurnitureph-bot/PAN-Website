@@ -445,8 +445,16 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
 
   // ── Build summary (cart lines / quote ref) ──
   const pickedAddonLines = [
-    ...checks.filter((a) => isPicked(a.label)).map((a) => ({ label: a.label, price: a.price ?? 0 })),
-    ...pickedChoices.map((o) => ({ label: o.full, price: o.price ?? 0 })),
+    // Ang Double Walling ay may sariling pangkat na sa itaas (kapal, frame,
+    // sukat ng dingding) — ang checkbox label ay pag-uulit lang.
+    ...checks
+      .filter((a) => isPicked(a.label) && !isDoubleWall(a.label))
+      .map((a) => ({ label: a.label, price: a.price ?? 0 })),
+    // Ang "None" ay pagtanggi sa option, hindi sagot — walang saysay itong
+    // isulat sa sheet ("Mattress Insert: None" ay hindi nagsasabi ng gagawin).
+    ...pickedChoices
+      .filter((o) => !/^(none|not|without)/i.test(o.value))
+      .map((o) => ({ label: o.full, price: o.price ?? 0 })),
   ];
   const fieldLines = fields
     .filter((f) => (fieldVal[f.label] ?? "").trim())
@@ -527,8 +535,17 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     }
     setQuoteErr([]);
     setQuoteSending(true);
+    // ANG PAGKAKASUNOD-SUNOD AY AYON SA URI, hindi ayon sa pagkakasulat sa
+    // form: sukat muna, tapos tela, mga sukat ng bahagi, ang mga add-on, at
+    // panghuli ang dingding — magkakasama ang magkakauri kaya nababasa.
     const buildLines = [
       ...(size ? [{ label: `Size: ${size}`, price: sizes.find((s) => s.label === size)?.price ?? 0 }] : []),
+      ...fabrics_.map((f) => ({
+        label: f.part && f.part !== "Whole bed" ? `Fabric — ${f.part}: ${f.name}` : `Fabric: ${f.name}`,
+        price: 0,
+      })),
+      ...measureLines.map((l) => ({ label: l.label, price: 0 })),
+      ...pickedAddonLines.map((l) => ({ label: l.label, price: l.price })),
       ...(doubleWallOn
         ? [
             { label: `Double Walling: ${dwThick}"`, price: 0 },
@@ -542,12 +559,6 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             ...(dwAccent ? [{ label: "Gold Accent: Yes", price: 0 }] : []),
           ]
         : []),
-      ...fabrics_.map((f) => ({
-        label: f.part && f.part !== "Whole bed" ? `Fabric — ${f.part}: ${f.name}` : `Fabric: ${f.name}`,
-        price: 0,
-      })),
-      ...measureLines.map((l) => ({ label: l.label, price: 0 })),
-      ...pickedAddonLines.map((l) => ({ label: l.label, price: l.price })),
       ...fieldLines.map((l) => ({ label: l.label, price: 0 })),
     ];
     // Ang lugar na PINILI SA PAGE ang ipinapadala — basehan ng auto
