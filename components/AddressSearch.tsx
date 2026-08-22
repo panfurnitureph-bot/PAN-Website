@@ -28,10 +28,14 @@ type Suggestion = { id: string; main: string; secondary: string; source: "google
 
 export default function AddressSearch({
   onPick,
+  onClear,
   placeholder = "Bahay, eskwelahan, simbahan, o bayan…",
   label = "Saan ihahatid?",
 }: {
   onPick: (d: PlaceDetail) => void;
+  // Pagbura ng hanapan — dapat mawala rin ang address na pinunan nito, kung
+  // hindi ay may naiiwang lugar na hindi na tumutugma sa nakikita sa taas.
+  onClear?: () => void;
   placeholder?: string;
   label?: string;
 }) {
@@ -58,6 +62,9 @@ export default function AddressSearch({
     setQ(v);
     setHi(-1);
     if (timer.current) clearTimeout(timer.current);
+    // Binura nang manu-mano hanggang blangko — parehong kahulugan ng pagpindot
+    // sa ✕: ang address na pinunan ng hanapan ay hindi na dapat naroon.
+    if (!v.trim()) { setList([]); setOpen(false); onClear?.(); return; }
     if (v.trim().length < 2) { setList([]); setOpen(false); return; }
     // 280 ms: sapat para hindi tumawag kada letra, maikli para hindi maramdaman.
     timer.current = setTimeout(async () => {
@@ -130,7 +137,14 @@ export default function AddressSearch({
           />
           {busy && <span className="shrink-0 text-[10px] font-bold text-stone">…</span>}
           {!!q && !busy && (
-            <button type="button" onClick={() => { setQ(""); setList([]); setOpen(false); }} className="shrink-0 text-stone hover:text-ink" aria-label="Clear">✕</button>
+            <button
+              type="button"
+              onClick={() => { setQ(""); setList([]); setOpen(false); onClear?.(); }}
+              className="shrink-0 text-stone hover:text-ink"
+              aria-label="Clear"
+            >
+              ✕
+            </button>
           )}
         </div>
 

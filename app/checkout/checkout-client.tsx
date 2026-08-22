@@ -262,6 +262,20 @@ export default function CheckoutClient({
     }
   }
 
+  // Binura ang hanapan → mawawala rin ang lahat ng pinunan nito, pati ang
+  // shipping fee na nakasalalay sa bayan. Ang naiiwang bayad para sa bayang
+  // wala na sa form ay ang mismong bug na inaayos ng hanapang ito.
+  function clearPlace() {
+    setSearchNote("");
+    setRegion("");
+    setProvince("");
+    setCity("");
+    setBarangay("");
+    setAddress("");
+    setPostal("");
+    setPin(null);
+  }
+
   // Page ng tindahan sa Messenger — galing sa Facebook URL sa admin panel.
   const messengerPage = messengerHandle((site as any).social?.facebook);
 
@@ -789,7 +803,7 @@ export default function CheckoutClient({
                 dropdown sa ibaba ay para sa pag-aayos at para sa lugar na hindi
                 mahanap ng search. */}
             <div className="col-span-2 mb-1">
-              <AddressSearch onPick={applyPlace} />
+              <AddressSearch onPick={applyPlace} onClear={clearPlace} />
               {searchNote ? (
                 <p className="-mt-2 mb-3 rounded bg-cognac/10 px-3 py-2 text-[11px] font-medium leading-snug text-cognac">{searchNote}</p>
               ) : (

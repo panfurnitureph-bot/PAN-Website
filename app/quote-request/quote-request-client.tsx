@@ -153,6 +153,20 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
     }
   }
 
+  // Binura ang hanapan → mawawala rin ang lahat ng pinunan nito. Kung hindi,
+  // may naiiwang bayan at bayad na walang kaugnayan sa nakikita ng customer sa
+  // taas — at wala siyang paraan para malaman kung alin ang totoo.
+  function clearPlace() {
+    setSearchNote("");
+    setRegion("");
+    setProvince("");
+    setCity("");
+    setBarangay("");
+    setStreet("");
+    setPostal("");
+    setPin(null);
+  }
+
   async function send() {
     // WALANG MAAGANG RETURN DITO. Ang naunang `if (!handle) return` ay
     // tumitigil BAGO ang relay papunta sa IMS — kaya nang ang Facebook sa
@@ -382,7 +396,7 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
                 at ang shipping fee. Ang mga dropdown ay nananatili para sa
                 pag-aayos — at para sa lugar na hindi mahanap ng search. */}
             <div className="py-1">
-              <AddressSearch onPick={applyPlace} />
+              <AddressSearch onPick={applyPlace} onClear={clearPlace} />
               {searchNote ? (
                 <p className="-mt-1 mb-2 rounded bg-cognac/10 px-3 py-2 text-[11px] font-medium leading-snug text-cognac">{searchNote}</p>
               ) : (
