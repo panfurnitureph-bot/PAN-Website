@@ -138,6 +138,16 @@ export default function ProductDetail({
     // Itago LANG kung walang presyo (0) — ang may presyo, laging lumalabas
     // sa LAHAT ng size (hindi na nakadepende sa laki ng halaga).
     .filter((a) => a.price > 0);
+  // 4 PCS BUILT-IN SIDE DRAWERS (2026-08-23): Double/Full, Queen, King lang -
+  // ang gating ay nasa bySize ng add-on (price 0 sa ibang sukat = nakatago sa
+  // filter sa itaas). Dito ang "no other add-ons will reflect": kapag ito ang
+  // pinili, bawal ang ibang add-on sa parehong group, at kabaligtaran.
+  const isFourDrawers = (a: { label: string }) => /(^|\D)4\s*(pcs\.?\s*)?(built-?in\s*)?(side\s*)?drawers?\b/i.test(a.label);
+  const grpOf = (a: { group?: string }) => a.group || "Add-ons";
+  const fourAddOn = addOns.find(isFourDrawers);
+  const fourOn = !!fourAddOn && pickedAddOns.includes(fourAddOn.id);
+  const isSibling = (a: { id: string; group?: string }) => !!fourAddOn && a.id !== fourAddOn.id && grpOf(a) === grpOf(fourAddOn);
+  const siblingOn = addOns.some((a) => isSibling(a) && pickedAddOns.includes(a.id));
   // Dami para sa per-unit na add-on (hal. karagdagang headboard height /ft)
   const [addOnQty, setAddOnQty] = useState<Record<string, number>>({});
   // Aling add-on group ang bukas — LAHAT NAKA-MINIMIZE sa unang load
@@ -553,27 +563,30 @@ export default function ProductDetail({
               <div className={`space-y-2 ${open ? "" : "hidden"}`}>
                 {items.map((a) => {
                   const on = pickedAddOns.includes(a.id);
+                  const blocked = (fourOn && isSibling(a)) || (isFourDrawers(a) && siblingOn);
                   return (
                     <label
                       key={a.id}
-                      className={`flex items-center gap-3 border rounded px-4 py-3 cursor-pointer transition-colors ${
-                        on ? "border-cognac bg-cognac/5" : "border-stone/30 hover:border-stone/60"
+                      className={`flex items-center gap-3 border rounded px-4 py-3 transition-colors ${
+                        blocked ? "border-stone/20 opacity-50 cursor-not-allowed" : on ? "border-cognac bg-cognac/5 cursor-pointer" : "border-stone/30 hover:border-stone/60 cursor-pointer"
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={on}
+                        disabled={blocked}
                         onChange={() =>
                           setPickedAddOns((prev) =>
                             prev.includes(a.id)
                               ? prev.filter((x) => x !== a.id)
-                              : [...prev, a.id]
+                              : isFourDrawers(a) ? [...prev.filter((x) => !addOns.some((o) => o.id === x && isSibling(o))), a.id] : [...prev, a.id]
                           )
                         }
                         className="accent-cognac w-4 h-4"
                       />
                       <span className="flex-1">
                         <span className="block text-sm font-medium">{a.label}</span>
+                        {blocked && !on && (<span className="block text-xs text-stone">{isFourDrawers(a) ? "remove the other add-ons first" : "not available with 4 pcs drawers"}</span>)}
                         {a.detail && (
                           <span className="block text-xs text-stone">{a.detail}</span>
                         )}

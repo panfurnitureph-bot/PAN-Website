@@ -306,9 +306,14 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   const isLift = (l: string) => /lift/i.test(l);
   const isDrawer = (l: string) => /drawer/i.test(l);
   const isPullout = (l: string) => /pullout/i.test(l);
+  // 4 built-in drawers (2026-08-23) - "4 built-in drawers" sa IMS config, "4 pcs
+  // Built-in Side Drawers" sa product page. Katumbas ng lib/bed-rules sa IMS.
+  const isFourDrawers = (l: string) => /(^|\D)4\s*(pcs\.?\s*)?(built-?in\s*)?(side\s*)?drawers?\b/i.test(l);
   const isFootboard = (l: string) => /tufted|footboard/i.test(l);
   const isDoubleWall = (l: string) => /double wall/i.test(l);
   const liftOn = checks.some((a) => isLift(a.label) && checkPick[a.label]);
+  const fourOn = checks.some((a) => isFourDrawers(a.label) && !!checkPick[a.label]);
+  const otherAddonOn = checks.some((a) => !isFourDrawers(a.label) && !!checkPick[a.label]);
   const leatherFabric = fabrics_.some((f) => /leather/i.test(f.name));
 
   // Ang piniling halaga ng isang choice group. Ang paghahanap ay HINDI eksakto:
@@ -357,6 +362,12 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   const platformForced = doubleWallOn || liftOn;
 
   function banReason(label: string): string | null {
+    // 4 BUILT-IN DRAWERS: Full Double, Queen, King lang; at "no other add-ons
+    // will reflect after 4 drawers" - magkabilang panig ang harang para hindi
+    // makalusot ang isa habang nakapili ang isa.
+    if (isFourDrawers(label) && bedW < 54) return "Full Double, Queen or King only";
+    if (fourOn && !isFourDrawers(label)) return "no other add-ons will reflect with 4 built-in drawers";
+    if (isFourDrawers(label) && otherAddonOn) return "remove the other add-ons first";
     if (isLift(label) && leatherFabric) return "not available with leather fabric — change the fabric first";
     if ((isDrawer(label) || isPullout(label)) && liftOn) return "not available with Lift Storage (Tufted only)";
     if (isStorage(label) && floatingLegs) return "not available with floating legs — nothing to mount it on";
@@ -1163,6 +1174,11 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
               );
             })}
           </div>
+          {fourOn && (
+            <p className="mt-2 rounded bg-linen px-3 py-2 text-xs text-stone">
+              4 built-in drawers — no other add-ons will reflect.
+            </p>
+          )}
           {liftOn && (
             <p className="mt-2 rounded bg-linen px-3 py-2 text-xs text-stone">
               Lift Storage — Platform Style base; drawers/pullout are no longer available (Tufted only).

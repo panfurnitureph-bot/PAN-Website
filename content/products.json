@@ -623,6 +623,19 @@
         "group": "Add-ons"
       },
       {
+        "id": "side-drawers-4",
+        "label": "4 pcs Built-in Side Drawers",
+        "detail": "No other add-ons will reflect after 4 drawers",
+        "price": 0,
+        "bySize": {
+          "Double/Full": { "price": 8000 },
+          "Queen": { "price": 8000 },
+          "King": { "price": 8000 },
+          "King 2": { "price": 8000 }
+        },
+        "group": "Add-ons"
+      },
+      {
         "id": "pull-out-bed",
         "label": "Pull Out Bed",
         "detail": "",
@@ -756,6 +769,19 @@
         "group": "Add-ons"
       },
       {
+        "id": "side-drawers-4",
+        "label": "4 pcs Built-in Side Drawers",
+        "detail": "No other add-ons will reflect after 4 drawers",
+        "price": 0,
+        "bySize": {
+          "Double/Full": { "price": 8000 },
+          "Queen": { "price": 8000 },
+          "King": { "price": 8000 },
+          "King 2": { "price": 8000 }
+        },
+        "group": "Add-ons"
+      },
+      {
         "id": "pull-out-bed",
         "label": "Pull Out Bed",
         "detail": "",
@@ -886,6 +912,19 @@
         "label": "2 pcs Built-in Side Drawers",
         "detail": "",
         "price": 4000,
+        "group": "Add-ons"
+      },
+      {
+        "id": "side-drawers-4",
+        "label": "4 pcs Built-in Side Drawers",
+        "detail": "No other add-ons will reflect after 4 drawers",
+        "price": 0,
+        "bySize": {
+          "Double/Full": { "price": 8000 },
+          "Queen": { "price": 8000 },
+          "King": { "price": 8000 },
+          "King 2": { "price": 8000 }
+        },
         "group": "Add-ons"
       },
       {
@@ -1092,6 +1131,19 @@
         "label": "2 pcs Built-in Side Drawers",
         "detail": "",
         "price": 4000,
+        "group": "Add-ons"
+      },
+      {
+        "id": "side-drawers-4",
+        "label": "4 pcs Built-in Side Drawers",
+        "detail": "No other add-ons will reflect after 4 drawers",
+        "price": 0,
+        "bySize": {
+          "Double/Full": { "price": 8000 },
+          "Queen": { "price": 8000 },
+          "King": { "price": 8000 },
+          "King 2": { "price": 8000 }
+        },
         "group": "Add-ons"
       },
       {
@@ -1352,6 +1404,19 @@
         "label": "2 pcs Built-in Side Drawers",
         "detail": "",
         "price": 4000,
+        "group": "Add-ons"
+      },
+      {
+        "id": "side-drawers-4",
+        "label": "4 pcs Built-in Side Drawers",
+        "detail": "No other add-ons will reflect after 4 drawers",
+        "price": 0,
+        "bySize": {
+          "Double/Full": { "price": 8000 },
+          "Queen": { "price": 8000 },
+          "King": { "price": 8000 },
+          "King 2": { "price": 8000 }
+        },
         "group": "Add-ons"
       },
       {
