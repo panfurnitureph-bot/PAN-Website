@@ -23,6 +23,8 @@ import CardForm from "@/components/CardForm";
 import RedirectCountdown from "@/components/RedirectCountdown";
 import MessengerRedirect from "@/components/MessengerRedirect";
 import StreetSuggest from "@/components/StreetSuggest";
+import AddressSearch, { type PlaceDetail } from "@/components/AddressSearch";
+import { matchCity } from "@/lib/city-match";
 
 import { messengerHandle, messengerUrl } from "@/lib/messenger";
 import { DEFAULT_BED_SIZES } from "@/components/FrameDiagram";
@@ -221,6 +223,44 @@ export default function CheckoutClient({
 }) {
   const { cart, clearCart } = useStore();
   const SHIP_LOCATIONS: ShipProvince[] = (site as any).shipping?.provinces ?? [];
+
+  // ── ISANG PINDOT MULA SA HANAPAN ──────────────────────────────────────────
+  // BUG NA INAAYOS NITO (2026-08-23): ang StreetSuggest sa ibaba ay nagtatakda
+  // lang ng pin at ng teksto ng address — hindi nito ginagalaw ang Province at
+  // City. Kaya ang customer na naghanap ng "Bano Street, Pakil, Laguna" ay may
+  // Street na Pakil, Laguna PERO Province/City na naiwang Batangas / Mataas na
+  // Kahoy — at sinisingil ng ₱5,000 para sa maling bayan. Walang nagsasabi sa
+  // kanya, at walang nagsasabi sa atin hangga't hindi na dumarating ang truck.
+  const [searchNote, setSearchNote] = useState("");
+  function applyPlace(d: PlaceDetail) {
+    setSearchNote("");
+    if (d.postal) setPostal(d.postal);
+    if (d.barangay) setBarangay(d.barangay);
+    if (d.street || d.name) setAddress(d.street || d.name);
+
+    const prov = SHIP_LOCATIONS.find((p) => p.name.toLowerCase() === (d.province || "").toLowerCase());
+    if (prov) {
+      setProvince(prov.name);
+      setRegion(REGION_OF[prov.name] ?? "");
+      const hit = matchCity(d.city, prov.cities);
+      if (hit) setCity(hit);
+      else {
+        // WALANG HINUHULAANG BAYAD. Mas mabuting blangko kaysa sa singil para sa
+        // ibang bayan — ang mali ay nakikita lang sa araw ng delivery.
+        setCity("");
+        setSearchNote(`Wala pa kaming delivery sa ${d.city || "lugar na ito"} — piliin ang pinakamalapit na bayan sa ibaba.`);
+      }
+    } else if (d.province) {
+      setProvince("");
+      setCity("");
+      setSearchNote(`Wala pa kaming delivery sa ${d.province} — nasa Metro Manila at Calabarzon lang kami sa ngayon.`);
+    }
+
+    if (Number.isFinite(d.lat) && Number.isFinite(d.lng)) {
+      setPin({ lat: d.lat as number, lng: d.lng as number, address: d.formatted || d.name });
+      setErrors((e) => ({ ...e, address: "" }));
+    }
+  }
 
   // Page ng tindahan sa Messenger — galing sa Facebook URL sa admin panel.
   const messengerPage = messengerHandle((site as any).social?.facebook);
@@ -743,6 +783,22 @@ export default function CheckoutClient({
                 <option value="PH">Philippines</option>
               </select>
             </label>
+            {/* ── HANAPAN MUNA ────────────────────────────────────────────
+                Isang pindot at napupunan ang Province, City, Barangay, Postal,
+                Street at ang pin — kasama ang tamang shipping fee. Ang mga
+                dropdown sa ibaba ay para sa pag-aayos at para sa lugar na hindi
+                mahanap ng search. */}
+            <div className="col-span-2 mb-1">
+              <AddressSearch onPick={applyPlace} />
+              {searchNote ? (
+                <p className="-mt-2 mb-3 rounded bg-cognac/10 px-3 py-2 text-[11px] font-medium leading-snug text-cognac">{searchNote}</p>
+              ) : (
+                <p className="-mt-2 mb-3 text-[11px] leading-snug text-stone">
+                  I-type ang bahay, eskwelahan, simbahan o bayan — napupunan nito ang address sa ibaba.
+                </p>
+              )}
+            </div>
+
             <label className="block mb-3 col-span-2 sm:col-span-1">
               <span className="block text-xs font-bold text-stone mb-1">Region</span>
               <select
@@ -834,6 +890,10 @@ export default function CheckoutClient({
               value={address}
               onChange={setAddress}
               onPick={(loc) => {
+                // Ang pagpili rito ay HINDI nagtatakda ng bayan — naka-scope na
+                // ito sa napiling Province/City sa itaas, kaya ang pin lang ang
+                // gumagalaw. Ang paghahanap na nagpapalit ng bayan ay nasa
+                // AddressSearch sa itaas ng form.
                 setPin({ lat: loc.lat, lng: loc.lng, address: loc.address });
                 setErrors((e) => ({ ...e, address: "" }));
               }}

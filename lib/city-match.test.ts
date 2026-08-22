@@ -48,3 +48,24 @@ describe("matchCity", () => {
     expect(feeFor("Davao City", of_("Laguna"))).toBeNull();
   });
 });
+
+// ANG BUG NA INAYOS (2026-08-23): sa checkout, ang paghahanap ng "Bano Street,
+// Pakil, Laguna" ay nagtatakda lang ng Street — naiwan ang Province/City sa
+// Batangas / Mataas na Kahoy, at sinisingil ang customer ng ₱5,000 para sa
+// maling bayan. Ang matcher ang bahagi nito: dapat nitong makita ang Pakil sa
+// Laguna, at HINDI ito dapat tumugma sa anumang bayan sa Batangas.
+describe("the Pakil case", () => {
+  it("finds Pakil in Laguna", () => {
+    expect(matchCity("Pakil", of_("Laguna"))).toBe("Pakil");
+    expect(feeFor("Pakil", of_("Laguna"))).not.toBeNull();
+  });
+
+  it("never matches Pakil to a Batangas town", () => {
+    expect(matchCity("Pakil", of_("Batangas"))).toBeNull();
+  });
+
+  it("keeps Paete and Pakil apart — neighbours with similar names", () => {
+    expect(matchCity("Paete", of_("Laguna"))).toBe("Paete");
+    expect(matchCity("Pakil", of_("Laguna"))).toBe("Pakil");
+  });
+});
