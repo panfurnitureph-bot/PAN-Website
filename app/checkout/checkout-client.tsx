@@ -248,12 +248,12 @@ export default function CheckoutClient({
         // WALANG HINUHULAANG BAYAD. Mas mabuting blangko kaysa sa singil para sa
         // ibang bayan — ang mali ay nakikita lang sa araw ng delivery.
         setCity("");
-        setSearchNote(`Wala pa kaming delivery sa ${d.city || "lugar na ito"} — piliin ang pinakamalapit na bayan sa ibaba.`);
+        setSearchNote(`We don't deliver to ${d.city || "this area"} yet — pick the nearest town below.`);
       }
     } else if (d.province) {
       setProvince("");
       setCity("");
-      setSearchNote(`Wala pa kaming delivery sa ${d.province} — nasa Metro Manila at Calabarzon lang kami sa ngayon.`);
+      setSearchNote(`We don't deliver to ${d.province} yet — we cover Metro Manila and Calabarzon for now.`);
     }
 
     if (Number.isFinite(d.lat) && Number.isFinite(d.lng)) {
@@ -808,7 +808,7 @@ export default function CheckoutClient({
                 <p className="-mt-2 mb-3 rounded bg-cognac/10 px-3 py-2 text-[11px] font-medium leading-snug text-cognac">{searchNote}</p>
               ) : (
                 <p className="-mt-2 mb-3 text-[11px] leading-snug text-stone">
-                  I-type ang bahay, eskwelahan, simbahan o bayan — napupunan nito ang address sa ibaba.
+                  Type a house, school, church, or town — this fills in the address below.
                 </p>
               )}
             </div>

@@ -29,8 +29,8 @@ type Suggestion = { id: string; main: string; secondary: string; source: "google
 export default function AddressSearch({
   onPick,
   onClear,
-  placeholder = "Bahay, eskwelahan, simbahan, o bayan…",
-  label = "Saan ihahatid?",
+  placeholder = "House, school, church, or town…",
+  label = "Where should we deliver?",
 }: {
   onPick: (d: PlaceDetail) => void;
   // Pagbura ng hanapan — dapat mawala rin ang address na pinunan nito, kung
@@ -152,7 +152,7 @@ export default function AddressSearch({
           <div className="absolute left-0 right-0 top-[calc(100%+4px)] z-30 overflow-hidden rounded border border-stone/30 bg-white shadow-lg">
             {list.length === 0 ? (
               <p className="px-3 py-3 text-xs text-stone">
-                Walang nahanap. Subukan ang pangalan ng bayan, o punan ang address sa ibaba.
+                No matches. Try the town name, or fill in the address below.
               </p>
             ) : (
               list.map((s, i) => (

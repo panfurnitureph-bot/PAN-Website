@@ -138,12 +138,12 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
       if (hit) setCity(hit);
       else {
         setCity("");
-        setSearchNote(`Wala pa kaming delivery sa ${d.city || "lugar na ito"} — piliin ang pinakamalapit na bayan sa ibaba.`);
+        setSearchNote(`We don't deliver to ${d.city || "this area"} yet — pick the nearest town below.`);
       }
     } else if (d.province) {
       setProvince("");
       setCity("");
-      setSearchNote(`Wala pa kaming delivery sa ${d.province} — nasa Metro Manila at Calabarzon lang kami sa ngayon.`);
+      setSearchNote(`We don't deliver to ${d.province} yet — we cover Metro Manila and Calabarzon for now.`);
     }
 
     // Ang pin ay dumadala sa mapa sa napiling lugar; ang customer ang mag-a-adjust
@@ -401,7 +401,7 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
                 <p className="-mt-1 mb-2 rounded bg-cognac/10 px-3 py-2 text-[11px] font-medium leading-snug text-cognac">{searchNote}</p>
               ) : (
                 <p className="-mt-1 mb-2 text-[11px] leading-snug text-stone">
-                  I-type ang bahay, eskwelahan, simbahan o bayan — napupunan nito ang address sa ibaba. Puwede ring punan nang manu-mano.
+                  Type a house, school, church, or town — this fills in the address below. Puwede ring punan nang manu-mano.
                 </p>
               )}
             </div>
