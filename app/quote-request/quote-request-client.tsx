@@ -5,6 +5,8 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import StreetSuggest from "@/components/StreetSuggest";
+import AddressSearch, { type PlaceDetail } from "@/components/AddressSearch";
+import { matchCity } from "@/lib/city-match";
 import { groupBuildLines } from "@/lib/build-groups";
 import { pinMismatch } from "@/lib/pin-match";
 import type { PickedLocation } from "@/components/LocationPicker";
@@ -113,6 +115,43 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
   // Ang buong address, sa pagkakasunod na sinusulat sa Pilipinas — ito ang
   // napupunta sa quotation at siyang binabasa ng delivery team.
   const fullAddress = [street.trim(), barangay, city, province, postal.trim()].filter(Boolean).join(", ");
+
+  // ── ISANG PINDOT MULA SA HANAPAN ──────────────────────────────────────────
+  // Ang buong address ay pinupunan mula sa isang napiling lugar. Ang mahirap na
+  // bahagi ay ang BAYAN: ang shipping fee ay galing sa listahan ng admin, at ang
+  // pagkakasulat doon ay hindi laging pareho ng sinasabi ng Google ("Santa Cruz"
+  // vs "Sta Cruz / Pila"). Ang matchCity ang nagtutugma; kapag talagang walang
+  // katugma, WALANG ipinapalagay na bayad — nananatiling blangko ang City at ang
+  // dropdown ang bahala, kaysa magpakita ng maling halaga.
+  const [searchNote, setSearchNote] = useState("");
+  function applyPlace(d: PlaceDetail) {
+    setSearchNote("");
+    if (d.postal) setPostal(d.postal);
+    if (d.barangay) setBarangay(d.barangay);
+    if (d.street || d.name) setStreet(d.street || d.name);
+
+    const prov = PROVINCES.find((p) => p.name.toLowerCase() === (d.province || "").toLowerCase());
+    if (prov) {
+      setProvince(prov.name);
+      setRegion(REGION_OF[prov.name] ?? "");
+      const hit = matchCity(d.city, prov.cities);
+      if (hit) setCity(hit);
+      else {
+        setCity("");
+        setSearchNote(`Wala pa kaming delivery sa ${d.city || "lugar na ito"} — piliin ang pinakamalapit na bayan sa ibaba.`);
+      }
+    } else if (d.province) {
+      setProvince("");
+      setCity("");
+      setSearchNote(`Wala pa kaming delivery sa ${d.province} — nasa Metro Manila at Calabarzon lang kami sa ngayon.`);
+    }
+
+    // Ang pin ay dumadala sa mapa sa napiling lugar; ang customer ang mag-a-adjust
+    // papunta sa mismong bahay — doon nagsisimula ang tumpak na address.
+    if (Number.isFinite(d.lat) && Number.isFinite(d.lng)) {
+      setPin({ lat: d.lat as number, lng: d.lng as number, address: d.formatted || d.name });
+    }
+  }
 
   async function send() {
     // WALANG MAAGANG RETURN DITO. Ang naunang `if (!handle) return` ay
@@ -336,6 +375,21 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
               <select value="PH" disabled className="w-full rounded-lg border border-sand bg-sand/40 px-3 py-2 text-sm text-stone">
                 <option value="PH">Philippines</option>
               </select>
+            </div>
+
+            {/* ── HANAPAN MUNA ────────────────────────────────────────────
+                Isang pindot at napupunan ang lahat ng nasa ibaba, pati ang pin
+                at ang shipping fee. Ang mga dropdown ay nananatili para sa
+                pag-aayos — at para sa lugar na hindi mahanap ng search. */}
+            <div className="py-1">
+              <AddressSearch onPick={applyPlace} />
+              {searchNote ? (
+                <p className="-mt-1 mb-2 rounded bg-cognac/10 px-3 py-2 text-[11px] font-medium leading-snug text-cognac">{searchNote}</p>
+              ) : (
+                <p className="-mt-1 mb-2 text-[11px] leading-snug text-stone">
+                  I-type ang bahay, eskwelahan, simbahan o bayan — napupunan nito ang address sa ibaba. Puwede ring punan nang manu-mano.
+                </p>
+              )}
             </div>
 
             {/* EKSAKTONG HANAY NG CHECKOUT: Region → Province → City → Barangay
