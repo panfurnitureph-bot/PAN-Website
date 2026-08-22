@@ -96,6 +96,10 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
     fetch("/barangays.json").then((r) => r.json()).then(setBrgyData).catch(() => {});
   }, []);
   const [sending, setSending] = useState(false);
+  // Ang tanging bagay na nakikita ng customer kapag hindi tumuloy ang
+  // Messenger. Kung wala ito, ang pagpindot sa Send ay walang epekto sa
+  // screen — at walang paraang malaman kung nakarating ba o hindi.
+  const [sendErr, setSendErr] = useState("");
   const [errs, setErrs] = useState<Record<string, string>>({});
 
   const PROVINCES =
@@ -111,7 +115,16 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
   const fullAddress = [street.trim(), barangay, city, province, postal.trim()].filter(Boolean).join(", ");
 
   async function send() {
-    if (!handle) return;
+    // WALANG MAAGANG RETURN DITO. Ang naunang `if (!handle) return` ay
+    // tumitigil BAGO ang relay papunta sa IMS — kaya nang ang Facebook sa
+    // site.json ay naiwang "https://facebook.com" (walang pangalan ng page),
+    // ang pagpindot sa Send ay walang ginagawa: walang Messenger, WALANG MTO
+    // row, at walang mensahe sa customer. Ang buong build na pinaghirapan ay
+    // nawawala nang tahimik.
+    //
+    // Ang request ay dapat MAKARATING SA IMS kahit hindi mabuksan ang
+    // Messenger — doon ito nagiging quotation, at ang thread ay puwedeng
+    // habulin mamaya sa mobile o sa Facebook name.
     // LAHAT KAILANGAN dito (maliban sa landmark): dito na ipinapadala ang
     // request, at ang eksaktong address ang nagtatakda ng delivery fee sa
     // quotation. Wala nang ibang pagkakataong itanong ito.
@@ -126,6 +139,7 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
     if (!postal.trim()) e.postal = "Required";
     setErrs(e);
     if (Object.keys(e).length) return;
+    setSendErr("");
     setSending(true);
     const slots = quote.map(({ id: _id, summary: _s, state: _st, ...rest }) => rest);
     let mtoRef: string | null = null;
@@ -164,9 +178,28 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
       /* relay down — Messenger link pa rin ang fallback */
     }
     setSending(false);
+
+    // HINDI NAKARATING SA AMIN: huwag linisin ang listahan. Ang pagbura ng
+    // build na walang nakatanggap ay nagtatapon ng gawaing hindi na mababawi —
+    // walang draft, walang history, wala nang mababalikan ang customer.
+    if (!mtoRef) {
+      setSendErr(
+        "We could not send your request just now. Your builds are still here — please check your connection and try again.",
+      );
+      return;
+    }
+
     // Naipadala na — linisin, para hindi maisama sa susunod na request.
     clearQuote();
-    const url = messengerUrl(handle, mtoRef ? `mto_${mtoRef}` : `mto_${slots[0]?.slug ?? "request"}`);
+
+    // WALANG MESSENGER PERO NASA AMIN NA: ang request ay ligtas. Sabihin ito,
+    // huwag mag-iwan ng blangkong pahina — akala ng customer ay nabigo ang lahat.
+    if (!handle) {
+      setSendErr(`Request ${mtoRef} received. Our team will reply to you shortly.`);
+      return;
+    }
+
+    const url = messengerUrl(handle, `mto_${mtoRef}`);
     if (/Android|iPhone|iPad/i.test(navigator.userAgent)) window.location.href = url;
     else window.open(url, "_blank", "noopener,noreferrer");
   }
@@ -470,15 +503,22 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
             </p>
           )}
 
-          {handle && (
-            <button
-              type="button"
-              onClick={() => void send()}
-              disabled={sending}
-              className="mt-3 flex w-full items-center justify-center rounded bg-espresso px-4 py-3 text-base font-medium text-cream transition-colors hover:bg-cognac disabled:cursor-not-allowed disabled:bg-stone/50"
-            >
-              {sending ? "Sending…" : `Send request · ${quote.length} ${quote.length === 1 ? "product" : "products"}`}
-            </button>
+          {/* LAGING NANDITO ANG BUTON. Naka-kandado ito dati sa `handle` —
+              kapag walang maayos na Facebook page sa site.json, walang buton,
+              at ang request ay hindi man lang nakakarating sa IMS. Ang
+              Messenger ay ang huling hakbang, hindi ang kundisyon. */}
+          <button
+            type="button"
+            onClick={() => void send()}
+            disabled={sending}
+            className="mt-3 flex w-full items-center justify-center rounded bg-espresso px-4 py-3 text-base font-medium text-cream transition-colors hover:bg-cognac disabled:cursor-not-allowed disabled:bg-stone/50"
+          >
+            {sending ? "Sending…" : `Send request · ${quote.length} ${quote.length === 1 ? "product" : "products"}`}
+          </button>
+          {sendErr && (
+            <p className="mt-2 rounded bg-linen px-3 py-2 text-xs font-medium text-ink" role="alert">
+              {sendErr}
+            </p>
           )}
           <Link
             href="/collections/bed"
