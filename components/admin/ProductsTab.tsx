@@ -15,9 +15,9 @@ type Product = Record<string, any>;
 
 const CATEGORIES = [
   "bed", "sofa-bed", "sofa", "dining-table", "dining-chairs",
-  "dining-set", "side-table", "ottoman-ph", "kurtina-ni-pan",
+  "dining-set", "side-table", "ottoman-ph",
   "mattress", "customized-bed", "accent-chair",
-  "barstool", "swivel-chair", "wall-padding",
+  "barstool", "swivel-chair",
 ];
 
 export default function ProductsTab({

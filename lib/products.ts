@@ -35,6 +35,7 @@ export type Product = {
   // nav group nito — dito hinahango ng site ang collections/nav/tiles.
   categoryTitle?: string;
   categoryGroups?: string[];
+  categoryListed?: boolean; // false = may page pero wala sa nav/tiles/footer (hal. Wall Padding)
   sku?: string; // internal lang — hindi ipinapakita sa customer
   stock?: number; // 0 = Out of stock sa product page
   colors: string[];
@@ -145,7 +146,7 @@ export function primeContent(next: {
 export const COLLECTIONS: Record<string, { title: string; categories: string[] }> = {
   "new-in": { title: "New In", categories: [] }, // special: lahat ng isNew
   // "new-*" = mga BAGONG items lang ng grupong yun (isNew filter)
-  "new-beds": { title: "New Beds", categories: ["bed", "sofa-bed", "mattress", "customized-bed", "wall-padding"] },
+  "new-beds": { title: "New Beds", categories: ["bed", "sofa-bed", "mattress", "customized-bed"] },
   "new-sofas": { title: "New Sofas", categories: ["sofa", "sofa-bed", "accent-chair"] },
   "new-dining": {
     title: "New Dining",
@@ -153,10 +154,10 @@ export const COLLECTIONS: Record<string, { title: string; categories: string[] }
   },
   "new-living": {
     title: "New Living",
-    categories: ["sofa", "accent-chair", "side-table", "ottoman-ph", "kurtina-ni-pan", "swivel-chair", "wall-padding"],
+    categories: ["sofa", "accent-chair", "side-table", "ottoman-ph", "swivel-chair"],
   },
   // --- Grupo (para sa top nav) ---
-  beds: { title: "Beds", categories: ["bed", "sofa-bed", "mattress", "customized-bed", "wall-padding"] },
+  beds: { title: "Beds", categories: ["bed", "sofa-bed", "mattress", "customized-bed"] },
   sofas: { title: "Sofas", categories: ["sofa", "sofa-bed", "accent-chair"] },
   dining: {
     title: "Dining",
@@ -164,7 +165,7 @@ export const COLLECTIONS: Record<string, { title: string; categories: string[] }
   },
   living: {
     title: "Living",
-    categories: ["sofa", "accent-chair", "side-table", "ottoman-ph", "kurtina-ni-pan", "swivel-chair", "wall-padding"],
+    categories: ["sofa", "accent-chair", "side-table", "ottoman-ph", "swivel-chair"],
   },
   // --- Opisyal na categories — PAREHONG PANGALAN ng IMS MTO categories
   //     (lib/categories.ts sa IMS); ang slug ay URL lang, hindi binabago. ---
@@ -176,7 +177,6 @@ export const COLLECTIONS: Record<string, { title: string; categories: string[] }
   "dining-set": { title: "Dining Set", categories: ["dining-set"] },
   "side-table": { title: "Side Table", categories: ["side-table"] },
   "ottoman-ph": { title: "Ottoman", categories: ["ottoman-ph"] },
-  "kurtina-ni-pan": { title: "Kurtina ni PAN", categories: ["kurtina-ni-pan"] },
   mattress: { title: "Mattress", categories: ["mattress"] },
   "customized-bed": { title: "Custom Bed", categories: ["customized-bed"] },
   "accent-chair": { title: "Accent Chair", categories: ["accent-chair"] },
@@ -184,7 +184,6 @@ export const COLLECTIONS: Record<string, { title: string; categories: string[] }
   // sa IMS publish, kaya ang na-publish doon ay lumalabas dito agad.
   barstool: { title: "Barstool", categories: ["barstool"] },
   "swivel-chair": { title: "Swivel Chair", categories: ["swivel-chair"] },
-  "wall-padding": { title: "Wall Padding", categories: ["wall-padding"] },
 };
 
 // Main nav — may children = lalabas na mega-menu sa hover
@@ -212,7 +211,6 @@ export const NAV_LINKS: NavLink[] = [
       { label: "Sofa Bed", href: "/collections/sofa-bed" },
       { label: "Mattress", href: "/collections/mattress" },
       { label: "Custom Bed", href: "/collections/customized-bed" },
-      { label: "Wall Padding", href: "/collections/wall-padding" },
     ],
   },
   {
@@ -243,10 +241,8 @@ export const NAV_LINKS: NavLink[] = [
       { label: "All Living", href: "/collections/living" },
       { label: "Side Table", href: "/collections/side-table" },
       { label: "Ottoman", href: "/collections/ottoman-ph" },
-      { label: "Kurtina ni PAN", href: "/collections/kurtina-ni-pan" },
       { label: "Accent Chair", href: "/collections/accent-chair" },
       { label: "Swivel Chair", href: "/collections/swivel-chair" },
-      { label: "Wall Padding", href: "/collections/wall-padding" },
     ],
   },
 ];
@@ -261,13 +257,11 @@ export const CATEGORY_TILES = [
   { label: "Dining Set", slug: "dining-set" },
   { label: "Side Table", slug: "side-table" },
   { label: "Ottoman", slug: "ottoman-ph" },
-  { label: "Kurtina ni PAN", slug: "kurtina-ni-pan" },
   { label: "Mattress", slug: "mattress" },
   { label: "Custom Bed", slug: "customized-bed" },
   { label: "Accent Chair", slug: "accent-chair" },
   { label: "Barstool", slug: "barstool" },
   { label: "Swivel Chair", slug: "swivel-chair" },
-  { label: "Wall Padding", slug: "wall-padding" },
 ];
 
 // ---------- Categories follow the IMS ----------
@@ -285,6 +279,9 @@ export function syncCategoriesFromProducts(list: Product[]): void {
     // 1) sariling collection ng category
     if (!COLLECTIONS[slug]) COLLECTIONS[slug] = { title, categories: [slug] };
     else if (p.categoryTitle && COLLECTIONS[slug].title !== title) COLLECTIONS[slug].title = title;
+    // Hindi nakalista (IMS: listed=false) → may /collections/<slug> pa rin,
+    // pero wala sa nav, tiles at footer.
+    if (p.categoryListed === false) continue;
     // 2) mga group (Beds/Sofas/Dining/Living + New *)
     for (const g of p.categoryGroups ?? []) {
       const grp = COLLECTIONS[g];

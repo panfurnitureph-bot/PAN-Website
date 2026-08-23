@@ -18,12 +18,10 @@ const FOOTER_COLUMNS = [
       { label: "Dining", href: "/collections/dining" },
       { label: "Side Table", href: "/collections/side-table" },
       { label: "Ottoman", href: "/collections/ottoman-ph" },
-      { label: "Kurtina ni PAN", href: "/collections/kurtina-ni-pan" },
       { label: "Mattress", href: "/collections/mattress" },
       { label: "Accent Chair", href: "/collections/accent-chair" },
       { label: "Barstool", href: "/collections/barstool" },
       { label: "Swivel Chair", href: "/collections/swivel-chair" },
-      { label: "Wall Padding", href: "/collections/wall-padding" },
     ],
   },
   {
