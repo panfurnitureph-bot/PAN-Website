@@ -99,6 +99,10 @@ export type MtoItemConfig = {
   measurements?: MtoMeasure[];
   addons: MtoAddon[];
   fabricsOff: string[];
+  // FABRICS TOGGLE (IMS 2026-08-23): false = walang Fabric field; fabricsPick =
+  // allow-list. Wala pareho = legacy (lahat maliban sa fabricsOff).
+  fabricsOn?: boolean;
+  fabricsPick?: string[];
 };
 
 export async function loadItemConfig(sku: string | undefined | null): Promise<MtoItemConfig | null> {

@@ -197,7 +197,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   const fabrics = useMemo(
     () =>
       swatchLibrary
-        .filter((l) => !cfg.fabricsOff.includes(l.name))
+        .filter((l) => (cfg.fabricsOn === false ? false : Array.isArray(cfg.fabricsPick) ? cfg.fabricsPick.includes(l.name) : !cfg.fabricsOff.includes(l.name)))
         .filter((l) => !(noLeatherCategory(cfg.category) && /leather/i.test(l.name)))
         .sort((a, b) => colRank(colOf(a.name)) - colRank(colOf(b.name)) || a.name.localeCompare(b.name, undefined, { numeric: true })),
     [cfg],
