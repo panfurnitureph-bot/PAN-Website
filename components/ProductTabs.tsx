@@ -122,24 +122,28 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
     return n > 0 ? String(n) + '"' : undefined;
   };
   const liveB = liveInch(/headboard\s*height/i), liveD = liveInch(/bedframe\s*height|base\s*height/i);
-  // MATTRESS: kapal (T) = nakatali sa napiling Model (Comfort Plus 6", Trill
-  // Hybrid 10") — binabasa sa label ng option; kapag wala pang pinipili, ang
-  // unang Model option ng Configurator. Ang size mismo ay W×L lang.
+  // MATTRESS: bawat modelo ay sariling item (Linen by PAN catalog) — ang kapal
+  // (T) ay FI\ED na detalye ng item sa Configurator ('Thickness: 10"'); kung
+  // wala, ang napiling/unang Model option (lumang config); sa huli ang pangalan
+  // ng produkto ("Trill Hybrid" → 10"). Ang size mismo ay W×L lang.
   const mattT = (() => {
     const thick = (label: string) => {
       const m = /(\d+(?:\.\d+)?)\s*(?:"|″|in\b)/i.exec(label ?? "");
       if (m) return Number(m[1]);
-      if (/trill/i.test(label)) return 10;
-      if (/comfort\s*plus/i.test(label)) return 6;
+      const t = label ?? "";
+      if (/trill\s*hybrid/i.test(t)) return 10;
+      if (/trill\s*regal/i.test(t)) return 9;
+      if (/trill\s*air/i.test(t)) return 5;
+      if (/comfort\s*plus/i.test(t)) return 6;
+      if (/airlite/i.test(t)) return 6;
       return null;
     };
+    const addons = mto?.addons ?? [];
+    const fixed = addons.find((a) => a.on !== false && a.type === "FI\ED" && /thickness/i.test(a.label))?.label ?? "";
     const picked = Object.entries(build?.choices ?? {}).find(([g]) => /^model/i.test(g))?.[1] ?? "";
-    // Fallback kapag wala pang napipili: unang option ng NAKA-ON na Model; kung
-    // wala (naka-off ang Model sa Configurator), kahit aling Model row; at sa
-    // huli ang pangalan ng produkto mismo ("Trill Hybrid" → 10").
-    const modelRows = (mto?.addons ?? []).filter((a) => /^model\s*:/i.test(a.label));
+    const modelRows = addons.filter((a) => /^model\s*:/i.test(a.label));
     const firstOf = (rows: typeof modelRows) => rows[0]?.label.split(":")[1]?.split("/")[0]?.trim() ?? "";
-    const t = thick(picked) ?? thick(firstOf(modelRows.filter((a) => a.on !== false))) ?? thick(firstOf(modelRows)) ?? thick(product.name);
+    const t = thick(fixed) ?? thick(picked) ?? thick(firstOf(modelRows.filter((a) => a.on !== false))) ?? thick(firstOf(modelRows)) ?? thick(product.name);
     return t ? `${t}"` : undefined;
   })();
   // DOUBLE WALLING: ang frame ay lumalabas sa kutson (talaan ng team sa
