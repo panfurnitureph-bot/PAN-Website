@@ -8,7 +8,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { site as siteDefault, type Product, type SiteContent } from "@/lib/products";
-import FrameDiagram, { DEFAULT_BED_SIZES } from "@/components/FrameDiagram";
+import FrameDiagram, { DEFAULT_BED_SIZES, bedBuildRows, type BedBuild } from "@/components/FrameDiagram";
 import MattressDiagram, { splitDim } from "@/components/MattressDiagram";
 
 const TABS = [
@@ -90,6 +90,15 @@ function DimensionsPanel({ product }: { product: Product }) {
     window.addEventListener("pb-measure-change", h);
     return () => window.removeEventListener("pb-measure-change", h);
   }, []);
+  // BUILD mula sa customizer: bawat add-on na pinili ay may sariling layer
+  // (F–M) sa diagram at hanay sa listahan — live sa bawat click.
+  const [build, setBuild] = useState<BedBuild | null>(null);
+  useEffect(() => {
+    const h = (e: Event) => setBuild(((e as CustomEvent).detail as BedBuild) ?? null);
+    window.addEventListener("pb-build-change", h);
+    return () => window.removeEventListener("pb-build-change", h);
+  }, []);
+  const buildRows = isBed ? bedBuildRows(build) : [];
   const liveInch = (re: RegExp) => {
     const k = Object.keys(liveMeas).find((x) => re.test(x));
     const n = k ? liveMeas[k] : 0;
@@ -183,8 +192,13 @@ function DimensionsPanel({ product }: { product: Product }) {
               <p className="font-bold text-ink">E — Legs</p>
               <p className="text-stone">{selected.E}</p>
             </div>
-            {/* Ang add-ons (hal. wall padding) ay nasa FRAME DIMENSIONS
-                table na sa kanan — hindi na inuulit dito. */}
+            {/* Mga add-on na pinili sa customizer — kapareho ng letra sa diagram */}
+            {buildRows.map((r) => (
+              <div key={r.k}>
+                <p className="font-bold text-ink">{r.k} — {r.label}</p>
+                <p className="text-stone">{r.value}</p>
+              </div>
+            ))}
             <div>
               <p className="font-bold text-ink">Packaged (approx.)</p>
               <p className="text-stone">Add ~2&quot; per side</p>
@@ -241,6 +255,7 @@ function DimensionsPanel({ product }: { product: Product }) {
             focus={sizeFocus}
             onFocus={setSizeFocus}
             hideChips
+            build={build}
             addOns={(product.addOns ?? []).map((a) => {
               // gamitin ang sukat/presyo ng NAPILING size kung meron
               const perSize = sizeFocus ? a.bySize?.[sizeFocus] : undefined;

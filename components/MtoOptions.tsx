@@ -576,6 +576,22 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     // ang lugar — sa /quote-request na iyon tinatanong.
   }, [size, fabrics_, choiceSel, measVal, fieldVal, dwThick, dwH, dwW, dwPad, dwNails, dwAccent, checkPick]);
 
+  // DIMENSIONS TAB (2026-08-23): ang buong build (size, naka-check na add-on,
+  // choice groups, double-wall, sukat) ay ibino-broadcast. Ang FrameDiagram
+  // ang nagdodrowing ng bawat add-on layer nang live — bawat click, agad.
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("pb-build-change", {
+      detail: {
+        size,
+        checks: checks.filter((a) => isPicked(a.label)).map((a) => a.label),
+        choices: choiceSel,
+        dw: { thick: dwThick, h: dwH, pad: dwPad, w: dwW, nails: dwNails, accent: dwAccent },
+        meas: measVal,
+      },
+    }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [size, fabrics_, choiceSel, measVal, dwThick, dwH, dwW, dwPad, dwNails, dwAccent, checkPick]);
+
   // ANG PAGKAKASUNOD-SUNOD AY AYON SA URI, hindi ayon sa pagkakasulat sa
   // form: sukat muna, tapos tela, mga sukat ng bahagi, ang mga add-on, at
   // panghuli ang dingding — magkakasama ang magkakauri kaya nababasa.
