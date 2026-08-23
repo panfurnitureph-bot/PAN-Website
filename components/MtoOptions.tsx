@@ -687,7 +687,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   const readySizeOpts = (() => {
     const line = readySpecs.find((l) => /^sizes:/i.test(l));
     if (!line) return [] as { label: string; price: number }[];
-    return line.replace(/^sizes:\s*/i, "").split(/\s*[·,]\s*/).map((t) => {
+    return line.replace(/^sizes:\s*/i, "").split(/\s*·\s*/).map((t) => {
       const m = /^(\S+)(?:\s+₱?\s*([\d,]+(?:\.\d+)?))?/.exec(t.trim());
       return m ? { label: m[1], price: Number((m[2] ?? "0").replace(/,/g, "")) } : null;
     }).filter((x): x is { label: string; price: number } => !!x && !!x.label);
@@ -887,12 +887,11 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                           className="w-full bg-transparent font-bold leading-tight outline-none"
                         >
                           {readySizeOpts.map((o) => (
-                            <option key={o.label} value={o.label}>{o.label}{o.price > 0 ? ` — ${formatPrice(o.price)}` : ""}</option>
+                            <option key={o.label} value={o.label}>{o.label.replace(/x/i, "×")}{o.price > 0 ? ` — ${formatPrice(o.price)}` : ""}</option>
                           ))}
                         </select>
                         <span className="block text-xs text-stone">Size</span>
                       </span>
-                      {readySizePick && readySizePick.price > 0 && <span className="shrink-0 font-bold">{formatPrice(readySizePick.price)}</span>}
                     </label>
                   );
                 }

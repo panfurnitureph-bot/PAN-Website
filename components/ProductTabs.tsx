@@ -91,7 +91,7 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
     if (!isMattress) return [] as typeof DEFAULT_BED_SIZES;
     const line = readySpecLines.find((l) => /^sizes?:/i.test(l));
     if (!line) return [] as typeof DEFAULT_BED_SIZES;
-    const dims = line.replace(/^sizes?:\s*/i, "").split(/\s*[·,]\s*/).map((t) => t.trim().split(/\s+/)[0].toLowerCase().replace(/"/g, "")).filter((d) => /^\d+x\d+$/.test(d));
+    const dims = line.replace(/^sizes?:\s*/i, "").split(/\s*·\s*/).map((t) => t.trim().split(/\s+/)[0].toLowerCase().replace(/"/g, "")).filter((d) => /^\d+x\d+$/.test(d));
     return dims.map((d) => ({ size: SIZE_NAME[d] ?? d.toUpperCase(), dim: d.replace("x", '"x') + '"', A: "", B: "", C: "", D: "", E: "" }));
   })();
   const bedSizesBase = (specSizes.length
