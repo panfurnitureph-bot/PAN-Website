@@ -12,12 +12,12 @@ const FOOTER_COLUMNS = [
   {
     title: "SHOP",
     links: [
-      { label: "Bed", href: "/collections/bed" },
+      { label: "Promo Bed", href: "/collections/bed" },
       { label: "Sofa", href: "/collections/sofa" },
       { label: "Sofa Bed", href: "/collections/sofa-bed" },
       { label: "Dining", href: "/collections/dining" },
       { label: "Side Table", href: "/collections/side-table" },
-      { label: "Ottoman PH", href: "/collections/ottoman-ph" },
+      { label: "Ottoman", href: "/collections/ottoman-ph" },
       { label: "Kurtina ni PAN", href: "/collections/kurtina-ni-pan" },
       { label: "Mattress", href: "/collections/mattress" },
       { label: "Accent Chair", href: "/collections/accent-chair" },

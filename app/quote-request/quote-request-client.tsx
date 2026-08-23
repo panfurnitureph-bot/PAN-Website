@@ -8,6 +8,7 @@ import StreetSuggest from "@/components/StreetSuggest";
 import AddressSearch, { type PlaceDetail } from "@/components/AddressSearch";
 import { matchCity } from "@/lib/city-match";
 import { groupBuildLines } from "@/lib/build-groups";
+import { categoryTitle } from "@/lib/products";
 import { pinMismatch } from "@/lib/pin-match";
 import type { PickedLocation } from "@/components/LocationPicker";
 import { useStore } from "@/components/store";
@@ -309,7 +310,7 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
                 <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                   <span className="font-semibold">{b.name}</span>
                   {b.category && (
-                    <span className="text-[10px] uppercase tracking-widest2 text-stone">{b.category}</span>
+                    <span className="text-[10px] uppercase tracking-widest2 text-stone">{categoryTitle(b.category)}</span>
                   )}
                   <span className="ml-auto font-bold tabular-nums">
                     {b.build?.priced && b.build?.total ? formatPrice(b.build.total) : "For quotation"}

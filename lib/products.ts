@@ -159,18 +159,19 @@ export const COLLECTIONS: Record<string, { title: string; categories: string[] }
     title: "Living",
     categories: ["sofa", "accent-chair", "side-table", "ottoman-ph", "kurtina-ni-pan", "swivel-chair", "wall-padding"],
   },
-  // --- 13 opisyal na categories ---
-  bed: { title: "Bed", categories: ["bed"] },
+  // --- Opisyal na categories — PAREHONG PANGALAN ng IMS MTO categories
+  //     (lib/categories.ts sa IMS); ang slug ay URL lang, hindi binabago. ---
+  bed: { title: "Promo Bed", categories: ["bed"] },
   "sofa-bed": { title: "Sofa Bed", categories: ["sofa-bed"] },
   sofa: { title: "Sofa", categories: ["sofa"] },
   "dining-table": { title: "Dining Table", categories: ["dining-table"] },
-  "dining-chairs": { title: "Dining Chairs", categories: ["dining-chairs"] },
+  "dining-chairs": { title: "Dining Chair", categories: ["dining-chairs"] },
   "dining-set": { title: "Dining Set", categories: ["dining-set"] },
   "side-table": { title: "Side Table", categories: ["side-table"] },
-  "ottoman-ph": { title: "Ottoman PH", categories: ["ottoman-ph"] },
+  "ottoman-ph": { title: "Ottoman", categories: ["ottoman-ph"] },
   "kurtina-ni-pan": { title: "Kurtina ni PAN", categories: ["kurtina-ni-pan"] },
   mattress: { title: "Mattress", categories: ["mattress"] },
-  "customized-bed": { title: "Customized Bed", categories: ["customized-bed"] },
+  "customized-bed": { title: "Custom Bed", categories: ["customized-bed"] },
   "accent-chair": { title: "Accent Chair", categories: ["accent-chair"] },
   // MTO categories ng IMS Configurator (2026-08-23) — pareho ng SITE_CATEGORY
   // sa IMS publish, kaya ang na-publish doon ay lumalabas dito agad.
@@ -200,10 +201,10 @@ export const NAV_LINKS: NavLink[] = [
     href: "/collections/beds",
     children: [
       { label: "All Beds", href: "/collections/beds" },
-      { label: "Bed", href: "/collections/bed" },
+      { label: "Promo Bed", href: "/collections/bed" },
       { label: "Sofa Bed", href: "/collections/sofa-bed" },
       { label: "Mattress", href: "/collections/mattress" },
-      { label: "Customized Bed", href: "/collections/customized-bed" },
+      { label: "Custom Bed", href: "/collections/customized-bed" },
       { label: "Wall Padding", href: "/collections/wall-padding" },
     ],
   },
@@ -223,7 +224,7 @@ export const NAV_LINKS: NavLink[] = [
     children: [
       { label: "All Dining", href: "/collections/dining" },
       { label: "Dining Table", href: "/collections/dining-table" },
-      { label: "Dining Chairs", href: "/collections/dining-chairs" },
+      { label: "Dining Chair", href: "/collections/dining-chairs" },
       { label: "Dining Set", href: "/collections/dining-set" },
       { label: "Barstool", href: "/collections/barstool" },
     ],
@@ -234,7 +235,7 @@ export const NAV_LINKS: NavLink[] = [
     children: [
       { label: "All Living", href: "/collections/living" },
       { label: "Side Table", href: "/collections/side-table" },
-      { label: "Ottoman PH", href: "/collections/ottoman-ph" },
+      { label: "Ottoman", href: "/collections/ottoman-ph" },
       { label: "Kurtina ni PAN", href: "/collections/kurtina-ni-pan" },
       { label: "Accent Chair", href: "/collections/accent-chair" },
       { label: "Swivel Chair", href: "/collections/swivel-chair" },
@@ -245,17 +246,17 @@ export const NAV_LINKS: NavLink[] = [
 
 // 13 tiles ng "Shop by Category" sa homepage
 export const CATEGORY_TILES = [
-  { label: "Bed", slug: "bed" },
+  { label: "Promo Bed", slug: "bed" },
   { label: "Sofa Bed", slug: "sofa-bed" },
   { label: "Sofa", slug: "sofa" },
   { label: "Dining Table", slug: "dining-table" },
-  { label: "Dining Chairs", slug: "dining-chairs" },
+  { label: "Dining Chair", slug: "dining-chairs" },
   { label: "Dining Set", slug: "dining-set" },
   { label: "Side Table", slug: "side-table" },
-  { label: "Ottoman PH", slug: "ottoman-ph" },
+  { label: "Ottoman", slug: "ottoman-ph" },
   { label: "Kurtina ni PAN", slug: "kurtina-ni-pan" },
   { label: "Mattress", slug: "mattress" },
-  { label: "Customized Bed", slug: "customized-bed" },
+  { label: "Custom Bed", slug: "customized-bed" },
   { label: "Accent Chair", slug: "accent-chair" },
   { label: "Barstool", slug: "barstool" },
   { label: "Swivel Chair", slug: "swivel-chair" },
@@ -263,6 +264,12 @@ export const CATEGORY_TILES = [
 ];
 
 // ---------- Helpers ----------
+// Pangalan ng category para ipakita — PAREHO ng IMS (Promo Bed, Custom Bed,
+// Dining Chair, Ottoman…). Ang slug ay URL lang.
+export function categoryTitle(slug: string): string {
+  return COLLECTIONS[slug]?.title ?? slug.replace(/-/g, " ");
+}
+
 export function getProduct(slug: string): Product | undefined {
   return products.find((p) => p.slug === slug);
 }

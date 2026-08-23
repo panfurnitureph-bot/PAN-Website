@@ -17,7 +17,7 @@ import { useEffect, useMemo, useState } from "react";
 import { groupBuildLines } from "@/lib/build-groups";
 import { pinMismatch } from "@/lib/pin-match";
 import type { PickedLocation } from "@/components/LocationPicker";
-import { formatPrice, type Product, type SiteContent } from "@/lib/products";
+import { categoryTitle, formatPrice, type Product, type SiteContent } from "@/lib/products";
 import { useStore } from "@/components/store";
 import CardForm from "@/components/CardForm";
 import RedirectCountdown from "@/components/RedirectCountdown";
@@ -169,10 +169,7 @@ function variantDimension(
 
 // "sofa-bed" -> "Sofa Bed"
 function prettyCategory(c: string): string {
-  return c
-    .split("-")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
+  return categoryTitle(c);
 }
 
 function Field({

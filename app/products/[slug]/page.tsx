@@ -8,7 +8,7 @@
 
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { COLLECTIONS, getProduct, homepage, products, site } from "@/lib/products";
+import { COLLECTIONS, categoryTitle, getProduct, homepage, products, site } from "@/lib/products";
 import { loadItemConfig, primeStoreContent } from "@/lib/content";
 import ProductDetail from "@/components/ProductDetail";
 import ProductTabs from "@/components/ProductTabs";
@@ -70,8 +70,8 @@ export default async function ProductPage({ params }: { params: { slug: string }
       <nav className="text-xs text-stone mb-6">
         <Link href="/" className="hover:text-cognac">Home</Link>
         <span className="mx-2">/</span>
-        <Link href={`/collections/${product.category}`} className="hover:text-cognac capitalize">
-          {product.category.replace(/-/g, " ")}
+        <Link href={`/collections/${product.category}`} className="hover:text-cognac">
+          {categoryTitle(product.category)}
         </Link>
         <span className="mx-2">/</span>
         <span className="text-ink">{product.name}</span>
