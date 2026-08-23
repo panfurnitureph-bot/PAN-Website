@@ -138,26 +138,26 @@ export function primeContent(next: {
 export const COLLECTIONS: Record<string, { title: string; categories: string[] }> = {
   "new-in": { title: "New In", categories: [] }, // special: lahat ng isNew
   // "new-*" = mga BAGONG items lang ng grupong yun (isNew filter)
-  "new-beds": { title: "New Beds", categories: ["bed", "sofa-bed", "mattress", "customized-bed"] },
+  "new-beds": { title: "New Beds", categories: ["bed", "sofa-bed", "mattress", "customized-bed", "wall-padding"] },
   "new-sofas": { title: "New Sofas", categories: ["sofa", "sofa-bed", "accent-chair"] },
   "new-dining": {
     title: "New Dining",
-    categories: ["dining-table", "dining-chairs", "dining-set"],
+    categories: ["dining-table", "dining-chairs", "dining-set", "barstool"],
   },
   "new-living": {
     title: "New Living",
-    categories: ["sofa", "accent-chair", "side-table", "ottoman-ph", "kurtina-ni-pan"],
+    categories: ["sofa", "accent-chair", "side-table", "ottoman-ph", "kurtina-ni-pan", "swivel-chair", "wall-padding"],
   },
   // --- Grupo (para sa top nav) ---
-  beds: { title: "Beds", categories: ["bed", "sofa-bed", "mattress", "customized-bed"] },
+  beds: { title: "Beds", categories: ["bed", "sofa-bed", "mattress", "customized-bed", "wall-padding"] },
   sofas: { title: "Sofas", categories: ["sofa", "sofa-bed", "accent-chair"] },
   dining: {
     title: "Dining",
-    categories: ["dining-table", "dining-chairs", "dining-set"],
+    categories: ["dining-table", "dining-chairs", "dining-set", "barstool"],
   },
   living: {
     title: "Living",
-    categories: ["sofa", "accent-chair", "side-table", "ottoman-ph", "kurtina-ni-pan"],
+    categories: ["sofa", "accent-chair", "side-table", "ottoman-ph", "kurtina-ni-pan", "swivel-chair", "wall-padding"],
   },
   // --- 13 opisyal na categories ---
   bed: { title: "Bed", categories: ["bed"] },
@@ -172,6 +172,11 @@ export const COLLECTIONS: Record<string, { title: string; categories: string[] }
   mattress: { title: "Mattress", categories: ["mattress"] },
   "customized-bed": { title: "Customized Bed", categories: ["customized-bed"] },
   "accent-chair": { title: "Accent Chair", categories: ["accent-chair"] },
+  // MTO categories ng IMS Configurator (2026-08-23) — pareho ng SITE_CATEGORY
+  // sa IMS publish, kaya ang na-publish doon ay lumalabas dito agad.
+  barstool: { title: "Barstool", categories: ["barstool"] },
+  "swivel-chair": { title: "Swivel Chair", categories: ["swivel-chair"] },
+  "wall-padding": { title: "Wall Padding", categories: ["wall-padding"] },
 };
 
 // Main nav — may children = lalabas na mega-menu sa hover
@@ -199,6 +204,7 @@ export const NAV_LINKS: NavLink[] = [
       { label: "Sofa Bed", href: "/collections/sofa-bed" },
       { label: "Mattress", href: "/collections/mattress" },
       { label: "Customized Bed", href: "/collections/customized-bed" },
+      { label: "Wall Padding", href: "/collections/wall-padding" },
     ],
   },
   {
@@ -219,6 +225,7 @@ export const NAV_LINKS: NavLink[] = [
       { label: "Dining Table", href: "/collections/dining-table" },
       { label: "Dining Chairs", href: "/collections/dining-chairs" },
       { label: "Dining Set", href: "/collections/dining-set" },
+      { label: "Barstool", href: "/collections/barstool" },
     ],
   },
   {
@@ -230,6 +237,8 @@ export const NAV_LINKS: NavLink[] = [
       { label: "Ottoman PH", href: "/collections/ottoman-ph" },
       { label: "Kurtina ni PAN", href: "/collections/kurtina-ni-pan" },
       { label: "Accent Chair", href: "/collections/accent-chair" },
+      { label: "Swivel Chair", href: "/collections/swivel-chair" },
+      { label: "Wall Padding", href: "/collections/wall-padding" },
     ],
   },
 ];
@@ -248,6 +257,9 @@ export const CATEGORY_TILES = [
   { label: "Mattress", slug: "mattress" },
   { label: "Customized Bed", slug: "customized-bed" },
   { label: "Accent Chair", slug: "accent-chair" },
+  { label: "Barstool", slug: "barstool" },
+  { label: "Swivel Chair", slug: "swivel-chair" },
+  { label: "Wall Padding", slug: "wall-padding" },
 ];
 
 // ---------- Helpers ----------

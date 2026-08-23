@@ -17,6 +17,7 @@ const CATEGORIES = [
   "bed", "sofa-bed", "sofa", "dining-table", "dining-chairs",
   "dining-set", "side-table", "ottoman-ph", "kurtina-ni-pan",
   "mattress", "customized-bed", "accent-chair",
+  "barstool", "swivel-chair", "wall-padding",
 ];
 
 export default function ProductsTab({
