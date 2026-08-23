@@ -122,11 +122,21 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
     return n > 0 ? String(n) + '"' : undefined;
   };
   const liveB = liveInch(/headboard\s*height/i), liveD = liveInch(/bedframe\s*height|base\s*height/i);
-  // MATTRESS: kapal (T) = live na Thickness ng customizer → default ng
-  // Configurator; ang size mismo ay W×L lang.
-  const mattT = liveInch(/thickness/i) ?? (() => {
-    const m = (mto?.measurements ?? []).find((x) => x.on && /thickness/i.test(x.label));
-    return m?.def ? `${m.def}"` : undefined;
+  // MATTRESS: kapal (T) = nakatali sa napiling Model (Comfort Plus 6", Trill
+  // Hybrid 10") — binabasa sa label ng option; kapag wala pang pinipili, ang
+  // unang Model option ng Configurator. Ang size mismo ay W×L lang.
+  const mattT = (() => {
+    const thick = (label: string) => {
+      const m = /(\d+(?:\.\d+)?)\s*(?:"|″|in\b)/i.exec(label ?? "");
+      if (m) return Number(m[1]);
+      if (/trill/i.test(label)) return 10;
+      if (/comfort\s*plus/i.test(label)) return 6;
+      return null;
+    };
+    const picked = Object.entries(build?.choices ?? {}).find(([g]) => /^model/i.test(g))?.[1] ?? "";
+    const firstOpt = (mto?.addons ?? []).find((a) => a.on !== false && /^model\s*:/i.test(a.label))?.label.split(":")[1]?.split("/")[0]?.trim() ?? "";
+    const t = thick(picked) ?? thick(firstOpt);
+    return t ? `${t}"` : undefined;
   })();
   // DOUBLE WALLING: ang frame ay lumalabas sa kutson (talaan ng team sa
   // lib/double-walling) — ang A (width) at C (length) ay sumusunod sa frame.
