@@ -120,6 +120,58 @@ export function bedFlags(build?: BedBuild | null) {
   return { noHead, platform: lift || /platform/i.test(legs), floating: /floating/i.test(legs), wallPad };
 }
 
+// LOCKED / AS-IS NA ITEM: walang customizer na nagpapadala ng build, kaya ang
+// ORIHINAL na specs ng produkto (IMS Products, composeBedSpecs) ang binabasa
+// pabalik sa BedBuild — sumusunod ang diagram sa nakalagay: drawers, pullout,
+// double walling (kapal + H/T/W + nails/accent), lift, legs, insert, tufted,
+// winged, exceed, headboard height. Ang customizable na item ay live pa rin
+// (pb-build-change ang nangingibabaw).
+export function buildFromSpecs(lines: string[]): BedBuild | null {
+  const L = (lines ?? []).map((l) => l.trim()).filter(Boolean);
+  if (!L.length) return null;
+  const b: BedBuild = { checks: [], choices: {}, dw: {}, meas: {} };
+  const num = (v: string) => { const m = /(\d+(?:\.\d+)?)/.exec(v); return m ? Number(m[1]) : 0; };
+  let touched = false;
+  for (const l of L) {
+    const m = /^([^:]+):\s*(.+)$/.exec(l);
+    const label = (m ? m[1] : "").trim().toLowerCase();
+    const value = (m ? m[2] : l).trim();
+    if (label === "size") { b.size = value; touched = true; continue; }
+    if (label === "headboard" && /none/i.test(value)) { b.choices!["Headboard"] = "None Headboard"; touched = true; continue; }
+    if (/^headboard height/.test(label)) { if (num(value) > 0) b.meas!["Headboard Height"] = num(value); touched = true; continue; }
+    if (/^bedframe height|^base height/.test(label)) { if (num(value) > 0) b.meas!["Bedframe Height"] = num(value); touched = true; continue; }
+    if (label === "drawers") {
+      const [what, pos] = value.split(/\s*—\s*|\s+-\s+/);
+      b.checks!.push(what.trim());
+      if (pos) b.choices!["Drawer Position"] = pos.split(",")[0].trim();
+      touched = true; continue;
+    }
+    if (label === "pullout bed") {
+      const d = /(\d+)\s*[xX×]\s*(\d+)/.exec(value);
+      b.checks!.push(d ? `Pullout ${d[1]}X${d[2]}` : "Pullout");
+      touched = true; continue;
+    }
+    if (label === "lift storage" && /yes/i.test(value)) { b.checks!.push("Lift Storage"); touched = true; continue; }
+    if (label === "legs") { b.choices!["Legs"] = value.replace(/\s*\(.*\)$/, "").trim(); touched = true; continue; }
+    if (label === "mattress insert") { b.choices!["Mattress Insert"] = value; touched = true; continue; }
+    if (label === "double walling") { b.checks!.push("Double Walling"); b.dw!.thick = num(value) || 8; touched = true; continue; }
+    if (label === "height") { b.dw!.h = String(num(value) || ""); continue; }
+    if (label === "thickness") { b.dw!.pad = String(num(value) || ""); continue; }
+    if (label === "width") { b.dw!.w = String(num(value) || ""); continue; }
+    if (label === "decorative nails") { b.dw!.nails = value; continue; }
+    if (label === "gold accent") { b.dw!.accent = /yes/i.test(value); continue; }
+    if (/^tufted/i.test(l)) {
+      b.checks!.push(/elevated/i.test(l) ? "Tufted Elevated Footboard" : "Tufted Footboard");
+      const mt = /mattress thickness:\s*(\d+(?:\.\d+)?)/i.exec(l);
+      if (mt) b.meas!["Mattress Thickness"] = Number(mt[1]);
+      touched = true; continue;
+    }
+    if (label === "winged headboard") { b.choices!["Winged"] = /not/i.test(value) ? "Not winged" : "Winged"; touched = true; continue; }
+    if (label === "exceed headboard") { b.choices!["Exceed Headboard"] = value; touched = true; continue; }
+  }
+  return touched ? b : null;
+}
+
 function Dot({ k }: { k: string }) {
   return (
     <span

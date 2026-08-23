@@ -8,7 +8,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { site as siteDefault, type Product, type SiteContent } from "@/lib/products";
-import FrameDiagram, { DEFAULT_BED_SIZES, bedBuildRows, bedFlags, type BedBuild } from "@/components/FrameDiagram";
+import FrameDiagram, { DEFAULT_BED_SIZES, bedBuildRows, bedFlags, buildFromSpecs, type BedBuild } from "@/components/FrameDiagram";
 import MattressDiagram, { splitDim } from "@/components/MattressDiagram";
 import MeasureDiagram, { measureKind, measureRows } from "@/components/MeasureDiagram";
 import type { MtoItemConfig } from "@/lib/content";
@@ -110,12 +110,16 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
   }, []);
   // BUILD mula sa customizer: bawat add-on na pinili ay may sariling layer
   // (F–M) sa diagram at hanay sa listahan — live sa bawat click.
-  const [build, setBuild] = useState<BedBuild | null>(null);
+  const [liveBuild, setLiveBuild] = useState<BedBuild | null>(null);
   useEffect(() => {
-    const h = (e: Event) => setBuild(((e as CustomEvent).detail as BedBuild) ?? null);
+    const h = (e: Event) => setLiveBuild(((e as CustomEvent).detail as BedBuild) ?? null);
     window.addEventListener("pb-build-change", h);
     return () => window.removeEventListener("pb-build-change", h);
   }, []);
+  // LOCKED / AS-IS: walang customizer → ang orihinal na specs ng produkto ang
+  // build ng diagram. Customizable → ang live na pili ang nangingibabaw.
+  const specBuild = isBed ? buildFromSpecs(readySpecLines) : null;
+  const build = liveBuild ?? specBuild;
   const buildRows = isBed ? bedBuildRows(build) : [];
   // Pangalan ng napiling size (pb-size-change) — para sa "Opens to" ng sofa bed.
   const [sizeName, setSizeName] = useState("");
@@ -130,8 +134,10 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
     if (m) mRows.rows.push({ k: String.fromCharCode(65 + mRows.rows.length), label: "Opens to (mattress)", value: `${m[1]}"×${m[2]}"` });
   }
   const liveInch = (re: RegExp) => {
-    const k = Object.keys(liveMeas).find((x) => re.test(x));
-    const n = k ? liveMeas[k] : 0;
+    // Live na sukat ng customizer; kung wala (locked), ang nasa orihinal na specs.
+    const src = Object.keys(liveMeas).length ? liveMeas : (specBuild?.meas ?? {});
+    const k = Object.keys(src).find((x) => re.test(x));
+    const n = k ? src[k] : 0;
     return n > 0 ? String(n) + '"' : undefined;
   };
   const liveB = liveInch(/headboard\s*height/i), liveD = liveInch(/bedframe\s*height|base\s*height/i);
