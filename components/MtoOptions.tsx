@@ -217,6 +217,13 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     for (const m of measures) init[m.label] = m.def ?? 0;
     return init;
   });
+  // DIMENSIONS TAB (2026-08-23): sumusunod ang frame diagram (B headboard, D
+  // base) sa mismong measurement na itinakda ng customer - parehong event-style
+  // ng pb-size-change. Ang tab ay ibang component (ProductTabs), kaya window
+  // event ang tulay.
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("pb-measure-change", { detail: measVal }));
+  }, [measVal]);
   const [size, setSize] = useState(sizes[0]?.label ?? "");
   // Napiling option kada choice group (value = option value, hal. "Standard").
   const [choiceSel, setChoiceSel] = useState<Record<string, string>>({});

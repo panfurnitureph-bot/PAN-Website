@@ -78,9 +78,25 @@ function DimensionsPanel({ product }: { product: Product }) {
   const specs = product.dimensionSpecs ?? [];
   const dims = parseDims(product.dimensions);
   // Gamitin ang custom na bedSizes ng product kung meron, kung wala default
-  const bedSizes = (product.bedSizes && product.bedSizes.length
+  const bedSizesBase = (product.bedSizes && product.bedSizes.length
     ? product.bedSizes.filter((s: any) => s.enabled !== false)
     : DEFAULT_BED_SIZES) as typeof DEFAULT_BED_SIZES;
+  // LIVE mula sa customizer (2026-08-23): kapag inangat ng customer ang Headboard
+  // Height o Bedframe Height sa MTO options, sumusunod ang B at D ng diagram.
+  // Ang table mismo (bedSizes) ay galing sa Publish ng Configurator.
+  const [liveMeas, setLiveMeas] = useState<Record<string, number>>({});
+  useEffect(() => {
+    const h = (e: Event) => setLiveMeas({ ...(((e as CustomEvent).detail as Record<string, number>) ?? {}) });
+    window.addEventListener("pb-measure-change", h);
+    return () => window.removeEventListener("pb-measure-change", h);
+  }, []);
+  const liveInch = (re: RegExp) => {
+    const k = Object.keys(liveMeas).find((x) => re.test(x));
+    const n = k ? liveMeas[k] : 0;
+    return n > 0 ? String(n) + '"' : undefined;
+  };
+  const liveB = liveInch(/headboard\s*height/i), liveD = liveInch(/bedframe\s*height|base\s*height/i);
+  const bedSizes = (liveB || liveD ? bedSizesBase.map((r) => ({ ...r, B: liveB ?? r.B, D: liveD ?? r.D })) : bedSizesBase) as typeof DEFAULT_BED_SIZES;
   const [sizeFocus, setSizeFocus] = useState<string | null>(
     isBed || isMattress ? bedSizes[0]?.size ?? null : null
   );
