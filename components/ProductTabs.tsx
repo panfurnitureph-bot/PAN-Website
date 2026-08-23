@@ -134,8 +134,12 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
       return null;
     };
     const picked = Object.entries(build?.choices ?? {}).find(([g]) => /^model/i.test(g))?.[1] ?? "";
-    const firstOpt = (mto?.addons ?? []).find((a) => a.on !== false && /^model\s*:/i.test(a.label))?.label.split(":")[1]?.split("/")[0]?.trim() ?? "";
-    const t = thick(picked) ?? thick(firstOpt);
+    // Fallback kapag wala pang napipili: unang option ng NAKA-ON na Model; kung
+    // wala (naka-off ang Model sa Configurator), kahit aling Model row; at sa
+    // huli ang pangalan ng produkto mismo ("Trill Hybrid" → 10").
+    const modelRows = (mto?.addons ?? []).filter((a) => /^model\s*:/i.test(a.label));
+    const firstOf = (rows: typeof modelRows) => rows[0]?.label.split(":")[1]?.split("/")[0]?.trim() ?? "";
+    const t = thick(picked) ?? thick(firstOf(modelRows.filter((a) => a.on !== false))) ?? thick(firstOf(modelRows)) ?? thick(product.name);
     return t ? `${t}"` : undefined;
   })();
   // DOUBLE WALLING: ang frame ay lumalabas sa kutson (talaan ng team sa
