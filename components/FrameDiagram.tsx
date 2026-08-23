@@ -123,6 +123,30 @@ function DimH({ y, x1, x2 }: { y: number; x1: number; x2: number }) {
   return (<g><line x1={x1} y1={y} x2={x2} y2={y} /><path d={`M${x1 + 5} ${y - 3}l-5 3 5 3M${x2 - 5} ${y - 3}l5 3-5 3`} /></g>);
 }
 
+// Maliit na drawing kada add-on para sa "Add-ons on this build" tiles.
+const TILE_ART: Record<string, JSX.Element> = {
+  F: (<><rect x="14" y="22" width="92" height="30" /><rect x="20" y="28" width="38" height="18" rx="1" /><rect x="62" y="28" width="38" height="18" rx="1" /><line x1="35" y1="37" x2="43" y2="37" /><line x1="77" y1="37" x2="85" y2="37" /></>),
+  G: (<><rect x="30" y="18" width="80" height="22" /><rect x="10" y="44" width="80" height="14" strokeDasharray="3 2" /><path d="M2 51 l4-3 M2 51 l4 3 M2 51 l8 0" /></>),
+  H: (<><rect x="18" y="14" width="84" height="42" strokeWidth="5" opacity="0.45" /><rect x="26" y="22" width="68" height="26" /></>),
+  I: (<><rect x="12" y="40" width="84" height="14" /><rect x="96" y="18" width="12" height="36" rx="2" /><rect x="18" y="30" width="74" height="10" rx="3" strokeDasharray="2 2" /></>),
+  J: (<><rect x="34" y="16" width="52" height="42" rx="2" /><path d="M34 16 l-16 8 v34 l16 -8" /><path d="M86 16 l16 8 v34 l-16 -8" /></>),
+  K: (<><rect x="44" y="14" width="14" height="44" /><rect x="58" y="38" width="50" height="14" /><line x1="30" y1="38" x2="118" y2="38" strokeDasharray="2 2" /><g strokeWidth="1"><line x1="26" y1="14" x2="26" y2="38" /><path d="M23 19l3-5 3 5M23 33l3 5 3-5" /></g></>),
+  L: (<><rect x="14" y="26" width="92" height="30" /><rect x="22" y="18" width="76" height="20" rx="4" strokeDasharray="3 2" /><g strokeWidth="1"><line x1="112" y1="26" x2="112" y2="38" /><path d="M109 31l3-5 3 5M109 33l3 5 3-5" /></g></>),
+  M: (<><rect x="14" y="30" width="92" height="24" /><path d="M24 30 l0-10 l80 0" strokeDasharray="3 2" /><path d="M60 12 l0 12" /><path d="M56 16 l4-4 4 4" /></>),
+};
+
+function Tile({ row }: { row: BuildRow }) {
+  return (
+    <div className="rounded-lg border border-sand bg-linen px-3 py-2">
+      <div className="flex items-center gap-1.5 text-xs font-bold text-ink mb-1"><Dot k={row.k} />{row.label}</div>
+      <svg viewBox="0 0 120 70" className="w-full" style={{ color: GOLD }} aria-hidden>
+        <g fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round">{TILE_ART[row.k]}</g>
+      </svg>
+      <div className="text-[11px] text-stone mt-0.5">{row.value}</div>
+    </div>
+  );
+}
+
 const BASE_LEGEND = [
   { k: "A", label: "Width" },
   { k: "B", label: "Headboard Height" },
@@ -320,6 +344,15 @@ export default function FrameDiagram({
           </tbody>
         </table>
       </div>
+
+      {rows.length > 0 && (
+        <div className="mt-5">
+          <p className="text-[10px] font-bold tracking-widest2 mb-2" style={{ color: GOLD }}>ADD-ONS ON THIS BUILD</p>
+          <div className="grid gap-2.5 grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
+            {rows.map((r) => <Tile key={r.k} row={r} />)}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
