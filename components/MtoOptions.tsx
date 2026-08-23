@@ -890,7 +890,11 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                             <button
                               key={o.label}
                               type="button"
-                              onClick={() => setReadySize(o.label)}
+                              onClick={() => {
+                                setReadySize(o.label);
+                                // Sabihan ang Dimensions tab — sumusunod ang diagram/table.
+                                window.dispatchEvent(new CustomEvent("pb-size-change", { detail: o.label }));
+                              }}
                               className={`rounded-full border px-3 py-1.5 text-xs font-bold transition-colors ${on ? "border-espresso bg-espresso text-cream" : "border-stone/40 text-ink hover:border-ink"}`}
                             >
                               {o.label.replace(/x/i, "×")}

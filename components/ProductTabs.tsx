@@ -158,7 +158,7 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
     const picked = Object.entries(build?.choices ?? {}).find(([g]) => /^model/i.test(g))?.[1] ?? "";
     const modelRows = addons.filter((a) => /^model\s*:/i.test(a.label));
     const firstOf = (rows: typeof modelRows) => rows[0]?.label.split(":")[1]?.split("/")[0]?.trim() ?? "";
-    const t = thick(fixed) ?? thick(specThick) ?? thick(picked) ?? thick(firstOf(modelRows.filter((a) => a.on !== false))) ?? thick(firstOf(modelRows)) ?? thick(product.name);
+    const t = thick(specThick) ?? thick(fixed) ?? thick(picked) ?? thick(firstOf(modelRows.filter((a) => a.on !== false))) ?? thick(firstOf(modelRows)) ?? thick(product.name);
     return t ? `${t}"` : undefined;
   })();
   // DOUBLE WALLING: ang frame ay lumalabas sa kutson (talaan ng team sa
@@ -181,8 +181,11 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
       const id = (e as CustomEvent).detail as string;
       setSizeName(id);
       // I-match ang selector id (hal. "King 2", "Double/Full") sa table size
+      const key = id.toLowerCase().replace(/[\s/"]/g, "");
       const m = bedSizes.find(
-        (s) => s.size.toLowerCase().replace(/[\s/]/g, "") === id.toLowerCase().replace(/[\s/]/g, "")
+        (s) => s.size.toLowerCase().replace(/[\s/]/g, "") === key
+          // mattress size buttons ay nagpapadala ng "60x75" — itugma sa dim
+          || s.dim.toLowerCase().replace(/[\s"″]/g, "") === key
       );
       if (m) setSizeFocus(m.size);
     }
