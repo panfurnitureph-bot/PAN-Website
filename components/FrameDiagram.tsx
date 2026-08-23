@@ -179,14 +179,6 @@ function Tile({ row }: { row: BuildRow }) {
   );
 }
 
-const BASE_LEGEND = [
-  { k: "A", label: "Width" },
-  { k: "B", label: "Headboard Height" },
-  { k: "C", label: "Length" },
-  { k: "D", label: "Base" },
-  { k: "E", label: "Legs" },
-];
-
 export default function FrameDiagram({
   sizes = DEFAULT_BED_SIZES,
   focus,
@@ -217,10 +209,8 @@ export default function FrameDiagram({
   };
   const { noHead, platform, floating, wallPad } = bedFlags(build);
   const wallOff = 5 + Math.min(wallPad * 2, 10); // kapal ng dingding → lapad ng dashed outline
-  const wide = rows.length > 0;
   const drawerPos = choice(/drawer position|footboard drawer/i);
   const footHigh = on("I") && /mattress|elevated/i.test(val("I") + " " + (rows.find((r) => r.k === "I")?.label ?? ""));
-  const legend = [...BASE_LEGEND.filter((l) => !(l.k === "E" && platform) && !(l.k === "B" && noHead)), ...rows.map((r) => ({ k: r.k, label: r.label }))];
 
   // Geometry (side elevation): sahig y=196 · headboard x96–114, y40–156 · base x114–444, y132–156 · footboard x444–460
   const frame = { fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinejoin: "round" as const };
@@ -234,17 +224,9 @@ export default function FrameDiagram({
         <span className="flex-1 border-t border-dotted" style={{ borderColor: GOLD }} />
       </h3>
 
-      {/* May add-on = buong lapad ang drawing, walang legend (nasa kaliwang
-          column na ng tab ang listahan); wala = legend sa kaliwa ng drawing. */}
-      <div className={`grid grid-cols-1 gap-6 items-start mb-6 ${wide ? "" : "sm:grid-cols-[160px_1fr]"}`}>
-        {!wide && <ul className="space-y-2.5">
-          {legend.map((l) => (
-            <li key={l.k} className="flex items-center gap-2.5 text-sm text-stone">
-              <Dot k={l.k} />
-              {l.label}
-            </li>
-          ))}
-        </ul>}
+      {/* Buong lapad ang drawing — ang listahan ng letra ay nasa kaliwang
+          column na ng tab, kaya walang legend dito (redundant). */}
+      <div className="mb-6">
 
         <svg viewBox="0 0 560 236" className="w-full" style={{ color: GOLD }} aria-label="Bed frame side view with dimensions">
           <defs>

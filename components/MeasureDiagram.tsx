@@ -93,13 +93,6 @@ export function measureRows(kind: MeasureKind, live?: Record<string, number> | n
   return { rows, live: isLive };
 }
 
-function Dot({ k }: { k: string }) {
-  return (
-    <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-white text-[10px] font-bold shrink-0" style={{ backgroundColor: GOLD }}>
-      {k}
-    </span>
-  );
-}
 function Lbl({ x, y, t }: { x: number; y: number; t: string }) {
   return (
     <g>
@@ -261,16 +254,10 @@ export default function MeasureDiagram({ kind, rows, live = false }: { kind: Mea
         <span className="flex-1 border-t border-dotted" style={{ borderColor: GOLD }} />
       </h3>
 
-      <div className="grid grid-cols-1 sm:grid-cols-[160px_1fr] gap-6 items-start mb-6">
-        <ul className="space-y-2.5">
-          {rows.map((r) => (
-            <li key={r.k} className="flex items-center gap-2.5 text-sm text-stone">
-              <Dot k={r.k} />
-              {r.label}
-            </li>
-          ))}
-        </ul>
-        <svg viewBox="0 0 340 210" className="w-full max-w-[420px] mx-auto" style={{ color: GOLD }} aria-label={`${spec.title} dimensions`}>
+      {/* Buong lapad ang drawing — ang listahan ng letra ay nasa kaliwang
+          column na ng tab, kaya walang legend dito (redundant). */}
+      <div className="mb-6">
+        <svg viewBox="0 0 340 210" className="w-full" style={{ color: GOLD }} aria-label={`${spec.title} dimensions`}>
           <Drawing kind={kind} />
         </svg>
       </div>
