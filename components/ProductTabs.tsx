@@ -7,7 +7,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import type { Product } from "@/lib/products";
+import { site as siteDefault, type Product, type SiteContent } from "@/lib/products";
 import FrameDiagram, { DEFAULT_BED_SIZES } from "@/components/FrameDiagram";
 import MattressDiagram, { splitDim } from "@/components/MattressDiagram";
 
@@ -249,7 +249,19 @@ function DimensionsPanel({ product }: { product: Product }) {
   );
 }
 
-export default function ProductTabs({ product }: { product: Product }) {
+// Ang Shipping / Returns / Warranty na tab ay galing sa site.productTabs
+// (IMS Website > Promo & Site, 2026-08-23) - dating naka-hardcode dito. Ang
+// bundled site.json ang default kapag wala pa sa web_content doc.
+type TabCol = { title: string; heading?: string; body?: string; note?: string; note2?: string; heading2?: string; body2?: string; linkLabel?: string; linkHref?: string };
+const rich = (t: string) => t.split(/\*\*(.+?)\*\*/g).map((part, i) => (i % 2 ? <strong key={i} className="text-ink">{part}</strong> : part));
+const ICONS: Record<string, JSX.Element> = {
+  shipping: <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3"><path d="M1 7h12v9H1zM13 10h5l3 3v3h-8z" /><circle cx="6" cy="18" r="1.8" /><circle cx="17" cy="18" r="1.8" /></svg>,
+  guarantee: <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3"><path d="M21 12a9 9 0 11-3-6.7" /><path d="M21 4v4h-4" /><path d="M12 10.5c-.8-.9-2.2-.9-3 0-.7.8-.7 2 0 2.8L12 16l3-2.7c.7-.8.7-2 0-2.8-.8-.9-2.2-.9-3 0z" /></svg>,
+  warranty: <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3"><circle cx="12" cy="9" r="5" /><path d="M9 13l-2 8 5-3 5 3-2-8" /></svg>,
+};
+
+export default function ProductTabs({ product, site }: { product: Product; site?: SiteContent }) {
+  const tabs = ((site as SiteContent | undefined)?.productTabs ?? siteDefault.productTabs) as Record<string, TabCol>;
   // Default = Dimensions para agad makita ang FRAME DIMENSIONS table
   // (hindi na kailangang pindutin ang tab o VIEW DIMENSIONS)
   const [tab, setTab] = useState("dimensions");
@@ -319,77 +331,24 @@ export default function ProductTabs({ product }: { product: Product }) {
 
         {tab === "shipping" && (
           <div className="grid md:grid-cols-3 gap-10">
-            {/* Free shipping */}
-            <div>
-              <p className="flex items-center gap-3 font-bold text-ink mb-4">
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3">
-                  <path d="M1 7h12v9H1zM13 10h5l3 3v3h-8z" />
-                  <circle cx="6" cy="18" r="1.8" />
-                  <circle cx="17" cy="18" r="1.8" />
-                </svg>
-                Free shipping on all orders*
-              </p>
-              <p>
-                We offer <strong className="text-ink">Free</strong> Ground Shipping on all eligible orders.*
-              </p>
-              <p className="mt-2">
-                *Certain areas excluded. Extended Area Delivery Surcharges may be added at
-                checkout and are not refundable once the order ships.
-              </p>
-              <p className="mt-2 italic">
-                Please note that all delivery dates are estimates and actual delivery times
-                may vary or be subject to change.
-              </p>
-              <a href="/shipping" className="inline-block mt-4 text-xs font-bold tracking-widest2 border-b border-ink pb-0.5 text-ink hover:text-cognac hover:border-cognac">
-                SEE MORE
-              </a>
-            </div>
-
-            {/* 100-day guarantee */}
-            <div>
-              <p className="flex items-center gap-3 font-bold text-ink mb-4">
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3">
-                  <path d="M21 12a9 9 0 11-3-6.7" />
-                  <path d="M21 4v4h-4" />
-                  <path d="M12 10.5c-.8-.9-2.2-.9-3 0-.7.8-.7 2 0 2.8L12 16l3-2.7c.7-.8.7-2 0-2.8-.8-.9-2.2-.9-3 0z" />
-                </svg>
-                100-Day Happiness Guarantee
-              </p>
-              <p className="font-bold text-ink">Shop with Confidence — 100-Day Returns</p>
-              <p className="mt-2">
-                We think you&apos;ll love your new piece, but if something isn&apos;t quite
-                right, our <strong className="text-ink">100-day return window</strong> has
-                you covered. Please see our Shipping &amp; Returns guide for more details.
-              </p>
-              <a href="/shipping" className="inline-block mt-4 text-xs font-bold tracking-widest2 border-b border-ink pb-0.5 text-ink hover:text-cognac hover:border-cognac">
-                SHIPPING &amp; RETURNS GUIDE
-              </a>
-            </div>
-
-            {/* Warranty */}
-            <div>
-              <p className="flex items-center gap-3 font-bold text-ink mb-4">
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3">
-                  <circle cx="12" cy="9" r="5" />
-                  <path d="M9 13l-2 8 5-3 5 3-2-8" />
-                </svg>
-                Warranty
-              </p>
-              <p className="font-bold text-ink">Manufacturers Warranty</p>
-              <p className="mt-2">
-                Things don&apos;t always go as planned. In the unlikely event your item
-                arrives damaged, please get in touch with us right away. Please inspect
-                items before signing for the delivery.
-              </p>
-              <p className="font-bold text-ink mt-3">1 Year Manufacturer&apos;s Warranty</p>
-              <p className="mt-2">
-                Our standard manufacturer&apos;s warranty covers defects in materials and
-                workmanship for one year from the product&apos;s delivery date.
-              </p>
-              <a href="/faqs" className="inline-block mt-4 text-xs font-bold tracking-widest2 border-b border-ink pb-0.5 text-ink hover:text-cognac hover:border-cognac">
-                LEARN MORE
-              </a>
-            </div>
+            {(["shipping", "guarantee", "warranty"] as const).map((k) => {
+              const c = tabs[k];
+              if (!c) return null;
+              return (
+                <div key={k}>
+                  <p className="flex items-center gap-3 font-bold text-ink mb-4">{ICONS[k]}{c.title}</p>
+                  {c.heading && <p className="font-bold text-ink">{c.heading}</p>}
+                  {c.body && <p className={c.heading ? "mt-2" : ""}>{rich(c.body)}</p>}
+                  {c.note && <p className="mt-2">{rich(c.note)}</p>}
+                  {c.note2 && <p className="mt-2 italic">{rich(c.note2)}</p>}
+                  {c.heading2 && <p className="font-bold text-ink mt-3">{c.heading2}</p>}
+                  {c.body2 && <p className="mt-2">{rich(c.body2)}</p>}
+                  {c.linkLabel && c.linkHref && (
+                    <a href={c.linkHref} className="inline-block mt-4 text-xs font-bold uppercase tracking-widest2 border-b border-ink pb-0.5 text-ink hover:text-cognac hover:border-cognac">{c.linkLabel}</a>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

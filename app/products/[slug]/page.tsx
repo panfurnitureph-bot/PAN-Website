@@ -81,7 +81,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
       <ProductDetail product={product} site={site} mto={mto} />
 
       {/* 2 — FULL-WIDTH TABS */}
-      <ProductTabs product={product} />
+      <ProductTabs product={product} site={site} />
 
       {/* 3 — EXPLORE THE COLLECTION: title kaliwa + 3 cards */}
       {sameCollection.length > 0 && (

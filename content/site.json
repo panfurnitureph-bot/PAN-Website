@@ -586,5 +586,40 @@
         ]
       }
     ]
+  },
+  "productTabs": {
+    "shipping": {
+      "title": "Free shipping on all orders*",
+      "heading": "",
+      "body": "We offer **Free** Ground Shipping on all eligible orders.*",
+      "note": "*Certain areas excluded. Extended Area Delivery Surcharges may be added at checkout and are not refundable once the order ships.",
+      "note2": "Please note that all delivery dates are estimates and actual delivery times may vary or be subject to change.",
+      "heading2": "",
+      "body2": "",
+      "linkLabel": "See more",
+      "linkHref": "/shipping"
+    },
+    "guarantee": {
+      "title": "100-Day Happiness Guarantee",
+      "heading": "Shop with Confidence — 100-Day Returns",
+      "body": "We think you'll love your new piece, but if something isn't quite right, our **100-day return window** has you covered. Please see our Shipping & Returns guide for more details.",
+      "note": "",
+      "note2": "",
+      "heading2": "",
+      "body2": "",
+      "linkLabel": "Shipping & Returns guide",
+      "linkHref": "/shipping"
+    },
+    "warranty": {
+      "title": "Warranty",
+      "heading": "Manufacturers Warranty",
+      "body": "Things don't always go as planned. In the unlikely event your item arrives damaged, please get in touch with us right away. Please inspect items before signing for the delivery.",
+      "note": "",
+      "note2": "",
+      "heading2": "1 Year Manufacturer's Warranty",
+      "body2": "Our standard manufacturer's warranty covers defects in materials and workmanship for one year from the product's delivery date.",
+      "linkLabel": "Learn more",
+      "linkHref": "/faqs"
+    }
   }
 }
