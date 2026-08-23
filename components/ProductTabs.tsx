@@ -10,6 +10,8 @@ import { useEffect, useState } from "react";
 import { site as siteDefault, type Product, type SiteContent } from "@/lib/products";
 import FrameDiagram, { DEFAULT_BED_SIZES, bedBuildRows, type BedBuild } from "@/components/FrameDiagram";
 import MattressDiagram, { splitDim } from "@/components/MattressDiagram";
+import MeasureDiagram, { measureKind, measureRows } from "@/components/MeasureDiagram";
+import type { MtoItemConfig } from "@/lib/content";
 
 const TABS = [
   { id: "description", label: "Description & Features" },
@@ -68,7 +70,7 @@ const BED_SIZES = [
 
 // Dimensions tab: shared size state — pag pinili ang isang size sa
 // FrameDiagram, ang left specs ay nag-hi-highlight sa napiling size.
-function DimensionsPanel({ product }: { product: Product }) {
+function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConfig | null }) {
   // Ang mattress ay may sariling sukat (kapal × lapad × haba) — walang frame,
   // kaya hiwalay ang panel nito sa kama.
   const isMattress = product.category === "mattress";
@@ -99,6 +101,10 @@ function DimensionsPanel({ product }: { product: Product }) {
     return () => window.removeEventListener("pb-build-change", h);
   }, []);
   const buildRows = isBed ? bedBuildRows(build) : [];
+  // IBANG CATEGORY (sofa, chairs, tables, wall padding…): line drawing na may
+  // letra, sumusunod sa measurements ng Configurator at sa live na pili.
+  const mKind = !isMattress && !isBed ? measureKind(product.category) : null;
+  const mRows = mKind ? measureRows(mKind, liveMeas, mto?.measurements) : { rows: [], live: false };
   const liveInch = (re: RegExp) => {
     const k = Object.keys(liveMeas).find((x) => re.test(x));
     const n = k ? liveMeas[k] : 0;
@@ -204,6 +210,19 @@ function DimensionsPanel({ product }: { product: Product }) {
               <p className="text-stone">Add ~2&quot; per side</p>
             </div>
           </div>
+        ) : mKind ? (
+          <div className="space-y-4">
+            {mRows.rows.map((r) => (
+              <div key={r.k}>
+                <p className="font-bold text-ink">{r.k} — {r.label}</p>
+                <p className="text-stone">{r.value}</p>
+              </div>
+            ))}
+            <div>
+              <p className="font-bold text-ink">Packaged (approx.)</p>
+              <p className="text-stone">Add ~2&quot; per side</p>
+            </div>
+          </div>
         ) : specs.length > 0 ? (
           <div className="space-y-4">
             {specs.map((s) => (
@@ -266,6 +285,8 @@ function DimensionsPanel({ product }: { product: Product }) {
               };
             })}
           />
+        ) : mKind ? (
+          <MeasureDiagram kind={mKind} rows={mRows.rows} live={mRows.live} />
         ) : product.dimensionImage ? (
           <div className="relative aspect-[4/3] bg-white rounded p-4">
             <Image src={product.dimensionImage} alt="Dimensions" fill className="object-contain" sizes="(min-width: 768px) 500px, 100vw" />
@@ -291,7 +312,7 @@ const ICONS: Record<string, JSX.Element> = {
   warranty: <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3"><circle cx="12" cy="9" r="5" /><path d="M9 13l-2 8 5-3 5 3-2-8" /></svg>,
 };
 
-export default function ProductTabs({ product, site }: { product: Product; site?: SiteContent }) {
+export default function ProductTabs({ product, site, mto }: { product: Product; site?: SiteContent; mto?: MtoItemConfig | null }) {
   const tabs = ((site as SiteContent | undefined)?.productTabs ?? siteDefault.productTabs) as Record<string, TabCol>;
   // Default = Dimensions para agad makita ang FRAME DIMENSIONS table
   // (hindi na kailangang pindutin ang tab o VIEW DIMENSIONS)
@@ -345,7 +366,7 @@ export default function ProductTabs({ product, site }: { product: Product; site?
           </div>
         )}
 
-        {tab === "dimensions" && <DimensionsPanel product={product} />}
+        {tab === "dimensions" && <DimensionsPanel product={product} mto={mto} />}
 
         {tab === "care" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-4xl mx-auto">
