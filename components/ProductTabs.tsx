@@ -139,7 +139,7 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
       return null;
     };
     const addons = mto?.addons ?? [];
-    const fixed = addons.find((a) => a.on !== false && a.type === "FI\ED" && /thickness/i.test(a.label))?.label ?? "";
+    const fixed = addons.find((a) => a.on !== false && a.type === "FIXED" && /thickness/i.test(a.label))?.label ?? "";
     const picked = Object.entries(build?.choices ?? {}).find(([g]) => /^model/i.test(g))?.[1] ?? "";
     const modelRows = addons.filter((a) => /^model\s*:/i.test(a.label));
     const firstOf = (rows: typeof modelRows) => rows[0]?.label.split(":")[1]?.split("/")[0]?.trim() ?? "";
