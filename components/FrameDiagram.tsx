@@ -169,12 +169,12 @@ const TILE_ART: Record<string, JSX.Element> = {
 
 function Tile({ row }: { row: BuildRow }) {
   return (
-    <div className="rounded-lg border border-sand bg-linen px-3 py-2">
-      <div className="flex items-center gap-1.5 text-xs font-bold text-ink mb-1"><Dot k={row.k} />{row.label}</div>
+    <div className="rounded-lg border border-sand bg-linen px-4 py-3">
+      <div className="flex items-center gap-2 text-sm font-bold text-ink mb-2"><Dot k={row.k} />{row.label}</div>
       <svg viewBox="0 0 120 70" className="w-full" style={{ color: GOLD }} aria-hidden>
-        <g fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round">{TILE_ART[row.k]}</g>
+        <g fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round">{TILE_ART[row.k]}</g>
       </svg>
-      <div className="text-[11px] text-stone mt-0.5">{row.value}</div>
+      <div className="text-xs text-stone mt-1.5">{row.value}</div>
     </div>
   );
 }
@@ -234,19 +234,19 @@ export default function FrameDiagram({
         <span className="flex-1 border-t border-dotted" style={{ borderColor: GOLD }} />
       </h3>
 
-      {/* May add-on = buong lapad ang drawing (legend sa ilalim, naka-column)
-          para mabasa ang dagdag na letra; wala = legend sa kaliwa. */}
+      {/* May add-on = buong lapad ang drawing, walang legend (nasa kaliwang
+          column na ng tab ang listahan); wala = legend sa kaliwa ng drawing. */}
       <div className={`grid grid-cols-1 gap-6 items-start mb-6 ${wide ? "" : "sm:grid-cols-[160px_1fr]"}`}>
-        <ul className={wide ? "order-2 grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1.5" : "space-y-2.5"}>
+        {!wide && <ul className="space-y-2.5">
           {legend.map((l) => (
             <li key={l.k} className="flex items-center gap-2.5 text-sm text-stone">
               <Dot k={l.k} />
               {l.label}
             </li>
           ))}
-        </ul>
+        </ul>}
 
-        <svg viewBox="0 0 560 236" className={`w-full ${wide ? "order-1" : ""}`} style={{ color: GOLD }} aria-label="Bed frame side view with dimensions">
+        <svg viewBox="0 0 560 236" className="w-full" style={{ color: GOLD }} aria-label="Bed frame side view with dimensions">
           <defs>
             <pattern id="fd-tuft" width="8" height="8" patternUnits="userSpaceOnUse">
               <circle cx="4" cy="4" r="0.9" fill="currentColor" opacity="0.6" />
@@ -386,7 +386,7 @@ export default function FrameDiagram({
       {rows.length > 0 && (
         <div className="mt-5">
           <p className="text-[10px] font-bold tracking-widest2 mb-2" style={{ color: GOLD }}>ADD-ONS ON THIS BUILD</p>
-          <div className="grid gap-2.5 grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {rows.map((r) => <Tile key={r.k} row={r} />)}
           </div>
         </div>
