@@ -877,6 +877,31 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                 const label = m ? m[1].trim() : "";
                 const value = m ? m[2].trim() : l;
                 // Maraming size → dropdown (presyo kada size), hindi plain na linya.
+                if (/^sizes$/i.test(label) && readySizeOpts.length && /mattress/i.test(product.category)) {
+                  // MATTRESS: size buttons (hindi dropdown) — kita agad lahat ng
+                  // size at presyo, isang pindot lang.
+                  return (
+                    <div key={l} className="rounded border border-sand bg-transparent px-4 py-3 text-sm">
+                      <span className="block text-xs text-stone">Size</span>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {readySizeOpts.map((o) => {
+                          const on = o.label === readySizePick?.label;
+                          return (
+                            <button
+                              key={o.label}
+                              type="button"
+                              onClick={() => setReadySize(o.label)}
+                              className={`rounded-full border px-3 py-1.5 text-xs font-bold transition-colors ${on ? "border-espresso bg-espresso text-cream" : "border-stone/40 text-ink hover:border-ink"}`}
+                            >
+                              {o.label.replace(/x/i, "×")}
+                              {o.price > 0 && <span className={`ml-1.5 font-normal ${on ? "text-cream/80" : "text-stone"}`}>{formatPrice(o.price)}</span>}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                }
                 if (/^sizes$/i.test(label) && readySizeOpts.length) {
                   return (
                     <label key={l} className="flex items-center gap-3 rounded border border-sand bg-transparent px-4 py-3 text-sm">
