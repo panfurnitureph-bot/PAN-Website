@@ -217,6 +217,7 @@ export default function FrameDiagram({
   };
   const { noHead, platform, floating, wallPad } = bedFlags(build);
   const wallOff = 5 + Math.min(wallPad * 2, 10); // kapal ng dingding → lapad ng dashed outline
+  const wide = rows.length > 0;
   const drawerPos = choice(/drawer position|footboard drawer/i);
   const footHigh = on("I") && /mattress|elevated/i.test(val("I") + " " + (rows.find((r) => r.k === "I")?.label ?? ""));
   const legend = [...BASE_LEGEND.filter((l) => !(l.k === "E" && platform) && !(l.k === "B" && noHead)), ...rows.map((r) => ({ k: r.k, label: r.label }))];
@@ -233,8 +234,10 @@ export default function FrameDiagram({
         <span className="flex-1 border-t border-dotted" style={{ borderColor: GOLD }} />
       </h3>
 
-      <div className="grid grid-cols-1 sm:grid-cols-[160px_1fr] gap-6 items-start mb-6">
-        <ul className="space-y-2.5">
+      {/* May add-on = buong lapad ang drawing (legend sa ilalim, naka-column)
+          para mabasa ang dagdag na letra; wala = legend sa kaliwa. */}
+      <div className={`grid grid-cols-1 gap-6 items-start mb-6 ${wide ? "" : "sm:grid-cols-[160px_1fr]"}`}>
+        <ul className={wide ? "order-2 grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1.5" : "space-y-2.5"}>
           {legend.map((l) => (
             <li key={l.k} className="flex items-center gap-2.5 text-sm text-stone">
               <Dot k={l.k} />
@@ -243,7 +246,7 @@ export default function FrameDiagram({
           ))}
         </ul>
 
-        <svg viewBox="0 0 560 236" className="w-full" style={{ color: GOLD }} aria-label="Bed frame side view with dimensions">
+        <svg viewBox="0 0 560 236" className={`w-full ${wide ? "order-1" : ""}`} style={{ color: GOLD }} aria-label="Bed frame side view with dimensions">
           <defs>
             <pattern id="fd-tuft" width="8" height="8" patternUnits="userSpaceOnUse">
               <circle cx="4" cy="4" r="0.9" fill="currentColor" opacity="0.6" />
