@@ -122,6 +122,12 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
     return n > 0 ? String(n) + '"' : undefined;
   };
   const liveB = liveInch(/headboard\s*height/i), liveD = liveInch(/bedframe\s*height|base\s*height/i);
+  // MATTRESS: kapal (T) = live na Thickness ng customizer → default ng
+  // Configurator; ang size mismo ay W×L lang.
+  const mattT = liveInch(/thickness/i) ?? (() => {
+    const m = (mto?.measurements ?? []).find((x) => x.on && /thickness/i.test(x.label));
+    return m?.def ? `${m.def}"` : undefined;
+  })();
   // DOUBLE WALLING: ang frame ay lumalabas sa kutson (talaan ng team sa
   // lib/double-walling) — ang A (width) at C (length) ay sumusunod sa frame.
   // Floating legs → E = "Floating". Pareho ito ng ginagawa ng diagram.
@@ -173,7 +179,7 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
                   <>
                     <div>
                       <p className="font-bold text-ink">T — Thickness</p>
-                      <p className="text-stone">{d.thickness}&quot;</p>
+                      <p className="text-stone">{d.thickness ? `${d.thickness}"` : (mattT ?? "—")}</p>
                     </div>
                     <div>
                       <p className="font-bold text-ink">W — Width</p>
@@ -292,7 +298,7 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
       {/* KANAN: diagram */}
       <div>
         {isMattress ? (
-          <MattressDiagram sizes={bedSizes} focus={sizeFocus} onFocus={setSizeFocus} />
+          <MattressDiagram sizes={bedSizes} focus={sizeFocus} onFocus={setSizeFocus} thickness={mattT} />
         ) : isBed ? (
           <FrameDiagram
             sizes={bedSizes}
