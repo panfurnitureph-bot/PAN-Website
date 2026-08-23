@@ -8,10 +8,11 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { site as siteDefault, type Product, type SiteContent } from "@/lib/products";
-import FrameDiagram, { DEFAULT_BED_SIZES, bedBuildRows, type BedBuild } from "@/components/FrameDiagram";
+import FrameDiagram, { DEFAULT_BED_SIZES, bedBuildRows, bedFlags, type BedBuild } from "@/components/FrameDiagram";
 import MattressDiagram, { splitDim } from "@/components/MattressDiagram";
 import MeasureDiagram, { measureKind, measureRows } from "@/components/MeasureDiagram";
 import type { MtoItemConfig } from "@/lib/content";
+import { frameFor } from "@/lib/double-walling";
 
 const TABS = [
   { id: "description", label: "Description & Features" },
@@ -111,7 +112,16 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
     return n > 0 ? String(n) + '"' : undefined;
   };
   const liveB = liveInch(/headboard\s*height/i), liveD = liveInch(/bedframe\s*height|base\s*height/i);
-  const bedSizes = (liveB || liveD ? bedSizesBase.map((r) => ({ ...r, B: liveB ?? r.B, D: liveD ?? r.D })) : bedSizesBase) as typeof DEFAULT_BED_SIZES;
+  // DOUBLE WALLING: ang frame ay lumalabas sa kutson (talaan ng team sa
+  // lib/double-walling) — ang A (width) at C (length) ay sumusunod sa frame.
+  // Floating legs → E = "Floating". Pareho ito ng ginagawa ng diagram.
+  const flags = bedFlags(build);
+  const dwOn = !!build?.checks?.some((c) => /double walling/i.test(c));
+  const dwT = build?.dw?.thick ?? 8;
+  const bedSizes = bedSizesBase.map((r) => {
+    const f = dwOn ? frameFor(r.size, dwT) : null;
+    return { ...r, A: f ? `${f.w}"` : r.A, C: f ? `${f.l}"` : r.C, B: liveB ?? r.B, D: liveD ?? r.D, E: flags.floating ? "Floating" : r.E };
+  }) as typeof DEFAULT_BED_SIZES;
   const [sizeFocus, setSizeFocus] = useState<string | null>(
     isBed || isMattress ? bedSizes[0]?.size ?? null : null
   );
@@ -182,10 +192,12 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
               <p className="font-bold text-ink">A — Width</p>
               <p className="text-stone">{selected.A}</p>
             </div>
-            <div>
-              <p className="font-bold text-ink">B — Headboard Height</p>
-              <p className="text-stone">{selected.B}</p>
-            </div>
+            {!flags.noHead && (
+              <div>
+                <p className="font-bold text-ink">B — Headboard Height</p>
+                <p className="text-stone">{selected.B}</p>
+              </div>
+            )}
             <div>
               <p className="font-bold text-ink">C — Length</p>
               <p className="text-stone">{selected.C}</p>
@@ -194,10 +206,12 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
               <p className="font-bold text-ink">D — Base Height</p>
               <p className="text-stone">{selected.D}</p>
             </div>
-            <div>
-              <p className="font-bold text-ink">E — Legs</p>
-              <p className="text-stone">{selected.E}</p>
-            </div>
+            {!flags.platform && (
+              <div>
+                <p className="font-bold text-ink">E — Legs</p>
+                <p className="text-stone">{selected.E}</p>
+              </div>
+            )}
             {/* Mga add-on na pinili sa customizer — kapareho ng letra sa diagram */}
             {buildRows.map((r) => (
               <div key={r.k}>
