@@ -8,12 +8,14 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { NAV_LINKS, type SiteContent } from "@/lib/products";
+import { NAV_LINKS, type NavLink, type SiteContent } from "@/lib/products";
 import { useStore } from "@/components/store";
 
 // Ang `site` (promo banner, pangalan ng brand) ay galing sa layout — server
 // ang kumukuha nito sa Supabase, hindi na ang browser.
-export default function Header({ site }: { site: SiteContent }) {
+// `nav` ay ipinapasa ng layout (server) — doon na-sync ang categories mula sa
+// IMS; sa browser ay static lang ang NAV_LINKS kaya prop ang ginagamit.
+export default function Header({ site, nav = NAV_LINKS }: { site: SiteContent; nav?: NavLink[] }) {
   const { cartCount, wishlist, quoteCount } = useStore();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -173,7 +175,7 @@ export default function Header({ site }: { site: SiteContent }) {
 
         {/* Desktop nav — may mega-menu sa hover */}
         <nav className={`hidden lg:flex justify-center gap-8 pb-3 text-[15px] ${txt}`}>
-          {NAV_LINKS.map((link) => (
+          {nav.map((link) => (
             <div key={link.href} onMouseEnter={() => setOpenMenu(link.children ? link.label : null)}>
               <Link
                 href={link.href}
@@ -190,7 +192,7 @@ export default function Header({ site }: { site: SiteContent }) {
 
         {/* MEGA-MENU PANEL — subcategories kaliwa + featured image kanan */}
         {openMenu && (() => {
-          const link = NAV_LINKS.find((l) => l.label === openMenu);
+          const link = nav.find((l) => l.label === openMenu);
           if (!link?.children) return null;
           const featured = link.children.find((c) => c.href !== link.href);
           const featuredSlug = featured?.href.split("/").pop() ?? "bed";
@@ -238,7 +240,7 @@ export default function Header({ site }: { site: SiteContent }) {
         {/* Mobile menu — may expandable subcategories */}
         {menuOpen && (
           <nav className="lg:hidden flex flex-col border-t border-sand bg-cream px-6 py-4 gap-1 text-ink max-h-[70vh] overflow-y-auto">
-            {NAV_LINKS.map((link) => (
+            {nav.map((link) => (
               <div key={link.href}>
                 <div className="flex items-center justify-between">
                   <Link

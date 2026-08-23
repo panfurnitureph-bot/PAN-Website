@@ -64,7 +64,10 @@ const FOOTER_COLUMNS = [
 const PAYMENTS = ["Visa", "Pay", "GPay", "MC", "Klarna", "G Pay"];
 
 // Ang `site` ay ipinapasa ng layout (server) — hindi na binabasa dito.
-export default function Footer({ site }: { site: SiteContent }) {
+export default function Footer({ site, shop }: { site: SiteContent; shop?: { label: string; href: string }[] }) {
+  // SHOP column = mga category na galing sa IMS (ipinapasa ng layout); static
+  // na listahan lang ang fallback.
+  const cols = shop?.length ? FOOTER_COLUMNS.map((c) => (c.title === "SHOP" ? { ...c, links: shop } : c)) : FOOTER_COLUMNS;
   const [email, setEmail] = useState("");
   const [done, setDone] = useState(false);
 
@@ -133,7 +136,7 @@ export default function Footer({ site }: { site: SiteContent }) {
 
         {/* Link columns — desktop: grid; mobile: accordion (tap para buksan) */}
         <div className="hidden md:grid grid-cols-4 gap-8">
-          {FOOTER_COLUMNS.map((col) => (
+          {cols.map((col) => (
             <div key={col.title}>
               <h4 className="text-sm font-bold tracking-widest2 mb-5">{col.title}</h4>
               <ul className="space-y-3 text-sm text-cream/80">
@@ -149,7 +152,7 @@ export default function Footer({ site }: { site: SiteContent }) {
           ))}
         </div>
         <div className="md:hidden divide-y divide-cream/20 border-y border-cream/20">
-          {FOOTER_COLUMNS.map((col) => (
+          {cols.map((col) => (
             <details key={col.title} className="group py-4">
               <summary className="flex justify-between items-center text-sm font-bold tracking-widest2 cursor-pointer list-none">
                 {col.title}

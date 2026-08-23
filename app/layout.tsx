@@ -10,6 +10,7 @@ import TrackButton from "@/components/TrackButton";
 import EmbedMode from "@/components/EmbedMode";
 import ContentLive from "@/components/ContentLive";
 import { primeStoreContent } from "@/lib/content";
+import { NAV_LINKS, shopLinks } from "@/lib/products";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const cormorant = Cormorant({
@@ -51,9 +52,9 @@ export default async function RootLayout({
           <Suspense fallback={null}>
             <EmbedMode />
           </Suspense>
-          <Header site={site} />
+          <Header site={site} nav={NAV_LINKS} />
           <main className="min-h-screen">{children}</main>
-          <Footer site={site} />
+          <Footer site={site} shop={shopLinks()} />
           <TrackButton />
           <ChatBubble site={site} />
         </StoreProvider>

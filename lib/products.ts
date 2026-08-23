@@ -31,6 +31,10 @@ export type Product = {
   compareAtPrice: number | null;
   priceFrom?: number | null;
   category: string;
+  // Galing sa IMS publish (2026-08-23): pangalan ng category sa IMS at mga
+  // nav group nito — dito hinahango ng site ang collections/nav/tiles.
+  categoryTitle?: string;
+  categoryGroups?: string[];
   sku?: string; // internal lang — hindi ipinapakita sa customer
   stock?: number; // 0 = Out of stock sa product page
   colors: string[];
@@ -123,7 +127,10 @@ export function primeContent(next: {
   homepage?: HomepageContent;
   swatches?: LibrarySwatch[];
 }): void {
-  if (next.products?.length) products = next.products;
+  if (next.products?.length) {
+    products = next.products;
+    syncCategoriesFromProducts(products);
+  }
   if (next.site) site = next.site;
   if (next.homepage) homepage = next.homepage;
   if (next.swatches?.length) {
@@ -262,6 +269,49 @@ export const CATEGORY_TILES = [
   { label: "Swivel Chair", slug: "swivel-chair" },
   { label: "Wall Padding", slug: "wall-padding" },
 ];
+
+// ---------- Categories follow the IMS ----------
+// ANG IMS ANG PINAGMUMULAN NG CATEGORIES. Bawat published product ay may
+// `category` (slug), `categoryTitle` (pangalan sa IMS) at `categoryGroups`
+// (beds/sofas/dining/living). Dito idinadagdag/ina-update ang collection,
+// ang nav children ng group, at ang homepage tile — kaya ang i-publish sa MTO
+// Configurator ay agad may lugar sa site nang walang code change. Idempotent:
+// tinatawag kada primeContent().
+export function syncCategoriesFromProducts(list: Product[]): void {
+  for (const p of list) {
+    const slug = (p.category ?? "").trim();
+    if (!slug) continue;
+    const title = (p.categoryTitle ?? "").trim() || COLLECTIONS[slug]?.title || slug.replace(/-/g, " ");
+    // 1) sariling collection ng category
+    if (!COLLECTIONS[slug]) COLLECTIONS[slug] = { title, categories: [slug] };
+    else if (p.categoryTitle && COLLECTIONS[slug].title !== title) COLLECTIONS[slug].title = title;
+    // 2) mga group (Beds/Sofas/Dining/Living + New *)
+    for (const g of p.categoryGroups ?? []) {
+      const grp = COLLECTIONS[g];
+      if (!grp) continue;
+      if (!grp.categories.includes(slug)) grp.categories.push(slug);
+      const newGrp = COLLECTIONS["new-" + g];
+      if (newGrp && !newGrp.categories.includes(slug)) newGrp.categories.push(slug);
+      const nav = NAV_LINKS.find((l) => l.href === "/collections/" + g);
+      if (nav?.children) {
+        const href = "/collections/" + slug;
+        const child = nav.children.find((c) => c.href === href);
+        if (!child) nav.children.push({ label: title, href });
+        else if (child.label !== title) child.label = title;
+      }
+    }
+    // 3) homepage tile
+    const tile = CATEGORY_TILES.find((t) => t.slug === slug);
+    if (!tile) CATEGORY_TILES.push({ label: title, slug });
+    else if (tile.label !== title) tile.label = title;
+  }
+}
+
+// Footer "SHOP" links — lahat ng opisyal na category (isang slug bawat isa),
+// sa pagkakasunod ng tiles, para pareho ng nav at ng IMS.
+export function shopLinks(): { label: string; href: string }[] {
+  return CATEGORY_TILES.map((t) => ({ label: t.label, href: "/collections/" + t.slug }));
+}
 
 // ---------- Helpers ----------
 // Pangalan ng category para ipakita — PAREHO ng IMS (Promo Bed, Custom Bed,
