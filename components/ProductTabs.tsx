@@ -77,7 +77,9 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
   const isMattress = product.category === "mattress";
   // Kasama ang customized-bed — may frame din ito, kaya frame diagram ang bagay.
   const isBed =
-    !isMattress && ["bed", "customized-bed", "sofa-bed", "bedroom"].includes(product.category);
+    !isMattress && ["bed", "customized-bed", "bedroom"].includes(product.category);
+  // Sofa Bed = sofa drawing (armrest, backrest, seat…) + "Opens to" na sukat
+  // ng kutson mula sa napiling size — hindi frame diagram ng kama.
   const specs = product.dimensionSpecs ?? [];
   const dims = parseDims(product.dimensions);
   // Gamitin ang custom na bedSizes ng product kung meron, kung wala default
@@ -102,10 +104,18 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
     return () => window.removeEventListener("pb-build-change", h);
   }, []);
   const buildRows = isBed ? bedBuildRows(build) : [];
+  // Pangalan ng napiling size (pb-size-change) — para sa "Opens to" ng sofa bed.
+  const [sizeName, setSizeName] = useState("");
   // IBANG CATEGORY (sofa, chairs, tables, wall padding…): line drawing na may
   // letra, sumusunod sa measurements ng Configurator at sa live na pili.
   const mKind = !isMattress && !isBed ? measureKind(product.category) : null;
   const mRows = mKind ? measureRows(mKind, liveMeas, mto?.measurements) : { rows: [], live: false };
+  if (mKind && /sofa.?bed/i.test(product.category)) {
+    const on = (mto?.sizes ?? []).filter((x) => x.on !== false);
+    const pick = on.find((x) => sizeName && x.label.toLowerCase().startsWith(sizeName.toLowerCase())) ?? on[0];
+    const m = pick ? /(\d+)\s*x\s*(\d+)/i.exec(pick.label) : null;
+    if (m) mRows.rows.push({ k: String.fromCharCode(65 + mRows.rows.length), label: "Opens to (mattress)", value: `${m[1]}"×${m[2]}"` });
+  }
   const liveInch = (re: RegExp) => {
     const k = Object.keys(liveMeas).find((x) => re.test(x));
     const n = k ? liveMeas[k] : 0;
@@ -130,6 +140,7 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
   useEffect(() => {
     function onSize(e: Event) {
       const id = (e as CustomEvent).detail as string;
+      setSizeName(id);
       // I-match ang selector id (hal. "King 2", "Double/Full") sa table size
       const m = bedSizes.find(
         (s) => s.size.toLowerCase().replace(/[\s/]/g, "") === id.toLowerCase().replace(/[\s/]/g, "")
