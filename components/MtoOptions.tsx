@@ -682,7 +682,19 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     .split("\n")
     .map((s) => s.trim().replace(/^[•·\-]\s*/, ""))
     .filter(Boolean);
-  const readyPrice = Number(px.mtoReadyPrice ?? product.price ?? 0);
+  // MARAMIHANG SIZE (IMS 2026-08-23): "Sizes: 36x75 ₱7,100 · 48x75 ₱8,650 · …"
+  // sa specs → Size dropdown; ang presyo ay sumusunod sa napiling size.
+  const readySizeOpts = (() => {
+    const line = readySpecs.find((l) => /^sizes:/i.test(l));
+    if (!line) return [] as { label: string; price: number }[];
+    return line.replace(/^sizes:\s*/i, "").split(/\s*[·,]\s*/).map((t) => {
+      const m = /^(\S+)(?:\s+₱?\s*([\d,]+(?:\.\d+)?))?/.exec(t.trim());
+      return m ? { label: m[1], price: Number((m[2] ?? "0").replace(/,/g, "")) } : null;
+    }).filter((x): x is { label: string; price: number } => !!x && !!x.label);
+  })();
+  const [readySize, setReadySize] = useState("");
+  const readySizePick = readySizeOpts.find((o) => o.label === readySize) ?? readySizeOpts[0];
+  const readyPrice = readySizePick && readySizePick.price > 0 ? readySizePick.price : Number(px.mtoReadyPrice ?? product.price ?? 0);
   const readyAvail = (product.stock ?? 0) > 0 && readyPrice > 0;
   // LOCKED (as-is item): laging ready/as-is view — walang customize.
   const [view, setView] = useState<"ready" | "mto">(locked || readyAvail ? "ready" : "mto");
@@ -742,10 +754,15 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
 
 
   function handleBuyReady(buyNow: boolean) {
-    addToCart(product.slug, "Ready unit — as configured", qty, readyPrice, {
-      baseLabel: "Ready unit — as configured",
+    const sizeLabel = readySizePick ? `Size: ${readySizePick.label}` : "";
+    const base = readySizePick ? `Ready unit — ${readySizePick.label}` : "Ready unit — as configured";
+    addToCart(product.slug, base, qty, readyPrice, {
+      baseLabel: base,
       basePrice: readyPrice,
-      addOns: readySpecs.map((l) => ({ label: l, price: 0 })),
+      addOns: [
+        ...readySpecs.filter((l) => !/^sizes:/i.test(l)).map((l) => ({ label: l, price: 0 })),
+        ...(sizeLabel ? [{ label: sizeLabel, price: 0 }] : []),
+      ],
     });
     if (buyNow) router.push("/checkout");
     else {
@@ -859,6 +876,26 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                 const m = /^([^:]+):\s*(.+)$/.exec(l);
                 const label = m ? m[1].trim() : "";
                 const value = m ? m[2].trim() : l;
+                // Maraming size → dropdown (presyo kada size), hindi plain na linya.
+                if (/^sizes$/i.test(label) && readySizeOpts.length) {
+                  return (
+                    <label key={l} className="flex items-center gap-3 rounded border border-sand bg-transparent px-4 py-3 text-sm">
+                      <span className="min-w-0 flex-1">
+                        <select
+                          value={readySizePick?.label ?? ""}
+                          onChange={(e) => setReadySize(e.target.value)}
+                          className="w-full bg-transparent font-bold leading-tight outline-none"
+                        >
+                          {readySizeOpts.map((o) => (
+                            <option key={o.label} value={o.label}>{o.label}{o.price > 0 ? ` — ${formatPrice(o.price)}` : ""}</option>
+                          ))}
+                        </select>
+                        <span className="block text-xs text-stone">Size</span>
+                      </span>
+                      {readySizePick && readySizePick.price > 0 && <span className="shrink-0 font-bold">{formatPrice(readySizePick.price)}</span>}
+                    </label>
+                  );
+                }
                 // Hanapin ang presyo ng linyang ito sa config: size price,
                 // add-on +₱, choice option, o "included".
                 let price = "";

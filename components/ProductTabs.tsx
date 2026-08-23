@@ -83,7 +83,20 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
   const specs = product.dimensionSpecs ?? [];
   const dims = parseDims(product.dimensions);
   // Gamitin ang custom na bedSizes ng product kung meron, kung wala default
-  const bedSizesBase = (product.bedSizes && product.bedSizes.length
+  // MATTRESS na may "Sizes:"/"Size:" sa as-is specs (IMS Products) → iyon ang
+  // mga size ng diagram (36x75 → SINGLE, …), hindi ang default na kama.
+  const readySpecLines = String((product as unknown as { mtoReadySpecs?: string }).mtoReadySpecs ?? "").split("\n").map((l) => l.trim());
+  const SIZE_NAME: Record<string, string> = { "36x75": "SINGLE", "48x75": "TWIN", "54x75": "DOUBLE/FULL", "60x75": "QUEEN", "72x75": "KING", "72x78": "KING 2" };
+  const specSizes = (() => {
+    if (!isMattress) return [] as typeof DEFAULT_BED_SIZES;
+    const line = readySpecLines.find((l) => /^sizes?:/i.test(l));
+    if (!line) return [] as typeof DEFAULT_BED_SIZES;
+    const dims = line.replace(/^sizes?:\s*/i, "").split(/\s*[·,]\s*/).map((t) => t.trim().split(/\s+/)[0].toLowerCase().replace(/"/g, "")).filter((d) => /^\d+x\d+$/.test(d));
+    return dims.map((d) => ({ size: SIZE_NAME[d] ?? d.toUpperCase(), dim: d.replace("x", '"x') + '"', A: "", B: "", C: "", D: "", E: "" }));
+  })();
+  const bedSizesBase = (specSizes.length
+    ? specSizes
+    : product.bedSizes && product.bedSizes.length
     ? product.bedSizes.filter((s: any) => s.enabled !== false)
     : DEFAULT_BED_SIZES) as typeof DEFAULT_BED_SIZES;
   // LIVE mula sa customizer (2026-08-23): kapag inangat ng customer ang Headboard
@@ -140,10 +153,12 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
     };
     const addons = mto?.addons ?? [];
     const fixed = addons.find((a) => a.on !== false && a.type === "FIXED" && /thickness/i.test(a.label))?.label ?? "";
+    // As-is specs mula sa IMS Products: "Thickness: 6 inches".
+    const specThick = readySpecLines.find((l) => /^thickness:/i.test(l))?.replace(/inches?/i, "in") ?? "";
     const picked = Object.entries(build?.choices ?? {}).find(([g]) => /^model/i.test(g))?.[1] ?? "";
     const modelRows = addons.filter((a) => /^model\s*:/i.test(a.label));
     const firstOf = (rows: typeof modelRows) => rows[0]?.label.split(":")[1]?.split("/")[0]?.trim() ?? "";
-    const t = thick(fixed) ?? thick(picked) ?? thick(firstOf(modelRows.filter((a) => a.on !== false))) ?? thick(firstOf(modelRows)) ?? thick(product.name);
+    const t = thick(fixed) ?? thick(specThick) ?? thick(picked) ?? thick(firstOf(modelRows.filter((a) => a.on !== false))) ?? thick(firstOf(modelRows)) ?? thick(product.name);
     return t ? `${t}"` : undefined;
   })();
   // DOUBLE WALLING: ang frame ay lumalabas sa kutson (talaan ng team sa
