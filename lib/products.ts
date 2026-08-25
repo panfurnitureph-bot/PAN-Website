@@ -87,7 +87,11 @@ export type Product = {
   reviews: Review[];
 };
 
-export type SiteContent = typeof siteData;
+// MENU IMAGES (2026-08-26): larawan sa kanan ng mega-menu, kada top menu
+// ("beds" | "sofas" | "dining" | "living"), pinamamahalaan sa PAN app
+// (Website > Promo & Site > Menu Images). Hindi kasama sa content/site.json —
+// opsyonal ito at galing sa Supabase, kaya nakadagdag sa tipo.
+export type SiteContent = typeof siteData & { menuImages?: Record<string, string> };
 export type HomepageContent = typeof homepageData;
 
 // ---------- Swatch library (name -> texture image + hex) ----------

@@ -196,6 +196,12 @@ export default function Header({ site, nav = NAV_LINKS }: { site: SiteContent; n
           if (!link?.children) return null;
           const featured = link.children.find((c) => c.href !== link.href);
           const featuredSlug = featured?.href.split("/").pop() ?? "bed";
+          // ANG LARAWAN AY MULA SA IMS (2026-08-26) — Website > Promo & Site >
+          // Menu Images. Dati ay naka-fix sa file ng UNANG subcategory, kaya ang
+          // "Living" ay nagpapakita ng litrato ng Side Table at ang pagpapalit
+          // ay nangangailangan ng deploy. Panakip pa rin ang lumang file kapag
+          // walang naka-upload.
+          const menuImg = site.menuImages?.[openMenu.toLowerCase()] || `/images/category-${featuredSlug}.jpg`;
           return (
             <div className="hidden lg:block absolute inset-x-0 top-full bg-cream border-t border-sand shadow-lg">
               <div className="max-w-6xl mx-auto grid grid-cols-[240px_1fr] gap-12 px-10 py-10">
@@ -224,7 +230,7 @@ export default function Header({ site, nav = NAV_LINKS }: { site: SiteContent; n
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={`/images/category-${featuredSlug}.jpg`}
+                    src={menuImg}
                     alt={link.label}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
