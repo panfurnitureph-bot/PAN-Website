@@ -90,7 +90,7 @@ export default function Header({ site, nav = NAV_LINKS }: { site: SiteContent; n
           {/* Center: serif logo */}
           <Link
             href="/"
-            className="justify-self-center font-cormorant text-xl sm:text-[28px] font-medium tracking-[0.15em] sm:tracking-[0.25em] whitespace-nowrap"
+            className="justify-self-center font-cormorant text-xl sm:text-[26px] font-normal tracking-[0.1em] sm:tracking-[0.16em] whitespace-nowrap"
           >
             {site.brand.name.toUpperCase()}
           </Link>

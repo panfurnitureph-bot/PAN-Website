@@ -21,8 +21,11 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-inter)", "Helvetica", "Arial", "sans-serif"],
-        // Serif ng Poly & Bark para sa headlines at logo
-        cormorant: ["var(--font-cormorant)", "Georgia", "serif"],
+        // DISPLAY — headline at logo. Ang pangalan ay `cormorant` pa rin (nasa
+        // sampung file ang class), pero Bricolage Grotesque na ang titik: sans
+        // na, kaya sans-serif ang fallback — hindi Georgia, na magpapalit ng
+        // buong anyo ng pahina kung mabagal ang pag-load ng font.
+        cormorant: ["var(--font-cormorant)", "Segoe UI", "Helvetica", "sans-serif"],
       },
       keyframes: {
         fadeIn: {

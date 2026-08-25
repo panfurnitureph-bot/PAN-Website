@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Cormorant } from "next/font/google";
+import { Inter, Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
 import { StoreProvider } from "@/components/store";
 import Header from "@/components/Header";
@@ -13,9 +13,18 @@ import { primeStoreContent } from "@/lib/content";
 import { NAV_LINKS, shopLinks } from "@/lib/products";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const cormorant = Cormorant({
+// DISPLAY (2026-08-26) — Cormorant ito noon: ang libreng Didot na ginagamit ng
+// bawat furniture, skincare at hotel na site. Maganda ang titik, pero walang
+// sinasabi tungkol sa PAN. Ang Bricolage Grotesque ay makapal at bahagyang
+// hindi pantay — gawa ng kamay, hindi boutique sa Milan.
+//
+// Pinanatili ang variable name (--font-cormorant) at ang class na
+// `font-cormorant`: nasa sampung file ito, at ang pagpapalit ng pangalan ay
+// walang idadagdag maliban sa panganib. Isang linya lang ang ibabalik kung
+// hindi bagay.
+const cormorant = Bricolage_Grotesque({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-cormorant",
 });
 
