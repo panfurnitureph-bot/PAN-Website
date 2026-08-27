@@ -5,7 +5,7 @@
 // mula sa naka-save na order, kaya hindi ito mapapakialaman mula sa browser.
 //
 // Kailangan sa .env.local:
-//   PAN_APP_URL=https://pan-furnitures.vercel.app
+//   PAN_APP_URL=https://panfurnitures.cloud
 //   PAN_APP_WEBHOOK_SECRET=<parehong secret ng app>
 
 import { NextRequest, NextResponse } from "next/server";

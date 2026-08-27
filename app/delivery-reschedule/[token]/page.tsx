@@ -7,7 +7,7 @@ import RescheduleClient from "./RescheduleClient";
 export const metadata: Metadata = { title: "Reschedule Your Delivery — PAN Furniture" };
 export const dynamic = "force-dynamic";
 
-const APP_URL = (process.env.PAN_APP_URL || "https://pan-furnitures.vercel.app").replace(/\/+$/, "");
+const APP_URL = (process.env.PAN_APP_URL || "https://panfurnitures.cloud").replace(/\/+$/, "");
 
 type Summary = {
   orderNumber: string | null;

@@ -8,7 +8,7 @@ import ConfirmClient from "./ConfirmClient";
 export const metadata: Metadata = { title: "Confirm Your Delivery — PAN Furniture" };
 export const dynamic = "force-dynamic";
 
-const APP_URL = (process.env.PAN_APP_URL || "https://pan-furnitures.vercel.app").replace(/\/+$/, "");
+const APP_URL = (process.env.PAN_APP_URL || "https://panfurnitures.cloud").replace(/\/+$/, "");
 
 type Summary = {
   orderNumber: string | null;

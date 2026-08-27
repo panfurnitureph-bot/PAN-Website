@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-const APP_URL = (process.env.PAN_APP_URL || "https://pan-furnitures.vercel.app").replace(/\/+$/, "");
+const APP_URL = (process.env.PAN_APP_URL || "https://panfurnitures.cloud").replace(/\/+$/, "");
 
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;

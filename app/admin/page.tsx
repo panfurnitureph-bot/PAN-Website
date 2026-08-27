@@ -17,7 +17,7 @@ import Link from "next/link";
 export const metadata = { title: "Admin — moved" };
 
 const APP_URL =
-  process.env.PAN_APP_URL?.replace(/\/$/, "") ?? "https://pan-furnitures.vercel.app";
+  process.env.PAN_APP_URL?.replace(/\/$/, "") ?? "https://panfurnitures.cloud";
 
 export default function AdminMoved() {
   return (

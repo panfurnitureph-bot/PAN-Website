@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 // Server-side proxy papunta sa IMS confirm API — para ang browser ng customer
 // ay panfurniture.ph LANG ang kausap (hindi lantad ang IMS host).
-const APP_URL = (process.env.PAN_APP_URL || "https://pan-furnitures.vercel.app").replace(/\/+$/, "");
+const APP_URL = (process.env.PAN_APP_URL || "https://panfurnitures.cloud").replace(/\/+$/, "");
 
 export const dynamic = "force-dynamic";
 
