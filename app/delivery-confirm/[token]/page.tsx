@@ -16,6 +16,7 @@ type Summary = {
   address: string | null;
   item?: string | null;
   date: string | null;
+  timeWindow?: string | null;
   balance: number;
   alreadyConfirmed: boolean;
 };

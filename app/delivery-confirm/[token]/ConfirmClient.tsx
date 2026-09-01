@@ -8,6 +8,10 @@
 
 import { useState } from "react";
 
+// TUNAY NA LOGO (2026-09-01, "ausin ung logo") — parehong asset ng mga email
+// ng IMS; ang dating "PAN" na teksto sa bilog ay pansamantalang seal lang.
+const LOGO = `${process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://ujxzhdkzjgiulvhlcehr.supabase.co"}/storage/v1/object/public/product-images/email-assets/logo-transparent.png`;
+
 const peso = (n: number) => `₱${(Number(n) || 0).toLocaleString("en-PH", { minimumFractionDigits: 2 })}`;
 const fmtLong = (iso: string | null) => {
   if (!iso) return "—";
@@ -62,6 +66,7 @@ export default function ConfirmClient({ token, summary }: {
     address: string | null;
     item?: string | null;
     date: string | null;
+    timeWindow?: string | null;
     balance: number;
     alreadyConfirmed: boolean;
   };
@@ -95,7 +100,8 @@ export default function ConfirmClient({ token, summary }: {
     <div className="rounded-xl overflow-hidden border border-[#e6dcc4] shadow-sm">
       {/* Header: seal + wordmark (kapareho ng email) */}
       <div className="bg-[#4a3b1a] px-7 pt-7 pb-6 border-b-[3px] border-[#caa45a] text-center">
-        <span className="inline-flex w-16 h-16 items-center justify-center rounded-full border-2 border-[#caa45a] font-cormorant font-bold tracking-[0.15em] text-[#caa45a]">PAN</span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={LOGO} alt="PAN Furniture" className="mx-auto h-14 w-auto" />
         <p className="font-cormorant font-bold text-2xl tracking-[0.3em] text-[#f4ead8] mt-3.5">PAN&nbsp;FURNITURE</p>
       </div>
 
@@ -118,12 +124,19 @@ export default function ConfirmClient({ token, summary }: {
             <div className="text-center rounded-lg border border-[#bfe0cc] bg-[#f0f7f2] px-6 py-5">
               <p className="text-[10px] font-bold tracking-widest2 uppercase text-[#2e7d52] mb-2">Confirmed Delivery</p>
               <p className="font-cormorant text-[26px] font-bold text-[#1e5c3c] leading-tight">{fmtLong(summary.date)}</p>
-              <p className="text-xs text-[#8a8272] mt-1.5">{weekdayOf(summary.date)}</p>
+              <p className="text-xs text-[#8a8272] mt-1.5">{weekdayOf(summary.date)}{summary.timeWindow ? ` · ${summary.timeWindow}` : ""}</p>
             </div>
             <Steps confirmed />
+            {/* KUMPLETONG DETALYE PATI DITO (2026-09-01, "dapat may details
+                din") — ang na-book na view ay Order at address lang dati:
+                nawawala ang gamit at ang recipient sa mismong resibo ng
+                kumpirmasyon. */}
             <div className="mt-4 mb-1">
               <DetailRow label="Order" value={<span className="font-mono text-[13px] font-bold">{ord}</span>} />
+              {summary.item && <DetailRow label="Item" value={summary.item} />}
+              {summary.customerName && <DetailRow label="Recipient" value={<b>{summary.customerName}</b>} />}
               {summary.address && <DetailRow label="Delivery address" value={<b>{summary.address}</b>} />}
+              {summary.timeWindow && <DetailRow label="Time window" value={summary.timeWindow} />}
               {summary.balance > 0 && <DetailRow label="Amount due on arrival (COD)" value={peso(summary.balance)} bold />}
             </div>
             <div className="text-xs leading-[1.9] text-[#57534b] mt-5">
@@ -161,7 +174,9 @@ export default function ConfirmClient({ token, summary }: {
             <div className="mt-4 mb-1">
               <DetailRow label="Order" value={<span className="font-mono text-[13px] font-bold">{ord}</span>} />
               {summary.item && <DetailRow label="Item" value={summary.item} />}
+              {summary.customerName && <DetailRow label="Recipient" value={<b>{summary.customerName}</b>} />}
               {summary.address && <DetailRow label="Delivery address" value={<b>{summary.address}</b>} />}
+              {summary.timeWindow && <DetailRow label="Time window" value={summary.timeWindow} />}
               {summary.balance > 0 && <DetailRow label="Balance due on delivery (COD)" value={peso(summary.balance)} bold />}
             </div>
           </>
