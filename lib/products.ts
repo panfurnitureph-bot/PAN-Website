@@ -22,6 +22,9 @@ export type ColorSwatch = {
   swatch?: string; // close-up ng tela (para sa swatch circle + hover)
   image?: string; // buong product photo sa kulay na ito
   hex?: string; // opsyonal na kulay (ginagamit ng recolor kung walang swatch)
+  // LITRATO KADA KULAY (IMS 0231, 2026-09-03): kapag may laman, ito ang buong
+  // gallery ng product page habang napili ang kulay na ito.
+  images?: string[];
 };
 
 export type Product = {

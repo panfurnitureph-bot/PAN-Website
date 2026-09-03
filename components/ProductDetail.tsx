@@ -56,6 +56,18 @@ export default function ProductDetail({
   }, []);
   const mtoLocked = !!mto && !mto.customizable;
   const hideOpts = mtoActive || mtoLocked;
+  // Ang Fabric tiles ng MTO panel (ready-unit view) ang color picker kapag
+  // nakatago ang classic options - sumusunod ang gallery sa napiling kulay.
+  useEffect(() => {
+    const h = (e: Event) => {
+      const nm = String((e as CustomEvent).detail ?? "").toLowerCase();
+      const i = (product.colorSwatches ?? []).findIndex((s) => s.name.toLowerCase() === nm);
+      if (i >= 0) pickColor(i);
+    };
+    window.addEventListener("pb-color-change", h);
+    return () => window.removeEventListener("pb-color-change", h);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product]);
   const { addToCart, toggleWishlist, wishlist } = useStore();
   const router = useRouter();
   const [imageIdx, setImageIdx] = useState(0);
@@ -84,14 +96,21 @@ export default function ProductDetail({
   // sariling recolored photo, idadagdag ito sa DULO ng gallery (para may
   // ma-swap na larawan nang hindi nagugulo ang catalog crops).
   const swatchImg = product.colorSwatches?.[colorIdx]?.image;
+  // LITRATO KADA KULAY (IMS 0231, 2026-09-03): kapag may sariling hanay ng
+  // litrato ang kulay, ITO ang buong gallery (hero + thumbnails) - Poly & Bark
+  // style. Walang hanay = dating gawi (catalog crops + recolored photo sa dulo).
+  const colorImages = product.colorSwatches?.[colorIdx]?.images ?? [];
   const galleryImages =
-    swatchImg && !product.images.includes(swatchImg)
+    colorImages.length
+      ? colorImages
+      : swatchImg && !product.images.includes(swatchImg)
       ? [...product.images, swatchImg]
       : product.images;
 
   // Kapag napili ang kulay, ilipat ang gallery sa photo ng kulay na yun
   function pickColor(i: number) {
     setColorIdx(i);
+    if (product.colorSwatches?.[i]?.images?.length) { setImageIdx(0); return; }
     const img = product.colorSwatches?.[i]?.image;
     if (img) {
       const merged = product.images.includes(img)

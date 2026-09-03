@@ -698,8 +698,13 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   // sya automatic"): ang mga telang pinili sa Configurator ay lumalabas din sa
   // yari-nang-unit na view bilang swatch tiles - ito ang mga kulay na available
   // sa stock. Unang tela ang default; ang pili ay sumasama sa cart line.
+  // COLOR VARIANTS ng Product Management (IMS 0231) ang mauuna kapag meron -
+  // iyon ang may litrato kada kulay; kung wala, ang fabricsPick ng Configurator.
+  const readyColors: LibrarySwatch[] = product.colorSwatches?.length
+    ? product.colorSwatches.map((s) => ({ name: s.name, swatch: s.swatch ?? s.image, color: s.hex, material: s.material }))
+    : fabrics;
   const [readyFabric, setReadyFabric] = useState("");
-  const readyFabricPick = fabrics.find((l) => l.name === readyFabric) ?? fabrics[0];
+  const readyFabricPick = readyColors.find((l) => l.name === readyFabric) ?? readyColors[0];
   const readyPrice = readySizePick && readySizePick.price > 0 ? readySizePick.price : Number(px.mtoReadyPrice ?? product.price ?? 0);
   const readyAvail = (product.stock ?? 0) > 0 && readyPrice > 0;
   // LOCKED (as-is item): laging ready/as-is view — walang customize.
@@ -973,20 +978,24 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           </div>
         )}
         {/* Fabric / color ng yari nang unit — ang mga telang pinili sa Configurator */}
-        {fabrics.length > 0 && (
+        {readyColors.length > 0 && (
           <div className="mt-3 rounded-lg border border-sand px-4 py-3">
             <div className="flex items-baseline justify-between gap-3">
               <span className="text-sm text-stone">Fabric</span>
               <span className="truncate text-sm font-semibold">{readyFabricPick?.name ?? ""}</span>
             </div>
             <div className="mt-2 flex flex-wrap gap-1.5">
-              {fabrics.map((l) => {
+              {readyColors.map((l) => {
                 const on = l.name === readyFabricPick?.name;
                 return (
                   <button
                     key={l.name}
                     type="button"
-                    onClick={() => setReadyFabric(l.name)}
+                    onClick={() => {
+                      setReadyFabric(l.name);
+                      // Sabihan ang gallery - palit sa litrato ng kulay na ito (IMS 0231).
+                      window.dispatchEvent(new CustomEvent("pb-color-change", { detail: l.name }));
+                    }}
                     title={l.name}
                     className={`w-[92px] flex-none overflow-hidden rounded-md bg-white text-center ${on ? "border-2 border-cognac ring-2 ring-cognac/20" : "border border-sand hover:border-cognac"}`}
                   >
