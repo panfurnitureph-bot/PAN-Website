@@ -891,7 +891,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
         <hr className="border-sand my-5" />
         {/* As-is spec sheet ng yari nang unit — MOCK STYLE: bold value + gray
             label sub, presyo/"included" sa kanan (galing sa config prices). */}
-        {readySpecs.length > 0 && (
+        {readySizeOpts.length > 0 && (
           <div className="rounded-lg border border-sand overflow-hidden">
             <div className="p-3 space-y-2">
               {readySpecs.map((l) => {
@@ -946,42 +946,22 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                     </label>
                   );
                 }
-                // Hanapin ang presyo ng linyang ito sa config: size price,
-                // add-on +₱, choice option, o "included".
-                let price = "";
-                if (/^size$/i.test(label)) {
-                  const sz = sizes.find((s) => s.label.toLowerCase() === value.toLowerCase() || s.label.toLowerCase().startsWith(value.toLowerCase().split(" ")[0]));
-                  if (sz && (sz.price ?? 0) > 0) price = formatPrice(sz.price!);
-                } else {
-                  const ad = addons.find((a) => a.label.toLowerCase() === l.toLowerCase() || a.label.toLowerCase() === value.toLowerCase());
-                  if (ad) price = (ad.price ?? 0) > 0 ? `+${formatPrice(ad.price!)}` : "included";
-                  else {
-                    let hit: ChoiceOpt | undefined;
-                    for (const g of choiceGroups) {
-                      hit = g.options.find((o) => o.full.toLowerCase() === l.toLowerCase() || (g.name.toLowerCase() === label.toLowerCase() && o.value.toLowerCase() === value.toLowerCase()));
-                      if (hit) break;
-                    }
-                    if (hit) price = (hit.price ?? 0) > 0 ? `+${formatPrice(hit.price!)}` : "included";
-                    else if (/color|fabric|upholster/i.test(label)) price = "included";
-                  }
-                }
-                return (
-                  <div key={l} className="flex items-center gap-3 rounded border border-sand bg-transparent px-4 py-3 text-sm">
-                    <span className="min-w-0 flex-1">
-                      <span className="block font-bold leading-tight">{value}</span>
-                      {label && <span className="block text-xs text-stone">{label}</span>}
-                    </span>
-                    {price && (
-                      <span className={`shrink-0 ${price === "included" ? "text-xs text-stone" : "font-bold"}`}>{price}</span>
-                    )}
-                  </div>
-                );
+                // REDUNDANT (2026-09-03, "mas okay ba alisin dito at iwan ung
+                // baba"): ang sukat at tela ay nasa Dimensions tab at sa Fabric
+                // tiles na - hindi na inuulit dito. Size picker lang ang natitira.
+                return null;
               })}
             </div>
             <div className="flex items-center gap-2 border-t border-sand bg-linen px-4 py-2">
               <span className="rounded bg-espresso px-2 py-0.5 text-[9px] font-extrabold tracking-widest2 text-cream">AS-IS</span>
               <span className="text-xs text-stone">Built exactly as specified — this unit is ready for delivery.</span>
             </div>
+          </div>
+        )}
+        {readySizeOpts.length === 0 && (
+          <div className="flex items-center gap-2 rounded-lg border border-sand bg-linen px-4 py-2">
+            <span className="rounded bg-espresso px-2 py-0.5 text-[9px] font-extrabold tracking-widest2 text-cream">AS-IS</span>
+            <span className="text-xs text-stone">Built exactly as specified — this unit is ready for delivery. Full measurements are in the Dimensions tab.</span>
           </div>
         )}
         {/* Fabric / color ng yari nang unit — ang mga telang pinili sa Configurator */}

@@ -137,14 +137,16 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
     .filter((m): m is RegExpExecArray => !!m && !/^sizes?$/i.test(m[1].trim()))
     .map((m) => ({ label: m[1].trim(), n: Number(m[2]) }));
   const specMeas: Record<string, number> = {};
-  for (const r of specMeasRows) specMeas[r.label] = r.n;
+  // "Seat Height (incl. legs)" ↔ "Seat Height" ng drawing: itala rin nang
+  // walang parenthetical para tumugma ang letra (B) at ang halaga.
+  for (const r of specMeasRows) { specMeas[r.label] = r.n; specMeas[r.label.replace(/\s*\(.*?\)\s*/g, " ").trim()] = r.n; }
   const useSpec = mtoLocked && !Object.keys(liveMeas).length && specMeasRows.length > 0;
   const mRows = mKind ? measureRows(mKind, useSpec ? specMeas : liveMeas, mto?.measurements) : { rows: [], live: false };
   if (useSpec) mRows.live = false;
   // Listahan sa kaliwa kapag locked: ang mga linya ng Product Management, may
   // letra kung nasa drawing ang sukat (A-D), wala kung dagdag na detalye.
   const lockedRows = useSpec
-    ? specMeasRows.map((r) => ({ k: mRows.rows.find((x) => normL(x.label) === normL(r.label))?.k ?? "", label: r.label, value: `${r.n}"` }))
+    ? specMeasRows.map((r) => ({ k: mRows.rows.find((x) => normL(x.label) === normL(r.label) || normL(x.label) === normL(r.label.replace(/\s*\(.*?\)\s*/g, " ")))?.k ?? "", label: r.label, value: `${r.n}"` }))
     : null;
   if (mKind && /sofa.?bed/i.test(product.category)) {
     const on = (mto?.sizes ?? []).filter((x) => x.on !== false);
