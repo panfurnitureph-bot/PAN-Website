@@ -7,6 +7,7 @@
 // Editable ang laman sa content/homepage.json → googleReviews.
 
 import Image from "next/image";
+import Rail from "@/components/home/Rail";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { averageRating, type HomepageContent, type Product } from "@/lib/products";
@@ -332,22 +333,14 @@ export default function GoogleReviews({
   // storefront. Reviews na walang rating ay ipinapalagay na mataas (para hindi
   // matanggal ang mga lumang record na walang score).
   const items = googleReviews.items.filter((r) => (r.rating ?? 5) >= 4);
-  const [shown, setShown] = useState(6);
   const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   return (
-    <section className="max-w-7xl mx-auto px-6 py-14">
-      <h2 className="text-2xl sm:text-3xl mb-1">{title}</h2>
-      <p className="flex items-center gap-2 text-sm mb-10">
-        <strong>{rating}</strong>
-        <Stars n={5} />
-        <span>{count.toLocaleString()} Reviews</span>
-      </p>
-
-      {/* Pantay-pantay na cards: putol ang mahabang text (SEE MORE),
-          isang photo lang ang preview — buong laman sa modal */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 items-start">
-        {items.slice(0, shown).map((r, i) => {
+    <section id="reviews" className="max-w-7xl mx-auto px-4 sm:px-8 py-12 md:py-14">
+      {/* RAIL (2026-09-04): isang hilera, parehong carousel engine; lightbox
+          at "Write a review" ay nananatili. */}
+      <Rail title={title} sub={`${rating} ★ · ${count.toLocaleString()} reviews · verified on Google`} n={[3, 2, 2, 1]} autoplay={false}>
+        {items.map((r, i) => {
           const isLong = r.text.length > 160;
           const preview = isLong ? r.text.slice(0, 157).trimEnd() + "…" : r.text;
           // Unang tunay na larawan (hindi generated na card), kung meron.
@@ -403,17 +396,9 @@ export default function GoogleReviews({
             </div>
           );
         })}
-      </div>
+      </Rail>
 
       <div className="text-center mt-8 space-y-4">
-        {shown < items.length && (
-          <button
-            onClick={() => setShown(shown + 6)}
-            className="border border-stone/50 px-8 py-3 text-xs font-bold tracking-widest2 hover:border-ink transition-colors"
-          >
-            LOAD MORE
-          </button>
-        )}
         <p className="flex items-center justify-center gap-2 text-sm text-stone">
           <span className="font-bold text-lg">
             <span className="text-[#4285F4]">G</span>
@@ -430,7 +415,7 @@ export default function GoogleReviews({
       {/* Lightbox */}
       {openIdx !== null && (
         <ReviewModal
-          items={items.slice(0, shown)}
+          items={items}
           index={openIdx}
           onClose={() => setOpenIdx(null)}
           onNav={setOpenIdx}
