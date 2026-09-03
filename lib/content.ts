@@ -21,6 +21,7 @@ export type StoreContent = {
   site: SiteContent;
   homepage: HomepageContent;
   swatches: LibrarySwatch[];
+  bestSellers: string[];
 };
 
 // Ang naka-bundle na JSON — ito ang ibinabalik kapag walang Supabase.
@@ -29,6 +30,7 @@ const FALLBACK: StoreContent = {
   site: siteJson as SiteContent,
   homepage: homepageJson as HomepageContent,
   swatches: swatchesJson as LibrarySwatch[],
+  bestSellers: [],
 };
 
 async function rest<T>(path: string): Promise<T | null> {
@@ -65,6 +67,9 @@ export async function loadStoreContent(): Promise<StoreContent> {
     // bar, promo beds, MTO, showrooms…) ay may default kahit hindi pa na-save
     // sa IMS ang dokumento.
     homepage: { ...FALLBACK.homepage, ...((docs.get("homepage") as Partial<HomepageContent> | undefined) ?? {}) } as HomepageContent,
+    // BEST SELLERS (2026-09-04): awtomatiko mula sa IMS orders (top slugs ng
+    // huling 90 araw, isinusulat ng IMS sa web_content.best_sellers).
+    bestSellers: Array.isArray(docs.get("best_sellers")) ? (docs.get("best_sellers") as string[]) : [],
   };
 }
 

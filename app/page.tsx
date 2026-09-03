@@ -13,7 +13,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { homepage, products, swatchLibrary, CATEGORY_TILES, categoryTileImage, findManyByPrefix } from "@/lib/products";
+import { homepage, products, swatchLibrary, CATEGORY_TILES, categoryTileImage } from "@/lib/products";
 import { primeStoreContent } from "@/lib/content";
 import { messengerHandle } from "@/lib/messenger";
 import HeroSlideshow from "@/components/HeroSlideshow";
@@ -37,13 +37,14 @@ import MessengerModal from "@/components/home/MessengerModal";
 export const revalidate = 0;
 
 export default async function HomePage() {
-  const { site } = await primeStoreContent();
+  const { site, bestSellers } = await primeStoreContent();
   const h = homepage;
   const listed = products.filter((p) => p.categoryListed !== false);
-  // Best sellers: IMS picks (Website → Homepage); kung blangko, ang mga
-  // featured/new na produkto.
-  const picked = findManyByPrefix(h.bestSelling?.productPrefixes ?? []);
-  const best = (picked.length ? picked : [...listed].sort((a, b) => Number(b.featured) - Number(a.featured) || Number(b.isNew) - Number(a.isNew))).slice(0, 10);
+  // Best sellers: awtomatiko mula sa IMS orders (web_content.best_sellers,
+  // top 10 ng huling 90 araw); walang laman pa = featured/new na produkto.
+  const bySlug = new Map(listed.map((p) => [p.slug, p]));
+  const auto = bestSellers.map((s) => bySlug.get(s)).filter((p): p is NonNullable<typeof p> => !!p);
+  const best = (auto.length ? auto : [...listed].sort((a, b) => Number(b.featured) - Number(a.featured) || Number(b.isNew) - Number(a.isNew))).slice(0, 10);
   const tiles = CATEGORY_TILES.filter((t) => listed.some((p) => p.category === t.slug));
   const handle = messengerHandle((site as unknown as { social?: { facebook?: string } }).social?.facebook);
   const mtoImage = listed.find((p) => p.category === "customized-bed")?.images[0] ?? listed.find((p) => p.category === "bed")?.images[0];
@@ -68,7 +69,7 @@ export default async function HomePage() {
 
       {best.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-8 pt-12 pb-1">
-          <Rail title={h.bestSelling?.title || "Best sellers"} sub="The most-ordered pieces this month." link={{ label: "Shop all →", href: "/collections/new-in" }}>
+          <Rail title="Best sellers" sub={auto.length ? "The most-ordered pieces of the last 90 days." : "Featured pieces."} link={{ label: "Shop all →", href: "/collections/new-in" }}>
             {best.map((p) => <ProductCard key={p.slug} product={p} />)}
           </Rail>
         </section>
