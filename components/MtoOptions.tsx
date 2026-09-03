@@ -705,6 +705,13 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     : fabrics;
   const [readyFabric, setReadyFabric] = useState("");
   const readyFabricPick = readyColors.find((l) => l.name === readyFabric) ?? readyColors[0];
+  // Hover popup (Poly & Bark style): malaking litrato ng produkto sa kulay na
+  // iyon + pangalan + material - bago pa i-click.
+  const [hoverFab, setHoverFab] = useState<string | null>(null);
+  const previewOf = (name: string) => {
+    const s = product.colorSwatches?.find((x) => x.name === name);
+    return s?.images?.[0] ?? s?.image ?? s?.swatch ?? readyColors.find((l) => l.name === name)?.swatch ?? product.images[0];
+  };
   const readyPrice = readySizePick && readySizePick.price > 0 ? readySizePick.price : Number(px.mtoReadyPrice ?? product.price ?? 0);
   const readyAvail = (product.stock ?? 0) > 0 && readyPrice > 0;
   // LOCKED (as-is item): laging ready/as-is view — walang customize.
@@ -987,21 +994,35 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             <div className="mt-2 flex flex-wrap gap-1.5">
               {readyColors.map((l) => {
                 const on = l.name === readyFabricPick?.name;
+                const preview = previewOf(l.name);
                 return (
-                  <button
-                    key={l.name}
-                    type="button"
-                    onClick={() => {
-                      setReadyFabric(l.name);
-                      // Sabihan ang gallery - palit sa litrato ng kulay na ito (IMS 0231).
-                      window.dispatchEvent(new CustomEvent("pb-color-change", { detail: l.name }));
-                    }}
-                    title={l.name}
-                    className={`w-[92px] flex-none overflow-hidden rounded-md bg-white text-center ${on ? "border-2 border-cognac ring-2 ring-cognac/20" : "border border-sand hover:border-cognac"}`}
-                  >
-                    <SwatchTile s={l} className="h-9 w-full" />
-                    <span className={`block truncate px-1 py-0.5 text-[9px] leading-tight ${on ? "font-bold text-ink" : "text-stone"}`}>{l.name}</span>
-                  </button>
+                  <div key={l.name} className="relative" onMouseEnter={() => setHoverFab(l.name)} onMouseLeave={() => setHoverFab(null)}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setReadyFabric(l.name);
+                        // Sabihan ang gallery - palit sa litrato ng kulay na ito (IMS 0231).
+                        window.dispatchEvent(new CustomEvent("pb-color-change", { detail: l.name }));
+                      }}
+                      title={l.name}
+                      className={`w-[92px] flex-none overflow-hidden rounded-md bg-white text-center ${on ? "border-2 border-cognac ring-2 ring-cognac/20" : "border border-sand hover:border-cognac"}`}
+                    >
+                      <SwatchTile s={l} className="h-9 w-full" />
+                      <span className={`block truncate px-1 py-0.5 text-[9px] leading-tight ${on ? "font-bold text-ink" : "text-stone"}`}>{l.name}</span>
+                    </button>
+                    {/* Hover popup - produkto sa kulay na ito + pangalan + material */}
+                    {hoverFab === l.name && preview && (
+                      <div className="pointer-events-none absolute bottom-full left-0 z-30 mb-2 hidden w-56 overflow-hidden rounded-lg border border-sand bg-white shadow-2xl md:block">
+                        <div className="relative aspect-square bg-white">
+                          <Image src={preview} alt={l.name} fill className="object-contain p-2" sizes="224px" />
+                        </div>
+                        <div className="px-3 py-2">
+                          <p className="text-sm font-bold leading-tight">{l.name}</p>
+                          {l.material && <p className="text-xs text-stone">{l.material}</p>}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 );
               })}
             </div>
