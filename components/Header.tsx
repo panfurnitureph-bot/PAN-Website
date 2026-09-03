@@ -226,15 +226,20 @@ export default function Header({ site, nav = NAV_LINKS }: { site: SiteContent; n
                 <Link
                   href={link.href}
                   onClick={() => setOpenMenu(null)}
-                  className="relative block h-72 overflow-hidden group bg-sand"
+                  className="relative block h-72 overflow-hidden group bg-white"
                 >
+                  {/* BUONG LITRATO (2026-09-04, "putol mga image dapat auto fit"):
+                      ang mga product shot ay puting canvas na iba-iba ang hugis -
+                      ang cover crop ay pinuputol ang upuan. Contain + padding,
+                      at ang label ay nasa madilim na banda sa ibaba para
+                      laging kita kahit puti ang litrato. */}
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={menuImg}
                     alt={link.label}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-contain p-4 pb-10 group-hover:scale-105 transition-transform duration-500"
                   />
-                  <span className="absolute bottom-3 left-4 text-cream text-sm drop-shadow">
+                  <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/80 to-ink/0 px-4 pb-3 pt-8 text-sm text-cream">
                     {link.label} Collection
                   </span>
                 </Link>
