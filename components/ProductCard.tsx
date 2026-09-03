@@ -32,11 +32,9 @@ export default function ProductCard({
           image: s.image ?? product.images[0],
           swatch: s.swatch,
         }))
-      : product.images.map((img, i) => ({
-          name: product.colors[i] ?? "",
-          image: img,
-          swatch: undefined as string | undefined,
-        }));
+      : // Walang color variant (IMS 0231) = walang thumb strip - hero lang. Dati
+        // ay lahat ng anggulo ang thumbs, na parang maraming kulay ang produkto.
+        ([] as { name: string; image: string; swatch: string | undefined }[]);
 
   const [activeIdx, setActiveIdx] = useState(0);
   const active = variants[activeIdx] ?? variants[0];
