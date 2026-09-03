@@ -39,7 +39,15 @@ export async function generateStaticParams() {
 
 export function generateMetadata({ params }: { params: { category: string } }) {
   const collection = COLLECTIONS[params.category];
-  return { title: collection ? `${collection.title} — PAN Furniture` : "PAN Furniture" };
+  if (!collection) return { title: "PAN Furniture" };
+  // Branded OG card (2026-09-03) - hindi na hinuhugot ng chat apps ang unang
+  // product photo (na pinuputol nila); laging maayos ang share preview.
+  const og = `/api/og?title=${encodeURIComponent(collection.title)}`;
+  return {
+    title: `${collection.title} — PAN Furniture`,
+    openGraph: { title: `${collection.title} — PAN Furniture`, images: [og] },
+    twitter: { card: "summary_large_image", images: [og] },
+  };
 }
 
 export default async function CollectionPage({

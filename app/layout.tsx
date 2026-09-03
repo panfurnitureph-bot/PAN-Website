@@ -29,9 +29,17 @@ const cormorant = Bricolage_Grotesque({
 });
 
 export const metadata: Metadata = {
+  // Absolute base para sa og:image ng bawat page (2026-09-03) — ang mga
+  // scraper (Messenger/FB) ay nangangailangan ng buong URL.
+  metadataBase: new URL("https://panfurniture.ph"),
   title: "PAN Furniture",
   description:
     "Premium sofas, sectionals, dining, bedroom, and outdoor furniture. Quality materials, built to last. Free shipping and a 100-day happiness guarantee.",
+  openGraph: {
+    siteName: "PAN Furniture",
+    images: ["/api/og?title=PAN%20Furniture"],
+  },
+  twitter: { card: "summary_large_image" },
   // Favicon mula sa /public (static — hindi na dynamic route, iwas crash)
   icons: {
     icon: "/icon.png",

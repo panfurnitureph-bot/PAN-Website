@@ -38,7 +38,16 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   // Kung hindi, ang bagong product mula sa admin ay makakakuha ng generic title.
   await primeStoreContent();
   const product = getProduct(params.slug);
-  return { title: product ? `${product.name} — PAN Furniture` : "PAN Furniture" };
+  if (!product) return { title: "PAN Furniture" };
+  // Branded OG card (2026-09-03): ang hilaw na portrait photo ay pinuputol ng
+  // Messenger card - ang /api/og ay 1200x630 na laging maayos, buong litrato.
+  const price = product.priceFrom ?? product.price;
+  const og = `/api/og?title=${encodeURIComponent(product.name)}&price=${encodeURIComponent(price ? `₱${Number(price).toLocaleString("en-PH")}` : "")}&img=${encodeURIComponent(product.images[0] ?? "")}`;
+  return {
+    title: `${product.name} — PAN Furniture`,
+    openGraph: { title: `${product.name} — PAN Furniture`, images: [og] },
+    twitter: { card: "summary_large_image", images: [og] },
+  };
 }
 
 export default async function ProductPage({ params }: { params: { slug: string } }) {
