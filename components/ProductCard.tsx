@@ -73,12 +73,17 @@ export default function ProductCard({
       </div>
 
       <Link href={`/products/${product.slug}`}>
-        <div className={`relative overflow-hidden bg-[#F1EAE0] ${square ? "aspect-square" : "aspect-[4/3]"}`}>
+        {/* object-CONTAIN, hindi cover (2026-09-03, "dapat auto center sya"):
+            iba-iba ang canvas at margin ng mga product photo — ang cover ay
+            pumuputol at nagpapalihis ng subject kada card. Ang contain ay
+            buong litrato, laging nakasentro; puting background para kasabay
+            ng puting studio shots. */}
+        <div className={`relative overflow-hidden bg-white ${square ? "aspect-square" : "aspect-[4/3]"}`}>
           <Image
             src={heroImage}
             alt={product.name}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
+            className="object-contain p-2 group-hover:scale-105 transition-transform duration-500"
             sizes="(min-width: 1024px) 300px, 50vw"
           />
         </div>

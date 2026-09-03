@@ -289,7 +289,7 @@ export default function ProductDetail({
               <button
                 key={img}
                 onClick={() => setLightbox(true)}
-                className="relative w-full shrink-0 snap-center aspect-square bg-sand"
+                className="relative w-full shrink-0 snap-center aspect-square bg-white"
                 aria-label={`Image ${i + 1}`}
               >
                 <Image
@@ -301,7 +301,7 @@ export default function ProductDetail({
                   // habang nag-sw-swipe, nasisira ang snap-point cache ng iOS
                   // WebKit at nagfi-freeze ang gallery pagkatapos ng unang hagod.
                   loading="eager"
-                  className="object-cover"
+                  className="object-contain"
                   sizes="100vw"
                 />
               </button>
@@ -361,7 +361,7 @@ export default function ProductDetail({
           </div>
           <button
             onClick={() => setLightbox(true)}
-            className="relative flex-1 min-h-[560px] bg-sand overflow-hidden group cursor-zoom-in"
+            className="relative flex-1 min-h-[560px] bg-white overflow-hidden group cursor-zoom-in"
             aria-label="Open fullscreen gallery"
           >
             <Image
@@ -369,7 +369,10 @@ export default function ProductDetail({
               alt={product.name}
               fill
               priority
-              className="object-cover group-hover:scale-105 transition-transform duration-700"
+              // Contain + center (2026-09-03): ang cover ay pumuputol ng
+              // portrait shots at lumilihis ang subject — buong litrato na
+              // nakasentro ang tama sa product gallery.
+              className="object-contain group-hover:scale-105 transition-transform duration-700"
               sizes="620px"
             />
             <span className="absolute bottom-3 right-3 bg-cream/80 text-ink text-xs px-2.5 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">
