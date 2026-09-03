@@ -61,7 +61,10 @@ export async function loadStoreContent(): Promise<StoreContent> {
     products: prodRows?.length ? prodRows.map((r) => r.data) : FALLBACK.products,
     swatches: swatchRows?.length ? swatchRows.map((r) => r.data) : FALLBACK.swatches,
     site: (docs.get("site") as SiteContent) ?? FALLBACK.site,
-    homepage: (docs.get("homepage") as HomepageContent) ?? FALLBACK.homepage,
+    // Isinasanib sa bundled JSON (2026-09-04): ang bagong homepage keys (trust
+    // bar, promo beds, MTO, showrooms…) ay may default kahit hindi pa na-save
+    // sa IMS ang dokumento.
+    homepage: { ...FALLBACK.homepage, ...((docs.get("homepage") as Partial<HomepageContent> | undefined) ?? {}) } as HomepageContent,
   };
 }
 

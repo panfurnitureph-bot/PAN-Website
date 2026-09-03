@@ -1,142 +1,94 @@
-// HOMEPAGE — eksaktong section order ng polyandbark.com:
-// 1 Hero slideshow (sale GIF + 3 slides)   2 Trust badges (icons)
-// 3 Shop by category (carousel)            4 Featured in (dark olive)
-// 5 Best-selling sofas (carousel)          6 Banner: Audrey collection
-// 7 Split: Outdoor                         8 Testimonials
-// 9 Split: Statement armchairs            10 Banner: Bedroom
-// 11 Split: The dining edit               12 Video reviews
-// 13 UGC grid                             14 FAQs
-// 15 Google reviews                       16 Pre-footer contact
-// Ang laman ay ini-edit sa PAN app (Website → Hero / Banners / Reviews) at
-// nakaimbak sa Supabase; ang content/homepage.json ang fallback.
+// HOMEPAGE (2026-09-04, redesign) — order:
+//  1 Hero slideshow           2 Trust bar (4 na totoong pangako)
+//  3 Shop by category (rail)  4 Best sellers (rail, IMS picks)
+//  5 Ready to ship (stock)    6 Promo beds (featured + 2×2)
+//  7 Category rows (tabs)     8 Made to order, made here (+ fabric popup)
+//  9 Video reviews           10 In real life (UGC)
+// 11 FAQs                    12 Google reviews
+// 13 Showrooms + contact
+// Ang produkto, stock, kulay at tela ay galing sa IMS data (web_products,
+// web_swatches); ang copy ay sa Website → Homepage. Ang mga lumang section
+// (press bar, banners, split, testimonials, pre-footer) ay hindi na
+// nire-render — nasa repo pa rin ang components.
 
 import Image from "next/image";
 import Link from "next/link";
-import {
-  homepage,
-  products,
-  CATEGORY_TILES,
-  categoryTileImage,
-  findManyByPrefix,
-} from "@/lib/products";
+import { homepage, products, swatchLibrary, CATEGORY_TILES, categoryTileImage, findManyByPrefix } from "@/lib/products";
 import { primeStoreContent } from "@/lib/content";
+import { messengerHandle } from "@/lib/messenger";
 import HeroSlideshow from "@/components/HeroSlideshow";
-import TrustBadges from "@/components/TrustBadges";
-import Carousel from "@/components/Carousel";
-import PressBar from "@/components/PressBar";
 import ProductCard from "@/components/ProductCard";
-import BannerSlideshow from "@/components/BannerSlideshow";
-import SplitSection from "@/components/SplitSection";
-import Testimonials from "@/components/Testimonials";
 import VideoReviews from "@/components/VideoReviews";
 import UgcGrid from "@/components/UgcGrid";
 import FaqAccordion from "@/components/FaqAccordion";
 import GoogleReviews from "@/components/GoogleReviews";
-import PreFooter from "@/components/PreFooter";
 import ScrollTop from "@/components/ScrollTop";
+import Rail from "@/components/home/Rail";
+import TrustBar from "@/components/home/TrustBar";
+import ReadyToShip from "@/components/home/ReadyToShip";
+import PromoBeds from "@/components/home/PromoBeds";
+import CategoryRows from "@/components/home/CategoryRows";
+import MadeToOrder from "@/components/home/MadeToOrder";
+import Showrooms from "@/components/home/Showrooms";
+import QuickView from "@/components/home/QuickView";
+import FabricPopup from "@/components/home/FabricPopup";
+import MessengerModal from "@/components/home/MessengerModal";
 
-// Walang cache: sariwang kuha sa Supabase kada page load, kaya ang binago sa
-// PAN app admin ay lumalabas agad — hindi na kailangang maghintay.
 export const revalidate = 0;
 
 export default async function HomePage() {
-  // Punan muna bago basahin ang `homepage` sa ibaba.
-  await primeStoreContent();
-
-  const bestSelling = findManyByPrefix(homepage.bestSelling.productPrefixes);
-  const [audreyBanner, bedroomBanner] = homepage.bannerSlideshows;
-  const [outdoorSplit, armchairSplit, diningSplit] = homepage.splitSections;
+  const { site } = await primeStoreContent();
+  const h = homepage;
+  const listed = products.filter((p) => p.categoryListed !== false);
+  // Best sellers: IMS picks (Website → Homepage); kung blangko, ang mga
+  // featured/new na produkto.
+  const picked = findManyByPrefix(h.bestSelling?.productPrefixes ?? []);
+  const best = (picked.length ? picked : [...listed].sort((a, b) => Number(b.featured) - Number(a.featured) || Number(b.isNew) - Number(a.isNew))).slice(0, 10);
+  const tiles = CATEGORY_TILES.filter((t) => listed.some((p) => p.category === t.slug));
+  const handle = messengerHandle((site as unknown as { social?: { facebook?: string } }).social?.facebook);
+  const mtoImage = listed.find((p) => p.category === "customized-bed")?.images[0] ?? listed.find((p) => p.category === "bed")?.images[0];
 
   return (
     <div>
-      {/* 1 — HERO SLIDESHOW */}
-      <HeroSlideshow slides={homepage.heroSlides} />
+      <HeroSlideshow slides={h.heroSlides} />
+      <TrustBar items={h.trustBar} />
 
-      {/* 2 — TRUST BADGES */}
-      <TrustBadges badges={homepage.trustBadges} />
+      <section className="max-w-7xl mx-auto px-4 sm:px-8 pt-12 pb-1">
+        <Rail title="Shop by category" n={[7, 5, 4, 3]}>
+          {tiles.map((t) => (
+            <Link key={t.slug} href={`/collections/${t.slug}`} className="group flex flex-col gap-2 text-center text-[12.5px] font-medium">
+              <span className="relative block aspect-square bg-sand overflow-hidden">
+                <Image src={categoryTileImage(t.slug)} alt={t.label} fill className="object-cover transition-transform duration-500 group-hover:scale-[1.04]" sizes="(min-width: 1100px) 160px, 40vw" />
+              </span>
+              {t.label}
+            </Link>
+          ))}
+        </Rail>
+      </section>
 
-      {/* 3 — SHOP BY CATEGORY (carousel na may arrows) */}
-      <Carousel title="Shop by category">
-        {CATEGORY_TILES.map((tile) => (
-          <Link
-            key={tile.slug}
-            href={`/collections/${tile.slug}`}
-            className="group snap-center shrink-0 w-[44vw] sm:w-[265px] text-center"
-          >
-            <div className="relative aspect-[4/5] overflow-hidden bg-sand">
-              <Image
-                src={categoryTileImage(tile.slug)}
-                alt={tile.label}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-                sizes="240px"
-              />
-            </div>
-            <p className="text-sm mt-3 group-hover:text-cognac transition-colors">
-              {tile.label}
-            </p>
-          </Link>
-        ))}
-      </Carousel>
+      {best.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-8 pt-12 pb-1">
+          <Rail title={h.bestSelling?.title || "Best sellers"} sub="The most-ordered pieces this month." link={{ label: "Shop all →", href: "/collections/new-in" }}>
+            {best.map((p) => <ProductCard key={p.slug} product={p} />)}
+          </Rail>
+        </section>
+      )}
 
-      {/* 4 — FEATURED IN (dark olive + quote + logos) */}
-      <PressBar pressBar={homepage.pressBar} />
+      <div className="mt-12"><ReadyToShip products={listed} copy={h.readyToShip} /></div>
+      <PromoBeds products={listed} copy={h.promoBeds} />
+      <CategoryRows products={listed} config={h.categoryRows} />
+      <MadeToOrder copy={h.mto} swatches={swatchLibrary} fallbackImage={mtoImage} />
 
-      {/* 5 — BEST-SELLING SOFAS — clickable ang heading papunta sa collection */}
-      <Carousel
-        title={homepage.bestSelling.title}
-        href={`/collections/${homepage.bestSelling.productPrefixes?.[0] ?? "bed"}`}
-      >
-        {bestSelling.map((p) => (
-          <div key={p.slug} className="snap-center shrink-0 w-[70vw] sm:w-[280px]">
-            <ProductCard product={p} />
-          </div>
-        ))}
-      </Carousel>
-
-      {/* 6 — BANNER SLIDESHOW: AUDREY */}
-      <BannerSlideshow slides={audreyBanner.slides} />
-
-      {/* 7 — SPLIT: OUTDOOR */}
-      <SplitSection
-        {...outdoorSplit}
-        products={findManyByPrefix(outdoorSplit.productPrefixes)}
-      />
-
-      {/* 8 — TESTIMONIALS */}
-      <Testimonials testimonials={homepage.testimonials} />
-
-      {/* 9 — SPLIT: STATEMENT ARMCHAIRS */}
-      <SplitSection
-        {...armchairSplit}
-        products={findManyByPrefix(armchairSplit.productPrefixes)}
-      />
-
-      {/* 10 — BANNER SLIDESHOW: BEDROOM */}
-      <BannerSlideshow slides={bedroomBanner.slides} />
-
-      {/* 11 — SPLIT: THE DINING EDIT */}
-      <SplitSection
-        {...diningSplit}
-        products={findManyByPrefix(diningSplit.productPrefixes)}
-      />
-
-      {/* 12 — VIDEO REVIEWS */}
-      <VideoReviews videoReviews={homepage.videoReviews} />
-
-      {/* 13 — UGC GRID */}
-      <UgcGrid ugc={homepage.ugc} products={products} />
-
-      {/* 14 — FAQS */}
+      <VideoReviews videoReviews={h.videoReviews} />
+      <UgcGrid ugc={h.ugc} products={products} />
       <FaqAccordion />
-
-      {/* 15 — GOOGLE REVIEWS */}
-      <GoogleReviews googleReviews={homepage.googleReviews} products={products} />
-
-      {/* 16 — PRE-FOOTER CONTACT */}
-      <PreFooter />
+      <GoogleReviews googleReviews={h.googleReviews} products={products} />
+      <Showrooms copy={h.showrooms} />
 
       <ScrollTop />
+      <QuickView />
+      <FabricPopup swatches={swatchLibrary} />
+      <MessengerModal handle={handle} />
     </div>
   );
 }

@@ -1,172 +1,56 @@
-"use client";
-
-// Footer — dark brown (espresso), "Keep in touch" na may underline
-// email input + arrow, social icons, 4 link columns
-// (SHOP / COMPANY / ACCOUNT / HELP), copyright + payment badges.
+// FOOTER (2026-09-04, pinayat) — brand + tagline + contact, Shop (grupo, hindi
+// bawat category), Help. Tanggal ang Company/Account columns (walang page ang
+// About/Careers; Cart at Quotation ay nasa header). Socials + payment sa bar.
 
 import Link from "next/link";
-import { useState } from "react";
 import type { SiteContent } from "@/lib/products";
 
-const FOOTER_COLUMNS = [
-  {
-    title: "SHOP",
-    links: [
-      { label: "Promo Bed", href: "/collections/bed" },
-      { label: "Sofa", href: "/collections/sofa" },
-      { label: "Sofa Bed", href: "/collections/sofa-bed" },
-      { label: "Dining", href: "/collections/dining" },
-      { label: "Side Table", href: "/collections/side-table" },
-      { label: "Ottoman", href: "/collections/ottoman-ph" },
-      { label: "Mattress", href: "/collections/mattress" },
-      { label: "Accent Chair", href: "/collections/accent-chair" },
-      { label: "Barstool", href: "/collections/barstool" },
-      { label: "Swivel Chair", href: "/collections/swivel-chair" },
-    ],
-  },
-  {
-    title: "COMPANY",
-    links: [
-      { label: "Real Customer Reviews", href: "/#reviews" },
-      { label: "About Us", href: "/about" },
-      { label: "Blog", href: "/about" },
-      { label: "Privacy Policy", href: "/privacy" },
-      { label: "Terms & Conditions", href: "/faqs" },
-      { label: "Your Privacy Choices", href: "/privacy" },
-    ],
-  },
-  {
-    title: "ACCOUNT",
-    links: [
-      { label: "Login / Register", href: "/contact" },
-      { label: "Rewards", href: "/faqs" },
-      { label: "Cart", href: "/cart" },
-      { label: "Order Status", href: "/contact" },
-      { label: "Trade", href: "/contact" },
-    ],
-  },
-  {
-    title: "HELP",
-    links: [
-      { label: "FAQs", href: "/faqs" },
-      { label: "Shipping Guide", href: "/shipping" },
-      { label: "Return Policy", href: "/shipping" },
-      { label: "Product Care", href: "/faqs" },
-      { label: "Contact Us", href: "/contact" },
-      { label: "Financing", href: "/faqs" },
-      { label: "Sitemap", href: "/" },
-    ],
-  },
+const SHOP = [
+  { label: "Beds & Mattress", href: "/collections/beds" },
+  { label: "Sofas", href: "/collections/sofas" },
+  { label: "Dining", href: "/collections/dining" },
+  { label: "Living", href: "/collections/living" },
+  { label: "Made to order", href: "/collections/customized-bed" },
+];
+const HELP = [
+  { label: "FAQs", href: "/faqs" },
+  { label: "Shipping & returns", href: "/shipping" },
+  { label: "Track my delivery", href: "/track" },
+  { label: "Measuring guide", href: "/measuring" },
+  { label: "Wishlist", href: "/wishlist" },
 ];
 
-const PAYMENTS = ["Visa", "Pay", "GPay", "MC", "Klarna", "G Pay"];
-
-// Ang `site` ay ipinapasa ng layout (server) — hindi na binabasa dito.
-export default function Footer({ site, shop }: { site: SiteContent; shop?: { label: string; href: string }[] }) {
-  // SHOP column = mga category na galing sa IMS (ipinapasa ng layout); static
-  // na listahan lang ang fallback.
-  const cols = shop?.length ? FOOTER_COLUMNS.map((c) => (c.title === "SHOP" ? { ...c, links: shop } : c)) : FOOTER_COLUMNS;
-  const [email, setEmail] = useState("");
-  const [done, setDone] = useState(false);
-
+export default function Footer({ site }: { site: SiteContent; shop?: { label: string; href: string }[] }) {
+  const social = Object.entries((site as unknown as { social?: Record<string, string> }).social ?? {}).filter(([, u]) => u && !/facebook\.com\/?$/.test(u));
   return (
-    <footer className="bg-espresso text-cream mt-20">
-      <div className="max-w-7xl mx-auto px-6 py-14 grid lg:grid-cols-[1.2fr_2fr] gap-12">
-        {/* Keep in touch */}
-        <div>
-          <h3 className="text-lg mb-6">Keep in touch</h3>
-          {done ? (
-            <p className="text-sm text-cognac">✓ Thank you! You&apos;re on the list.</p>
-          ) : (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (email.includes("@")) setDone(true);
-              }}
-              className="flex items-center border-b border-cream/50 pb-2 max-w-sm"
-            >
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="flex-1 bg-transparent text-sm text-cream placeholder:text-cream/50 focus:outline-none"
-              />
-              <button type="submit" aria-label="Subscribe" className="text-cream hover:text-cognac text-lg">
-                →
-              </button>
-            </form>
-          )}
-
-          {/* Social icons */}
-          <div className="flex gap-5 mt-8">
-            {Object.entries(site.social).map(([name, url]) => (
-              <a
-                key={name}
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={name}
-                className="text-cream/80 hover:text-cognac transition-colors capitalize text-sm"
-              >
-                {name === "facebook" ? "ⓕ" : name === "twitter" ? "𝕏" : name === "pinterest" ? "ⓟ" : "ⓘ"}
-              </a>
-            ))}
+    <footer className="bg-brownDeep text-cream mt-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-11 pb-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr] gap-6 max-w-[820px] text-[13px]">
+          <div>
+            <Link href="/" className="flex items-center gap-2.5">
+              <span className="w-9 h-9 rounded-full bg-brown border-2 border-gold text-gold flex items-center justify-center font-cormorant font-bold text-[11px]">PAN</span>
+              <span className="font-cormorant font-semibold tracking-[0.3em] text-lg">{site.brand.name.toUpperCase()}</span>
+            </Link>
+            <p className="text-[12.5px] text-cream/70 max-w-[32ch] mt-2.5">Made to order in San Pedro, Laguna. Delivered nationwide by our own team.</p>
+            <ul className="list-none m-0 p-0 mt-3.5 text-[12.5px] text-cream/80 space-y-1.5">
+              <li>Messenger · replies within the hour</li>
+              <li><a href="mailto:panfurnitureph@gmail.com">panfurnitureph@gmail.com</a></li>
+              <li>2 showrooms · Mon–Sun 9 AM – 7 PM</li>
+            </ul>
           </div>
-
-          <p className="text-xs text-cream/50 mt-10">
-            © {new Date().getFullYear()} {site.brand.name}. All rights reserved.
-          </p>
-
-          {/* Payment badges */}
-          <div className="flex gap-1.5 mt-4 flex-wrap">
-            {PAYMENTS.map((m, i) => (
-              <span
-                key={m + i}
-                className="bg-cream text-ink rounded px-2 py-0.5 text-[10px] font-bold"
-              >
-                {m}
-              </span>
-            ))}
+          <div>
+            <h4 className="m-0 mb-2.5 text-[11px] tracking-[0.16em] uppercase text-gold">Shop</h4>
+            <ul className="list-none m-0 p-0 space-y-1.5 text-cream/90">{SHOP.map((l) => <li key={l.href}><Link href={l.href} className="hover:text-gold">{l.label}</Link></li>)}</ul>
+          </div>
+          <div>
+            <h4 className="m-0 mb-2.5 text-[11px] tracking-[0.16em] uppercase text-gold">Help</h4>
+            <ul className="list-none m-0 p-0 space-y-1.5 text-cream/90">{HELP.map((l) => <li key={l.href}><Link href={l.href} className="hover:text-gold">{l.label}</Link></li>)}</ul>
           </div>
         </div>
-
-        {/* Link columns — desktop: grid; mobile: accordion (tap para buksan) */}
-        <div className="hidden md:grid grid-cols-4 gap-8">
-          {cols.map((col) => (
-            <div key={col.title}>
-              <h4 className="text-sm font-bold tracking-widest2 mb-5">{col.title}</h4>
-              <ul className="space-y-3 text-sm text-cream/80">
-                {col.links.map((l) => (
-                  <li key={l.label}>
-                    <Link href={l.href} className="hover:text-cognac transition-colors">
-                      {l.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-        <div className="md:hidden divide-y divide-cream/20 border-y border-cream/20">
-          {cols.map((col) => (
-            <details key={col.title} className="group py-4">
-              <summary className="flex justify-between items-center text-sm font-bold tracking-widest2 cursor-pointer list-none">
-                {col.title}
-                <span className="text-cream/60 group-open:rotate-180 transition-transform">⌄</span>
-              </summary>
-              <ul className="space-y-3 text-sm text-cream/80 pt-4">
-                {col.links.map((l) => (
-                  <li key={l.label}>
-                    <Link href={l.href} className="hover:text-cognac transition-colors">
-                      {l.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </details>
-          ))}
+        <div className="mt-8 pt-3.5 border-t border-gold/20 flex justify-between gap-3 flex-wrap text-[11px] text-cream/70">
+          <span>© {new Date().getFullYear()} {site.brand.name}</span>
+          <span className="flex gap-3">{social.map(([n, u]) => <a key={n} href={u} target="_blank" rel="noopener noreferrer" className="capitalize hover:text-gold">{n}</a>)}</span>
+          <span>GCash · Maya · BDO · BPI</span>
         </div>
       </div>
     </footer>
