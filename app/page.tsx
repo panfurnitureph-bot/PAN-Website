@@ -70,7 +70,7 @@ export default async function HomePage() {
             ) : (
               <div key={t.slug} className="flex flex-col gap-2 text-center text-[12.5px] font-medium text-stone" aria-label={`${t.label} — coming soon`}>
                 <span className="relative flex aspect-square flex-col items-center justify-center gap-2 bg-brown text-cream overflow-hidden [background-image:radial-gradient(circle_at_30%_20%,rgba(226,194,122,.18),transparent_55%)]">
-                  <span className="w-11 h-11 rounded-full border-2 border-gold bg-brownDeep text-gold flex items-center justify-center font-cormorant font-bold text-[13px] tracking-[0.04em]">PAN</span>
+                  <Image src="/images/pan-logo.png" alt="PAN Furniture" width={72} height={72} className="w-[46%] h-auto drop-shadow-[0_2px_6px_rgba(0,0,0,.35)]" />
                   <span className="text-[10px] font-bold tracking-[0.18em] uppercase text-gold">Coming soon</span>
                   <span className="absolute inset-x-3 bottom-2.5 border-t border-gold/25" />
                 </span>
