@@ -45,7 +45,10 @@ export default async function HomePage() {
   const bySlug = new Map(listed.map((p) => [p.slug, p]));
   const auto = bestSellers.map((s) => bySlug.get(s)).filter((p): p is NonNullable<typeof p> => !!p);
   const best = (auto.length ? auto : [...listed].sort((a, b) => Number(b.featured) - Number(a.featured) || Number(b.isNew) - Number(a.isNew))).slice(0, 10);
-  const tiles = CATEGORY_TILES.filter((t) => listed.some((p) => p.category === t.slug));
+  // LAHAT ng category ang nasa tiles (2026-09-04): ang may published na
+  // produkto = litrato + link; ang wala pa = "Coming soon" na PAN tile, hindi
+  // clickable. Kusang nagiging tunay na tile pag may na-publish.
+  const tiles = CATEGORY_TILES.map((t) => ({ ...t, live: listed.some((p) => p.category === t.slug) }));
   const handle = messengerHandle((site as unknown as { social?: { facebook?: string } }).social?.facebook);
   const mtoImage = listed.find((p) => p.category === "customized-bed")?.images[0] ?? listed.find((p) => p.category === "bed")?.images[0];
 
@@ -56,14 +59,25 @@ export default async function HomePage() {
 
       <section className="max-w-7xl mx-auto px-4 sm:px-8 pt-12 pb-1">
         <Rail title="Shop by category" n={[7, 5, 4, 3]}>
-          {tiles.map((t) => (
-            <Link key={t.slug} href={`/collections/${t.slug}`} className="group flex flex-col gap-2 text-center text-[12.5px] font-medium">
-              <span className="relative block aspect-square bg-sand overflow-hidden">
-                <Image src={categoryTileImage(t.slug)} alt={t.label} fill className="object-cover transition-transform duration-500 group-hover:scale-[1.04]" sizes="(min-width: 1100px) 160px, 40vw" />
-              </span>
-              {t.label}
-            </Link>
-          ))}
+          {tiles.map((t) =>
+            t.live ? (
+              <Link key={t.slug} href={`/collections/${t.slug}`} className="group flex flex-col gap-2 text-center text-[12.5px] font-medium">
+                <span className="relative block aspect-square bg-sand overflow-hidden">
+                  <Image src={categoryTileImage(t.slug)} alt={t.label} fill className="object-cover transition-transform duration-500 group-hover:scale-[1.04]" sizes="(min-width: 1100px) 160px, 40vw" />
+                </span>
+                {t.label}
+              </Link>
+            ) : (
+              <div key={t.slug} className="flex flex-col gap-2 text-center text-[12.5px] font-medium text-stone" aria-label={`${t.label} — coming soon`}>
+                <span className="relative flex aspect-square flex-col items-center justify-center gap-2 bg-brown text-cream overflow-hidden [background-image:radial-gradient(circle_at_30%_20%,rgba(226,194,122,.18),transparent_55%)]">
+                  <span className="w-11 h-11 rounded-full border-2 border-gold bg-brownDeep text-gold flex items-center justify-center font-cormorant font-bold text-[13px] tracking-[0.04em]">PAN</span>
+                  <span className="text-[10px] font-bold tracking-[0.18em] uppercase text-gold">Coming soon</span>
+                  <span className="absolute inset-x-3 bottom-2.5 border-t border-gold/25" />
+                </span>
+                {t.label}
+              </div>
+            ),
+          )}
         </Rail>
       </section>
 
