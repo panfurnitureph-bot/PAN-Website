@@ -10,8 +10,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { formatPrice, type HomepageContent, type Product } from "@/lib/products";
 
-type Card = { name?: string; price?: string; image?: string; sizes?: string; colors?: string; sizeList?: { size: string; price: string }[]; colorList?: { name: string; hex?: string }[] };
-type Tile = { key: string; name: string; href: string; image: string; from: number; sizes: { size: string; price: number }[]; colors: { name: string; hex?: string; swatch?: string }[] };
+type Card = { name?: string; price?: string; image?: string; sizes?: string; colors?: string; sizeList?: { size: string; price: string }[]; colorList?: { name: string; image?: string; focus?: string; hex?: string }[] };
+type Tile = { key: string; name: string; href: string; image: string; from: number; sizes: { size: string; price: number }[]; colors: { name: string; hex?: string; swatch?: string; focus?: string }[] };
 
 const num = (s: string) => Number(String(s).replace(/[^\d.]/g, "")) || 0;
 const norm = (s: string) => s.trim().toLowerCase();
@@ -30,7 +30,7 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
       image: photoFor(b.name) || b.images[0] || "/images/placeholder.jpg",
       from: b.priceFrom ?? b.price,
       sizes: (b.bedSizes ?? []).filter((s) => s.enabled !== false && (s.price ?? 0) > 0).map((s) => ({ size: s.size, price: s.price! })),
-      colors: (b.colorSwatches ?? []).length ? b.colorSwatches!.map((c) => ({ name: c.name, hex: c.hex, swatch: c.swatch })) : b.colors.map((c) => ({ name: c })),
+      colors: (b.colorSwatches ?? []).length ? b.colorSwatches!.map((c) => ({ name: c.name, hex: c.hex, swatch: c.image || c.swatch })) : b.colors.map((c) => ({ name: c })),
     }));
     const fs = (copy as { featuredSlug?: string } | undefined)?.featuredSlug;
     const fi = Math.max(0, tiles.findIndex((t) => t.key === fs || (fs === "" && beds.find((b) => b.slug === t.key)?.featured)));
@@ -43,7 +43,7 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
       // Hiwalay na field kada size/kulay (sizeList/colorList); ang lumang
       // "Single 18799 · …" na text ay binabasa pa rin.
       sizes: (c.sizeList?.length ? c.sizeList.map((s) => ({ size: s.size, price: num(s.price) })) : (c.sizes ?? "").split("·").map((s) => s.trim()).filter(Boolean).map((s) => { const m = /^(.+?)\s+([\d,.]+)$/.exec(s); return m ? { size: m[1], price: num(m[2]) } : { size: s, price: 0 }; })).filter((s) => s.price > 0),
-      colors: c.colorList?.length ? c.colorList.filter((x) => x.name).map((x) => ({ name: x.name, hex: x.hex })) : (c.colors ?? "").split("·").map((s) => s.trim()).filter(Boolean).map((n) => ({ name: n })),
+      colors: c.colorList?.length ? c.colorList.filter((x) => x.name || x.image).map((x, k) => ({ name: x.name || `Color ${k + 1}`, hex: x.hex, swatch: x.image, focus: x.focus })) : (c.colors ?? "").split("·").map((s) => s.trim()).filter(Boolean).map((n) => ({ name: n })),
     }));
   }
   if (!tiles.length) return null;
@@ -85,7 +85,7 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
               ) : null}
               {featured.colors.length > 0 && (
                 <div className="flex items-center gap-1.5 text-xs text-cream/80">
-                  {featured.colors.slice(0, 4).map((c) => <i key={c.name} className="w-[18px] h-[18px] rounded-full border-2 border-cream/60 inline-block overflow-hidden relative" style={{ background: c.hex ?? "#CFC2A8" }}>{c.swatch && <Image src={c.swatch} alt="" fill className="object-cover" sizes="18px" />}</i>)}
+                  {featured.colors.slice(0, 4).map((c) => <i key={c.name} title={c.name} className="w-[22px] h-[22px] rounded-full border-2 border-cream/60 inline-block overflow-hidden relative" style={{ background: c.hex ?? "#CFC2A8" }}>{c.swatch && <Image src={c.swatch} alt="" fill className="object-cover" style={{ objectPosition: c.focus || "50% 50%" }} sizes="24px" />}</i>)}
                   <span>{featured.colors.map((c) => c.name).slice(0, 3).join(" · ")}</span>
                 </div>
               )}
