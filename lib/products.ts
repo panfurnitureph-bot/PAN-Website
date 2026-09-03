@@ -199,18 +199,9 @@ export const COLLECTIONS: Record<string, { title: string; categories: string[] }
 export type NavChild = { label: string; href: string };
 export type NavLink = { label: string; href: string; children?: NavChild[] };
 
+// NAV (2026-09-04): Beds · Sofas · Dining · Living lang — tanggal ang "New In"
+// (nasa homepage na ang bago bilang badge, at kakaunti pa ang catalog).
 export const NAV_LINKS: NavLink[] = [
-  {
-    label: "New In",
-    href: "/collections/new-in",
-    children: [
-      { label: "All New Arrivals", href: "/collections/new-in" },
-      { label: "New Beds", href: "/collections/new-beds" },
-      { label: "New Sofas", href: "/collections/new-sofas" },
-      { label: "New Dining", href: "/collections/new-dining" },
-      { label: "New Living", href: "/collections/new-living" },
-    ],
-  },
   {
     label: "Beds",
     href: "/collections/beds",

@@ -16,7 +16,7 @@ import { useStore } from "@/components/store";
 // `nav` ay ipinapasa ng layout (server) — doon na-sync ang categories mula sa
 // IMS; sa browser ay static lang ang NAV_LINKS kaya prop ang ginagamit.
 export default function Header({ site, nav = NAV_LINKS }: { site: SiteContent; nav?: NavLink[] }) {
-  const { cartCount, wishlist, quoteCount } = useStore();
+  const { cartCount, quoteCount } = useStore();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -108,49 +108,28 @@ export default function Header({ site, nav = NAV_LINKS }: { site: SiteContent; n
               </svg>
               <span className="hidden lg:inline text-sm">Search</span>
             </button>
-            <Link href="/contact" className="hidden lg:flex items-center gap-1.5 hover:text-cognac">
+            {/* HEADER ICONS (2026-09-04): Search · Quotation · Cart lang. Tanggal ang
+                Support, Account at wishlist na icon — ang heart sa cards ay gumagana
+                pa rin at nasa /wishlist ang listahan. Ang Quotation ay laging kita
+                (dating lumalabas lang kapag may laman). */}
+            <Link href="/quote-request" aria-label={`Quotation (${quoteCount})`} className="relative flex items-center gap-1.5 hover:text-cognac">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 16v.01M12 13a2.5 2.5 0 10-2.5-2.5" />
+                <path d="M8 4h8a2 2 0 012 2v14l-6-3-6 3V6a2 2 0 012-2z" />
+                <path d="M9 9h6M9 12.5h4" />
               </svg>
-              <span className="text-sm">Support</span>
-            </Link>
-            <Link href="/contact" aria-label="Account" className="hidden sm:block hover:text-cognac">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-                <circle cx="12" cy="8" r="4" />
-                <path d="M4 21c0-4 3.6-6 8-6s8 2 8 6" />
-              </svg>
-            </Link>
-            <Link href="/wishlist" aria-label="Wishlist" className="relative hover:text-cognac">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-                <path d="M12 21C7 16.5 3 13 3 8.8 3 6 5.2 4 7.8 4c1.7 0 3.2.9 4.2 2.3C13 4.9 14.5 4 16.2 4 18.8 4 21 6 21 8.8c0 4.2-4 7.7-9 12.2z" />
-              </svg>
-              {wishlist.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-cognac text-cream text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
-                  {wishlist.length}
-                </span>
-              )}
-            </Link>
-            {/* QUOTE REQUEST — HIWALAY SA CART, at nakikita. Ang bumili agad at
-                ang magpapresyo muna ay magkaibang layunin; ang isang bilang na
-                naghahalo ng dalawa ay walang sinasabing alinman. Lumalabas lang
-                kapag may laman — sa nakararami, walang nadadagdag sa header. */}
-            {quoteCount > 0 && (
-              <Link href="/quote-request" aria-label={`Quote request (${quoteCount})`} className="relative hover:text-cognac">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-                  <path d="M8 4h8a2 2 0 012 2v14l-6-3-6 3V6a2 2 0 012-2z" />
-                  <path d="M9 9h6M9 12.5h4" />
-                </svg>
+              <span className="hidden lg:inline text-sm">Quotation</span>
+              {quoteCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-cognac text-cream text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
                   {quoteCount}
                 </span>
-              </Link>
-            )}
-            <Link href="/cart" aria-label="Cart" className="relative hover:text-cognac">
+              )}
+            </Link>
+            <Link href="/cart" aria-label="Cart" className="relative flex items-center gap-1.5 hover:text-cognac">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
                 <path d="M6 7h12l1 14H5L6 7z" />
                 <path d="M9 7a3 3 0 016 0" />
               </svg>
+              <span className="hidden lg:inline text-sm">Cart</span>
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-cognac text-cream text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
                   {cartCount}

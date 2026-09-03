@@ -18,6 +18,14 @@ const config: Config = {
         olive: "#4A4123",
         espresso: "#33261C",
         linen: "#F6EFE7",
+        // PAN brand (2026-09-04, mula sa logo): deep brown na ground, gold na
+        // ring at letra. Ginagamit ng bagong homepage; ang cognac ay nananatili
+        // para sa mga lumang bahagi.
+        brown: "#5B4A2F",
+        brownDeep: "#3E3220",
+        gold: "#E2C27A",
+        goldDeep: "#B08A3E",
+        goldSoft: "#F3E7C9",
       },
       fontFamily: {
         sans: ["var(--font-inter)", "Helvetica", "Arial", "sans-serif"],

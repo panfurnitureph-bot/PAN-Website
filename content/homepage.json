@@ -69,7 +69,7 @@
     ]
   },
   "bestSelling": {
-    "title": "Best-selling Bed",
+    "title": "Best sellers",
     "productPrefixes": [
       "eden-bed-frame",
       "frankie-bed-frame",
@@ -1064,5 +1064,193 @@
     "chatText": "Chat with experts",
     "email": "panfurnitureph@gmail.com",
     "emailText": "Expect a reply within 2 days"
+  },
+  "trustBar": [
+    {
+      "icon": "home",
+      "title": "Made in San Pedro, Laguna",
+      "sub": "Our own workshop crew"
+    },
+    {
+      "icon": "shield",
+      "title": "6-month warranty",
+      "sub": "Frame, foam, workmanship"
+    },
+    {
+      "icon": "truck",
+      "title": "Delivered & set up by our team",
+      "sub": "Nationwide · live tracking"
+    },
+    {
+      "icon": "card",
+      "title": "30% downpayment",
+      "sub": "GCash · Maya · BDO · BPI"
+    }
+  ],
+  "readyToShip": {
+    "eyebrow": "In stock · San Pedro, Laguna",
+    "title": "Ready to ship this week",
+    "sub": "Built and on the warehouse floor. Order by Thursday and it leaves with this week’s delivery run."
+  },
+  "promoBeds": {
+    "eyebrow": "Promo Bed · made to order",
+    "title": "Promo beds from ₱15,000",
+    "sub": "Five upholstered frames, built to order in San Pedro. Two fabrics to choose from, Single to King, delivered and set up in 4–6 weeks.",
+    "featuredSlug": "",
+    "foot": [
+      "30% downpayment to start",
+      "4–6 weeks build to delivery",
+      "6-month warranty on frame, foam and workmanship",
+      "Add a Uratex mattress — delivered together"
+    ]
+  },
+  "categoryRows": {
+    "minProducts": 4,
+    "rows": [
+      {
+        "title": "Chairs",
+        "tabs": [
+          {
+            "label": "Swivel",
+            "slug": "swivel-chair"
+          },
+          {
+            "label": "Dining",
+            "slug": "dining-chairs"
+          },
+          {
+            "label": "Accent",
+            "slug": "accent-chair"
+          },
+          {
+            "label": "Barstool",
+            "slug": "barstool"
+          }
+        ]
+      },
+      {
+        "title": "Beds & Mattress",
+        "tabs": [
+          {
+            "label": "Promo Bed",
+            "slug": "bed"
+          },
+          {
+            "label": "Custom Bed",
+            "slug": "customized-bed"
+          },
+          {
+            "label": "Mattress",
+            "slug": "mattress"
+          }
+        ]
+      },
+      {
+        "title": "Sofas",
+        "tabs": [
+          {
+            "label": "Sofa",
+            "slug": "sofa"
+          },
+          {
+            "label": "Sofa Bed",
+            "slug": "sofa-bed"
+          }
+        ]
+      },
+      {
+        "title": "Dining",
+        "tabs": [
+          {
+            "label": "Dining Table",
+            "slug": "dining-table"
+          },
+          {
+            "label": "Dining Set",
+            "slug": "dining-set"
+          },
+          {
+            "label": "Barstool",
+            "slug": "barstool"
+          }
+        ]
+      },
+      {
+        "title": "Living",
+        "tabs": [
+          {
+            "label": "Side Table",
+            "slug": "side-table"
+          },
+          {
+            "label": "Ottoman",
+            "slug": "ottoman-ph"
+          }
+        ]
+      }
+    ]
+  },
+  "mto": {
+    "eyebrow": "How made-to-order works",
+    "title": "Made to order, made here",
+    "sub": "Every made-to-order piece is built in our own San Pedro, Laguna workshop. Pick the fabric, we build it, we deliver it.",
+    "image": "",
+    "stat": {
+      "pieces": "1,200+",
+      "workshop": "San Pedro, Laguna",
+      "build": "4–6 wks"
+    },
+    "steps": [
+      {
+        "title": "Pick your fabric and size",
+        "text": "Choose from 196 fabrics — leather, bouclé, velvet, linen — and set the measurements that fit your room."
+      },
+      {
+        "title": "We build it in San Pedro",
+        "text": "Frame, foam and upholstery by our own crew. You get a photo update when it goes into upholstery and when it passes QC."
+      },
+      {
+        "title": "Delivered and set up",
+        "text": "Our own delivery team brings it to your home anywhere in the Philippines, assembles it, and takes the packaging away. Live tracking on the day; balance paid on delivery."
+      }
+    ],
+    "areas": [
+      "Cavite",
+      "Laguna",
+      "Metro Manila",
+      "Nationwide"
+    ],
+    "messengerLabel": "Talk to us on Messenger"
+  },
+  "showrooms": {
+    "eyebrow": "Two showrooms",
+    "title": "Come sit on it first",
+    "sub": "Try the fabrics, test the seats, and talk to the people who build them. Walk-ins welcome at both branches.",
+    "items": [
+      {
+        "name": "PAN Furniture Showroom 1",
+        "address": "San Pedro, Laguna — main branch",
+        "hours": "Mon–Sun · 9:00 AM – 7:00 PM",
+        "image": "",
+        "waze": "",
+        "maps": ""
+      },
+      {
+        "name": "PAN Furniture Showroom 2",
+        "address": "",
+        "hours": "Mon–Sun · 9:00 AM – 7:00 PM",
+        "image": "",
+        "waze": "",
+        "maps": ""
+      }
+    ],
+    "contact": {
+      "phone": "",
+      "phoneHours": "Mon–Sun · 9 AM – 7 PM",
+      "email": "panfurnitureph@gmail.com",
+      "emailNote": "Expect a reply within 2 days",
+      "messengerNote": "Replies within the hour on business days",
+      "deliveryNote": "Nationwide by our own team · Cavite, Laguna and Metro Manila weekly runs"
+    }
   }
 }

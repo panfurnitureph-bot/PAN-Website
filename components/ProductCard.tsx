@@ -1,141 +1,126 @@
 "use client";
 
-// Product card — tulad ng tunay na site: image, maliliit na variant
-// swatch thumbnails sa ilalim, "Pangalan - Kulay" na title, presyo
-// (may "from $X" kung may mas murang variant). Heart button sa hover.
+// PRODUCT CARD (2026-09-04, bagong homepage) — puting parisukat na litrato
+// (contain, laging nakasentro), pangalan, presyo, at kanang meta (bilang ng
+// kulay o "Ships this week"). Color variants = maliliit na thumb sa ilalim
+// (hover = palit ng hero). Hover sa card = pangalawang anggulo ng litrato at
+// "Quick view" na button sa ibaba ng litrato. Heart = wishlist (hindi
+// ginagalaw). Stock pill at Add to cart ay opsyonal (Ready to ship).
 
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { formatPrice, type Product } from "@/lib/products";
 import { useStore } from "@/components/store";
+import { openQuickView } from "@/components/home/QuickView";
 
 export default function ProductCard({
   product,
-  square = false,
+  square = true,
+  showStock = false,
+  showAddToCart = false,
+  quickView = true,
 }: {
   product: Product;
   square?: boolean;
+  showStock?: boolean;
+  showAddToCart?: boolean;
+  quickView?: boolean;
 }) {
-  const { wishlist, toggleWishlist } = useStore();
+  const { wishlist, toggleWishlist, addToCart } = useStore();
   const wished = wishlist.includes(product.slug);
-  const onSale = product.compareAtPrice && product.compareAtPrice > product.price;
+  const onSale = !!product.compareAtPrice && product.compareAtPrice > product.price;
 
-  // Mga color variant. Bawat swatch: bed photo (recolored .image) kung meron,
-  // kung wala ay ang default na bed photo; at ang tela swatch texture para sa
-  // thumbnail. Kung walang swatch, fallback sa gallery images.
-  const swatches = (product.colorSwatches ?? []).filter((s) => s.image || s.swatch);
-  const variants =
-    swatches.length > 0
-      ? swatches.map((s) => ({
-          name: s.name,
-          image: s.image ?? product.images[0],
-          swatch: s.swatch,
-        }))
-      : // Walang color variant (IMS 0231) = walang thumb strip - hero lang. Dati
-        // ay lahat ng anggulo ang thumbs, na parang maraming kulay ang produkto.
-        ([] as { name: string; image: string; swatch: string | undefined }[]);
-
+  const swatches = (product.colorSwatches ?? []).filter((s) => s.image || s.swatch || s.images?.length);
+  const variants = swatches.map((s) => ({ name: s.name, image: s.images?.[0] ?? s.image ?? product.images[0], thumb: s.swatch ?? s.images?.[0] ?? s.image ?? product.images[0], stock: s.stock }));
   const [activeIdx, setActiveIdx] = useState(0);
-  const active = variants[activeIdx] ?? variants[0];
-  // Laging may valid na src (iwas blangkong card kapag walang image)
-  const heroImage = active?.image ?? product.images[0] ?? "/images/placeholder.jpg";
+  const [added, setAdded] = useState(false);
+  const active = variants[activeIdx];
+  const hero = active?.image ?? product.images[0] ?? "/images/placeholder.jpg";
+  const alt = !active && product.images[1] ? product.images[1] : null;
+  const stock = product.stock ?? 0;
+  const inStock = stock > 0;
 
-  // Pangalan - kulay (nagbabago habang naka-hover sa swatch)
-  const activeColor = active?.name && active.name !== "Default" ? active.name : product.colors[0];
-  const title = activeColor ? `${product.name} - ${activeColor}` : product.name;
+  function add() {
+    const colorName = active?.name ?? "";
+    addToCart(product.slug, colorName ? `Standard — ${colorName}` : "default", 1, product.price, {
+      baseLabel: colorName || undefined, basePrice: product.price, image: hero,
+      addOns: colorName ? [{ label: `Fabric: ${colorName}`, price: 0 }] : [],
+    });
+    setAdded(true); setTimeout(() => setAdded(false), 1400);
+  }
 
   return (
-    <div className="group relative snap-start">
-      {/* Heart — lumalabas sa hover (laging visible sa touch) */}
+    <div className="group relative flex flex-col h-full bg-white border border-sand transition-colors hover:border-goldDeep [contain:content]">
       <button
         aria-label={wished ? "Remove from wishlist" : "Add to wishlist"}
         onClick={() => toggleWishlist(product.slug)}
-        className={`absolute top-3 right-3 z-10 p-1.5 rounded-full bg-cream/80 transition-opacity ${
-          wished ? "opacity-100" : "opacity-0 group-hover:opacity-100 max-lg:opacity-100"
-        }`}
+        className={`absolute top-2.5 right-2.5 z-10 p-1.5 rounded-full bg-cream/85 transition-opacity ${wished ? "opacity-100" : "opacity-0 group-hover:opacity-100 max-lg:opacity-100"}`}
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill={wished ? "#B87333" : "none"} stroke={wished ? "#B87333" : "#1A1A1A"} strokeWidth="1.6">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill={wished ? "#B08A3E" : "none"} stroke={wished ? "#B08A3E" : "#1A1A1A"} strokeWidth="1.6">
           <path d="M12 21C7 16.5 3 13 3 8.8 3 6 5.2 4 7.8 4c1.7 0 3.2.9 4.2 2.3C13 4.9 14.5 4 16.2 4 18.8 4 21 6 21 8.8c0 4.2-4 7.7-9 12.2z" />
         </svg>
       </button>
 
-      {/* Badges */}
-      <div className="absolute top-3 left-3 z-10 flex flex-col gap-1">
-        {product.isNew && (
-          <span className="bg-ink text-cream text-[10px] tracking-widest2 px-2 py-1">NEW</span>
-        )}
-        {onSale && (
-          <span className="bg-cognac text-cream text-[10px] tracking-widest2 px-2 py-1">SALE</span>
+      <div className="absolute top-2.5 left-2.5 z-10 flex flex-col gap-1">
+        {showStock ? (
+          inStock ? (
+            <span className={`inline-flex items-center gap-1.5 text-[9.5px] font-bold tracking-[0.1em] uppercase px-2 py-1 ${stock <= 3 ? "bg-[#F7EBD4] text-[#9A6B1E]" : "bg-[#E6F2EA] text-[#2F7D4F]"}`}>
+              <i className={`w-1.5 h-1.5 rounded-full ${stock <= 3 ? "bg-[#9A6B1E]" : "bg-[#2F7D4F]"}`} />{stock <= 3 ? `Only ${stock} left` : `In stock · ${stock}`}
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 text-[9.5px] font-bold tracking-[0.1em] uppercase px-2 py-1 bg-goldSoft text-brown"><i className="w-1.5 h-1.5 rounded-full bg-goldDeep" />Made to order</span>
+          )
+        ) : product.isNew ? (
+          <span className="bg-brown text-gold text-[9.5px] font-bold tracking-[0.14em] uppercase px-2 py-1">New</span>
+        ) : null}
+        {onSale && <span className="bg-cognac text-cream text-[9.5px] tracking-[0.14em] uppercase px-2 py-1">Sale</span>}
+      </div>
+
+      <div className={`relative ${square ? "aspect-square" : "aspect-[4/3]"} overflow-hidden bg-white`}>
+        <Link href={`/products/${product.slug}`} className="absolute inset-0 block" onClick={(e) => { if (quickView) { e.preventDefault(); openQuickView(product); } }}>
+          <Image src={hero} alt={product.name} fill className={`object-contain p-3 transition-opacity duration-300 ${alt ? "group-hover:opacity-0" : ""}`} sizes="(min-width: 1100px) 240px, (min-width: 640px) 33vw, 70vw" />
+          {alt && <Image src={alt} alt="" fill className="object-contain p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100" sizes="240px" />}
+        </Link>
+        {quickView && (
+          <button
+            type="button"
+            onClick={() => openQuickView(product)}
+            className="absolute left-2.5 right-2.5 bottom-2.5 z-[1] bg-ink/85 text-cream text-[11px] font-bold tracking-[0.14em] uppercase py-2 opacity-0 translate-y-1.5 transition group-hover:opacity-100 group-hover:translate-y-0 max-lg:opacity-100 max-lg:translate-y-0"
+          >
+            Quick view
+          </button>
         )}
       </div>
 
-      <Link href={`/products/${product.slug}`}>
-        {/* object-CONTAIN, hindi cover (2026-09-03, "dapat auto center sya"):
-            iba-iba ang canvas at margin ng mga product photo — ang cover ay
-            pumuputol at nagpapalihis ng subject kada card. Ang contain ay
-            buong litrato, laging nakasentro; puting background para kasabay
-            ng puting studio shots. */}
-        <div className={`relative overflow-hidden bg-white ${square ? "aspect-square" : "aspect-[4/3]"}`}>
-          <Image
-            src={heroImage}
-            alt={product.name}
-            fill
-            className="object-contain p-2 group-hover:scale-105 transition-transform duration-500"
-            sizes="(min-width: 1024px) 300px, 50vw"
-          />
+      <div className="flex flex-col gap-1.5 p-3 pt-2.5 border-t border-sand flex-1">
+        <Link href={`/products/${product.slug}`} className="text-[13.5px] font-semibold leading-snug hover:text-goldDeep">{product.name}</Link>
+        <div className="flex items-baseline justify-between gap-2">
+          <span className="text-[15px] font-bold tabular-nums">
+            {product.priceFrom ? <><span className="font-normal text-stone text-[11px] mr-1">from</span>{formatPrice(product.priceFrom)}</> : <span className={onSale ? "text-cognac" : ""}>{formatPrice(product.price)}</span>}
+            {onSale && <span className="text-stone line-through ml-2 text-xs font-normal">{formatPrice(product.compareAtPrice!)}</span>}
+          </span>
+          <span className="text-[11px] text-stone whitespace-nowrap">
+            {variants.length > 1 ? `${variants.length} colors` : inStock ? "Ships this week" : product.bedSizes?.length ? "Single–King" : ""}
+          </span>
         </div>
-      </Link>
-
-      {/* Color swatch thumbnails — hover para makita ang bed sa kulay na yun.
-          Ginagamit ang swatch texture (tela) kung meron; kung wala, ang
-          maliit na bed photo mismo. */}
-      {variants.length > 1 && (
-        <div className="flex gap-1.5 mt-2">
-          {variants.slice(0, 6).map((v, i) => (
-            <button
-              key={v.name + i}
-              onMouseEnter={() => setActiveIdx(i)}
-              onClick={() => setActiveIdx(i)}
-              title={v.name}
-              aria-label={v.name || `Variant ${i + 1}`}
-              className={`relative w-9 h-9 rounded bg-[#F1EAE0] overflow-hidden border-2 transition ${
-                i === activeIdx ? "border-cognac" : "border-transparent hover:border-stone/40"
-              }`}
-            >
-              <Image src={v.swatch ?? v.image} alt="" fill className="object-cover" sizes="36px" />
-            </button>
-          ))}
-          {variants.length > 6 && (
-            <span className="self-center text-[10px] text-stone">+{variants.length - 6}</span>
-          )}
-        </div>
-      )}
-
-      <Link href={`/products/${product.slug}`}>
-        <h3 className="text-sm text-ink mt-2.5 leading-snug group-hover:text-cognac transition-colors">
-          {title}
-        </h3>
-        <p className="text-sm mt-1.5">
-          {product.priceFrom ? (
-            <>
-              <span className="text-stone">from </span>
-              <span className="font-medium">{formatPrice(product.priceFrom)}</span>
-            </>
-          ) : (
-            <>
-              <span className={onSale ? "text-cognac font-medium" : "font-medium"}>
-                {formatPrice(product.price)}
-              </span>
-              {onSale && (
-                <span className="text-stone line-through ml-2">
-                  {formatPrice(product.compareAtPrice!)}
-                </span>
-              )}
-            </>
-          )}
-        </p>
-      </Link>
+        {variants.length > 1 && (
+          <div className="flex items-center gap-1.5">
+            {variants.slice(0, 6).map((v, i) => (
+              <button key={v.name + i} type="button" onMouseEnter={() => setActiveIdx(i)} onClick={() => setActiveIdx(i)} title={v.name} aria-label={v.name}
+                className={`relative w-[22px] h-[22px] rounded bg-white overflow-hidden border-[1.5px] ${i === activeIdx ? "border-brown" : "border-sand"} ${v.stock !== undefined && v.stock <= 0 ? "opacity-40" : ""}`}>
+                <Image src={v.thumb} alt="" fill className="object-contain" sizes="22px" />
+              </button>
+            ))}
+            {variants.length > 6 && <span className="text-[10px] text-stone">+{variants.length - 6}</span>}
+          </div>
+        )}
+        {showAddToCart && (
+          <button type="button" onClick={add} disabled={added} className={`mt-auto w-full py-2 text-[12px] font-semibold border ${added ? "bg-[#2F7D4F] border-[#2F7D4F] text-white" : "border-brown text-brown hover:bg-brown hover:text-cream"}`}>
+            {added ? "Added ✓" : "Add to cart"}
+          </button>
+        )}
+      </div>
     </div>
   );
 }
