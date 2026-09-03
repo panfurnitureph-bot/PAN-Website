@@ -35,8 +35,9 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
     if (fi > 0) tiles.unshift(...tiles.splice(fi, 1));
   } else {
     // Fallback: cards mula sa IMS habang wala pang published na Promo Bed.
-    tiles = cards.filter((c) => c.name).map((c, i) => ({
-      key: `card-${i}`, name: c.name!, href: "/collections/bed", image: c.image || "/images/placeholder.jpg", from: num(c.price ?? ""),
+    // Litrato lang ang kailangan; ang walang pangalan ay "Promo Bed n".
+    tiles = cards.filter((c) => c.image || c.name).map((c, i) => ({
+      key: `card-${i}`, name: c.name || `Promo Bed ${i + 1}`, href: "/collections/bed", image: c.image || "/images/placeholder.jpg", from: num(c.price ?? ""),
       sizes: (c.sizes ?? "").split("·").map((s) => s.trim()).filter(Boolean).map((s) => { const m = /^(.+?)\s+([\d,\.]+)$/.exec(s); return m ? { size: m[1], price: num(m[2]) } : { size: s, price: 0 }; }).filter((s) => s.price > 0),
       colors: (c.colors ?? "").split("·").map((s) => s.trim()).filter(Boolean).map((n) => ({ name: n })),
     }));
