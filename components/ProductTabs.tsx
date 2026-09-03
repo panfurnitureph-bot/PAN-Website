@@ -126,7 +126,26 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
   // IBANG CATEGORY (sofa, chairs, tables, wall padding…): line drawing na may
   // letra, sumusunod sa measurements ng Configurator at sa live na pili.
   const mKind = !isMattress && !isBed ? measureKind(product.category) : null;
-  const mRows = mKind ? measureRows(mKind, liveMeas, mto?.measurements) : { rows: [], live: false };
+  // LOCKED / AS-IS (2026-09-03, "di naman sya customizable so dapat susundin
+  // nya ung sa product information"): walang customizer, kaya ang sukat sa
+  // Product Management (as-is specs: "Total Height: 28 inches") ang masusunod -
+  // sa listahan, sa drawing, at sa table - hindi ang default ng Configurator.
+  const mtoLocked = !!mto && !mto.customizable;
+  const normL = (s: string) => s.trim().toLowerCase().replace(/[^a-z0-9]+/g, " ");
+  const specMeasRows = readySpecLines
+    .map((l) => /^([^:]+):\s*(\d+(?:\.\d+)?)\s*(?:"|″|in\b|inch(?:es)?)?\s*$/i.exec(l))
+    .filter((m): m is RegExpExecArray => !!m && !/^sizes?$/i.test(m[1].trim()))
+    .map((m) => ({ label: m[1].trim(), n: Number(m[2]) }));
+  const specMeas: Record<string, number> = {};
+  for (const r of specMeasRows) specMeas[r.label] = r.n;
+  const useSpec = mtoLocked && !Object.keys(liveMeas).length && specMeasRows.length > 0;
+  const mRows = mKind ? measureRows(mKind, useSpec ? specMeas : liveMeas, mto?.measurements) : { rows: [], live: false };
+  if (useSpec) mRows.live = false;
+  // Listahan sa kaliwa kapag locked: ang mga linya ng Product Management, may
+  // letra kung nasa drawing ang sukat (A-D), wala kung dagdag na detalye.
+  const lockedRows = useSpec
+    ? specMeasRows.map((r) => ({ k: mRows.rows.find((x) => normL(x.label) === normL(r.label))?.k ?? "", label: r.label, value: `${r.n}"` }))
+    : null;
   if (mKind && /sofa.?bed/i.test(product.category)) {
     const on = (mto?.sizes ?? []).filter((x) => x.on !== false);
     const pick = on.find((x) => sizeName && x.label.toLowerCase().startsWith(sizeName.toLowerCase())) ?? on[0];
@@ -285,9 +304,9 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
           </div>
         ) : mKind ? (
           <div className="space-y-4">
-            {mRows.rows.map((r) => (
-              <div key={r.k}>
-                <p className="font-bold text-ink">{r.k} — {r.label}</p>
+            {(lockedRows ?? mRows.rows).map((r) => (
+              <div key={r.k || r.label}>
+                <p className="font-bold text-ink">{r.k ? `${r.k} — ` : ""}{r.label}</p>
                 <p className="text-stone">{r.value}</p>
               </div>
             ))}
