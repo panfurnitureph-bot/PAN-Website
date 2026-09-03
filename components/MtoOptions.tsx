@@ -952,16 +952,6 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                 return null;
               })}
             </div>
-            <div className="flex items-center gap-2 border-t border-sand bg-linen px-4 py-2">
-              <span className="rounded bg-espresso px-2 py-0.5 text-[9px] font-extrabold tracking-widest2 text-cream">AS-IS</span>
-              <span className="text-xs text-stone">Built exactly as specified — this unit is ready for delivery.</span>
-            </div>
-          </div>
-        )}
-        {readySizeOpts.length === 0 && (
-          <div className="flex items-center gap-2 rounded-lg border border-sand bg-linen px-4 py-2">
-            <span className="rounded bg-espresso px-2 py-0.5 text-[9px] font-extrabold tracking-widest2 text-cream">AS-IS</span>
-            <span className="text-xs text-stone">Built exactly as specified — this unit is ready for delivery. Full measurements are in the Dimensions tab.</span>
           </div>
         )}
         {/* Fabric / color ng yari nang unit — ang mga telang pinili sa Configurator */}
