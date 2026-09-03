@@ -10,11 +10,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { formatPrice, type HomepageContent, type Product } from "@/lib/products";
 
-type Card = { name?: string; price?: string; image?: string; sizes?: string; colors?: string };
+type Card = { name?: string; price?: string; image?: string; sizes?: string; colors?: string; sizeList?: { size: string; price: string }[]; colorList?: { name: string; hex?: string }[] };
 type Tile = { key: string; name: string; href: string; image: string; from: number; sizes: { size: string; price: number }[]; colors: { name: string; hex?: string; swatch?: string }[] };
 
 const num = (s: string) => Number(String(s).replace(/[^\d.]/g, "")) || 0;
 const norm = (s: string) => s.trim().toLowerCase();
+// Pinakamababang presyo sa listahan (0 kapag walang laman) — "from ₱…".
+const minOf = (ns: number[]) => { const ps = ns.filter((n) => n > 0); return ps.length ? Math.min(...ps) : 0; };
 
 export default function PromoBeds({ products, copy }: { products: Product[]; copy?: HomepageContent["promoBeds"] }) {
   const cards: Card[] = ((copy as { cards?: Card[] } | undefined)?.cards ?? []).filter((c) => c && (c.name || c.image));
@@ -37,9 +39,11 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
     // Fallback: cards mula sa IMS habang wala pang published na Promo Bed.
     // Litrato lang ang kailangan; ang walang pangalan ay "Promo Bed n".
     tiles = cards.filter((c) => c.image || c.name).map((c, i) => ({
-      key: `card-${i}`, name: c.name || `Promo Bed ${i + 1}`, href: "/collections/bed", image: c.image || "/images/placeholder.jpg", from: num(c.price ?? ""),
-      sizes: (c.sizes ?? "").split("·").map((s) => s.trim()).filter(Boolean).map((s) => { const m = /^(.+?)\s+([\d,\.]+)$/.exec(s); return m ? { size: m[1], price: num(m[2]) } : { size: s, price: 0 }; }).filter((s) => s.price > 0),
-      colors: (c.colors ?? "").split("·").map((s) => s.trim()).filter(Boolean).map((n) => ({ name: n })),
+      key: `card-${i}`, name: c.name || `Promo Bed ${i + 1}`, href: "/collections/bed", image: c.image || "/images/placeholder.jpg", from: num(c.price ?? "") || minOf((c.sizeList ?? []).map((s) => num(s.price))),
+      // Hiwalay na field kada size/kulay (sizeList/colorList); ang lumang
+      // "Single 18799 · …" na text ay binabasa pa rin.
+      sizes: (c.sizeList?.length ? c.sizeList.map((s) => ({ size: s.size, price: num(s.price) })) : (c.sizes ?? "").split("·").map((s) => s.trim()).filter(Boolean).map((s) => { const m = /^(.+?)\s+([\d,.]+)$/.exec(s); return m ? { size: m[1], price: num(m[2]) } : { size: s, price: 0 }; })).filter((s) => s.price > 0),
+      colors: c.colorList?.length ? c.colorList.filter((x) => x.name).map((x) => ({ name: x.name, hex: x.hex })) : (c.colors ?? "").split("·").map((s) => s.trim()).filter(Boolean).map((n) => ({ name: n })),
     }));
   }
   if (!tiles.length) return null;
