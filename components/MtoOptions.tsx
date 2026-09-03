@@ -703,8 +703,16 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   const readyColors: LibrarySwatch[] = product.colorSwatches?.length
     ? product.colorSwatches.map((s) => ({ name: s.name, swatch: s.swatch ?? s.image, color: s.hex, material: s.material }))
     : fabrics;
+  // STOCK KADA KULAY (IMS 0232): undefined = walang kada-kulay na bilang
+  // (lumang listing) → ang kabuuang product.stock ang sinusunod.
+  const colorStock = (name: string): number | undefined => product.colorSwatches?.find((s) => s.name === name)?.stock;
   const [readyFabric, setReadyFabric] = useState("");
-  const readyFabricPick = readyColors.find((l) => l.name === readyFabric) ?? readyColors[0];
+  // Default = unang kulay na may stock; kung wala, ang una.
+  const readyFabricPick =
+    readyColors.find((l) => l.name === readyFabric) ??
+    readyColors.find((l) => (colorStock(l.name) ?? 1) > 0) ??
+    readyColors[0];
+  const pickStock = readyFabricPick ? colorStock(readyFabricPick.name) : undefined;
   // Hover popup (Poly & Bark style): malaking litrato ng produkto sa kulay na
   // iyon + pangalan + material - bago pa i-click.
   const [hoverFab, setHoverFab] = useState<string | null>(null);
@@ -856,7 +864,9 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   );
 
   // Availability card — nagpapalit ang delivery text ayon sa view at stock.
-  const shipsNow = view === "ready" && (product.stock ?? 0) > 0;
+  // Ang napiling kulay ang masusunod kapag may kada-kulay na bilang: ubos na
+  // kulay = Made to order ang card kahit may stock ang ibang kulay.
+  const shipsNow = view === "ready" && (pickStock ?? product.stock ?? 0) > 0;
   const etaCard = (
     <div className="mt-4 border border-sand rounded-lg overflow-hidden">
       <div className="flex items-center gap-2.5 px-4 py-3 bg-green-50/60 border-b border-sand">
@@ -962,11 +972,14 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           <div className="mt-5 border-t border-sand pt-4">
             <p className="text-sm">
               Color: <span className="text-stone">{readyFabricPick?.name ?? ""}</span>
+              {pickStock !== undefined && pickStock <= 0 && <span className="ml-2 text-xs text-stone">Out of stock in this color — made to order</span>}
+              {pickStock !== undefined && pickStock > 0 && pickStock <= 3 && <span className="ml-2 text-xs text-cognac">Only {pickStock} left</span>}
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               {readyColors.map((l) => {
                 const on = l.name === readyFabricPick?.name;
                 const preview = previewOf(l.name);
+                const out = (colorStock(l.name) ?? 1) <= 0;
                 return (
                   <div key={l.name} className="relative" onMouseEnter={() => setHoverFab(l.name)} onMouseLeave={() => setHoverFab(null)}>
                     <button
@@ -976,15 +989,17 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                         // Sabihan ang gallery - palit sa litrato ng kulay na ito (IMS 0231).
                         window.dispatchEvent(new CustomEvent("pb-color-change", { detail: l.name }));
                       }}
-                      title={l.name}
+                      title={out ? `${l.name} — out of stock, made to order` : l.name}
                       aria-label={l.name}
-                      className={`relative h-12 w-14 overflow-hidden rounded bg-white transition ${on ? "border-2 border-ink" : "border border-stone/25 hover:border-stone/60"}`}
+                      className={`relative h-12 w-14 overflow-hidden rounded bg-white transition ${on ? "border-2 border-ink" : "border border-stone/25 hover:border-stone/60"} ${out ? "opacity-50" : ""}`}
                     >
                       {preview ? (
                         <Image src={preview} alt={l.name} fill className="object-contain p-1" sizes="56px" />
                       ) : (
                         <SwatchTile s={l} className="absolute inset-0" />
                       )}
+                      {/* Ubos sa kulay na ito: pahilis na guhit (Poly & Bark) */}
+                      {out && <span className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top_right,transparent_calc(50%-1px),#8a8272_calc(50%-1px),#8a8272_calc(50%+1px),transparent_calc(50%+1px))]" />}
                     </button>
                     {/* Hover popup - produkto sa kulay na ito + pangalan + material */}
                     {hoverFab === l.name && preview && (

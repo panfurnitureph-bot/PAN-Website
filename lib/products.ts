@@ -25,6 +25,8 @@ export type ColorSwatch = {
   // LITRATO KADA KULAY (IMS 0231, 2026-09-03): kapag may laman, ito ang buong
   // gallery ng product page habang napili ang kulay na ito.
   images?: string[];
+  // STOCK KADA KULAY (IMS 0232): available na yari na unit sa kulay na ito.
+  stock?: number;
 };
 
 export type Product = {
