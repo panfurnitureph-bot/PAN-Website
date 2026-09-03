@@ -8,6 +8,7 @@
 // content/homepage.json → ugc.
 
 import Image from "next/image";
+import Rail from "@/components/home/Rail";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { averageRating, type HomepageContent, type Product } from "@/lib/products";
@@ -216,7 +217,6 @@ export default function UgcGrid({
   const { title, subtitle } = ugc;
   // 9 muna (3 buong hanay), tapos +9 kada LOAD MORE — laging multiple ng 3
   // kolum, para walang bungi na huling hanay.
-  const [shown, setShown] = useState(9);
   const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   // Kung may sariling photos sa admin (Videos & UGC tab) — yun ang
@@ -230,56 +230,43 @@ export default function UgcGrid({
       : products
           .filter((p) => p.images.length > 0)
           .map((p) => ({ src: p.images[0], product: p }));
-  // Ipakita lang ang mga buong hanay (multiple ng 3) — maliban kung ito na ang
-  // huli, para hindi maiwan ang mga natitirang larawan.
-  const photos =
-    allPhotos.length % 3 === 0
-      ? allPhotos
-      : allPhotos.slice(0, Math.floor(allPhotos.length / 3) * 3 || allPhotos.length);
+  // ISANG HILERA NA CAROUSEL (2026-09-04, bagong homepage): lahat ng litrato sa
+  // Rail — caption card muna, tapos ang mga litrato; walang load-more grid.
+  const photos = allPhotos;
+  const handle = (ugc as any).handle as string | undefined;
+  const caption = (ugc as any).caption as string | undefined;
 
   return (
-    <section className="max-w-7xl mx-auto px-6 py-14">
-      <h2 className="text-2xl sm:text-3xl mb-1">{title}</h2>
-      <p className="text-ink text-xs tracking-wide font-bold mb-8">{subtitle}</p>
-
-      {/* Pantay-pantay na square grid — walang bungi-bungi. Lahat ng larawan
-          ay iisang sukat, malinis ang hanay. */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {photos.slice(0, shown).map((ph, i) => (
-          <button
-            key={ph.product.slug + i}
-            onClick={() => setOpenIdx(i)}
-            className="relative block w-full aspect-square overflow-hidden group"
-            aria-label={`View ${ph.product.name}`}
-          >
-            <Image
-              src={ph.src}
-              alt={ph.product.name}
-              fill
-              className={`${
-                ph.src.includes("/card-") ? "object-contain bg-[#f7f0e4]" : "object-cover"
-              } group-hover:scale-105 transition-transform duration-500`}
-              sizes="(min-width: 768px) 33vw, 50vw"
-            />
-          </button>
-        ))}
-      </div>
-
-      {shown < photos.length && (
-        <div className="text-center mt-8">
-          <button
-            onClick={() => setShown(shown + 9)}
-            className="border border-stone/50 px-8 py-3 text-xs font-bold tracking-widest2 hover:border-ink transition-colors"
-          >
-            LOAD MORE
-          </button>
-        </div>
-      )}
+    <section className="max-w-7xl mx-auto px-4 sm:px-8 py-12 md:py-14">
+      <Rail title={title} sub={subtitle} n={[4, 3, 2, 2]}>
+        {[
+          <div key="cap" className="aspect-square bg-brown text-cream p-5 flex flex-col justify-center gap-2 text-[13px]">
+            {handle && <b className="text-gold text-xs tracking-[0.04em]">{handle}</b>}
+            <span className="leading-relaxed">{caption || "A little look at how our pieces are living in your homes."}</span>
+          </div>,
+          ...photos.map((ph, i) => (
+            <button
+              key={ph.product.slug + i}
+              onClick={() => setOpenIdx(i)}
+              className="relative block w-full aspect-square overflow-hidden group bg-sand"
+              aria-label={`View ${ph.product.name}`}
+            >
+              <Image
+                src={ph.src}
+                alt={ph.product.name}
+                fill
+                className={`${ph.src.includes("/card-") ? "object-contain bg-[#f7f0e4]" : "object-cover"} group-hover:scale-105 transition-transform duration-500`}
+                sizes="(min-width: 1100px) 25vw, 60vw"
+              />
+            </button>
+          )),
+        ]}
+      </Rail>
 
       {/* Lightbox modal */}
       {openIdx !== null && (
         <UgcModal
-          items={photos.slice(0, shown)}
+          items={photos}
           index={openIdx}
           onClose={() => setOpenIdx(null)}
           onNav={setOpenIdx}
