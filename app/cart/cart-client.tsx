@@ -52,7 +52,7 @@ export default function CartClient({ products }: { products: Product[] }) {
               className="flex gap-5 border-b border-sand pb-6"
             >
               <Link href={`/products/${product!.slug}`} className="relative w-28 h-24 bg-sand shrink-0">
-                <Image src={product!.images[0]} alt={product!.name} fill className="object-cover" />
+                <Image src={item.image || product!.images[0]} alt={product!.name} fill className="object-contain bg-white" />
               </Link>
               <div className="flex-1">
                 <Link href={`/products/${product!.slug}`} className="font-bold hover:text-cognac">
@@ -66,10 +66,8 @@ export default function CartClient({ products }: { products: Product[] }) {
                   <div className="mt-1.5 space-y-0.5">
                     {item.addOns.map((a, i) => (
                       <p key={i} className="text-[11px] text-stone">
-                        + {a.label}{" "}
-                        <span className="text-stone/70">
-                          {a.price > 0 ? formatPrice(a.price) : "(price TBC)"}
-                        </span>
+                        + {a.label}
+                        {a.price > 0 && <span className="text-stone/70"> {formatPrice(a.price)}</span>}
                       </p>
                     ))}
                   </div>

@@ -22,6 +22,8 @@ export type CartItem = {
   baseLabel?: string; // hal. "Lafayette Choco / Single"
   basePrice?: number; // presyo ng bed frame lang
   addOns?: { label: string; price: number; note?: string }[];
+  // Litrato ng napiling kulay (IMS 0231) - kung wala, product.images[0].
+  image?: string | null;
 };
 
 // QUOTE REQUEST — hiwalay sa cart. Ang bumili agad at ang magpapresyo muna ay
@@ -85,7 +87,7 @@ type StoreState = {
     color: string,
     qty?: number,
     unitPrice?: number,
-    extra?: Pick<CartItem, "baseLabel" | "basePrice" | "addOns">
+    extra?: Pick<CartItem, "baseLabel" | "basePrice" | "addOns" | "image">
   ) => void;
   removeFromCart: (slug: string, color: string) => void;
   setQty: (slug: string, color: string, qty: number) => void;
@@ -139,7 +141,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     color: string,
     qty = 1,
     unitPrice?: number,
-    extra?: Pick<CartItem, "baseLabel" | "basePrice" | "addOns">
+    extra?: Pick<CartItem, "baseLabel" | "basePrice" | "addOns" | "image">
   ) {
     setCart((prev) => {
       const existing = prev.find((i) => i.slug === slug && i.color === color);

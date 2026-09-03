@@ -496,7 +496,7 @@ export default function CheckoutClient({
             unitPrice:
               (item.basePrice ?? item.unitPrice ?? product!.price) +
               (item.addOns ?? []).reduce((s, a) => s + (Number(a.price) || 0), 0),
-            image: absoluteUrl(product!.images[0]),
+            image: absoluteUrl(item.image || product!.images[0]),
             // Structured — dito hinahanap ng app ang katugmang produkto sa
             // Product Management; kung wala pa, dito nito ibabatay ang
             // bagong record (preorder).
@@ -1053,7 +1053,7 @@ export default function CheckoutClient({
                 {/* Header: larawan + pangalan + kabuuan ng linyang ito */}
                 <div className="flex gap-3 items-start">
                   <div className="relative w-16 h-14 bg-sand rounded overflow-hidden shrink-0">
-                    <Image src={product!.images[0]} alt={product!.name} fill className="object-cover" sizes="64px" />
+                    <Image src={item.image || product!.images[0]} alt={product!.name} fill className="object-contain bg-white" sizes="64px" />
                     <span className="absolute -top-0 -right-0 bg-stone text-cream text-[10px] rounded-bl px-1.5">
                       {item.qty}
                     </span>

@@ -788,8 +788,16 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     addToCart(product.slug, key, qty, readyPrice, {
       baseLabel: base,
       basePrice: readyPrice,
+      // Litrato ng napiling kulay ang dala ng cart line (IMS 0231).
+      image: readyFabricPick ? previewOf(readyFabricPick.name) ?? null : null,
       addOns: [
-        ...readySpecs.filter((l) => !/^sizes:/i.test(l)).map((l) => ({ label: l, price: 0 })),
+        // Ang Fabric/Color line ng specs ay ang buong listahan ng kulay - hindi
+        // isinasama kapag may napiling kulay, para hindi doble at para ang
+        // IMS ay ang napili lang ang basahin.
+        ...readySpecs
+          .filter((l) => !/^sizes:/i.test(l))
+          .filter((l) => !(fabricLabel && /^(?:fabric(?:\s*\/\s*finish)?|upholstered finish|color)\s*:/i.test(l)))
+          .map((l) => ({ label: l, price: 0 })),
         ...(sizeLabel ? [{ label: sizeLabel, price: 0 }] : []),
         ...(fabricLabel ? [{ label: fabricLabel, price: 0 }] : []),
       ],
