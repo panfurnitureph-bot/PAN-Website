@@ -966,12 +966,14 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
         )}
         {/* Fabric / color ng yari nang unit — ang mga telang pinili sa Configurator */}
         {readyColors.length > 0 && (
-          <div className="mt-3 rounded-lg border border-sand px-4 py-3">
-            <div className="flex items-baseline justify-between gap-3">
-              <span className="text-sm text-stone">Fabric</span>
-              <span className="truncate text-sm font-semibold">{readyFabricPick?.name ?? ""}</span>
-            </div>
-            <div className="mt-2 flex flex-wrap gap-1.5">
+          // POLY & BARK STYLE (2026-09-03): "Color: <pangalan>" na linya, maliliit
+          // na parisukat na tile ng produkto sa bawat kulay, madilim na border
+          // sa napili; ang pangalan ay nagpapalit sa click.
+          <div className="mt-5 border-t border-sand pt-4">
+            <p className="text-sm">
+              Color: <span className="text-stone">{readyFabricPick?.name ?? ""}</span>
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
               {readyColors.map((l) => {
                 const on = l.name === readyFabricPick?.name;
                 const preview = previewOf(l.name);
@@ -985,10 +987,14 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                         window.dispatchEvent(new CustomEvent("pb-color-change", { detail: l.name }));
                       }}
                       title={l.name}
-                      className={`w-[92px] flex-none overflow-hidden rounded-md bg-white text-center ${on ? "border-2 border-cognac ring-2 ring-cognac/20" : "border border-sand hover:border-cognac"}`}
+                      aria-label={l.name}
+                      className={`relative h-12 w-14 overflow-hidden rounded bg-white transition ${on ? "border-2 border-ink" : "border border-stone/25 hover:border-stone/60"}`}
                     >
-                      <SwatchTile s={l} className="h-9 w-full" />
-                      <span className={`block truncate px-1 py-0.5 text-[9px] leading-tight ${on ? "font-bold text-ink" : "text-stone"}`}>{l.name}</span>
+                      {preview ? (
+                        <Image src={preview} alt={l.name} fill className="object-contain p-1" sizes="56px" />
+                      ) : (
+                        <SwatchTile s={l} className="absolute inset-0" />
+                      )}
                     </button>
                     {/* Hover popup - produkto sa kulay na ito + pangalan + material */}
                     {hoverFab === l.name && preview && (
