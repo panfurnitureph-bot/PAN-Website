@@ -1,302 +1,1304 @@
 [
   {
-    "name": "Maserati Burly Wood",
-    "material": "Fabric",
-    "color": "#dcdad0",
-    "swatch": "/images/swatches/library/maserati-burly-wood.jpg"
+    "name": "Berlin Beige 101",
+    "color": "#988868",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/berlin-beige-101.jpg",
+    "material": "Fabric"
   },
   {
-    "name": "German Leather 10522",
-    "material": "Leather",
-    "color": "#e6e3da",
-    "swatch": "/images/swatches/library/german-leather-10522.jpg"
+    "name": "Berlin Cream 101",
+    "color": "#A89878",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/berlin-cream-101.jpg",
+    "material": "Fabric"
+  },
+  {
+    "name": "Berlin Gray 101",
+    "color": "#989888",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/berlin-gray-101.jpg",
+    "material": "Fabric"
+  },
+  {
+    "name": "Berlin Ivory 101",
+    "color": "#486888",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/berlin-ivory-101.jpg",
+    "material": "Fabric"
+  },
+  {
+    "name": "Berlin Marble 101",
+    "color": "#B8A898",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/berlin-marble-101.jpg",
+    "material": "Fabric"
+  },
+  {
+    "name": "Berlin White 101",
+    "color": "#C8C8C8",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/berlin-white-101.jpg",
+    "material": "Fabric"
+  },
+  {
+    "name": "Bristol Blue 101",
+    "color": "#7E938F",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/bristol-blue-101.jpg",
+    "material": "Fabric — chenille"
+  },
+  {
+    "name": "Bristol Blue 301",
+    "color": "#4A6E96",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/bristol-blue-301.jpg",
+    "material": "Fabric — chenille"
+  },
+  {
+    "name": "Bristol Brown 101",
+    "color": "#96604A",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/bristol-brown-101.jpg",
+    "material": "Fabric — chenille"
+  },
+  {
+    "name": "Bristol Gold 101",
+    "color": "#C09140",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/bristol-gold-101.jpg",
+    "material": "Fabric — chenille"
+  },
+  {
+    "name": "Bristol Gray 101",
+    "color": "#A9A99C",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/bristol-gray-101.jpg",
+    "material": "Fabric — chenille"
+  },
+  {
+    "name": "Bristol Gray 201",
+    "color": "#8F9490",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/bristol-gray-201.jpg",
+    "material": "Fabric — chenille"
+  },
+  {
+    "name": "Bristol Gray 301",
+    "color": "#5E6874",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/bristol-gray-301.jpg",
+    "material": "Fabric — chenille"
+  },
+  {
+    "name": "Bristol Green 101",
+    "color": "#77816F",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/bristol-green-101.jpg",
+    "material": "Fabric — chenille"
+  },
+  {
+    "name": "Bristol Teal 101",
+    "color": "#3F8886",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/bristol-teal-101.jpg",
+    "material": "Fabric — chenille"
+  },
+  {
+    "name": "Bristol White 101",
+    "color": "#EDEBE2",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/bristol-white-101.jpg",
+    "material": "Fabric — chenille"
+  },
+  {
+    "name": "Cairo 1",
+    "color": "#E8E2D6",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-1.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 10",
+    "color": "#B9B4AC",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-10.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 11",
+    "color": "#3E4644",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-11.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 12",
+    "color": "#3A4148",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-12.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 13",
+    "color": "#2E3436",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-13.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 14",
+    "color": "#2C3138",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-14.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 15",
+    "color": "#24272B",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-15.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 16",
+    "color": "#E3B33A",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-16.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 17",
+    "color": "#C2426A",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-17.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 18",
+    "color": "#D45A2B",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-18.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 19",
+    "color": "#C93B34",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-19.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 2",
+    "color": "#BDB4A8",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-2.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 20",
+    "color": "#8E2F3B",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-20.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 21",
+    "color": "#6B3038",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-21.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 22",
+    "color": "#5C2D50",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-22.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 23",
+    "color": "#A4B06A",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-23.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 24",
+    "color": "#2E8A80",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-24.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 25",
+    "color": "#3E6A8A",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-25.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 26",
+    "color": "#2B54C0",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-26.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 27",
+    "color": "#232A44",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-27.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 28",
+    "color": "#EDEAE2",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-28.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 29",
+    "color": "#F0EEE6",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-29.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 3",
+    "color": "#A79781",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-3.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 30",
+    "color": "#E3B7B4",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-30.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 4",
+    "color": "#4A3B2E",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-4.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 5",
+    "color": "#6B5B43",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-5.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 6",
+    "color": "#8A8177",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-6.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 7",
+    "color": "#4E4234",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-7.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 8",
+    "color": "#5C5248",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-8.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Cairo 9",
+    "color": "#3B332B",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/cairo-9.jpg",
+    "material": "Fabric — embossed velvet"
   },
   {
     "name": "Denise Beige",
-    "material": "Fabric",
-    "color": "#cfc3ac",
-    "swatch": "/images/swatches/library/denise-beige.jpg"
+    "color": "#888888",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/denise-beige.jpg",
+    "material": "Fabric"
   },
   {
-    "name": "Bailey Garden Green",
-    "material": "Fabric",
-    "color": "#1d6b3a",
-    "swatch": "/images/swatches/library/bailey-garden-green.jpg"
+    "name": "Denise Black",
+    "color": "#182848",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/denise-black.jpg",
+    "material": "Fabric"
   },
   {
-    "name": "Bailey Olive Drab",
-    "material": "Fabric",
-    "color": "#585b3a",
-    "swatch": "/images/swatches/library/bailey-olive-drab.jpg"
-  },
-  {
-    "name": "Lafayette Choco",
-    "material": "Fabric",
-    "color": "#5a4632",
-    "swatch": "/images/swatches/library/lafayette-choco.jpg"
-  },
-  {
-    "name": "Bailey Burly Wood",
-    "material": "Fabric",
-    "color": "#8f8168",
-    "swatch": "/images/swatches/library/bailey-burly-wood.jpg"
-  },
-  {
-    "name": "German Leather 10023",
-    "material": "Leather",
-    "color": "#9aa287",
-    "swatch": "/images/swatches/library/german-leather-10023.jpg"
-  },
-  {
-    "name": "Lafayette Brown",
-    "material": "Fabric",
-    "color": "#b0a189",
-    "swatch": "/images/swatches/library/lafayette-brown.jpg"
-  },
-  {
-    "name": "Bailey Black",
-    "material": "Fabric",
-    "color": "#1c1c1e",
-    "swatch": "/images/swatches/library/bailey-black.jpg"
-  },
-  {
-    "name": "Bailey Frost Gray",
-    "material": "Fabric",
-    "color": "#4a4a4c",
-    "swatch": "/images/swatches/library/bailey-frost-gray.jpg"
+    "name": "Denise French Toast",
+    "color": "#181818",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/denise-french-toast.jpg",
+    "material": "Fabric"
   },
   {
     "name": "Denise Hazelnut",
-    "material": "Fabric",
-    "color": "#3a3833",
-    "swatch": "/images/swatches/library/denise-hazelnut.jpg"
+    "color": "#C8C8B8",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/denise-hazelnut.jpg",
+    "material": "Fabric"
   },
   {
-    "name": "Bailey Burly Wood (Light)",
-    "material": "Fabric",
-    "color": "#e5e2d6",
-    "swatch": "/images/swatches/library/bailey-burly-wood-light.jpg"
+    "name": "Denise Insignia Blue",
+    "color": "#684838",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/denise-insignia-blue.jpg",
+    "material": "Fabric"
   },
   {
-    "name": "Bailey Blue",
-    "material": "Velvet",
-    "color": "#1f3fa8",
-    "swatch": "/images/swatches/library/bailey-blue.jpg"
+    "name": "Denise Pecan",
+    "color": "#586868",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/denise-pecan.jpg",
+    "material": "Fabric"
   },
   {
-    "name": "Bailey Enamel",
-    "material": "Velvet",
-    "color": "#1b6b78",
-    "swatch": "/images/swatches/library/bailey-enamel.jpg"
+    "name": "Denise Red",
+    "color": "#585858",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/denise-red.jpg",
+    "material": "Fabric"
   },
   {
-    "name": "Bailey Flesh",
-    "material": "Velvet",
-    "color": "#d9cbb6",
-    "swatch": "/images/swatches/library/bailey-flesh.jpg"
+    "name": "Denise Winter Moss",
+    "color": "#181818",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/denise-winter-moss.jpg",
+    "material": "Fabric"
   },
   {
-    "name": "Bailey Burly Wood (Velvet)",
-    "material": "Velvet",
-    "color": "#5a4a34",
-    "swatch": "/images/swatches/library/bailey-burly-wood-velvet.jpg"
+    "name": "Feather Black",
+    "color": "#26262A",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/feather-black.jpg",
+    "material": "Fabric — velour"
   },
   {
-    "name": "Bailey Pistachio",
-    "material": "Velvet",
-    "color": "#9dd4b0",
-    "swatch": "/images/swatches/library/bailey-pistachio.jpg"
+    "name": "Feather Bronze",
+    "color": "#A98F6E",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/feather-bronze.jpg",
+    "material": "Fabric — velour"
   },
   {
-    "name": "Bailey Slate",
-    "material": "Velvet",
-    "color": "#2f5f74",
-    "swatch": "/images/swatches/library/bailey-slate.jpg"
+    "name": "Feather Brown",
+    "color": "#7E6A55",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/feather-brown.jpg",
+    "material": "Fabric — velour"
   },
   {
-    "name": "Bailey Biscuit",
-    "material": "Velvet",
-    "color": "#b6772a",
-    "swatch": "/images/swatches/library/bailey-biscuit.jpg"
+    "name": "Feather Cream Blue",
+    "color": "#5E6470",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/feather-cream-blue.jpg",
+    "material": "Fabric — velour"
   },
   {
-    "name": "Bailey Mustang",
-    "material": "Velvet",
-    "color": "#3a2c22",
-    "swatch": "/images/swatches/library/bailey-mustang.jpg"
+    "name": "Feather Gold",
+    "color": "#D9B32A",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/feather-gold.jpg",
+    "material": "Fabric — velour"
   },
   {
-    "name": "Bailey Hot Pink",
-    "material": "Velvet",
-    "color": "#d23f78",
-    "swatch": "/images/swatches/library/bailey-hot-pink.jpg"
+    "name": "Feather Gray",
+    "color": "#B9BEBE",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/feather-gray.jpg",
+    "material": "Fabric — velour"
   },
   {
-    "name": "Bailey Cardinal",
-    "material": "Velvet",
-    "color": "#b01f34",
-    "swatch": "/images/swatches/library/bailey-cardinal.jpg"
+    "name": "Feather Maroon",
+    "color": "#A32E44",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/feather-maroon.jpg",
+    "material": "Fabric — velour"
   },
   {
-    "name": "Bailey Olive Drab (Velvet)",
-    "material": "Velvet",
-    "color": "#4c5238",
-    "swatch": "/images/swatches/library/bailey-olive-drab-velvet.jpg"
+    "name": "Feather Natural",
+    "color": "#D9CFC0",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/feather-natural.jpg",
+    "material": "Fabric — velour"
   },
   {
-    "name": "Bailey Wood Land",
-    "material": "Velvet",
-    "color": "#4a4034",
-    "swatch": "/images/swatches/library/bailey-wood-land.jpg"
+    "name": "Feather Navy Blue",
+    "color": "#2E4A78",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/feather-navy-blue.jpg",
+    "material": "Fabric — velour"
   },
   {
-    "name": "Pecan",
-    "material": "Velvet",
-    "color": "#7a5a2e",
-    "swatch": "/images/swatches/library/pecan.jpg"
+    "name": "Feather Red",
+    "color": "#C22A28",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/feather-red.jpg",
+    "material": "Fabric — velour"
   },
   {
-    "name": "Beige",
-    "material": "Velvet",
-    "color": "#c2b29a",
-    "swatch": "/images/swatches/library/beige.jpg"
+    "name": "Feather Teak",
+    "color": "#BCAE9A",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/feather-teak.jpg",
+    "material": "Fabric — velour"
   },
   {
-    "name": "Red",
-    "material": "Velvet",
-    "color": "#a51f2a",
-    "swatch": "/images/swatches/library/red.jpg"
+    "name": "Lafayette Black",
+    "color": "#17161A",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/lafayette-black.jpg",
+    "material": "Fabric — velvet"
   },
   {
-    "name": "Hazelnut",
-    "material": "Velvet",
-    "color": "#3a3a3f",
-    "swatch": "/images/swatches/library/hazelnut.jpg"
+    "name": "Lafayette Brown",
+    "color": "#B3A176",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/lafayette-brown.jpg",
+    "material": "Fabric — velvet"
   },
   {
-    "name": "Amalia Canary Yellow",
-    "material": "Fabric",
-    "color": "#f3c518",
-    "swatch": "/images/swatches/library/amalia-canary-yellow.jpg"
+    "name": "Lafayette Choco",
+    "color": "#6B5B41",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/lafayette-choco.jpg",
+    "material": "Fabric — velvet"
   },
   {
-    "name": "Amalia Lime Green",
-    "material": "Fabric",
-    "color": "#9bcc3a",
-    "swatch": "/images/swatches/library/amalia-lime-green.jpg"
+    "name": "Lafayette Cream Blue",
+    "color": "#55606A",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/lafayette-cream-blue.jpg",
+    "material": "Fabric — velvet"
   },
   {
-    "name": "Amalia Scuba Blue",
-    "material": "Fabric",
-    "color": "#38bcd6",
-    "swatch": "/images/swatches/library/amalia-scuba-blue.jpg"
+    "name": "Lafayette Dark Gray",
+    "color": "#454E58",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/lafayette-dark-gray.jpg",
+    "material": "Fabric — velvet"
   },
   {
-    "name": "Amalia Hush Green",
-    "material": "Fabric",
-    "color": "#c3cdc0",
-    "swatch": "/images/swatches/library/amalia-hush-green.jpg"
+    "name": "Lafayette Gray",
+    "color": "#9FA9A6",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/lafayette-gray.jpg",
+    "material": "Fabric — velvet"
   },
   {
-    "name": "Amalia Peach",
-    "material": "Fabric",
-    "color": "#f4b8c4",
-    "swatch": "/images/swatches/library/amalia-peach.jpg"
+    "name": "Lafayette Natural",
+    "color": "#D8D0C0",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/lafayette-natural.jpg",
+    "material": "Fabric — velvet"
   },
   {
-    "name": "Amalia Fuschia",
-    "material": "Fabric",
-    "color": "#e5348a",
-    "swatch": "/images/swatches/library/amalia-fuschia.jpg"
+    "name": "Lafayette Navy Blue",
+    "color": "#1D3560",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/lafayette-navy-blue.jpg",
+    "material": "Fabric — velvet"
   },
   {
-    "name": "Amalia Tango",
-    "material": "Fabric",
-    "color": "#e87824",
-    "swatch": "/images/swatches/library/amalia-tango.jpg"
+    "name": "Lafayette Red",
+    "color": "#B31E24",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/lafayette-red.jpg",
+    "material": "Fabric — velvet"
   },
   {
-    "name": "Amalia Cerulean",
-    "material": "Fabric",
-    "color": "#2f8fc4",
-    "swatch": "/images/swatches/library/amalia-cerulean.jpg"
+    "name": "Lafayette Slate",
+    "color": "#A39A9C",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/lafayette-slate.jpg",
+    "material": "Fabric — velvet"
   },
   {
-    "name": "Amalia Prim Rose",
-    "material": "Fabric",
-    "color": "#dcc79a",
-    "swatch": "/images/swatches/library/amalia-prim-rose.jpg"
+    "name": "Leather BE20357",
+    "color": "#4B4A94",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-be20357.jpg",
+    "material": "Leather — Blue"
   },
   {
-    "name": "Amalia Milo",
-    "material": "Fabric",
-    "color": "#6b5545",
-    "swatch": "/images/swatches/library/amalia-milo.jpg"
+    "name": "Leather BE20457",
+    "color": "#A9D3DC",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-be20457.jpg",
+    "material": "Leather — Blue"
   },
   {
-    "name": "Amalia Rangoon",
-    "material": "Fabric",
-    "color": "#5c5040",
-    "swatch": "/images/swatches/library/amalia-rangoon.jpg"
+    "name": "Leather BE20502",
+    "color": "#2E8A99",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-be20502.jpg",
+    "material": "Leather — Blue"
   },
   {
-    "name": "Tanya Scarlet Red",
-    "material": "Linen",
-    "color": "#b02636",
-    "swatch": "/images/swatches/library/tanya-scarlet-red.jpg"
+    "name": "Leather BE20517",
+    "color": "#5B9BD5",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-be20517.jpg",
+    "material": "Leather — Blue"
+  },
+  {
+    "name": "Leather BG10023",
+    "color": "#7D7256",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-bg10023.jpg",
+    "material": "Leather — Beige / Cream"
+  },
+  {
+    "name": "Leather BG10312",
+    "color": "#C3AD84",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-bg10312.jpg",
+    "material": "Leather — Beige / Cream"
+  },
+  {
+    "name": "Leather BG10313",
+    "color": "#DED3AC",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-bg10313.jpg",
+    "material": "Leather — Beige / Cream"
+  },
+  {
+    "name": "Leather BG10522",
+    "color": "#D7D7C3",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-bg10522.jpg",
+    "material": "Leather — Beige / Cream"
+  },
+  {
+    "name": "Leather BG10737",
+    "color": "#E6D3AE",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-bg10737.jpg",
+    "material": "Leather — Beige / Cream"
+  },
+  {
+    "name": "Leather BG10750",
+    "color": "#ECD9B0",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-bg10750.jpg",
+    "material": "Leather — Beige / Cream"
+  },
+  {
+    "name": "Leather BG1807",
+    "color": "#D9CDB0",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-bg1807.jpg",
+    "material": "Leather — Beige / Cream"
+  },
+  {
+    "name": "Leather BG1840",
+    "color": "#B6A67F",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-bg1840.jpg",
+    "material": "Leather — Beige / Cream"
+  },
+  {
+    "name": "Leather BN30658",
+    "color": "#5A4636",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-bn30658.jpg",
+    "material": "Leather — Brown"
+  },
+  {
+    "name": "Leather BN30688",
+    "color": "#6E4A33",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-bn30688.jpg",
+    "material": "Leather — Brown"
+  },
+  {
+    "name": "Leather BN30780",
+    "color": "#3A322F",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-bn30780.jpg",
+    "material": "Leather — Brown"
+  },
+  {
+    "name": "Leather BN30968",
+    "color": "#A58253",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-bn30968.jpg",
+    "material": "Leather — Brown"
+  },
+  {
+    "name": "Leather BN30969",
+    "color": "#8A6A44",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-bn30969.jpg",
+    "material": "Leather — Brown"
+  },
+  {
+    "name": "Leather BN31108",
+    "color": "#9A6B3D",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-bn31108.jpg",
+    "material": "Leather — Brown"
+  },
+  {
+    "name": "Leather BN31116",
+    "color": "#5E4A3A",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-bn31116.jpg",
+    "material": "Leather — Brown"
+  },
+  {
+    "name": "Leather BN31144",
+    "color": "#9C7C35",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-bn31144.jpg",
+    "material": "Leather — Brown"
+  },
+  {
+    "name": "Leather GN40035",
+    "color": "#CFD9A8",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-gn40035.jpg",
+    "material": "Leather — Green"
+  },
+  {
+    "name": "Leather GN40044",
+    "color": "#2F8B7E",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-gn40044.jpg",
+    "material": "Leather — Green"
+  },
+  {
+    "name": "Leather GN40085",
+    "color": "#8A8137",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-gn40085.jpg",
+    "material": "Leather — Green"
+  },
+  {
+    "name": "Leather GN40117",
+    "color": "#9ABF3B",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-gn40117.jpg",
+    "material": "Leather — Green"
+  },
+  {
+    "name": "Leather GN40132",
+    "color": "#B5C93F",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-gn40132.jpg",
+    "material": "Leather — Green"
+  },
+  {
+    "name": "Leather GN40154",
+    "color": "#A4C04A",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-gn40154.jpg",
+    "material": "Leather — Green"
+  },
+  {
+    "name": "Leather GN40174",
+    "color": "#3D5C3A",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-gn40174.jpg",
+    "material": "Leather — Green"
+  },
+  {
+    "name": "Leather GY90370",
+    "color": "#C6CCC4",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-gy90370.jpg",
+    "material": "Leather — Gray"
+  },
+  {
+    "name": "Leather GY9559",
+    "color": "#6B675E",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-gy9559.jpg",
+    "material": "Leather — Gray"
+  },
+  {
+    "name": "Leather GY9677",
+    "color": "#4A463F",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-gy9677.jpg",
+    "material": "Leather — Gray"
+  },
+  {
+    "name": "Leather GY9714",
+    "color": "#7B766B",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-gy9714.jpg",
+    "material": "Leather — Gray"
+  },
+  {
+    "name": "Leather GY9715",
+    "color": "#8A857A",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-gy9715.jpg",
+    "material": "Leather — Gray"
+  },
+  {
+    "name": "Leather GY9918",
+    "color": "#38342F",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-gy9918.jpg",
+    "material": "Leather — Gray"
+  },
+  {
+    "name": "Leather OG6257",
+    "color": "#EF7F31",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-og6257.jpg",
+    "material": "Leather — Orange"
+  },
+  {
+    "name": "Leather RD70415",
+    "color": "#C14A32",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-rd70415.jpg",
+    "material": "Leather — Red / Pink / Plum"
+  },
+  {
+    "name": "Leather RD70430",
+    "color": "#A8408F",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-rd70430.jpg",
+    "material": "Leather — Red / Pink / Plum"
+  },
+  {
+    "name": "Leather RD70431",
+    "color": "#C4502E",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-rd70431.jpg",
+    "material": "Leather — Red / Pink / Plum"
+  },
+  {
+    "name": "Leather RD70546",
+    "color": "#B06A80",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-rd70546.jpg",
+    "material": "Leather — Red / Pink / Plum"
+  },
+  {
+    "name": "Leather RD70614",
+    "color": "#C22E35",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-rd70614.jpg",
+    "material": "Leather — Red / Pink / Plum"
+  },
+  {
+    "name": "Leather RD70659",
+    "color": "#D5427A",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-rd70659.jpg",
+    "material": "Leather — Red / Pink / Plum"
+  },
+  {
+    "name": "Leather RD70692",
+    "color": "#D84F6F",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-rd70692.jpg",
+    "material": "Leather — Red / Pink / Plum"
+  },
+  {
+    "name": "Leather RD70742",
+    "color": "#5E2436",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-rd70742.jpg",
+    "material": "Leather — Red / Pink / Plum"
+  },
+  {
+    "name": "Leather RD70754",
+    "color": "#B6455A",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-rd70754.jpg",
+    "material": "Leather — Red / Pink / Plum"
+  },
+  {
+    "name": "Leather WT8079",
+    "color": "#F2F0EA",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-wt8079.jpg",
+    "material": "Leather — White"
+  },
+  {
+    "name": "Leather YW5492",
+    "color": "#F2C22E",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-yw5492.jpg",
+    "material": "Leather — Yellow"
+  },
+  {
+    "name": "Leather YW5525",
+    "color": "#C8A94E",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/leather-yw5525.jpg",
+    "material": "Leather — Yellow"
+  },
+  {
+    "name": "Madrid Black 301",
+    "color": "#35342F",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/madrid-black-301.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Madrid Blue 301",
+    "color": "#3D5B8C",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/madrid-blue-301.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Madrid Green 301",
+    "color": "#56695C",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/madrid-green-301.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Madrid Maroon 301",
+    "color": "#A85868",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/madrid-maroon-301.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "New Sahara 1",
+    "color": "#EFEAE0",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-1.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 10",
+    "color": "#A89880",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-10.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 11",
+    "color": "#B0A492",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-11.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 12",
+    "color": "#C4BCB0",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-12.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 13",
+    "color": "#B8B0A4",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-13.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 14",
+    "color": "#A09888",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-14.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 15",
+    "color": "#8A8482",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-15.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 16",
+    "color": "#6E6862",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-16.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 17",
+    "color": "#4E4A44",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-17.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 2",
+    "color": "#E8E0D2",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-2.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 22",
+    "color": "#1F3D2E",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-22.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 28",
+    "color": "#D9A8B0",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-28.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 3",
+    "color": "#E5DCCA",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-3.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 39",
+    "color": "#C03038",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-39.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 4",
+    "color": "#E0D6C4",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-4.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 41",
+    "color": "#7E3A52",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-41.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 42",
+    "color": "#6E2228",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-42.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 43",
+    "color": "#B0B4B8",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-43.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 45",
+    "color": "#A8ACA8",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-45.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 46",
+    "color": "#9EA4A8",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-46.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 47",
+    "color": "#8E959C",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-47.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 49",
+    "color": "#5E5A56",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-49.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 53",
+    "color": "#B8C2C6",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-53.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 54",
+    "color": "#5E7488",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-54.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 6",
+    "color": "#D6CCB8",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-6.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 60",
+    "color": "#12403E",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-60.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 61",
+    "color": "#2E5E72",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-61.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 62",
+    "color": "#232E3E",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-62.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 65",
+    "color": "#1E2E5E",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-65.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 66",
+    "color": "#1A1A20",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-66.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 7",
+    "color": "#B98E4A",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-7.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 8",
+    "color": "#8A7460",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-8.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "New Sahara 9",
+    "color": "#4A4238",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/new-sahara-9.jpg",
+    "material": "Fabric — velour · 145cm · 100% polyester"
+  },
+  {
+    "name": "Sofia 1",
+    "color": "#A57F3F",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/sofia-1.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Sofia 10",
+    "color": "#17181C",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/sofia-10.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Sofia 11",
+    "color": "#EFE5D6",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/sofia-11.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Sofia 12",
+    "color": "#E9D9BD",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/sofia-12.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Sofia 13",
+    "color": "#96908A",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/sofia-13.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Sofia 14",
+    "color": "#6E6C6C",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/sofia-14.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Sofia 15",
+    "color": "#1F3A66",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/sofia-15.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Sofia 16",
+    "color": "#F0E7DC",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/sofia-16.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Sofia 17",
+    "color": "#D9A61F",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/sofia-17.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Sofia 18",
+    "color": "#EFE8DC",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/sofia-18.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Sofia 19",
+    "color": "#C7B296",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/sofia-19.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Sofia 2",
+    "color": "#5C4A2E",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/sofia-2.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Sofia 20",
+    "color": "#1F4A34",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/sofia-20.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Sofia 3",
+    "color": "#3D332B",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/sofia-3.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Sofia 4",
+    "color": "#565A63",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/sofia-4.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Sofia 5",
+    "color": "#3C4648",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/sofia-5.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Sofia 6",
+    "color": "#3A5570",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/sofia-6.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Sofia 7",
+    "color": "#A9622D",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/sofia-7.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Sofia 8",
+    "color": "#B02830",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/sofia-8.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Sofia 9",
+    "color": "#92263C",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/sofia-9.jpg",
+    "material": "Fabric — velvet"
+  },
+  {
+    "name": "Tahoe Almond",
+    "color": "#D9CFBA",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/tahoe-almond.jpg",
+    "material": "Fabric — textured chenille · 58\" width"
+  },
+  {
+    "name": "Tahoe Brown",
+    "color": "#5E4A3A",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/tahoe-brown.jpg",
+    "material": "Fabric — textured chenille · 58\" width"
+  },
+  {
+    "name": "Tahoe Charcoal",
+    "color": "#4A4E46",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/tahoe-charcoal.jpg",
+    "material": "Fabric — textured chenille · 58\" width"
+  },
+  {
+    "name": "Tahoe Emerald Green",
+    "color": "#2E5E48",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/tahoe-emerald-green.jpg",
+    "material": "Fabric — textured chenille · 58\" width"
+  },
+  {
+    "name": "Tahoe Gray",
+    "color": "#6E6A62",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/tahoe-gray.jpg",
+    "material": "Fabric — textured chenille · 58\" width"
+  },
+  {
+    "name": "Tahoe Maroon",
+    "color": "#5E2430",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/tahoe-maroon.jpg",
+    "material": "Fabric — textured chenille · 58\" width"
+  },
+  {
+    "name": "Tahoe Natural",
+    "color": "#C6BCA8",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/tahoe-natural.jpg",
+    "material": "Fabric — textured chenille · 58\" width"
+  },
+  {
+    "name": "Tahoe Ochre",
+    "color": "#C0A02E",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/tahoe-ochre.jpg",
+    "material": "Fabric — textured chenille · 58\" width"
+  },
+  {
+    "name": "Tahoe Olive",
+    "color": "#8A8A6A",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/tahoe-olive.jpg",
+    "material": "Fabric — textured chenille · 58\" width"
+  },
+  {
+    "name": "Tanya Beige 201",
+    "color": "#CFC8C2",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/tanya-beige-201.jpg",
+    "material": "Fabric — linen-weave"
+  },
+  {
+    "name": "Tanya Beige 301",
+    "color": "#A9A48D",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/tanya-beige-301.jpg",
+    "material": "Fabric — linen-weave"
   },
   {
     "name": "Tanya Black",
-    "material": "Linen",
-    "color": "#2a2a2c",
-    "swatch": "/images/swatches/library/tanya-black.jpg"
+    "color": "#33343A",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/tanya-black.jpg",
+    "material": "Fabric — linen-weave"
   },
   {
-    "name": "Tanya Peanut",
-    "material": "Linen",
-    "color": "#a89373",
-    "swatch": "/images/swatches/library/tanya-peanut.jpg"
+    "name": "Tanya Blue 201",
+    "color": "#3F5C74",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/tanya-blue-201.jpg",
+    "material": "Fabric — linen-weave"
   },
   {
-    "name": "Tanya Graphite",
-    "material": "Linen",
-    "color": "#3d3a37",
-    "swatch": "/images/swatches/library/tanya-graphite.jpg"
-  },
-  {
-    "name": "Tanya Parchment",
-    "material": "Linen",
-    "color": "#d6cdb8",
-    "swatch": "/images/swatches/library/tanya-parchment.jpg"
-  },
-  {
-    "name": "Tanya Torquoise",
-    "material": "Linen",
-    "color": "#2f6f8f",
-    "swatch": "/images/swatches/library/tanya-torquoise.jpg"
+    "name": "Tanya Desert Palm",
+    "color": "#575040",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/tanya-desert-palm.jpg",
+    "material": "Fabric — linen-weave"
   },
   {
     "name": "Tanya Ermine",
-    "material": "Linen",
-    "color": "#6e4d33",
-    "swatch": "/images/swatches/library/tanya-ermine.jpg"
+    "color": "#9C8C70",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/tanya-ermine.jpg",
+    "material": "Fabric — linen-weave"
   },
   {
-    "name": "Tanya Dessert Palm",
-    "material": "Linen",
-    "color": "#5f4a38",
-    "swatch": "/images/swatches/library/tanya-dessert-palm.jpg"
+    "name": "Tanya Gray 101",
+    "color": "#C0BDB6",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/tanya-gray-101.jpg",
+    "material": "Fabric — linen-weave"
   },
   {
     "name": "Tanya Iron",
-    "material": "Linen",
-    "color": "#9b9186",
-    "swatch": "/images/swatches/library/tanya-iron.jpg"
+    "color": "#4A453C",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/tanya-iron.jpg",
+    "material": "Fabric — linen-weave"
   },
   {
-    "name": "Tanya Frost Gray",
-    "material": "Linen",
-    "color": "#b3aca2",
-    "swatch": "/images/swatches/library/tanya-frost-gray.jpg"
+    "name": "Tanya Parchment",
+    "color": "#DAD4C2",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/tanya-parchment.jpg",
+    "material": "Fabric — linen-weave"
+  },
+  {
+    "name": "Tanya Peanut",
+    "color": "#B3A48D",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/tanya-peanut.jpg",
+    "material": "Fabric — linen-weave"
+  },
+  {
+    "name": "Tanya Scarlet Red",
+    "color": "#B03A38",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/tanya-scarlet-red.jpg",
+    "material": "Fabric — linen-weave"
+  },
+  {
+    "name": "Tanya Turquoise",
+    "color": "#3E76A8",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/tanya-turquoise.jpg",
+    "material": "Fabric — linen-weave"
+  },
+  {
+    "name": "Velbert Beige 101",
+    "color": "#E3DCCB",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/velbert-beige-101.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Velbert Beige 201",
+    "color": "#CFC7B6",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/velbert-beige-201.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Velbert Black",
+    "color": "#2A2A2C",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/velbert-black.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Velbert Blue 101",
+    "color": "#2C7C92",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/velbert-blue-101.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Velbert Blue 201",
+    "color": "#274A74",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/velbert-blue-201.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Velbert Brown 101",
+    "color": "#8A7B6B",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/velbert-brown-101.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Velbert Brown 201",
+    "color": "#4E4034",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/velbert-brown-201.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Velbert Gray 101",
+    "color": "#ADB2B4",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/velbert-gray-101.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Velbert Gray 201",
+    "color": "#4E5254",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/velbert-gray-201.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Velbert Red 101",
+    "color": "#DCA9AE",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/velbert-red-101.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Velbert Yellow 101",
+    "color": "#D9A928",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/velbert-yellow-101.jpg",
+    "material": "Fabric — embossed velvet"
+  },
+  {
+    "name": "Zenith Atmosphere",
+    "color": "#B8B8B8",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/zenith-atmosphere.jpg",
+    "material": "Fabric — sherpa"
+  },
+  {
+    "name": "Zenith Bronze",
+    "color": "#A89888",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/zenith-bronze.jpg",
+    "material": "Fabric — sherpa"
+  },
+  {
+    "name": "Zenith Cream",
+    "color": "#C8C8C8",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/zenith-cream.jpg",
+    "material": "Fabric — sherpa"
+  },
+  {
+    "name": "Zenith Gray",
+    "color": "#787878",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/zenith-gray.jpg",
+    "material": "Fabric — sherpa"
+  },
+  {
+    "name": "Zenith Natural",
+    "color": "#C8C8B8",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/zenith-natural.jpg",
+    "material": "Fabric — sherpa"
+  },
+  {
+    "name": "Zenith Platinum",
+    "color": "#988878",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/zenith-platinum.jpg",
+    "material": "Fabric — sherpa"
+  },
+  {
+    "name": "Zenith Wormwood",
+    "color": "#A8A898",
+    "swatch": "https://ujxzhdkzjgiulvhlcehr.supabase.co/storage/v1/object/public/product-images/website/swatches/zenith-wormwood.jpg",
+    "material": "Fabric — sherpa"
   }
 ]
