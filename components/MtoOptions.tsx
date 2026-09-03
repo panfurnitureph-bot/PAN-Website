@@ -694,6 +694,12 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   })();
   const [readySize, setReadySize] = useState("");
   const readySizePick = readySizeOpts.find((o) => o.label === readySize) ?? readySizeOpts[0];
+  // READY-UNIT FABRIC (2026-09-03, "pag nag select ako ng fabric is nandito na
+  // sya automatic"): ang mga telang pinili sa Configurator ay lumalabas din sa
+  // yari-nang-unit na view bilang swatch tiles - ito ang mga kulay na available
+  // sa stock. Unang tela ang default; ang pili ay sumasama sa cart line.
+  const [readyFabric, setReadyFabric] = useState("");
+  const readyFabricPick = fabrics.find((l) => l.name === readyFabric) ?? fabrics[0];
   const readyPrice = readySizePick && readySizePick.price > 0 ? readySizePick.price : Number(px.mtoReadyPrice ?? product.price ?? 0);
   const readyAvail = (product.stock ?? 0) > 0 && readyPrice > 0;
   // LOCKED (as-is item): laging ready/as-is view — walang customize.
@@ -755,13 +761,17 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
 
   function handleBuyReady(buyNow: boolean) {
     const sizeLabel = readySizePick ? `Size: ${readySizePick.label}` : "";
+    const fabricLabel = readyFabricPick ? `Fabric: ${readyFabricPick.name}` : "";
     const base = readySizePick ? `Ready unit — ${readySizePick.label}` : "Ready unit — as configured";
-    addToCart(product.slug, base, qty, readyPrice, {
+    // Iba't ibang kulay = magkahiwalay na cart line.
+    const key = readyFabricPick ? `${base} — ${readyFabricPick.name}` : base;
+    addToCart(product.slug, key, qty, readyPrice, {
       baseLabel: base,
       basePrice: readyPrice,
       addOns: [
         ...readySpecs.filter((l) => !/^sizes:/i.test(l)).map((l) => ({ label: l, price: 0 })),
         ...(sizeLabel ? [{ label: sizeLabel, price: 0 }] : []),
+        ...(fabricLabel ? [{ label: fabricLabel, price: 0 }] : []),
       ],
     });
     if (buyNow) router.push("/checkout");
@@ -959,6 +969,32 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             <div className="flex items-center gap-2 border-t border-sand bg-linen px-4 py-2">
               <span className="rounded bg-espresso px-2 py-0.5 text-[9px] font-extrabold tracking-widest2 text-cream">AS-IS</span>
               <span className="text-xs text-stone">Built exactly as specified — this unit is ready for delivery.</span>
+            </div>
+          </div>
+        )}
+        {/* Fabric / color ng yari nang unit — ang mga telang pinili sa Configurator */}
+        {fabrics.length > 0 && (
+          <div className="mt-3 rounded-lg border border-sand px-4 py-3">
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="text-sm text-stone">Fabric</span>
+              <span className="truncate text-sm font-semibold">{readyFabricPick?.name ?? ""}</span>
+            </div>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {fabrics.map((l) => {
+                const on = l.name === readyFabricPick?.name;
+                return (
+                  <button
+                    key={l.name}
+                    type="button"
+                    onClick={() => setReadyFabric(l.name)}
+                    title={l.name}
+                    className={`w-[92px] flex-none overflow-hidden rounded-md bg-white text-center ${on ? "border-2 border-cognac ring-2 ring-cognac/20" : "border border-sand hover:border-cognac"}`}
+                  >
+                    <SwatchTile s={l} className="h-9 w-full" />
+                    <span className={`block truncate px-1 py-0.5 text-[9px] leading-tight ${on ? "font-bold text-ink" : "text-stone"}`}>{l.name}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
