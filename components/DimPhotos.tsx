@@ -18,10 +18,14 @@ type Box = { l: number; t: number; r: number; b: number }; // % ng container
 
 // Bounding box ng produkto sa litrato (% ng litrato), o null kapag hindi
 // ma-decode (walang CORS, sirang file) — fallback sa buong litrato.
-function useSubjectBox(src: string): Box | null {
-  const [box, setBox] = useState<Box | null>(null);
+function useSubjectBoxes(srcs: string[]): (Box | null)[] {
+  const [boxes, setBoxes] = useState<(Box | null)[]>([]);
+  const key = srcs.join("|");
   useEffect(() => {
     let alive = true;
+    setBoxes([]);
+    srcs.forEach((src, idx) => {
+    const setBox = (b: Box) => setBoxes((prev) => { const n = [...prev]; n[idx] = b; return n; });
     const img = new window.Image();
     img.crossOrigin = "anonymous";
     img.onload = () => {
@@ -51,9 +55,11 @@ function useSubjectBox(src: string): Box | null {
       } catch { /* CORS-tainted canvas → fallback */ }
     };
     img.src = src;
+    });
     return () => { alive = false; };
-  }, [src]);
-  return box;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
+  return boxes;
 }
 
 const num = (v: string) => { const m = /([\d.]+)/.exec(v); if (!m) return 0; const n = Number(m[1]); return /cm/i.test(v) ? n / 2.54 : n; };
@@ -105,16 +111,30 @@ export default function DimPhotos({ photos, rows, subject }: { photos: string[];
   const thick = pick(/thick/i, pool);
   const extra = pool[0]; // hal. footrest / base diameter — sa harap, kanan
 
-  const box1 = useSubjectBox(photos[0] ?? "");
-  const box2 = useSubjectBox(photos[1] ?? "");
+  // HARAP vs GILID (2026-09-04, "front and side sana"): sinusuri ang lahat ng
+  // litrato — ang pinakamalapad na silhouette ang harap, ang pinakamakitid ang
+  // gilid (ang side view ng upuan/sofa ay laging mas makitid kaysa harap).
+  // Habang nagbabasa pa: 1st = harap, 2nd = gilid.
+  const all = photos.slice(0, 6);
+  const boxes = useSubjectBoxes(all);
+  const aspect = (b: Box | null | undefined) => (b ? (b.r - b.l) / Math.max(1, b.b - b.t) : NaN);
+  let fi = 0, si = all.length > 1 ? 1 : -1;
+  const known = all.map((_, i) => i).filter((i) => boxes[i]);
+  if (known.length >= 2) {
+    fi = known.reduce((m, i) => (aspect(boxes[i]) > aspect(boxes[m]) ? i : m), known[0]);
+    si = known.reduce((m, i) => (aspect(boxes[i]) < aspect(boxes[m]) ? i : m), known[0]);
+    // Kung halos pareho ang lapad (walang tunay na side shot), 2nd photo na lang.
+    if (si === fi || aspect(boxes[fi]) / aspect(boxes[si]) < 1.12) si = all.length > 1 ? (fi === 0 ? 1 : 0) : -1;
+  }
+  const box1 = boxes[fi] ?? null, box2 = si >= 0 ? boxes[si] ?? null : null;
   const f = box1 ? inset(box1) : FULL, s = box2 ? inset(box2) : FULL;
   const H = totalH ? num(totalH.value) : Math.max(num(seatH?.value ?? "0"), num(backSeat?.value ?? "0"), 1);
   const frac = (v: string) => Math.min(1, num(v) / (H || 1));
-  const hasSide = photos.length > 1 && !!(depth || backSeat || thick);
+  const hasSide = si >= 0 && !!(depth || backSeat || thick);
 
   return (
     <div className={`grid gap-3.5 bg-white border border-sand p-4 ${hasSide ? "md:grid-cols-2" : ""}`}>
-      <Fig src={photos[0]} alt={`${subject} — front`}>
+      <Fig src={all[fi]} alt={`${subject} — front`}>
         {totalH && <VLine x={f.l - 5} y1={f.t} y2={f.b} label={totalH.value} side="left" />}
         {width && <HLine y={f.b + 5} x1={f.l} x2={f.r} label={width.value} pos="below" />}
         {seatH && !hasSide && <VLine x={f.r + 5} y1={f.b - (f.b - f.t) * frac(seatH.value)} y2={f.b} label={seatH.value} side="right" />}
@@ -122,7 +142,7 @@ export default function DimPhotos({ photos, rows, subject }: { photos: string[];
         {!hasSide && depth && <VLine x={f.r + 12} y1={f.t} y2={f.t + (f.b - f.t) * 0.3} label={`${depth.value} D`} side="right" />}
       </Fig>
       {hasSide && (
-        <Fig src={photos[1]} alt={`${subject} — side`}>
+        <Fig src={all[si]} alt={`${subject} — side`}>
           {depth && <HLine y={s.b + 5} x1={s.l} x2={s.r} label={depth.value} pos="below" />}
           {seatH && <VLine x={s.r + 5} y1={s.b - (s.b - s.t) * frac(seatH.value)} y2={s.b} label={seatH.value} side="right" />}
           {backSeat && <VLine x={s.l - 5} y1={s.t} y2={s.t + (s.b - s.t) * frac(backSeat.value)} label={backSeat.value} side="left" />}
