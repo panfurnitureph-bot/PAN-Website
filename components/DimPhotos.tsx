@@ -1,0 +1,135 @@
+"use client";
+
+// DIMENSION PHOTOS — Poly & Bark style (2026-09-04, "front and side view tapos
+// ung sukat"): ang mismong litrato ng produkto (harap + gilid) na may manipis
+// na guhit na NAKADIKIT sa gilid ng produkto at ang tunay na sukat bilang label.
+//
+// Paano dumidikit ang guhit: kinukuha ang silhouette ng produkto sa litrato
+// (puting background → bounding box ng hindi-puting pixels, sa canvas sa
+// browser), tapos ang bawat guhit ay iginuguhit sa gilid ng box na iyon. Ang
+// mga bahagyang sukat (seat height, backrest to seat, kapal) ay proportional
+// sa total height / lalim para tama ang haba ng guhit.
+
+import Image from "next/image";
+import { useEffect, useState } from "react";
+
+export type DimRow = { k: string; label: string; value: string };
+type Box = { l: number; t: number; r: number; b: number }; // % ng container
+
+// Bounding box ng produkto sa litrato (% ng litrato), o null kapag hindi
+// ma-decode (walang CORS, sirang file) — fallback sa buong litrato.
+function useSubjectBox(src: string): Box | null {
+  const [box, setBox] = useState<Box | null>(null);
+  useEffect(() => {
+    let alive = true;
+    const img = new window.Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      try {
+        const W = 160, H = Math.max(1, Math.round((img.naturalHeight / img.naturalWidth) * W));
+        const c = document.createElement("canvas"); c.width = W; c.height = H;
+        const ctx = c.getContext("2d"); if (!ctx) return;
+        ctx.drawImage(img, 0, 0, W, H);
+        const d = ctx.getImageData(0, 0, W, H).data;
+        // background = median ng apat na sulok
+        const corner = (x: number, y: number) => { const i = (y * W + x) * 4; return [d[i], d[i + 1], d[i + 2]]; };
+        const cs = [corner(1, 1), corner(W - 2, 1), corner(1, H - 2), corner(W - 2, H - 2)];
+        const bg = [0, 1, 2].map((k) => cs.map((c) => c[k]).sort((a, b) => a - b)[2]);
+        let l = W, t = H, r = -1, b = -1;
+        for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+          const i = (y * W + x) * 4;
+          if (d[i + 3] < 40) continue; // transparent = background
+          const diff = Math.max(Math.abs(d[i] - bg[0]), Math.abs(d[i + 1] - bg[1]), Math.abs(d[i + 2] - bg[2]));
+          if (diff > 28) { if (x < l) l = x; if (x > r) r = x; if (y < t) t = y; if (y > b) b = y; }
+        }
+        if (r < 0 || r - l < W * 0.1 || b - t < H * 0.1) return; // walang subject na nakita
+        // % ng litrato → % ng parisukat na container (object-contain, nakasentro)
+        const ar = img.naturalWidth / img.naturalHeight;
+        const dw = ar >= 1 ? 100 : 100 * ar, dh = ar >= 1 ? 100 / ar : 100;
+        const ox = (100 - dw) / 2, oy = (100 - dh) / 2;
+        if (alive) setBox({ l: ox + (l / W) * dw, t: oy + (t / H) * dh, r: ox + ((r + 1) / W) * dw, b: oy + ((b + 1) / H) * dh });
+      } catch { /* CORS-tainted canvas → fallback */ }
+    };
+    img.src = src;
+    return () => { alive = false; };
+  }, [src]);
+  return box;
+}
+
+const num = (v: string) => { const m = /([\d.]+)/.exec(v); if (!m) return 0; const n = Number(m[1]); return /cm/i.test(v) ? n / 2.54 : n; };
+const pick = (re: RegExp, pool: DimRow[]) => { const i = pool.findIndex((r) => re.test(r.label)); return i >= 0 ? pool.splice(i, 1)[0] : undefined; };
+
+// Isang guhit na may tick sa dulo at label (walang kahon — Poly & Bark).
+function VLine({ x, y1, y2, label, side }: { x: number; y1: number; y2: number; label: string; side: "left" | "right" }) {
+  return (
+    <>
+      <span className="absolute w-px bg-stone/60" style={{ left: `${x}%`, top: `${y1}%`, height: `${y2 - y1}%` }} />
+      <span className="absolute h-px w-1.5 bg-stone/60 -translate-x-1/2" style={{ left: `${x}%`, top: `${y1}%` }} />
+      <span className="absolute h-px w-1.5 bg-stone/60 -translate-x-1/2" style={{ left: `${x}%`, top: `${y2}%` }} />
+      <span className={`absolute text-[10.5px] text-ink tabular-nums whitespace-nowrap -translate-y-1/2 ${side === "left" ? "-translate-x-full pr-1.5" : "pl-1.5"}`} style={{ left: `${x}%`, top: `${(y1 + y2) / 2}%` }}>{label}</span>
+    </>
+  );
+}
+function HLine({ y, x1, x2, label, pos }: { y: number; x1: number; x2: number; label: string; pos: "below" | "above" }) {
+  return (
+    <>
+      <span className="absolute h-px bg-stone/60" style={{ top: `${y}%`, left: `${x1}%`, width: `${x2 - x1}%` }} />
+      <span className="absolute w-px h-1.5 bg-stone/60 -translate-y-1/2" style={{ top: `${y}%`, left: `${x1}%` }} />
+      <span className="absolute w-px h-1.5 bg-stone/60 -translate-y-1/2" style={{ top: `${y}%`, left: `${x2}%` }} />
+      <span className={`absolute text-[10.5px] text-ink tabular-nums whitespace-nowrap -translate-x-1/2 ${pos === "below" ? "pt-1" : "-translate-y-full pb-1"}`} style={{ left: `${(x1 + x2) / 2}%`, top: `${y}%` }}>{label}</span>
+    </>
+  );
+}
+
+function Fig({ src, alt, children }: { src: string; alt: string; children: React.ReactNode }) {
+  return (
+    <figure className="relative m-0 aspect-square bg-white">
+      <Image src={src} alt={alt} fill className="object-contain p-[12%]" sizes="(min-width: 768px) 360px, 100vw" />
+      {children}
+    </figure>
+  );
+}
+
+// object-contain p-[12%] → ang litrato ay nasa 12%..88% ng container; ang box ay
+// nasa % ng litrato kaya ini-scale dito.
+const inset = (box: Box): Box => ({ l: 12 + box.l * 0.76, t: 12 + box.t * 0.76, r: 12 + box.r * 0.76, b: 12 + box.b * 0.76 });
+const FULL: Box = { l: 14, t: 14, r: 86, b: 86 };
+
+export default function DimPhotos({ photos, rows, subject }: { photos: string[]; rows: DimRow[]; subject: string }) {
+  const pool = rows.filter((r) => num(r.value) > 0);
+  const totalH = pick(/total\s*height|^height$|bar\s*counter\s*height/i, pool);
+  const width = pick(/end\s*to\s*end|width|diameter|length/i, pool);
+  const seatH = pick(/seat\s*height/i, pool);
+  const depth = pick(/seat\s*depth|depth/i, pool);
+  const backSeat = pick(/backrest\s*to\s*seat|armrest\s*height|back\s*cushion/i, pool);
+  const thick = pick(/thick/i, pool);
+  const extra = pool[0]; // hal. footrest / base diameter — sa harap, kanan
+
+  const box1 = useSubjectBox(photos[0] ?? "");
+  const box2 = useSubjectBox(photos[1] ?? "");
+  const f = box1 ? inset(box1) : FULL, s = box2 ? inset(box2) : FULL;
+  const H = totalH ? num(totalH.value) : Math.max(num(seatH?.value ?? "0"), num(backSeat?.value ?? "0"), 1);
+  const frac = (v: string) => Math.min(1, num(v) / (H || 1));
+  const hasSide = photos.length > 1 && !!(depth || backSeat || thick);
+
+  return (
+    <div className={`grid gap-3.5 bg-white border border-sand p-4 ${hasSide ? "md:grid-cols-2" : ""}`}>
+      <Fig src={photos[0]} alt={`${subject} — front`}>
+        {totalH && <VLine x={f.l - 5} y1={f.t} y2={f.b} label={totalH.value} side="left" />}
+        {width && <HLine y={f.b + 5} x1={f.l} x2={f.r} label={width.value} pos="below" />}
+        {seatH && !hasSide && <VLine x={f.r + 5} y1={f.b - (f.b - f.t) * frac(seatH.value)} y2={f.b} label={seatH.value} side="right" />}
+        {(hasSide ? extra ?? undefined : undefined) && <VLine x={f.r + 5} y1={f.b - (f.b - f.t) * frac(extra!.value)} y2={f.b} label={extra!.value} side="right" />}
+        {!hasSide && depth && <VLine x={f.r + 12} y1={f.t} y2={f.t + (f.b - f.t) * 0.3} label={`${depth.value} D`} side="right" />}
+      </Fig>
+      {hasSide && (
+        <Fig src={photos[1]} alt={`${subject} — side`}>
+          {depth && <HLine y={s.b + 5} x1={s.l} x2={s.r} label={depth.value} pos="below" />}
+          {seatH && <VLine x={s.r + 5} y1={s.b - (s.b - s.t) * frac(seatH.value)} y2={s.b} label={seatH.value} side="right" />}
+          {backSeat && <VLine x={s.l - 5} y1={s.t} y2={s.t + (s.b - s.t) * frac(backSeat.value)} label={backSeat.value} side="left" />}
+          {thick && depth && <HLine y={s.t - 5} x1={s.r - (s.r - s.l) * Math.min(0.6, num(thick.value) / num(depth.value))} x2={s.r} label={thick.value} pos="above" />}
+          {thick && !depth && <HLine y={s.t - 5} x1={s.r - (s.r - s.l) * 0.25} x2={s.r} label={thick.value} pos="above" />}
+        </Fig>
+      )}
+    </div>
+  );
+}

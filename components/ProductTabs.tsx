@@ -11,6 +11,7 @@ import { site as siteDefault, type Product, type SiteContent } from "@/lib/produ
 import FrameDiagram, { DEFAULT_BED_SIZES, bedBuildRows, bedFlags, buildFromSpecs, type BedBuild } from "@/components/FrameDiagram";
 import MattressDiagram, { splitDim } from "@/components/MattressDiagram";
 import MeasureDiagram, { measureKind, measureRows } from "@/components/MeasureDiagram";
+import DimPhotos from "@/components/DimPhotos";
 import type { MtoItemConfig } from "@/lib/content";
 import { frameFor } from "@/lib/double-walling";
 
@@ -68,58 +69,6 @@ const BED_SIZES = [
   { id: "Queen", w: '60"', l: '80"' },
   { id: "King", w: '76"', l: '80"' },
 ];
-
-// DIMENSION PHOTOS (2026-09-04 mockup): ang mismong litrato ng produkto
-// (harap at gilid) na may guhit ng sukat sa gilid at label ng halaga — kapalit
-// ng line drawing para sa upuan/sofa/mesa. Ang unang tatlong sukat ay nasa
-// harap (taas sa kaliwa, lapad sa ibaba, ikatlo sa kanan), ang susunod na
-// tatlo ay nasa gilid (lalim sa ibaba, sukat sa kanan, kapal sa itaas).
-function DimPhotos({ photos, rows, subject }: { photos: string[]; rows: { k: string; label: string; value: string }[]; subject: string }) {
-  // Puwesto ayon sa pangalan ng sukat (hindi sa pagkakasunod): taas at lapad
-  // ay nasa HARAP, lalim/backrest/kapal ay nasa GILID. Ang hindi tumugma ay
-  // pumupuno sa natitirang puwesto.
-  const pick = (re: RegExp, pool: typeof rows) => { const i = pool.findIndex((r) => re.test(r.label)); return i >= 0 ? pool.splice(i, 1)[0] : undefined; };
-  const pool = [...rows];
-  const slots = [
-    pick(/totals*height|^height$|bars*counters*height/i, pool), pick(/ends*tos*end|width|diameter|length/i, pool), pick(/seats*height/i, pool),
-    pick(/seats*depth|depth/i, pool), pick(/backrests*tos*seat|armrests*height|backs*cushion/i, pool), pick(/thick/i, pool),
-  ];
-  for (let i = 0; i < slots.length && pool.length; i++) if (!slots[i]) slots[i] = pool.shift();
-  const front = slots.slice(0, 3), side = slots.slice(3, 6);
-  const Fig = ({ src, title, items, spots }: { src: string; title: string; items: (typeof rows[number] | undefined)[]; spots: { line: string; at: [number, number] }[] }) => (
-    <figure className="relative m-0 flex flex-col gap-2">
-      <div className="relative aspect-square bg-white">
-        <Image src={src} alt={`${subject} — ${title} view`} fill className="object-contain" sizes="(min-width: 768px) 360px, 100vw" />
-        <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="pointer-events-none absolute inset-0 h-full w-full text-brown" stroke="currentColor" strokeWidth="0.6">
-          {items.map((r, i) => (r ? <path key={i} d={spots[i].line} fill="none" /> : null))}
-        </svg>
-        {items.map((r, i) => r && (
-          <span key={r.label} className="absolute -translate-x-1/2 -translate-y-1/2 bg-white border border-brown text-brown text-xs font-bold px-1.5 py-0.5 tabular-nums" style={{ left: `${spots[i].at[0]}%`, top: `${spots[i].at[1]}%` }} title={r.label}>
-            {r.value}
-          </span>
-        ))}
-      </div>
-      <figcaption className="text-[11px] text-stone tracking-[0.06em] uppercase text-center">{title} · {items.filter(Boolean).map((r) => r!.label.toLowerCase()).join(", ")}</figcaption>
-    </figure>
-  );
-  const FRONT = [
-    { line: "M14 18V90M11 18H17M11 90H17", at: [6, 50] as [number, number] },
-    { line: "M22 95H78M22 92V98M78 92V98", at: [46, 91] as [number, number] },
-    { line: "M86 52V90M83 52H89M83 90H89", at: [88, 68] as [number, number] },
-  ];
-  const SIDE = [
-    { line: "M28 95H72M28 92V98M72 92V98", at: [46, 91] as [number, number] },
-    { line: "M86 20V58M83 20H89M83 58H89", at: [88, 36] as [number, number] },
-    { line: "M40 8H52M40 5V11M52 5V11", at: [42, 3] as [number, number] },
-  ];
-  const two = photos.length > 1 && side.some(Boolean);
-  return (
-    <div className={`grid gap-3.5 bg-white border border-sand p-4 ${two ? "md:grid-cols-[1.25fr_1fr]" : ""}`}>
-      <Fig src={photos[0]} title="Front" items={front} spots={FRONT} />
-      {two && <Fig src={photos[1]} title="Side" items={side} spots={SIDE} />}
-    </div>
-  );
-}
 
 // Dimensions tab: shared size state — pag pinili ang isang size sa
 // FrameDiagram, ang left specs ay nag-hi-highlight sa napiling size.
