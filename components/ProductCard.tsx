@@ -14,6 +14,7 @@ import { formatPrice, type Product } from "@/lib/products";
 import { useStore } from "@/components/store";
 import { openQuickView } from "@/components/home/QuickView";
 import { readyCartLine } from "@/lib/ready-cart";
+import FitImage from "@/components/FitImage";
 
 export default function ProductCard({
   product,
@@ -85,8 +86,8 @@ export default function ProductCard({
         {/* Litrato = diretso sa product page (2026-09-04, "ang hirap i-click sa mobile");
             ang Quick view ay sa button lang. */}
         <Link href={`/products/${product.slug}`} className="absolute inset-0 block">
-          <Image src={hero} alt={product.name} fill className={`object-contain p-3 transition-opacity duration-300 ${alt ? "group-hover:opacity-0" : ""}`} sizes="(min-width: 1100px) 240px, (min-width: 640px) 33vw, 70vw" />
-          {alt && <Image src={alt} alt="" fill className="object-contain p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100" sizes="240px" />}
+          <FitImage src={hero} alt={product.name} className={`transition-opacity duration-300 ${alt ? "group-hover:opacity-0" : ""}`} sizes="(min-width: 1100px) 240px, (min-width: 640px) 33vw, 70vw" />
+          {alt && <FitImage src={alt} alt="" className="opacity-0 transition-opacity duration-300 group-hover:opacity-100" sizes="240px" />}
         </Link>
         {quickView && (
           <button

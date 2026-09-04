@@ -15,6 +15,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { homepage, products, swatchLibrary, CATEGORY_TILES, categoryTileImage } from "@/lib/products";
 import { primeStoreContent } from "@/lib/content";
+import FitImage from "@/components/FitImage";
 import { messengerHandle } from "@/lib/messenger";
 import HeroSlideshow from "@/components/HeroSlideshow";
 import ProductCard from "@/components/ProductCard";
@@ -65,7 +66,7 @@ export default async function HomePage() {
                 {/* Uniform na tile (2026-09-04): puting ground, buong litrato (contain) -
                     pareho ang dating ng product photo at ng category photo, walang putol. */}
                 <span className="relative block aspect-square bg-white overflow-hidden border border-sand">
-                  <Image src={categoryTileImage(t.slug)} alt={t.label} fill className="object-contain p-3 transition-transform duration-500 group-hover:scale-[1.04]" sizes="(min-width: 1100px) 160px, 40vw" />
+                  <FitImage src={categoryTileImage(t.slug)} alt={t.label} sizes="(min-width: 1100px) 160px, 40vw" />
                 </span>
                 {t.label}
               </Link>
