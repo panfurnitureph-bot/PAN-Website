@@ -21,9 +21,12 @@ export function groupBuildLines(lines: BuildLine[]): BuildGroup[] {
       return true;
     });
 
-  const hasWall = raw.some((l) => /^double walling\b/i.test(l.label));
+  // Height/Thickness/Width ng dingding = ang mga KASUNOD ng "Double walling"
+  // (2026-09-04); ang nauunang "Width: 34"" ay sukat ng produkto mismo.
+  const wallIdx = raw.findIndex((l) => /^double walling\b/i.test(l.label));
+  const hasWall = wallIdx >= 0;
   const isWall = (l: string) =>
-    hasWall && /^(double walling|frame dimension|height|thickness|width|decorative nails|gold accent)\b/i.test(l);
+    hasWall && (/^(double walling|frame dimension|decorative nails|gold accent)\b/i.test(l) || (/^(height|thickness|width)\b/i.test(l) && raw.findIndex((x) => x.label === l) > wallIdx));
 
   // Ang mga SUKAT ay bahagi ng bagay mismo, hindi idinagdag dito: ang taas at
   // lalim ng sofa ang sofa. Sa "Add-ons", parang may pinili pang dagdag ang

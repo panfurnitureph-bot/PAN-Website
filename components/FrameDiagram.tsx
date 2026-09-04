@@ -132,7 +132,14 @@ export function buildFromSpecs(lines: string[]): BedBuild | null {
   const b: BedBuild = { checks: [], choices: {}, dw: {}, meas: {} };
   const num = (v: string) => { const m = /(\d+(?:\.\d+)?)/.exec(v); return m ? Number(m[1]) : 0; };
   let touched = false;
+  // Bare na Height/Thickness/Width = sukat ng DINGDING kapag KASUNOD ng "Double
+  // walling" (2026-09-04); bago iyon, sukat ng produkto (Width/Length/Height ng
+  // Product Management) - hindi ipinapasok sa double-walling na kahon.
+  const wallIdx = L.findIndex((l) => /^double walling\s*:/i.test(l));
+  let li = -1;
   for (const l of L) {
+    li++;
+    const afterWall = wallIdx >= 0 && li > wallIdx;
     const m = /^([^:]+):\s*(.+)$/.exec(l);
     const label = (m ? m[1] : "").trim().toLowerCase();
     const value = (m ? m[2] : l).trim();
@@ -155,9 +162,9 @@ export function buildFromSpecs(lines: string[]): BedBuild | null {
     if (label === "legs") { b.choices!["Legs"] = value.replace(/\s*\(.*\)$/, "").trim(); touched = true; continue; }
     if (label === "mattress insert") { b.choices!["Mattress Insert"] = value; touched = true; continue; }
     if (label === "double walling") { b.checks!.push("Double Walling"); b.dw!.thick = num(value) || 8; touched = true; continue; }
-    if (label === "height") { b.dw!.h = String(num(value) || ""); continue; }
-    if (label === "thickness") { b.dw!.pad = String(num(value) || ""); continue; }
-    if (label === "width") { b.dw!.w = String(num(value) || ""); continue; }
+    if (label === "height") { if (afterWall) b.dw!.h = String(num(value) || ""); continue; }
+    if (label === "thickness") { if (afterWall) b.dw!.pad = String(num(value) || ""); continue; }
+    if (label === "width") { if (afterWall) b.dw!.w = String(num(value) || ""); continue; }
     if (label === "decorative nails") { b.dw!.nails = value; continue; }
     if (label === "gold accent") { b.dw!.accent = /yes/i.test(value); continue; }
     if (/^tufted/i.test(l)) {

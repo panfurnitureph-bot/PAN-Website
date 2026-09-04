@@ -133,10 +133,12 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
   // sa listahan, sa drawing, at sa table - hindi ang default ng Configurator.
   const mtoLocked = !!mto && !mto.customizable;
   const normL = (s: string) => s.trim().toLowerCase().replace(/[^a-z0-9]+/g, " ");
+  // Tinatanggap ang cm at ft (Add Product: in/cm/ft toggle, 2026-09-04) at
+  // ginagawang pulgada - dati inches lang ang nababasa, nawawala ang iba.
   const specMeasRows = readySpecLines
-    .map((l) => /^([^:]+):\s*(\d+(?:\.\d+)?)\s*(?:"|″|in\b|inch(?:es)?)?\s*$/i.exec(l))
+    .map((l) => /^([^:]+):\s*(\d+(?:\.\d+)?)\s*(cm|ft|"|″|in\b|inch(?:es)?)?\s*$/i.exec(l))
     .filter((m): m is RegExpExecArray => !!m && !/^sizes?$/i.test(m[1].trim()))
-    .map((m) => ({ label: m[1].trim(), n: Number(m[2]) }));
+    .map((m) => { const u = (m[3] ?? "").toLowerCase(); const raw = Number(m[2]); const n = u === "cm" ? Math.round((raw / 2.54) * 10) / 10 : u === "ft" ? raw * 12 : raw; return { label: m[1].trim(), n }; });
   const specMeas: Record<string, number> = {};
   // "Seat Height (incl. legs)" ↔ "Seat Height" ng drawing: itala rin nang
   // walang parenthetical para tumugma ang letra (B) at ang halaga.
