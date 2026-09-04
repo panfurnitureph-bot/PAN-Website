@@ -42,7 +42,7 @@ export function generateMetadata({ params }: { params: { category: string } }) {
   if (!collection) return { title: "PAN Furniture" };
   // Branded OG card (2026-09-03) - hindi na hinuhugot ng chat apps ang unang
   // product photo (na pinuputol nila); laging maayos ang share preview.
-  const og = `/api/og?title=${encodeURIComponent(collection.title)}`;
+  const og = `/api/og?title=${encodeURIComponent(collection.title)}&v=2`;
   return {
     title: `${collection.title} — PAN Furniture`,
     openGraph: { title: `${collection.title} — PAN Furniture`, images: [og] },

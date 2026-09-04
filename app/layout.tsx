@@ -34,12 +34,19 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://panfurniture.ph"),
   title: "PAN Furniture",
   description:
-    "Premium sofas, sectionals, dining, bedroom, and outdoor furniture. Quality materials, built to last. Free shipping and a 100-day happiness guarantee.",
+    "Made-to-order beds, sofas, dining and living furniture built in our San Pedro, Laguna workshop. 217 fabrics, 6-month warranty, delivered and set up nationwide by our own team.",
+  // Kumpletong OG (2026-09-04, "plain lang ang link sa Messenger"): url, type,
+  // 1200x630 na sukat at alt para tanggapin ng FB/Messenger scraper; v=2 para
+  // hindi ang lumang naka-cache na card ang lumabas.
   openGraph: {
+    type: "website",
+    url: "/",
     siteName: "PAN Furniture",
-    images: ["/api/og?title=PAN%20Furniture"],
+    title: "PAN Furniture",
+    description: "Made-to-order beds, sofas, dining and living furniture built in San Pedro, Laguna. Delivered and set up nationwide by our own team.",
+    images: [{ url: "/api/og?title=PAN%20Furniture&v=2", width: 1200, height: 630, alt: "PAN Furniture" }],
   },
-  twitter: { card: "summary_large_image" },
+  twitter: { card: "summary_large_image", title: "PAN Furniture", images: ["/api/og?title=PAN%20Furniture&v=2"] },
   // Favicon mula sa /public (static — hindi na dynamic route, iwas crash)
   icons: {
     icon: "/icon.png",

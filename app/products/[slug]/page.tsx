@@ -33,11 +33,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   // Branded OG card (2026-09-03): ang hilaw na portrait photo ay pinuputol ng
   // Messenger card - ang /api/og ay 1200x630 na laging maayos, buong litrato.
   const price = product.priceFrom ?? product.price;
-  const og = `/api/og?title=${encodeURIComponent(product.name)}&price=${encodeURIComponent(price ? `₱${Number(price).toLocaleString("en-PH")}` : "")}&img=${encodeURIComponent(product.images[0] ?? "")}`;
+  const og = `/api/og?title=${encodeURIComponent(product.name)}&price=${encodeURIComponent(price ? `₱${Number(price).toLocaleString("en-PH")}` : "")}&img=${encodeURIComponent(product.images[0] ?? "")}&v=2`;
+  const description = (product.description || `${product.name} by PAN Furniture — made to order in San Pedro, Laguna.`).slice(0, 160);
   return {
     title: `${product.name} — PAN Furniture`,
-    openGraph: { title: `${product.name} — PAN Furniture`, images: [og] },
-    twitter: { card: "summary_large_image", images: [og] },
+    description,
+    openGraph: { type: "website", url: `/products/${product.slug}`, siteName: "PAN Furniture", title: `${product.name} — PAN Furniture`, description, images: [{ url: og, width: 1200, height: 630, alt: product.name }] },
+    twitter: { card: "summary_large_image", title: `${product.name} — PAN Furniture`, images: [og] },
   };
 }
 
