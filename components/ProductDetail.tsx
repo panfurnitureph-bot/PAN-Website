@@ -18,7 +18,8 @@ import { messengerHandle, messengerUrl } from "@/lib/messenger";
 import { useStore } from "@/components/store";
 import MtoOptions from "@/components/MtoOptions";
 import type { MtoItemConfig } from "@/lib/content";
-import FitModal, { packagedFrom } from "@/components/FitModal";
+import FitModal from "@/components/FitModal";
+import { packagedFrom } from "@/lib/packaged";
 
 // Fallback na 6 bed sizes kung walang custom na bedSizes ang product
 const DEFAULT_SIZES = [

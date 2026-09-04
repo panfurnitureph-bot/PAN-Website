@@ -7,7 +7,7 @@ import Link from "next/link";
 import { products } from "@/lib/products";
 import { primeStoreContent } from "@/lib/content";
 import FitChecker, { type FitItem } from "@/components/FitChecker";
-import { packagedFrom } from "@/components/FitModal";
+import { packagedFrom } from "@/lib/packaged";
 
 export const metadata = { title: "Measure for Delivery — PAN Furniture" };
 export const revalidate = 0;
