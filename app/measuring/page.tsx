@@ -1,139 +1,135 @@
-// MEASURING PAGE — /measuring
-// A guide to prepare for your delivery. Layout at text ay tumutugma sa
-// tunay na site: alternating na sections na may totoong illustrations,
-// tapos Explore categories + pre-footer.
+// MEASURE FOR DELIVERY — /measuring (2026-09-04, mockup 2e53e865)
+// Hero "Will it fit through the door?" · 3 steps · Fit checker (lahat ng
+// produkto laban sa iyong pinakamasikip na daanan) · 4 guide cards (doors,
+// hallways, stairs, elevators). Wala nang Explore categories / pre-footer.
 
 import Link from "next/link";
-import Image from "next/image";
-import { CATEGORY_TILES } from "@/lib/products";
+import { products } from "@/lib/products";
 import { primeStoreContent } from "@/lib/content";
-import PreFooter from "@/components/PreFooter";
+import FitChecker, { type FitItem } from "@/components/FitChecker";
+import { packagedFrom } from "@/components/FitModal";
 
-export const metadata = { title: "Measuring Your Space — PAN Furniture" };
-
-// Walang cache: sariwang kuha sa Supabase kada page load, kaya ang binago sa
-// PAN app admin ay lumalabas agad — hindi na kailangang maghintay.
+export const metadata = { title: "Measure for Delivery — PAN Furniture" };
 export const revalidate = 0;
 
-const SECTIONS = [
+const STEPS = [
+  { t: "Get the packaged size", p: <>Every product page lists dimensions under the <b className="text-ink">Dimensions</b> tab. Add about 2&quot; per side for padding and the box — that is the size that has to pass.</> },
+  { t: "Measure the path", p: <>Front gate, main door, hallway, stairs, elevator, then the room&apos;s door. Write down width, height and the diagonal of each opening — the diagonal is what lets a piece tilt through.</> },
+  { t: "Check, or send it to us", p: <>Use the checker below, or send your measurements and a photo on Messenger. We confirm fit before you pay the downpayment.</> },
+];
+
+const PH = [["Main door (house)", "36\" × 80\""], ["Bedroom door", "32\" × 80\""], ["Condo unit door", "34\" × 84\""], ["Condo elevator door", "32–36\" × 80\""], ["Stair width (typical)", "36–42\""]];
+
+const GUIDES = [
   {
-    id: "product",
-    title: "Product Measurements",
-    image: "/images/measuring-product.png",
-    body: [
-      "Make your furniture delivery seamless by ensuring it fits perfectly into your home. To help you plan ahead, our Product Description Pages include two sets of dimensions: one for the product and one for its packaging. These details make it easy to map out the delivery path and choose the ideal spot for your new piece.",
-      "Read on to find out how to gather your other key measurements. Consider the full scale of your item, including the overall width (W), depth (D), and height (H).",
-    ],
+    t: "Doors and gates",
+    svg: <><rect x="28" y="10" width="44" height="82" /><circle cx="64" cy="52" r="2" /><path d="M28 6h44M32 3l-4 3 4 3M68 3l4 3-4 3" /><path d="M78 10v82M75 14l3-4 3 4M75 88l3 4 3-4" /><path d="M30 90L70 12" strokeDasharray="3 3" /></>,
+    li: [<><b className="text-ink">Width</b> between the door jambs, not the frame</>, <><b className="text-ink">Height</b> from floor to the top of the opening</>, <><b className="text-ink">Diagonal</b> corner to corner — for tilting a headboard or sofa through</>, <>Check the door can open fully; a door that stops at 90° loses 2–3&quot;</>],
+    tip: "Remove the door from its hinges for 3\" more width on the delivery day — our team can do this.",
   },
   {
-    id: "doorframes",
-    title: "Doorframes",
-    image: "/images/measuring-door.png",
-    body: [
-      "Locate the main entrance to the house or apartment. If applicable, identify any secondary entrances, like a back door or garage door.",
-      "Measure the doorway’s height, width, and the diagonal distance between the door jambs.",
-    ],
+    t: "Hallways and corners",
+    svg: <><path d="M10 20h50v50H90M10 90h50V70" /><path d="M10 14h50M14 11l-4 3 4 3M56 11l4 3-4 3" /><path d="M66 70v20M63 74l3-4 3 4" /><path d="M60 70l30-50" strokeDasharray="3 3" /></>,
+    li: [<><b className="text-ink">Width</b> of the hallway at its narrowest — count wall lights, railings, aircon units</>, <><b className="text-ink">Ceiling height</b> where the piece has to stand upright to turn</>, <><b className="text-ink">Turn diagonal</b> from the outer wall to the inner corner</>],
+    tip: "Long sofas and king headboards are the usual problem at an L-turn. Send us a photo of the corner.",
   },
   {
-    id: "hallways",
-    title: "Hallways",
-    image: "/images/measuring-hallway.png",
-    body: [
-      "Identify any obstacles like stairs, ceiling lights, landings, or a narrow hallway leading from the doorway to the final location. Measure the height of the lowest ceiling or obstacle along the way.",
-      "Measure the height, width, depth, and diagonal distance of each hallway to ensure there’s enough room to tilt or rotate the box if needed.",
-    ],
+    t: "Stairs and landings",
+    svg: <><path d="M10 90h16V74h16V58h16V42h16V26h16" /><path d="M26 74V20M23 24l3-4 3 4" /><path d="M10 94h80" /><path d="M42 58l40-38" strokeDasharray="3 3" /></>,
+    li: [<><b className="text-ink">Stair width</b> between railing and wall at the narrowest step</>, <><b className="text-ink">Headroom</b> from the top step to the ceiling, and at the bottom</>, <><b className="text-ink">Landing</b> width and depth — the piece has to turn here</>],
+    tip: "Spiral stairs: most bed frames and 3-seater sofas will not pass. Choose a knock-down bed or tell us before ordering.",
   },
   {
-    id: "stairs",
-    title: "Stairs",
-    image: "/images/measuring-stairs.png",
-    body: [
-      "When moving a sofa or any large item, it’s important to consider the challenges posed by stairs. Measure the narrowest point, such as the space between railings.",
-      "Measure the height from both the top and bottom steps to determine the clearance for a space with low ceilings. Measure both landings’ height and width to ensure adequate space.",
-      "Consider whether it might be necessary to tilt the sofa to navigate the stairway — measuring the diagonal dimension of the sofa can help determine if this approach will work.",
-    ],
-  },
-  {
-    id: "elevators",
-    title: "Elevators",
-    image: "/images/measuring-elevator.png",
-    body: [
-      "When arranging for a delivery that will require elevator access, it’s important to take a few measurements to ensure a smooth process. Measure the height and width of the door opening.",
-      "Measure the interior depth of the elevator (from the door to the back wall) and its width (from one side wall to the other). This will help determine how much space is available for your items.",
-      "For larger items, measure the diagonal depth — this is the distance from the bottom corner of the door to the upper back corner of the elevator.",
-    ],
+    t: "Elevators (condos)",
+    svg: <><rect x="20" y="14" width="60" height="76" /><path d="M50 14v76" /><path d="M20 8h60M24 5l-4 3 4 3M76 5l4 3-4 3" /><path d="M86 14v76M83 18l3-4 3 4M83 86l3 4 3-4" /><path d="M24 86L76 20" strokeDasharray="3 3" /></>,
+    li: [<><b className="text-ink">Door opening</b> width and height</>, <><b className="text-ink">Cab depth</b> and the diagonal from the door to the far top corner</>, <>Ask the admin about service-elevator hours and a gate pass for our team</>],
+    tip: "Queen and king headboards usually need the service elevator. Mattresses are rolled and always fit.",
   },
 ];
 
 export default async function MeasuringPage() {
-  // Punan muna bago basahin ang `CATEGORY_TILES` sa ibaba.
   await primeStoreContent();
+  // Packaged size kada produkto (sukat + 2"/gilid) — ang may W×D×H lang.
+  const items: FitItem[] = products
+    .map((p) => { const k = packagedFrom(p.dimensions || ""); return k ? { name: p.name, ...k } : null; })
+    .filter((x): x is FitItem => !!x)
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <div>
-      <div className="max-w-5xl mx-auto px-6 py-12">
-        <h1 className="font-cormorant font-medium text-4xl sm:text-5xl text-center mb-3">
-          Measuring Your Space
-        </h1>
-        <p className="text-stone text-center max-w-xl mx-auto mb-4">
-          A guide to prepare for your delivery.
-        </p>
-        <p className="text-stone text-center max-w-2xl mx-auto mb-14 text-sm">
-          A few minutes with a tape measure saves a delivery-day headache. Follow this guide
-          to make sure your new piece fits through every point of entry.
-        </p>
+    <div className="max-w-[1100px] mx-auto px-4 sm:px-8">
+      <nav className="text-xs text-stone pt-4 flex gap-2">
+        <Link href="/" className="hover:text-goldDeep">Home</Link><span>/</span><b className="text-ink font-medium">Measure for delivery</b>
+      </nav>
 
-        <div className="divide-y divide-sand">
-          {SECTIONS.map((s, i) => (
-            <section
-              key={s.id}
-              className={`grid md:grid-cols-2 gap-10 items-center py-12 ${
-                i % 2 === 1 ? "md:[direction:rtl]" : ""
-              }`}
-            >
-              <div className="[direction:ltr] relative aspect-[4/3] bg-linen rounded overflow-hidden">
-                <Image src={s.image} alt={s.title} fill className="object-contain p-4" sizes="(min-width: 768px) 500px, 100vw" />
-              </div>
-              <div className="[direction:ltr]">
-                <h2 className="font-cormorant font-medium text-2xl sm:text-3xl mb-4">{s.title}</h2>
-                {s.body.map((p) => (
-                  <p key={p.slice(0, 20)} className="text-sm text-stone leading-relaxed mb-3">
-                    {p}
-                  </p>
-                ))}
-              </div>
-            </section>
-          ))}
+      {/* HERO */}
+      <section className="grid md:grid-cols-[1.1fr_1fr] gap-10 items-center py-9 pb-11 border-b border-sand">
+        <div>
+          <p className="text-[11px] font-bold tracking-[0.16em] uppercase text-goldDeep">Delivery guide</p>
+          <h1 className="font-cormorant font-semibold text-[clamp(30px,4vw,46px)] leading-[1.05] mt-2">Will it fit through the door?</h1>
+          <p className="text-stone text-[15px] leading-relaxed mt-3.5 max-w-[52ch]">Five minutes with a tape measure saves a failed delivery. Measure the path from the street to the room — door, hallway, stairs or elevator — and compare it with the packaged size on the product page. Our team will still measure on arrival, but this tells you before you order.</p>
         </div>
+        <svg viewBox="0 0 320 240" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-full h-auto text-brown">
+          <rect x="30" y="30" width="110" height="190" rx="3" /><rect x="48" y="48" width="74" height="172" /><circle cx="112" cy="140" r="3" />
+          <path d="M160 40v180M156 44l4-4 4 4M156 216l4 4 4-4" /><text x="168" y="134" fontSize="11" fill="currentColor" stroke="none">H</text>
+          <path d="M48 26h74M52 22l-4 4 4 4M118 22l4 4-4 4" /><text x="80" y="18" fontSize="11" fill="currentColor" stroke="none">W</text>
+          <path d="M50 218L120 50" strokeDasharray="4 4" /><text x="60" y="140" fontSize="11" fill="currentColor" stroke="none">Diagonal</text>
+          <rect x="205" y="120" width="90" height="60" rx="4" /><path d="M205 150h90M250 120v60" /><text x="212" y="112" fontSize="10" fill="currentColor" stroke="none">Packaged box</text>
+          <path d="M205 190h90M209 186l-4 4 4 4M291 186l4 4-4 4" /><text x="236" y="206" fontSize="10" fill="currentColor" stroke="none">W+2&quot;</text>
+        </svg>
+      </section>
 
-        <p className="text-center text-sm text-stone mt-10">
-          Still not sure it fits? <Link href="/contact" className="underline text-ink hover:text-cognac">Contact us</Link>{" "}
-          before ordering — we&apos;re happy to help you check.
-        </p>
+      {/* STEPS */}
+      <div className="grid md:grid-cols-3 gap-4 mt-10">
+        {STEPS.map((s, i) => (
+          <div key={s.t} className="bg-white border border-sand p-[22px] flex flex-col gap-2">
+            <span className="w-9 h-9 rounded-full bg-brown text-gold border-2 border-gold flex items-center justify-center font-cormorant font-bold text-lg">{i + 1}</span>
+            <h3 className="font-cormorant font-semibold text-[19px] mt-1">{s.t}</h3>
+            <p className="text-stone text-[13.5px] leading-relaxed">{s.p}</p>
+          </div>
+        ))}
       </div>
 
-      {/* Explore categories */}
-      <section className="max-w-7xl mx-auto px-6 py-12">
-        <h2 className="font-cormorant font-medium text-3xl text-center mb-8">Explore categories</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          {CATEGORY_TILES.slice(0, 6).map((tile) => (
-            <Link key={tile.slug} href={`/collections/${tile.slug}`} className="group text-center">
-              <div className="relative aspect-square overflow-hidden bg-sand">
-                <Image
-                  src={`/images/category-${tile.slug}.jpg`}
-                  alt={tile.label}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  sizes="200px"
-                />
+      {/* FIT CHECKER */}
+      <section id="checker" className="mt-12 bg-brown text-cream p-6 md:p-9 grid md:grid-cols-2 gap-8">
+        <div>
+          <p className="text-[11px] font-bold tracking-[0.16em] uppercase text-gold">Fit checker</p>
+          <h2 className="font-cormorant font-semibold text-[26px] leading-tight mt-1">Enter your tightest opening — see what fits</h2>
+          <p className="text-cream/80 text-sm mt-2 max-w-[44ch]">Usually the front door, a stair landing or the elevator. We check every product size against it, including the tilt-through diagonal — no need to pick a product first.</p>
+          <div className="mt-[22px] border border-gold/30 bg-cream/[.06] p-5">
+            <h3 className="text-xs tracking-[0.14em] uppercase text-gold mb-2.5">Typical Philippine openings</h3>
+            <table className="w-full text-[13px]">
+              <tbody>
+                {PH.map(([k, v], i) => (
+                  <tr key={k}><td className={`py-[7px] ${i < PH.length - 1 ? "border-b border-gold/20" : ""}`}>{k}</td><td className={`py-[7px] text-right font-semibold tabular-nums ${i < PH.length - 1 ? "border-b border-gold/20" : ""}`}>{v}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <FitChecker items={items} />
+      </section>
+
+      {/* GUIDES */}
+      <section className="mt-14 mb-16">
+        <div className="mb-[18px]">
+          <h2 className="font-cormorant font-semibold text-[28px]">What to measure, where</h2>
+          <p className="text-stone mt-1.5 max-w-[60ch]">Measure every opening on the way in. The narrowest one decides.</p>
+        </div>
+        <div className="grid md:grid-cols-2 gap-4">
+          {GUIDES.map((g) => (
+            <div key={g.t} className="bg-white border border-sand grid sm:grid-cols-[150px_1fr] gap-[18px] p-[22px]">
+              <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="w-[120px] h-[120px] sm:w-[150px] sm:h-[150px] text-brown">{g.svg}</svg>
+              <div>
+                <h3 className="font-cormorant font-semibold text-[20px]">{g.t}</h3>
+                <ul className="mt-2 pl-4 list-disc text-stone text-[13.5px] leading-[1.7]">
+                  {g.li.map((l, i) => <li key={i}>{l}</li>)}
+                </ul>
+                <div className="mt-2.5 bg-goldSoft text-brown text-xs px-2.5 py-2 border-l-[3px] border-goldDeep">{g.tip}</div>
               </div>
-              <p className="text-sm mt-2 group-hover:text-cognac transition-colors">{tile.label}</p>
-            </Link>
+            </div>
           ))}
         </div>
       </section>
-
-      <PreFooter />
     </div>
   );
 }
