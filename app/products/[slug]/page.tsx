@@ -58,7 +58,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
     COLLECTIONS[product.category]?.title ?? product.category.replace(/-/g, " ");
 
   return (
-    <div className="max-w-7xl mx-auto px-6 pt-8 pb-16">
+    <div className="max-w-7xl mx-auto px-6 pt-8 pb-4">
       {/* Breadcrumbs */}
       <nav className="text-xs text-stone mb-6">
         <Link href="/" className="hover:text-cognac">Home</Link>

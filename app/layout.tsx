@@ -68,7 +68,10 @@ export default async function RootLayout({
         {/* page-clip: pumipigil sa pahalang na page drift. Nasa wrapper ito at
             HINDI sa html/body — sa iOS Safari, overflow-x sa root = hindi na
             ma-swipe ang mga carousel sa buong site. */}
-        <div className="page-clip">
+        {/* Walang min-h-screen sa main (2026-09-04, "laki ng space"): kapag maikli
+            ang page, footer agad; ang brownDeep sa wrapper ang pumupuno sa
+            ilalim ng footer sa matataas na screen - hindi blangkong cream. */}
+        <div className="page-clip min-h-screen bg-brownDeep">
         <StoreProvider>
           {/* Nakikinig kung may binago sa PAN app admin — nagre-refresh ang
               nakabukas na page nang hindi kailangang gawin ito ng bisita. */}
@@ -77,7 +80,7 @@ export default async function RootLayout({
             <EmbedMode />
           </Suspense>
           <Header site={site} nav={NAV_LINKS} />
-          <main className="min-h-screen">{children}</main>
+          <main className="bg-cream">{children}</main>
           <Footer site={site} shop={shopLinks()} />
           <TrackButton />
           <ChatBubble site={site} />
