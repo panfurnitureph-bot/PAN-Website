@@ -115,8 +115,8 @@ export default function DimPhotos({ photos, rows, subject, kind = "seat" }: { ph
   let totalH: DimRow | undefined, width: DimRow | undefined, seatH: DimRow | undefined, depth: DimRow | undefined, backSeat: DimRow | undefined, thick: DimRow | undefined, extra: DimRow | undefined;
   if (kind === "table") {
     totalH = pick(/height/i, pool);
-    width = pick(/length|diameter|end\s*to\s*end/i, pool) ?? pick(/width/i, pool);
-    depth = pick(/width|depth/i, pool);
+    width = pick(/^length$/i, pool) ?? pick(/diameter|end\s*to\s*end/i, pool) ?? pick(/width/i, pool);
+    depth = pick(/^width$/i, pool) ?? pick(/depth/i, pool);
     thick = pick(/thick/i, pool);
     extra = pool[0];
   } else if (kind === "bed") {
@@ -127,9 +127,11 @@ export default function DimPhotos({ photos, rows, subject, kind = "seat" }: { ph
     seatH = pick(/legs?/i, pool);
   } else {
     totalH = pick(/total\s*height|^height$|bar\s*counter\s*height/i, pool);
-    width = pick(/end\s*to\s*end|width|diameter|length/i, pool);
+    // Ang tahasang Width/Length (Product Management, 2026-09-04) ang mauuna;
+    // End to End / Seat depth ang panakip kapag wala.
+    width = pick(/^width$/i, pool) ?? pick(/end\s*to\s*end|width|diameter/i, pool);
     seatH = pick(/seat\s*height/i, pool);
-    depth = pick(/seat\s*depth|depth/i, pool);
+    depth = pick(/^length$/i, pool) ?? pick(/seat\s*depth|depth/i, pool);
     backSeat = pick(/backrest\s*to\s*seat|armrest\s*height|back\s*cushion/i, pool);
     thick = pick(/thick/i, pool);
     extra = pool[0]; // hal. footrest / base diameter - sa harap, kanan
