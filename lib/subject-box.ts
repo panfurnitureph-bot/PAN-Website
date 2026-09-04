@@ -37,7 +37,7 @@ export function useSubjectBoxes(srcs: string[]): (Box | null)[] {
           const i = (y * W + x) * 4;
           if (d[i + 3] < 40) continue; // transparent = background
           const diff = Math.max(Math.abs(d[i] - bg[0]), Math.abs(d[i + 1] - bg[1]), Math.abs(d[i + 2] - bg[2]));
-          if (diff > 28) { if (x < l) l = x; if (x > r) r = x; if (y < t) t = y; if (y > b) b = y; }
+          if (diff > 16) { if (x < l) l = x; if (x > r) r = x; if (y < t) t = y; if (y > b) b = y; }
         }
         if (r < 0 || r - l < W * 0.1 || b - t < H * 0.1) return; // walang subject na nakita
         // % ng litrato → % ng parisukat na container (object-contain, nakasentro)
