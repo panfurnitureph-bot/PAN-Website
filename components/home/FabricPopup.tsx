@@ -55,7 +55,10 @@ export default function FabricPopup({ swatches }: { swatches: LibrarySwatch[] })
             {g.items.map((s) => (
               <button key={s.name} type="button" title={s.name} onClick={() => { close(); router.push(`/collections/customized-bed?fabric=${encodeURIComponent(s.name)}`); }} className="group flex flex-col gap-1.5 text-center">
                 <span className="relative block aspect-square border border-black/10 overflow-hidden transition-transform group-hover:scale-[1.06] group-hover:shadow-lg" style={{ background: s.color ?? "#D9CFC0" }}>
-                  {s.swatch && <Image src={s.swatch} alt={s.name} fill className="object-cover" sizes="110px" />}
+                  {/* Maliit na 200px JPEG na (~8KB) mula sa Storage CDN — laktawan ang
+                      next/image optimizer (bawat isa ay server resize noon = mabagal ang
+                      unang bukas); lazy para ang nakikitang tab lang ang kinukuha. */}
+                  {s.swatch && <Image src={s.swatch} alt={s.name} fill unoptimized loading="lazy" className="object-cover" sizes="110px" />}
                 </span>
                 <span className="text-[11px] font-medium text-ink truncate">{s.name.replace(g.name + " ", "")}</span>
               </button>
