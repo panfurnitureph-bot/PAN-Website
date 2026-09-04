@@ -1,24 +1,15 @@
 // PRODUCT DETAIL PAGE — /products/<slug>
-// Eksaktong pagkakasunod-sunod ng tunay na product page:
-// 1 detail (gallery/options)      2 full-width tabs (Description...)
-// 3 Explore The Collection        4 Material band + free swatches
-// 5 Complete the room             6 Real Customer Reviews
-// 7 "What the fuss is all about" (trust badges)   8 FAQs
-// 9 pre-footer contact
+// MOCKUP 2026-09-04 ("eto lang dapat, wala ung iba"): breadcrumb, detail
+// (gallery + options), tabs — tapos footer na. Tinanggal ang Explore the
+// collection, material band, Complete the room, reviews, trust badges, FAQs
+// at pre-footer contact.
 
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { COLLECTIONS, getProduct, homepage, products, site } from "@/lib/products";
+import { COLLECTIONS, getProduct, products, site } from "@/lib/products";
 import { loadItemConfig, primeStoreContent } from "@/lib/content";
 import ProductDetail from "@/components/ProductDetail";
 import ProductTabs from "@/components/ProductTabs";
-import ProductCard from "@/components/ProductCard";
-import ProductReviews from "@/components/ProductReviews";
-import MaterialBand from "@/components/MaterialBand";
-import Carousel from "@/components/Carousel";
-import TrustBadges from "@/components/TrustBadges";
-import FaqAccordion from "@/components/FaqAccordion";
-import PreFooter from "@/components/PreFooter";
 
 // Walang cache: sariwang kuha sa Supabase kada page load, kaya ang binago sa
 // PAN app admin ay lumalabas agad — hindi na kailangang maghintay.
@@ -61,20 +52,11 @@ export default async function ProductPage({ params }: { params: { slug: string }
   // kapag meron, ang MTO options panel ang papalit sa classic options.
   const mto = await loadItemConfig(product.sku);
 
-  // "Explore The Collection" — kaparehong category, 3 items
-  const sameCollection = products
-    .filter((p) => p.category === product.category && p.slug !== product.slug)
-    .slice(0, 3);
-  // "Complete the room" — ibang categories
-  const completeTheRoom = products
-    .filter((p) => p.category !== product.category && p.slug !== product.slug)
-    .slice(0, 8);
-
   const categoryTitle =
     COLLECTIONS[product.category]?.title ?? product.category.replace(/-/g, " ");
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8">
+    <div className="max-w-7xl mx-auto px-6 pt-8 pb-16">
       {/* Breadcrumbs */}
       <nav className="text-xs text-stone mb-6">
         <Link href="/" className="hover:text-cognac">Home</Link>
@@ -92,64 +74,6 @@ export default async function ProductPage({ params }: { params: { slug: string }
       {/* 2 — FULL-WIDTH TABS */}
       <ProductTabs product={product} site={site} mto={mto} />
 
-      {/* 3 — EXPLORE THE COLLECTION: title kaliwa + 3 cards */}
-      {sameCollection.length > 0 && (
-        <section className="grid lg:grid-cols-[280px_1fr] gap-10 items-center py-14">
-          <div>
-            <h2 className="text-2xl sm:text-3xl leading-snug">
-              Explore The {categoryTitle} Collection
-            </h2>
-            <Link
-              href={`/collections/${product.category}`}
-              className="inline-block mt-4 text-xs font-bold tracking-widest2 border-b border-ink pb-0.5 hover:text-cognac hover:border-cognac"
-            >
-              SHOP THE FULL COLLECTION
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
-            {sameCollection.map((p) => (
-              <ProductCard key={p.slug} product={p} square />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* 4 — MATERIAL BAND + GET FREE SWATCHES */}
-      <MaterialBand product={product} />
-
-      {/* 5 — COMPLETE THE ROOM */}
-      {completeTheRoom.length > 0 && (
-        <div className="-mx-6">
-          <Carousel title="Complete the room">
-            {completeTheRoom.map((p) => (
-              <div key={p.slug} className="snap-start shrink-0 w-[70vw] sm:w-[260px]">
-                <ProductCard product={p} />
-              </div>
-            ))}
-          </Carousel>
-        </div>
-      )}
-
-      {/* 6 — REAL CUSTOMER REVIEWS */}
-      <ProductReviews product={product} />
-
-      {/* 7 — "WHAT THE FUSS IS ALL ABOUT" (trust badges) */}
-      <section className="-mx-6 mt-16 bg-linen pt-12">
-        <h2 className="font-cormorant font-medium text-3xl sm:text-4xl text-center mb-2">
-          What the fuss is all about
-        </h2>
-        <TrustBadges badges={homepage.trustBadges} />
-      </section>
-
-      {/* 8 — FAQS */}
-      <div className="-mx-6">
-        <FaqAccordion />
-      </div>
-
-      {/* 9 — PRE-FOOTER CONTACT */}
-      <div className="-mx-6 mt-8">
-        <PreFooter />
-      </div>
     </div>
   );
 }
