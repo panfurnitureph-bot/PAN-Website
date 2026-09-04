@@ -32,12 +32,16 @@ export default function ProductCard({
   const onSale = !!product.compareAtPrice && product.compareAtPrice > product.price;
 
   const swatches = (product.colorSwatches ?? []).filter((s) => s.image || s.swatch || s.images?.length);
-  const variants = swatches.map((s) => ({ name: s.name, image: s.images?.[0] ?? s.image ?? product.images[0], thumb: s.swatch ?? s.images?.[0] ?? s.image ?? product.images[0], stock: s.stock }));
+  const variants = swatches.map((s) => ({ name: s.name, image: s.images?.[0] ?? s.image ?? product.images[0], images: s.images?.length ? s.images : undefined, thumb: s.swatch ?? s.images?.[0] ?? s.image ?? product.images[0], stock: s.stock }));
   const [activeIdx, setActiveIdx] = useState(0);
   const [added, setAdded] = useState(false);
   const active = variants[activeIdx];
   const hero = active?.image ?? product.images[0] ?? "/images/placeholder.jpg";
-  const alt = !active && product.images[1] ? product.images[1] : null;
+  // HOVER = pangalawang anggulo (2026-09-04, "ung iba hindi nag-aanimate"):
+  // dati ang may color variants ay walang hover. Ngayon: pangalawang litrato ng
+  // napiling kulay kung meron, kung wala ang susunod na litrato ng produkto na
+  // iba sa hero — lahat ng may 2+ litrato ay nag-a-animate na.
+  const alt = (active?.images ?? product.images).find((im) => im !== hero) ?? null;
   const stock = product.stock ?? 0;
   const inStock = stock > 0;
 
