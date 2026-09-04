@@ -78,7 +78,9 @@ export default function ProductCard({
       </div>
 
       <div className={`relative ${square ? "aspect-square" : "aspect-[4/3]"} overflow-hidden bg-white`}>
-        <Link href={`/products/${product.slug}`} className="absolute inset-0 block" onClick={(e) => { if (quickView) { e.preventDefault(); openQuickView(product); } }}>
+        {/* Litrato = diretso sa product page (2026-09-04, "ang hirap i-click sa mobile");
+            ang Quick view ay sa button lang. */}
+        <Link href={`/products/${product.slug}`} className="absolute inset-0 block">
           <Image src={hero} alt={product.name} fill className={`object-contain p-3 transition-opacity duration-300 ${alt ? "group-hover:opacity-0" : ""}`} sizes="(min-width: 1100px) 240px, (min-width: 640px) 33vw, 70vw" />
           {alt && <Image src={alt} alt="" fill className="object-contain p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100" sizes="240px" />}
         </Link>
@@ -93,8 +95,11 @@ export default function ProductCard({
         )}
       </div>
 
-      <div className="flex flex-col gap-1.5 p-3 pt-2.5 border-t border-sand flex-1">
-        <Link href={`/products/${product.slug}`} className="text-[13.5px] font-semibold leading-snug hover:text-goldDeep">{product.name}</Link>
+      <div className="relative flex flex-col gap-1.5 p-3 pt-2.5 border-t border-sand flex-1">
+        {/* Buong info area ay link din (pangalan, presyo, puting espasyo) — ang
+            color thumbs at Add to cart ay nakapatong (z-[1]) para gumana pa rin. */}
+        <Link href={`/products/${product.slug}`} className="absolute inset-0" aria-hidden tabIndex={-1} />
+        <Link href={`/products/${product.slug}`} className="relative z-[1] text-[13.5px] font-semibold leading-snug hover:text-goldDeep">{product.name}</Link>
         <div className="flex items-baseline justify-between gap-2">
           <span className="text-[15px] font-bold tabular-nums">
             {product.priceFrom ? <><span className="font-normal text-stone text-[11px] mr-1">from</span>{formatPrice(product.priceFrom)}</> : <span className={onSale ? "text-cognac" : ""}>{formatPrice(product.price)}</span>}
@@ -105,7 +110,7 @@ export default function ProductCard({
           </span>
         </div>
         {variants.length > 1 && (
-          <div className="flex items-center gap-1.5">
+          <div className="relative z-[1] flex items-center gap-2">
             {variants.slice(0, 4).map((v, i) => (
               <button key={v.name + i} type="button" onMouseEnter={() => setActiveIdx(i)} onClick={() => setActiveIdx(i)} title={v.name} aria-label={v.name}
                 className={`relative w-[66px] h-[66px] rounded bg-white overflow-hidden border-[1.5px] ${i === activeIdx ? "border-brown" : "border-sand"} ${v.stock !== undefined && v.stock <= 0 ? "opacity-40" : ""}`}>
@@ -116,7 +121,7 @@ export default function ProductCard({
           </div>
         )}
         {showAddToCart && (
-          <button type="button" onClick={add} disabled={added} className={`mt-auto w-full py-2 text-[12px] font-semibold border ${added ? "bg-[#2F7D4F] border-[#2F7D4F] text-white" : "border-brown text-brown hover:bg-brown hover:text-cream"}`}>
+          <button type="button" onClick={add} disabled={added} className={`relative z-[1] mt-auto w-full py-2 text-[12px] font-semibold border ${added ? "bg-[#2F7D4F] border-[#2F7D4F] text-white" : "border-brown text-brown hover:bg-brown hover:text-cream"}`}>
             {added ? "Added ✓" : "Add to cart"}
           </button>
         )}
