@@ -54,6 +54,7 @@ type Order = {
     price: number;
     baseLabel?: string; // hal. "Maserati Burly Wood / Single"
     basePrice?: number;
+    category?: string; // hal. "Swivel Chair" — pamagat ng base line sa breakdown
     addOns?: { label: string; price: number; note?: string }[];
   }[];
   subtotal: number;
@@ -422,6 +423,7 @@ export default function CheckoutClient({
         price: r.item.unitPrice ?? r.product!.price,
         baseLabel: r.item.baseLabel,
         basePrice: r.item.basePrice,
+        category: prettyCategory(r.product!.category),
         addOns: r.item.addOns,
       })),
       subtotal,
@@ -654,11 +656,14 @@ export default function CheckoutClient({
                   magbago ng anyo pagkalipat ng isang screen. */}
               {it.addOns && it.addOns.length > 0 && (
                 <div className="mt-2.5 space-y-1.5 border-t border-sand/70 pt-2.5">
+                  {/* Pamagat ng base line = category ng produkto (Swivel Chair, Promo Bed…),
+                      hindi laging "Bed frame" (2026-09-05). Ready unit = lahat ng linya ay
+                      ang produkto mismo, walang ADD-ONS. */}
                   <div className="flex justify-between text-sm">
-                    <span>Bed frame</span>
+                    <span>{it.category ?? "Base price"}{/^ready unit/i.test(it.baseLabel ?? "") ? " · ready unit" : ""}</span>
                     <span>{formatPrice(it.basePrice ?? 0)}</span>
                   </div>
-                  {groupBuildLines(it.addOns).map((g) => (
+                  {groupBuildLines(it.addOns, { allItem: /^ready unit/i.test(it.baseLabel ?? "") }).map((g) => (
                     <div key={g.title} className="pt-1">
                       <p className="mb-1 text-[10px] font-extrabold uppercase tracking-widest2 text-cognac">
                         {g.title}
@@ -1101,10 +1106,10 @@ export default function CheckoutClient({
                 {item.addOns && item.addOns.length > 0 && (
                   <div className="mt-3 space-y-2 border-t border-sand pt-3">
                     <div className="flex justify-between text-sm">
-                      <span className="text-ink">Bed frame</span>
+                      <span className="text-ink">{prettyCategory(product!.category)}{/^ready unit/i.test(item.baseLabel ?? "") ? " · ready unit" : ""}</span>
                       <span className="text-ink">{formatPrice(item.basePrice ?? 0)}</span>
                     </div>
-                    {groupBuildLines(item.addOns).map((g) => (
+                    {groupBuildLines(item.addOns, { allItem: /^ready unit/i.test(item.baseLabel ?? "") }).map((g) => (
                       <div key={g.title} className="pt-1">
                         <p className="mb-1 text-[10px] font-extrabold uppercase tracking-widest2 text-cognac">
                           {g.title}
