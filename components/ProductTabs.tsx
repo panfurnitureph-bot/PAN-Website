@@ -386,7 +386,7 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
             })}
           /></div>
         ) : mKind && product.images.length > 0 ? (
-          <DimPhotos photos={product.images.slice(0, 6)} rows={(lockedRows ?? mRows.rows).filter((r) => /d/.test(r.value))} subject={product.name} />
+          <DimPhotos photos={product.images.slice(0, 6)} rows={(lockedRows ?? mRows.rows).filter((r) => /[0-9]/.test(r.value))} subject={product.name} />
         ) : mKind ? (
           <MeasureDiagram kind={mKind} rows={mRows.rows} live={mRows.live} />
         ) : product.dimensionImage ? (
