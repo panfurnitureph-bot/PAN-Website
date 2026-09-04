@@ -103,7 +103,7 @@ export default function ProductCard({
         {/* Buong info area ay link din (pangalan, presyo, puting espasyo) — ang
             color thumbs at Add to cart ay nakapatong (z-[1]) para gumana pa rin. */}
         <Link href={`/products/${product.slug}`} className="absolute inset-0" aria-hidden tabIndex={-1} />
-        <Link href={`/products/${product.slug}`} className="relative z-[1] text-[13.5px] font-semibold leading-snug hover:text-goldDeep">{product.name}</Link>
+        <Link href={`/products/${product.slug}`} className="relative z-[1] text-[13.5px] font-semibold leading-snug hover:text-goldDeep line-clamp-1" title={product.name}>{product.name}</Link>
         <div className="flex items-baseline justify-between gap-2">
           <span className="text-[15px] font-bold tabular-nums">
             {product.priceFrom ? <><span className="font-normal text-stone text-[11px] mr-1">from</span>{formatPrice(product.priceFrom)}</> : <span className={onSale ? "text-cognac" : ""}>{formatPrice(product.price)}</span>}
@@ -113,8 +113,11 @@ export default function ProductCard({
             {variants.length > 1 ? `${variants.length} colors` : inStock ? "Ships this week" : product.bedSizes?.length ? "Single–King" : ""}
           </span>
         </div>
-        {variants.length > 1 && (
-          <div className="relative z-[1] flex items-center gap-2">
+        {/* UNIFORM NA TAAS (2026-09-04, "dapat uniform"): laging nakalaan ang
+            hilera ng color thumbs (70px) kahit walang kulay ang produkto - kaya
+            pare-pareho ang taas ng bawat card sa rail at collection. */}
+        <div className="relative z-[1] flex h-[70px] items-center gap-2">
+          {variants.length > 1 && (<>
             {variants.slice(0, 4).map((v, i) => (
               <button key={v.name + i} type="button" onMouseEnter={() => setActiveIdx(i)} onClick={() => setActiveIdx(i)} title={v.name} aria-label={v.name}
                 className={`relative w-[66px] h-[66px] rounded bg-white overflow-hidden border-[1.5px] ${i === activeIdx ? "border-brown" : "border-sand"} ${v.stock !== undefined && v.stock <= 0 ? "opacity-40" : ""}`}>
@@ -122,8 +125,8 @@ export default function ProductCard({
               </button>
             ))}
             {variants.length > 4 && <span className="text-[11px] text-stone">+{variants.length - 4}</span>}
-          </div>
-        )}
+          </>)}
+        </div>
         {showAddToCart && (
           <button type="button" onClick={add} disabled={added} className={`relative z-[1] mt-auto w-full py-2 text-[12px] font-semibold border ${added ? "bg-[#2F7D4F] border-[#2F7D4F] text-white" : "border-brown text-brown hover:bg-brown hover:text-cream"}`}>
             {added ? "Added ✓" : "Add to cart"}
