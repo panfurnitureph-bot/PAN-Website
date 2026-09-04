@@ -11,7 +11,7 @@ import { site as siteDefault, type Product, type SiteContent } from "@/lib/produ
 import FrameDiagram, { DEFAULT_BED_SIZES, bedBuildRows, bedFlags, buildFromSpecs, type BedBuild } from "@/components/FrameDiagram";
 import MattressDiagram, { splitDim } from "@/components/MattressDiagram";
 import MeasureDiagram, { measureKind, measureRows } from "@/components/MeasureDiagram";
-import DimPhotos from "@/components/DimPhotos";
+import DimPhotos, { type DimKind } from "@/components/DimPhotos";
 import type { MtoItemConfig } from "@/lib/content";
 import { frameFor } from "@/lib/double-walling";
 
@@ -368,6 +368,19 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
       <div>
         {isMattress ? (
           <div className="bg-white border border-sand p-4"><MattressDiagram sizes={bedSizes} focus={sizeFocus} onFocus={setSizeFocus} thickness={mattT} /></div>
+        ) : isBed && selected && product.images.length > 0 ? (
+          // KAMA (2026-09-04): litrato rin - headboard view + haba, sukat ng
+          // NAPILING size (A-E), live sa customizer (headboard/base height).
+          <DimPhotos
+            kind="bed"
+            photos={product.images.slice(0, 6)}
+            subject={product.name}
+            rows={[
+              { k: "A", label: "Width", value: selected.A }, { k: "B", label: "Headboard Height", value: flags.noHead ? "" : selected.B },
+              { k: "C", label: "Length", value: selected.C }, { k: "D", label: "Base Height", value: selected.D },
+              { k: "E", label: "Legs", value: flags.platform ? "" : selected.E },
+            ].filter((r) => /[0-9]/.test(r.value))}
+          />
         ) : isBed ? (
           <div className="bg-white border border-sand p-4"><FrameDiagram
             sizes={bedSizes}
@@ -386,7 +399,7 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
             })}
           /></div>
         ) : mKind && product.images.length > 0 ? (
-          <DimPhotos photos={product.images.slice(0, 6)} rows={(lockedRows ?? mRows.rows).filter((r) => /[0-9]/.test(r.value))} subject={product.name} />
+          <DimPhotos kind={(/table/.test(mKind) ? "table" : "seat") as DimKind} photos={product.images.slice(0, 6)} rows={(lockedRows ?? mRows.rows).filter((r) => /[0-9]/.test(r.value))} subject={product.name} />
         ) : mKind ? (
           <MeasureDiagram kind={mKind} rows={mRows.rows} live={mRows.live} />
         ) : product.dimensionImage ? (

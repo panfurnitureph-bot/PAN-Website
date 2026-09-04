@@ -101,15 +101,39 @@ function Fig({ src, alt, children }: { src: string; alt: string; children: React
 const inset = (box: Box): Box => ({ l: 12 + box.l * 0.76, t: 12 + box.t * 0.76, r: 12 + box.r * 0.76, b: 12 + box.b * 0.76 });
 const FULL: Box = { l: 14, t: 14, r: 86, b: 86 };
 
-export default function DimPhotos({ photos, rows, subject }: { photos: string[]; rows: DimRow[]; subject: string }) {
+// Uri ng produkto → aling sukat ang nasa aling gilid (2026-09-04, "pano pag
+// table and bed"):
+//   seat  — upuan/sofa: harap = taas, lapad, extra; gilid = lalim, seat height,
+//           backrest to seat, kapal
+//   table — harap = taas (kaliwa), haba/diameter (ibaba); gilid = lapad/lalim (ibaba)
+//   bed   — harap (headboard view) = headboard height (kaliwa), lapad (ibaba),
+//           base height (kanan); gilid = haba (ibaba), legs (kanan)
+export type DimKind = "seat" | "table" | "bed";
+
+export default function DimPhotos({ photos, rows, subject, kind = "seat" }: { photos: string[]; rows: DimRow[]; subject: string; kind?: DimKind }) {
   const pool = rows.filter((r) => num(r.value) > 0);
-  const totalH = pick(/total\s*height|^height$|bar\s*counter\s*height/i, pool);
-  const width = pick(/end\s*to\s*end|width|diameter|length/i, pool);
-  const seatH = pick(/seat\s*height/i, pool);
-  const depth = pick(/seat\s*depth|depth/i, pool);
-  const backSeat = pick(/backrest\s*to\s*seat|armrest\s*height|back\s*cushion/i, pool);
-  const thick = pick(/thick/i, pool);
-  const extra = pool[0]; // hal. footrest / base diameter — sa harap, kanan
+  let totalH: DimRow | undefined, width: DimRow | undefined, seatH: DimRow | undefined, depth: DimRow | undefined, backSeat: DimRow | undefined, thick: DimRow | undefined, extra: DimRow | undefined;
+  if (kind === "table") {
+    totalH = pick(/height/i, pool);
+    width = pick(/length|diameter|end\s*to\s*end/i, pool) ?? pick(/width/i, pool);
+    depth = pick(/width|depth/i, pool);
+    thick = pick(/thick/i, pool);
+    extra = pool[0];
+  } else if (kind === "bed") {
+    totalH = pick(/headboard/i, pool) ?? pick(/height/i, pool);
+    width = pick(/width/i, pool);
+    depth = pick(/length/i, pool);
+    extra = pick(/base|frame/i, pool);
+    seatH = pick(/legs?/i, pool);
+  } else {
+    totalH = pick(/total\s*height|^height$|bar\s*counter\s*height/i, pool);
+    width = pick(/end\s*to\s*end|width|diameter|length/i, pool);
+    seatH = pick(/seat\s*height/i, pool);
+    depth = pick(/seat\s*depth|depth/i, pool);
+    backSeat = pick(/backrest\s*to\s*seat|armrest\s*height|back\s*cushion/i, pool);
+    thick = pick(/thick/i, pool);
+    extra = pool[0]; // hal. footrest / base diameter - sa harap, kanan
+  }
 
   // HARAP vs GILID (2026-09-04, "front and side sana"): sinusuri ang lahat ng
   // litrato — ang pinakamalapad na silhouette ang harap, ang pinakamakitid ang
@@ -121,16 +145,18 @@ export default function DimPhotos({ photos, rows, subject }: { photos: string[];
   let fi = 0, si = all.length > 1 ? 1 : -1;
   const known = all.map((_, i) => i).filter((i) => boxes[i]);
   if (known.length >= 2) {
-    fi = known.reduce((m, i) => (aspect(boxes[i]) > aspect(boxes[m]) ? i : m), known[0]);
-    si = known.reduce((m, i) => (aspect(boxes[i]) < aspect(boxes[m]) ? i : m), known[0]);
+    const widest = known.reduce((m, i) => (aspect(boxes[i]) > aspect(boxes[m]) ? i : m), known[0]);
+    const narrowest = known.reduce((m, i) => (aspect(boxes[i]) < aspect(boxes[m]) ? i : m), known[0]);
+    // Kama: ang gilid (haba) ang mas malapad kaysa harap (headboard view).
+    fi = kind === "bed" ? narrowest : widest; si = kind === "bed" ? widest : narrowest;
     // Kung halos pareho ang lapad (walang tunay na side shot), 2nd photo na lang.
-    if (si === fi || aspect(boxes[fi]) / aspect(boxes[si]) < 1.12) si = all.length > 1 ? (fi === 0 ? 1 : 0) : -1;
+    if (si === fi || aspect(boxes[widest]) / aspect(boxes[narrowest]) < 1.12) si = all.length > 1 ? (fi === 0 ? 1 : 0) : -1;
   }
   const box1 = boxes[fi] ?? null, box2 = si >= 0 ? boxes[si] ?? null : null;
   const f = box1 ? inset(box1) : FULL, s = box2 ? inset(box2) : FULL;
   const H = totalH ? num(totalH.value) : Math.max(num(seatH?.value ?? "0"), num(backSeat?.value ?? "0"), 1);
   const frac = (v: string) => Math.min(1, num(v) / (H || 1));
-  const hasSide = si >= 0 && !!(depth || backSeat || thick);
+  const hasSide = si >= 0 && !!(depth || backSeat || (kind === "seat" && thick));
 
   return (
     <div className={`grid gap-3.5 bg-white border border-sand p-4 ${hasSide ? "md:grid-cols-2" : ""}`}>
