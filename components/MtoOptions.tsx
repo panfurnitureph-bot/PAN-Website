@@ -863,7 +863,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     <button
       onClick={() => toggleWishlist(product.slug)}
       aria-label="Add to wishlist"
-      className="border border-stone/40 rounded px-4 hover:border-cognac"
+      className="w-12 h-12 shrink-0 border border-sand bg-white flex items-center justify-center hover:border-goldDeep"
     >
       <svg width="20" height="20" viewBox="0 0 24 24" fill={wished ? "#B87333" : "none"} stroke={wished ? "#B87333" : "#1A1A1A"} strokeWidth="1.6">
         <path d="M12 21C7 16.5 3 13 3 8.8 3 6 5.2 4 7.8 4c1.7 0 3.2.9 4.2 2.3C13 4.9 14.5 4 16.2 4 18.8 4 21 6 21 8.8c0 4.2-4 7.7-9 12.2z" />
@@ -875,25 +875,24 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   // Ang napiling kulay ang masusunod kapag may kada-kulay na bilang: ubos na
   // kulay = Made to order ang card kahit may stock ang ibang kulay.
   const shipsNow = view === "ready" && (pickStock ?? product.stock ?? 0) > 0;
+  // Mockup 2026-09-04: "In stock · N units" na berdeng bar + Ships this week.
+  const unitsNow = pickStock ?? product.stock ?? 0;
   const etaCard = (
-    <div className="mt-4 border border-sand rounded-lg overflow-hidden">
-      <div className="flex items-center gap-2.5 px-4 py-3 bg-green-50/60 border-b border-sand">
-        <span className="relative flex h-2.5 w-2.5 shrink-0">
-          <span className="absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-60 animate-ping" />
-          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-600" />
-        </span>
-        <span className="text-sm font-bold text-green-800">{shipsNow ? "In stock" : "Made to order"}</span>
+    <div className="mt-4 border border-sand bg-white">
+      <div className={`flex items-center gap-2 px-3.5 py-2.5 text-[13px] font-semibold ${shipsNow ? "bg-[#E6F2EA] text-[#2F7D4F]" : "bg-goldSoft text-brown"}`}>
+        <span className={`h-2 w-2 rounded-full ${shipsNow ? "bg-[#2F7D4F]" : "bg-goldDeep"}`} />
+        {shipsNow ? `In stock · ${unitsNow} unit${unitsNow === 1 ? "" : "s"}` : "Made to order"}
       </div>
-      <div className="px-4 py-3 text-sm">
+      <div className="px-3.5 py-3 text-[12.5px] text-stone">
         {shipsNow ? (
           <>
-            <p className="font-medium text-ink">Ships this week</p>
-            <p className="text-xs text-stone">Ready unit — in stock in San Pedro, Laguna</p>
+            <b className="block text-ink font-semibold text-[13.5px]">Ships this week</b>
+            Ready unit — delivered and set up by our own team. Delivery fee shown at checkout.
           </>
         ) : (
           <>
-            <p className="font-medium text-ink">Delivery in 4–6 weeks</p>
-            <p className="text-xs text-stone">Made to order in San Pedro, Laguna</p>
+            <b className="block text-ink font-semibold text-[13.5px]">Delivery in 4–6 weeks</b>
+            Built in our San Pedro, Laguna workshop — delivered and set up by our own team. Delivery fee shown at checkout.
           </>
         )}
       </div>
@@ -903,10 +902,9 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   if (locked || view === "ready") {
     return (
       <div>
-        <div className="flex items-baseline gap-3 flex-wrap">
-          <span className="text-3xl font-bold">{formatPrice(readyPrice)}</span>
+        <div className="flex items-baseline gap-3 flex-wrap border-y border-sand py-3.5 mb-4">
+          <span className="text-[28px] font-semibold">{formatPrice(readyPrice)}</span>
         </div>
-        <hr className="border-sand my-5" />
         {/* As-is spec sheet ng yari nang unit — MOCK STYLE: bold value + gray
             label sub, presyo/"included" sa kanan (galing sa config prices). */}
         {readySizeOpts.length > 0 && (
@@ -977,13 +975,13 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           // POLY & BARK STYLE (2026-09-03): "Color: <pangalan>" na linya, maliliit
           // na parisukat na tile ng produkto sa bawat kulay, madilim na border
           // sa napili; ang pangalan ay nagpapalit sa click.
-          <div className="mt-5 border-t border-sand pt-4">
-            <p className="text-sm">
-              Color: <span className="text-stone">{readyFabricPick?.name ?? ""}</span>
+          <div className="mt-4">
+            <p className="text-[13px] font-semibold">
+              Color <span className="font-normal text-stone ml-1.5">{readyFabricPick?.name ?? ""}</span>
               {pickStock !== undefined && pickStock <= 0 && <span className="ml-2 text-xs text-stone">Out of stock in this color — made to order</span>}
               {pickStock !== undefined && pickStock > 0 && pickStock <= 3 && <span className="ml-2 text-xs text-cognac">Only {pickStock} left</span>}
             </p>
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-2 flex flex-wrap gap-2.5">
               {readyColors.map((l) => {
                 const on = l.name === readyFabricPick?.name;
                 const preview = previewOf(l.name);
@@ -999,10 +997,10 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                       }}
                       title={out ? `${l.name} — out of stock, made to order` : l.name}
                       aria-label={l.name}
-                      className={`relative h-12 w-14 overflow-hidden rounded bg-white transition ${on ? "border-2 border-ink" : "border border-stone/25 hover:border-stone/60"} ${out ? "opacity-50" : ""}`}
+                      className={`relative h-11 w-11 overflow-hidden rounded-full bg-white border border-sand transition ${on ? "ring-2 ring-ink ring-offset-2 ring-offset-cream" : "hover:border-stone/60"} ${out ? "opacity-50" : ""}`}
                     >
                       {preview ? (
-                        <Image src={preview} alt={l.name} fill className="object-contain p-1" sizes="56px" />
+                        <Image src={preview} alt={l.name} fill className="object-cover" sizes="44px" />
                       ) : (
                         <SwatchTile s={l} className="absolute inset-0" />
                       )}
@@ -1029,16 +1027,16 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
         )}
         {shipBlock}
         {etaCard}
-        <div className="mt-3 flex gap-3">
-          <div className="flex items-center rounded border border-stone/40">
-            <button onClick={() => setQty(Math.max(1, qty - 1))} className="px-4 py-3 hover:text-cognac" aria-label="Decrease quantity">−</button>
-            <span className="w-8 text-center text-sm">{qty}</span>
-            <button onClick={() => setQty(qty + 1)} className="px-4 py-3 hover:text-cognac" aria-label="Increase quantity">+</button>
+        <div className="mt-3 flex gap-2.5">
+          <div className="flex items-center h-12 border border-sand bg-white">
+            <button onClick={() => setQty(Math.max(1, qty - 1))} className="w-10 h-full hover:text-goldDeep" aria-label="Decrease quantity">−</button>
+            <span className="w-11 text-center text-sm font-semibold">{qty}</span>
+            <button onClick={() => setQty(qty + 1)} className="w-10 h-full hover:text-goldDeep" aria-label="Increase quantity">+</button>
           </div>
-          <button onClick={() => handleBuyReady(false)} className="flex-1 rounded border border-espresso px-4 py-3 text-base font-medium text-espresso transition-colors hover:bg-espresso hover:text-cream">
-            {added ? "✓ Added to Cart" : "Add to cart"}
+          <button onClick={() => handleBuyReady(false)} className="flex-1 h-12 border-[1.5px] border-brown bg-white px-4 text-xs font-bold tracking-[0.14em] uppercase text-brown transition-colors hover:bg-brown hover:text-cream">
+            {added ? "Added ✓" : "Add to cart"}
           </button>
-          <button onClick={() => handleBuyReady(true)} className="flex-1 rounded bg-espresso px-4 py-3 text-base font-medium text-cream transition-colors hover:bg-cognac">
+          <button onClick={() => handleBuyReady(true)} className="flex-1 h-12 bg-brown px-4 text-xs font-bold tracking-[0.14em] uppercase text-cream transition-colors hover:bg-brownDeep">
             Buy now
           </button>
           {heartBtn}

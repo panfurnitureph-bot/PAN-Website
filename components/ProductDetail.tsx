@@ -18,6 +18,7 @@ import { messengerHandle, messengerUrl } from "@/lib/messenger";
 import { useStore } from "@/components/store";
 import MtoOptions from "@/components/MtoOptions";
 import type { MtoItemConfig } from "@/lib/content";
+import FitModal, { packagedFrom } from "@/components/FitModal";
 
 // Fallback na 6 bed sizes kung walang custom na bedSizes ang product
 const DEFAULT_SIZES = [
@@ -38,11 +39,14 @@ export default function ProductDetail({
   product,
   site,
   mto,
+  categoryTitle,
 }: {
   product: Product;
   site: SiteContent;
   // Made-to-Order config (IMS Website → MTO Configurator) — published lang.
   mto?: MtoItemConfig | null;
+  // Eyebrow sa itaas ng pangalan (hal. "Swivel Chair").
+  categoryTitle?: string;
 }) {
   // MTO: customizable = ang MtoOptions panel ang options UI; locked = as-is
   // page (presyo + Add to cart lang, walang classic options).
@@ -88,6 +92,10 @@ export default function ProductDetail({
   const [qty, setQtyState] = useState(1);
   const [added, setAdded] = useState(false);
   const [lightbox, setLightbox] = useState(false);
+  // HOVER TO ZOOM (2026-09-04 mockup): 220% na kopya ng litrato na sumusunod
+  // sa mouse sa ibabaw ng stage; click pa rin = fullscreen.
+  const [zoom, setZoom] = useState<{ x: number; y: number } | null>(null);
+  const packaged = packagedFrom(product.dimensions || "");
   const [copied, setCopied] = useState(false);
 
   const color = product.colors[colorIdx] ?? product.colors[0];
@@ -341,82 +349,70 @@ export default function ProductDetail({
           )}
         </div>
 
-        {/* DESKTOP: vertical thumbs kaliwa + main image. Poly & Bark behavior:
-            hover sa thumb = agad palit ang main image; kapag mahaba ang rail,
-            may ˅ button sa baba para mag-scroll. */}
-        <div className="hidden lg:flex gap-4">
-          <div className="relative shrink-0">
+        {/* DESKTOP (2026-09-04 mockup): 72px na puting thumbs sa kaliwa (hover =
+            palit agad), puting stage na may hover-to-zoom; click = fullscreen. */}
+        <div className="hidden lg:grid grid-cols-[72px_1fr] gap-3.5 items-start">
+          <div className="relative">
             <div
               ref={thumbRailRef}
-              className="flex flex-col gap-2 max-h-[560px] overflow-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="flex flex-col gap-2.5 max-h-[640px] overflow-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
               {galleryImages.map((img, i) => (
                 <button
                   key={img}
                   onClick={() => setImageIdx(i)}
                   onMouseEnter={() => setImageIdx(i)}
-                  className={`relative w-16 h-16 bg-sand overflow-hidden rounded border-2 shrink-0 ${
-                    i === imageIdx ? "border-ink" : "border-transparent hover:border-stone/40"
-                  }`}
+                  className={`relative w-[72px] h-[72px] bg-white border shrink-0 p-1.5 ${i === imageIdx ? "border-ink" : "border-sand hover:border-stone/60"}`}
                   aria-label={`Image ${i + 1}`}
                 >
-                  <Image src={img} alt="" fill className="object-cover" sizes="64px" />
+                  <Image src={img} alt="" fill className="object-contain p-1.5" sizes="72px" />
                 </button>
               ))}
             </div>
             {galleryImages.length > 7 && (
               <button
-                onClick={() =>
-                  thumbRailRef.current?.scrollBy({ top: 220, behavior: "smooth" })
-                }
-                className="absolute bottom-0 left-1/2 flex h-8 w-12 -translate-x-1/2 items-center justify-center rounded bg-white/90 shadow-md hover:bg-white"
+                onClick={() => thumbRailRef.current?.scrollBy({ top: 220, behavior: "smooth" })}
+                className="absolute bottom-0 left-1/2 flex h-8 w-12 -translate-x-1/2 items-center justify-center bg-white/90 shadow-md hover:bg-white"
                 aria-label="Scroll thumbnails down"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6" /></svg>
               </button>
             )}
           </div>
           <button
             onClick={() => setLightbox(true)}
-            className="relative flex-1 min-h-[560px] bg-white overflow-hidden group cursor-zoom-in"
+            onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setZoom({ x: ((e.clientX - r.left) / r.width) * 100, y: ((e.clientY - r.top) / r.height) * 100 }); }}
+            onMouseLeave={() => setZoom(null)}
+            className="relative aspect-square w-full bg-white border border-sand overflow-hidden cursor-zoom-in"
             aria-label="Open fullscreen gallery"
           >
-            <Image
-              src={galleryImages[imageIdx]}
-              alt={product.name}
-              fill
-              priority
-              // Contain + center (2026-09-03): ang cover ay pumuputol ng
-              // portrait shots at lumilihis ang subject — buong litrato na
-              // nakasentro ang tama sa product gallery.
-              className="object-contain group-hover:scale-105 transition-transform duration-700"
-              sizes="620px"
+            <Image src={galleryImages[imageIdx]} alt={product.name} fill priority className="object-contain p-8" sizes="620px" />
+            <span
+              aria-hidden
+              className={`pointer-events-none absolute inset-0 bg-white bg-no-repeat transition-opacity duration-150 ${zoom ? "opacity-100" : "opacity-0"}`}
+              style={{ backgroundImage: `url("${galleryImages[imageIdx]}")`, backgroundSize: "220%", backgroundPosition: zoom ? `${zoom.x}% ${zoom.y}%` : "center" }}
             />
-            <span className="absolute bottom-3 right-3 bg-cream/80 text-ink text-xs px-2.5 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-              🔍 Click to zoom
-            </span>
+            <span className="absolute bottom-3 right-3 bg-cream/90 text-stone text-[11px] px-2 py-1">Hover to zoom · click for full screen</span>
           </button>
         </div>
       </div>
 
       {/* ---------- INFO ---------- */}
       <div>
-        {/* Serif title + rating */}
-        <h1 className="font-cormorant font-medium text-3xl sm:text-4xl leading-snug">
+        {/* Eyebrow (category) · pangalan · rating — mockup 2026-09-04 */}
+        {categoryTitle && <p className="text-[11px] font-bold tracking-[0.16em] uppercase text-goldDeep">{categoryTitle}</p>}
+        <h1 className="font-cormorant font-semibold text-3xl sm:text-4xl leading-[1.1] mt-1.5">
           {product.name}
           {mtoActive && mtoView === "mto" ? " — Made to Order" : ""}
         </h1>
-        <a href="#reviews" className="inline-flex items-center gap-2 mt-2 text-sm hover:opacity-70">
-          <span className="text-olive tracking-tight">
+        <a href="#reviews" className="inline-flex items-center gap-2 mt-2 text-xs text-stone hover:opacity-70">
+          <span className="text-goldDeep tracking-[2px] text-[13px]">
             {"★".repeat(Math.round(rating))}
             {"☆".repeat(5 - Math.round(rating))}
           </span>
-          <span className="underline">{rating.toFixed(1)}</span>
+          <span>{rating.toFixed(1)}{product.reviews?.length ? ` · ${product.reviews.length} reviews` : ""}</span>
         </a>
-
-        <hr className="border-sand my-5" />
+        <div className="mb-4" />
 
         {/* MADE-TO-ORDER panel — pumapalit sa classic options kapag may
             published config ang item sa IMS configurator. */}
@@ -424,8 +420,8 @@ export default function ProductDetail({
 
         {/* Price block */}
         {!hideOpts && (
-        <div className="flex items-baseline gap-3 flex-wrap">
-          <span className="text-3xl font-bold">{formatPrice(price)}</span>
+        <div className="flex items-baseline gap-3 flex-wrap border-y border-sand py-3.5">
+          <span className="text-[28px] font-semibold">{formatPrice(price)}</span>
           {compareAt && compareAt > price && (
             <span className="text-xs text-stone">
               <span className="line-through">{formatPrice(compareAt)}</span> Comp Value{" "}
@@ -449,17 +445,13 @@ export default function ProductDetail({
             {copied && <span className="text-green-700 text-xs ml-1">Copied!</span>}
           </p>
         )}
-        {!hideOpts && <hr className="border-sand my-5" />}
-
-        {/* Color swatches (image thumbs) — itinatago kung walang kulay */}
+        {/* Color circles (mockup 2026-09-04) — itinatago kung walang kulay */}
         {!hideOpts && product.colors.length > 0 && (
-          <div className="flex items-center justify-between">
-            <p className="text-sm">
-              Color: <span className="text-stone">{color}</span>
-            </p>
-          </div>
+          <p className="mt-4 text-[13px] font-semibold">
+            Color <span className="font-normal text-stone ml-1.5">{color}</span>
+          </p>
         )}
-        <div className="flex gap-2 mt-3 flex-wrap">
+        <div className="flex gap-2.5 mt-2 flex-wrap">
           {!hideOpts && product.colors.map((c, i) => {
             const sw = product.colorSwatches?.[i];
             // Thumbnail box: tela swatch muna, tapos bed photo sa kulay
@@ -484,14 +476,11 @@ export default function ProductDetail({
                 <button
                   onClick={() => pickColor(i)}
                   aria-label={c}
-                  className={`relative w-12 h-12 bg-sand rounded overflow-hidden border-2 transition ${
-                    i === colorIdx ? "border-cognac ring-2 ring-cognac/30" : "border-stone/20 hover:border-stone/50"
+                  className={`relative w-11 h-11 bg-white rounded-full overflow-hidden border border-sand transition ${
+                    i === colorIdx ? "ring-2 ring-ink ring-offset-2 ring-offset-cream" : "hover:border-stone/60"
                   }`}
                 >
-                  <Image src={swatchImg} alt={c} fill className="object-cover" sizes="48px" />
-                  {/* Panloob na hangganan — para kita ang hugis ng swatch kahit
-                      napakaputla ng tela (hal. cream/beige), hindi mukhang blank. */}
-                  <span className="pointer-events-none absolute inset-0 rounded-[2px] ring-1 ring-inset ring-black/10" />
+                  <Image src={swatchImg} alt={c} fill className="object-cover" sizes="44px" />
                 </button>
 
                 {/* Hover popup — malaking TELA swatch + pangalan + material */}
@@ -759,36 +748,15 @@ export default function ProductDetail({
         {/* Availability + lead time — enterprise style: malinaw na
             hierarchy, may icon, at trust signals sa ilalim */}
         {!hideOpts && ((product.stock ?? 1) > 0 ? (
-          <div className="mt-4 border border-sand rounded-lg overflow-hidden">
-            {/* Status bar */}
-            <div className="flex items-center gap-2.5 px-4 py-3 bg-green-50/60 border-b border-sand">
-              <span className="relative flex h-2.5 w-2.5 shrink-0">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-60 animate-ping" />
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-600" />
-              </span>
-              <span className="text-sm font-bold text-green-800">In stock</span>
-              {(product.stock ?? 99) <= 3 && (
-                <span className="ml-auto text-xs font-bold text-cognac bg-cognac/10 px-2 py-0.5 rounded">
-                  Only {product.stock} left
-                </span>
-              )}
+          <div className="mt-4 border border-sand bg-white">
+            <div className="flex items-center gap-2 px-3.5 py-2.5 bg-[#E6F2EA] text-[#2F7D4F] text-[13px] font-semibold">
+              <span className="h-2 w-2 rounded-full bg-[#2F7D4F]" />
+              In stock{product.stock !== undefined && product.stock > 0 ? ` · ${product.stock} unit${product.stock === 1 ? "" : "s"}` : ""}
+              {(product.stock ?? 99) <= 3 && <span className="ml-auto text-xs font-bold text-goldDeep">Only {product.stock} left</span>}
             </div>
-
-            {/* Lead time */}
-            <div className="px-4 py-3">
-              <div className="flex items-start gap-2.5">
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-olive mt-0.5 shrink-0">
-                  <circle cx="12" cy="12" r="9" />
-                  <path d="M12 7v5l3 2" />
-                </svg>
-                <div className="text-sm">
-                  <p className="font-medium text-ink">Delivery in 4–6 weeks</p>
-                  <p className="text-xs text-stone">
-                    Made to order in San Pedro, Laguna
-                  </p>
-                </div>
-              </div>
-
+            <div className="px-3.5 py-3 text-[12.5px] text-stone">
+              <b className="block text-ink font-semibold text-[13.5px]">Delivery in 4–6 weeks</b>
+              Made to order in San Pedro, Laguna — delivered and set up by our own team. Delivery fee shown at checkout.
             </div>
           </div>
         ) : (
@@ -806,28 +774,28 @@ export default function ProductDetail({
 
         {/* Qty + Add to cart / Sold out + heart */}
         {!hideOpts && (product.stock ?? 1) > 0 ? (
-          <div className="flex gap-3 mt-3">
-            <div className="flex items-center border border-stone/40 rounded">
-              <button onClick={() => setQtyState(Math.max(1, qty - 1))} className="px-4 py-3 hover:text-cognac" aria-label="Decrease quantity">−</button>
-              <span className="w-8 text-center text-sm">{qty}</span>
-              <button onClick={() => setQtyState(qty + 1)} className="px-4 py-3 hover:text-cognac" aria-label="Increase quantity">+</button>
+          <div className="flex gap-2.5 mt-3">
+            <div className="flex items-center h-12 border border-sand bg-white">
+              <button onClick={() => setQtyState(Math.max(1, qty - 1))} className="w-10 h-full hover:text-goldDeep" aria-label="Decrease quantity">−</button>
+              <span className="w-11 text-center text-sm font-semibold">{qty}</span>
+              <button onClick={() => setQtyState(qty + 1)} className="w-10 h-full hover:text-goldDeep" aria-label="Increase quantity">+</button>
             </div>
             <button
               onClick={handleAdd}
-              className="flex-1 border border-espresso text-espresso text-base font-medium rounded py-3 px-4 hover:bg-espresso hover:text-cream transition-colors"
+              className="flex-1 h-12 border-[1.5px] border-brown bg-white text-brown text-xs font-bold tracking-[0.14em] uppercase px-4 hover:bg-brown hover:text-cream transition-colors"
             >
-              {added ? "✓ Added to Cart" : "Add to cart"}
+              {added ? "Added ✓" : "Add to cart"}
             </button>
             <button
               onClick={handleBuyNow}
-              className="flex-1 bg-espresso text-cream text-base font-medium rounded py-3 px-4 hover:bg-cognac transition-colors"
+              className="flex-1 h-12 bg-brown text-cream text-xs font-bold tracking-[0.14em] uppercase px-4 hover:bg-brownDeep transition-colors"
             >
               Buy now
             </button>
             <button
               onClick={() => toggleWishlist(product.slug)}
               aria-label="Add to wishlist"
-              className="border border-stone/40 rounded px-4 hover:border-cognac"
+              className="w-12 h-12 border border-sand bg-white flex items-center justify-center hover:border-goldDeep"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill={wished ? "#B87333" : "none"} stroke={wished ? "#B87333" : "#1A1A1A"} strokeWidth="1.6">
                 <path d="M12 21C7 16.5 3 13 3 8.8 3 6 5.2 4 7.8 4c1.7 0 3.2.9 4.2 2.3C13 4.9 14.5 4 16.2 4 18.8 4 21 6 21 8.8c0 4.2-4 7.7-9 12.2z" />
@@ -911,39 +879,28 @@ export default function ProductDetail({
                   window.location.href = messengerUrl(handle, ref);
                 }
               }}
-              className="mt-3 flex items-center justify-center gap-2 w-full border border-ink rounded py-3 px-4 text-sm font-bold tracking-widest2 hover:bg-ink hover:text-cream transition-colors"
+              className="mt-3 flex items-center justify-center gap-2 w-full h-12 border-[1.5px] border-ink bg-white px-4 text-xs font-bold tracking-[0.14em] uppercase hover:bg-ink hover:text-cream transition-colors"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
                 <path d="M12 2C6.5 2 2 6.14 2 11.25c0 2.88 1.42 5.45 3.65 7.15V22l3.34-1.83c.96.27 1.97.41 3.01.41 5.5 0 10-4.14 10-9.25S17.5 2 12 2zm1.03 12.42l-2.54-2.71-4.96 2.71 5.45-5.79 2.6 2.71 4.9-2.71-5.45 5.79z"/>
               </svg>
-              CONTACT US FOR MORE INFORMATION
+              Ask about this item on Messenger
             </a>
           );
         })()}
 
-        {/* Measure for delivery + View dimensions */}
+        {/* Will it fit? + View dimensions, tapos trust list (mockup 2026-09-04) */}
         <div className="flex flex-wrap items-center gap-6 mt-5">
-          <Link
-            href="/measuring"
-            className="flex items-center gap-2 text-xs font-bold tracking-widest2 text-olive border-b border-olive pb-0.5 hover:text-cognac hover:border-cognac transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
-              <circle cx="7" cy="14" r="4" />
-              <path d="M7 10h13v5h-3v-2m-3 2v-2m-3 2v-2" />
-            </svg>
-            MEASURE FOR DELIVERY
-          </Link>
-          <a
-            href="#dimensions"
-            className="flex items-center gap-2 text-xs font-bold tracking-widest2 text-olive border-b border-olive pb-0.5 hover:text-cognac hover:border-cognac transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
-              <path d="M12 2l8 4.5v9L12 20l-8-4.5v-9z" />
-              <path d="M12 11l8-4.5M12 11L4 6.5M12 11v9" />
-            </svg>
-            VIEW DIMENSIONS
+          {packaged && <FitModal name={product.name} packaged={packaged} />}
+          <a href="#dimensions" className="text-[11.5px] font-bold tracking-[0.14em] uppercase border-b-[1.5px] border-goldDeep pb-0.5 hover:text-goldDeep transition-colors">
+            View dimensions
           </a>
         </div>
+        <ul className="mt-4 pt-3.5 border-t border-sand flex flex-col gap-1.5 text-[12.5px] text-stone">
+          {["6-month warranty on frame, foam and workmanship", "Delivered nationwide by our own team · live tracking", "Pay via GCash, Maya, BDO, BPI or cash"].map((t) => (
+            <li key={t} className="flex items-center gap-2"><span className="h-1.5 w-1.5 bg-goldDeep shrink-0" />{t}</li>
+          ))}
+        </ul>
       </div>
     </div>
   );

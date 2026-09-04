@@ -69,6 +69,48 @@ const BED_SIZES = [
   { id: "King", w: '76"', l: '80"' },
 ];
 
+// DIMENSION PHOTOS (2026-09-04 mockup): ang mismong litrato ng produkto
+// (harap at gilid) na may guhit ng sukat sa gilid at label ng halaga — kapalit
+// ng line drawing para sa upuan/sofa/mesa. Ang unang tatlong sukat ay nasa
+// harap (taas sa kaliwa, lapad sa ibaba, ikatlo sa kanan), ang susunod na
+// tatlo ay nasa gilid (lalim sa ibaba, sukat sa kanan, kapal sa itaas).
+function DimPhotos({ photos, rows, subject }: { photos: string[]; rows: { k: string; label: string; value: string }[]; subject: string }) {
+  const front = rows.slice(0, 3), side = rows.slice(3, 6);
+  const Fig = ({ src, title, items, spots }: { src: string; title: string; items: typeof rows; spots: { line: string; at: [number, number] }[] }) => (
+    <figure className="relative m-0 flex flex-col gap-2">
+      <div className="relative aspect-square bg-white">
+        <Image src={src} alt={`${subject} — ${title} view`} fill className="object-contain" sizes="(min-width: 768px) 360px, 100vw" />
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="pointer-events-none absolute inset-0 h-full w-full text-brown" stroke="currentColor" strokeWidth="0.6">
+          {items.map((_, i) => <path key={i} d={spots[i].line} fill="none" />)}
+        </svg>
+        {items.map((r, i) => (
+          <span key={r.k} className="absolute -translate-x-1/2 -translate-y-1/2 bg-white border border-brown text-brown text-xs font-bold px-1.5 py-0.5 tabular-nums" style={{ left: `${spots[i].at[0]}%`, top: `${spots[i].at[1]}%` }} title={r.label}>
+            {r.k ? `${r.k} ` : ""}{r.value}
+          </span>
+        ))}
+      </div>
+      <figcaption className="text-[11px] text-stone tracking-[0.06em] uppercase text-center">{title} · {items.map((r) => r.label.toLowerCase()).join(", ")}</figcaption>
+    </figure>
+  );
+  const FRONT = [
+    { line: "M14 18V90M11 18H17M11 90H17", at: [6, 50] as [number, number] },
+    { line: "M22 95H78M22 92V98M78 92V98", at: [46, 91] as [number, number] },
+    { line: "M86 52V90M83 52H89M83 90H89", at: [88, 68] as [number, number] },
+  ];
+  const SIDE = [
+    { line: "M28 95H72M28 92V98M72 92V98", at: [46, 91] as [number, number] },
+    { line: "M86 20V58M83 20H89M83 58H89", at: [88, 36] as [number, number] },
+    { line: "M40 8H52M40 5V11M52 5V11", at: [42, 3] as [number, number] },
+  ];
+  const two = photos.length > 1 && side.length > 0;
+  return (
+    <div className={`grid gap-3.5 bg-white border border-sand p-4 ${two ? "md:grid-cols-[1.25fr_1fr]" : ""}`}>
+      <Fig src={photos[0]} title="Front" items={front} spots={FRONT} />
+      {two && <Fig src={photos[1]} title="Side" items={side} spots={SIDE} />}
+    </div>
+  );
+}
+
 // Dimensions tab: shared size state — pag pinili ang isang size sa
 // FrameDiagram, ang left specs ay nag-hi-highlight sa napiling size.
 function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConfig | null }) {
@@ -224,7 +266,7 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
   const selected = bedSizes.find((s) => s.size === sizeFocus);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto items-start">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-9 items-start">
       {/* KALIWA: para sa beds — specs ng NAPILING size lang; para sa iba —
           buong specs list */}
       <div className="text-sm">
@@ -305,17 +347,24 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
             </div>
           </div>
         ) : mKind ? (
-          <div className="space-y-4">
+          <div className="space-y-3.5">
+            {product.dimensions && (
+              <div>
+                <p className="font-semibold text-ink">Overall dimensions</p>
+                <p className="text-stone">{product.dimensions}</p>
+              </div>
+            )}
             {(lockedRows ?? mRows.rows).map((r) => (
               <div key={r.k || r.label}>
-                <p className="font-bold text-ink">{r.k ? `${r.k} — ` : ""}{r.label}</p>
+                <p className="font-semibold text-ink">{r.k ? `${r.k} — ` : ""}{r.label}</p>
                 <p className="text-stone">{r.value}</p>
               </div>
             ))}
             <div>
-              <p className="font-bold text-ink">Packaged (approx.)</p>
+              <p className="font-semibold text-ink">Packaged (approx.)</p>
               <p className="text-stone">Add ~2&quot; per side</p>
             </div>
+            <p className="text-[12.5px] text-stone leading-relaxed max-w-[40ch]"><b className="text-ink font-semibold">Note:</b> Measurements are taken at the widest point of the padding, not seam to seam. Handmade pieces may vary by up to ½&quot;.</p>
           </div>
         ) : specs.length > 0 ? (
           <div className="space-y-4">
@@ -350,20 +399,17 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
             </div>
           </div>
         )}
-        <a href="/measuring" className="inline-flex items-center gap-2 mt-6 text-xs font-bold tracking-widest2 text-olive border-b border-olive pb-0.5 hover:text-cognac hover:border-cognac">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
-            <circle cx="7" cy="14" r="4" /><path d="M7 10h13v5h-3v-2m-3 2v-2m-3 2v-2" />
-          </svg>
-          MEASURE FOR DELIVERY
+        <a href="/measuring" className="inline-block mt-5 text-[11.5px] font-bold tracking-[0.14em] uppercase text-ink border-b-[1.5px] border-goldDeep pb-0.5 hover:text-goldDeep">
+          Measure for delivery
         </a>
       </div>
 
       {/* KANAN: diagram */}
       <div>
         {isMattress ? (
-          <MattressDiagram sizes={bedSizes} focus={sizeFocus} onFocus={setSizeFocus} thickness={mattT} />
+          <div className="bg-white border border-sand p-4"><MattressDiagram sizes={bedSizes} focus={sizeFocus} onFocus={setSizeFocus} thickness={mattT} /></div>
         ) : isBed ? (
-          <FrameDiagram
+          <div className="bg-white border border-sand p-4"><FrameDiagram
             sizes={bedSizes}
             focus={sizeFocus}
             onFocus={setSizeFocus}
@@ -378,7 +424,9 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
                 price: perSize?.price ?? a.price,
               };
             })}
-          />
+          /></div>
+        ) : mKind && product.images.length > 0 ? (
+          <DimPhotos photos={product.images.slice(0, 2)} rows={(lockedRows ?? mRows.rows).filter((r) => r.k && r.value && r.value !== "—")} subject={product.name} />
         ) : mKind ? (
           <MeasureDiagram kind={mKind} rows={mRows.rows} live={mRows.live} />
         ) : product.dimensionImage ? (
@@ -423,17 +471,16 @@ export default function ProductTabs({ product, site, mto }: { product: Product; 
   }, []);
 
   return (
-    <section id="dimensions" className="bg-linen -mx-6 mt-14 scroll-mt-40">
-      {/* Tab bar — serif, nakasentro */}
-      <div className="flex flex-wrap justify-center gap-x-10 gap-y-2 border-b border-sand px-6 pt-6">
+    // MOCKUP 2026-09-04: linen na kahon na may border, tab bar sa kaliwa na may
+    // gold na underline, uppercase na maliliit na heading sa bawat pane.
+    <section id="dimensions" className="bg-linen border border-sand mt-14 scroll-mt-40">
+      <div className="flex gap-1 border-b border-sand px-5 overflow-x-auto">
         {TABS.map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`font-cormorant text-lg sm:text-xl pb-3 border-b-2 -mb-px transition-colors ${
-              tab === t.id
-                ? "border-ink text-ink"
-                : "border-transparent text-stone hover:text-ink"
+            className={`whitespace-nowrap px-4 py-[18px] text-sm border-b-2 -mb-px transition-colors ${
+              tab === t.id ? "border-goldDeep text-ink font-semibold" : "border-transparent text-stone hover:text-ink"
             }`}
           >
             {t.label}
@@ -441,20 +488,21 @@ export default function ProductTabs({ product, site, mto }: { product: Product; 
         ))}
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-12 text-sm text-stone leading-relaxed">
+      <div className="px-5 py-6 md:px-9 md:py-8 text-sm text-stone leading-relaxed [&_h3]:text-[13px] [&_h3]:font-bold [&_h3]:tracking-[0.12em] [&_h3]:uppercase [&_h3]:text-ink [&_h3]:mb-3">
         {tab === "description" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-9">
             <div>
-              <h3 className="font-bold text-ink mb-3">Description</h3>
-              <p>{product.description}</p>
+              <h3>Description</h3>
+              <p className="max-w-[56ch] leading-[1.65] whitespace-pre-line">{product.description}</p>
             </div>
             <div>
-              <h3 className="font-bold text-ink mb-3">Features</h3>
-              <ul className="list-disc pl-5 space-y-1.5">
-                <li>Quality materials, built to last</li>
-                <li>Designed for everyday living</li>
-                <li>Free shipping on every order</li>
-                <li>Backed by our 100-Day Happiness Guarantee</li>
+              <h3>Features</h3>
+              <ul className="list-disc pl-[18px] leading-[1.8]">
+                {product.colors.length > 0 && <li>Upholstered in {product.colors.length === 1 ? product.colors[0] : `${product.colors.length} colors — ${product.colors.slice(0, 3).join(", ")}${product.colors.length > 3 ? "…" : ""}`}</li>}
+                {product.materials && <li>{product.materials.split(/[;\n]/)[0].trim()}</li>}
+                <li>{(product.stock ?? 0) > 0 ? "Ready unit — ships within the week" : "Made to order in our San Pedro, Laguna workshop · 4–6 weeks"}</li>
+                <li>Delivered and set up by our own team, nationwide</li>
+                <li>6-month warranty on frame, foam and workmanship</li>
               </ul>
             </div>
           </div>
@@ -463,26 +511,26 @@ export default function ProductTabs({ product, site, mto }: { product: Product; 
         {tab === "dimensions" && <DimensionsPanel product={product} mto={mto} />}
 
         {tab === "care" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-9">
             <div>
-              <h3 className="font-bold text-ink mb-3">Materials</h3>
-              <p>{product.materials}</p>
+              <h3>Materials</h3>
+              <p className="max-w-[56ch] leading-[1.65] whitespace-pre-line">{product.materials}</p>
             </div>
             <div>
-              <h3 className="font-bold text-ink mb-3">Care</h3>
-              <p>{product.care}</p>
+              <h3>Care</h3>
+              <p className="max-w-[56ch] leading-[1.65] whitespace-pre-line">{product.care}</p>
             </div>
           </div>
         )}
 
         {tab === "shipping" && (
-          <div className="grid md:grid-cols-3 gap-10">
+          <div className="grid md:grid-cols-3 gap-9">
             {(["shipping", "guarantee", "warranty"] as const).map((k) => {
               const c = tabs[k];
               if (!c) return null;
               return (
                 <div key={k}>
-                  <p className="flex items-center gap-3 font-bold text-ink mb-4">{ICONS[k]}{c.title}</p>
+                  <h3 className="flex items-center gap-3">{ICONS[k]}{c.title}</h3>
                   {c.heading && <p className="font-bold text-ink">{c.heading}</p>}
                   {c.body && <p className={c.heading ? "mt-2" : ""}>{rich(c.body)}</p>}
                   {c.note && <p className="mt-2">{rich(c.note)}</p>}

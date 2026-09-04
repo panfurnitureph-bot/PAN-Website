@@ -87,7 +87,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
       </nav>
 
       {/* 1 — GALLERY + OPTIONS */}
-      <ProductDetail product={product} site={site} mto={mto} />
+      <ProductDetail product={product} site={site} mto={mto} categoryTitle={categoryTitle} />
 
       {/* 2 — FULL-WIDTH TABS */}
       <ProductTabs product={product} site={site} mto={mto} />
