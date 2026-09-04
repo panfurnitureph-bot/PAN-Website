@@ -4,6 +4,7 @@
 
 import Image from "next/image";
 import type { HomepageContent } from "@/lib/products";
+import ShowroomMap from "./ShowroomMap";
 
 function openNow(hours: string) {
   // "Mon–Sun · 9:00 AM – 7:00 PM" → bukas ba ngayon (PH time)?
@@ -50,24 +51,8 @@ export default function Showrooms({ copy }: { copy?: HomepageContent["showrooms"
             );
           })}
         </div>
-        <div className="border border-sand bg-white flex flex-col overflow-hidden min-h-[280px]">
-          <div className="relative flex-1 min-h-[240px] bg-[#F1EBE1] overflow-hidden">
-            <span className="absolute bg-white border border-[#E1D8CA] h-3.5 w-[120%] -left-[10%] top-[38%] -rotate-[14deg]" />
-            <span className="absolute bg-white border border-[#E1D8CA] w-3 h-[120%] left-[46%] -top-[10%] rotate-[18deg]" />
-            <span className="absolute bg-white border border-[#E1D8CA] h-2 w-[120%] -left-[10%] top-[66%] rotate-[6deg]" />
-            <span className="absolute -right-[16%] -top-[22%] w-[52%] h-[70%] rounded-[48%_52%_60%_40%] bg-[#D7E4E6]" />
-            <span className="absolute right-[8%] top-[14%] text-[10px] tracking-[0.14em] uppercase text-[#7C9AA0]">Laguna de Bay</span>
-            {items.slice(0, 2).map((s, i) => (
-              <span key={s.name} className={`absolute flex items-center gap-1.5 text-[11px] font-semibold bg-white border border-[#E1D8CA] px-2 py-1 rounded-full shadow ${i === 0 ? "left-[34%] top-[44%]" : "left-[56%] top-[62%]"}`}>
-                <i className="w-2.5 h-2.5 rounded-full bg-goldDeep shadow-[0_0_0_3px_rgba(176,138,62,.25)]" />{i === 0 ? "Showroom 1" : "Showroom 2"}
-              </span>
-            ))}
-          </div>
-          <div className="flex justify-between items-center px-3.5 py-2.5 border-t border-sand text-xs text-stone">
-            <span>{items[0]?.address?.split("—")[0]?.trim() || "San Pedro, Laguna"}</span>
-            {items[0]?.maps && <a href={items[0].maps} target="_blank" rel="noopener noreferrer" className="border border-ink text-ink text-[11px] font-bold tracking-[0.08em] uppercase px-2.5 py-1.5">Open in Google Maps</a>}
-          </div>
-        </div>
+        {/* Totoong Google Maps embed, awtomatiko mula sa link/address ng branch. */}
+        <ShowroomMap items={items.map((s) => ({ name: s.name, address: s.address, maps: s.maps, waze: s.waze }))} />
       </div>
       {c && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
