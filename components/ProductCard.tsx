@@ -13,6 +13,7 @@ import { useState } from "react";
 import { formatPrice, type Product } from "@/lib/products";
 import { useStore } from "@/components/store";
 import { openQuickView } from "@/components/home/QuickView";
+import { readyCartLine } from "@/lib/ready-cart";
 
 export default function ProductCard({
   product,
@@ -46,11 +47,10 @@ export default function ProductCard({
   const inStock = stock > 0;
 
   function add() {
+    // Kapareho ng product page: as-is specs + kulay (2026-09-04).
     const colorName = active?.name ?? "";
-    addToCart(product.slug, colorName ? `Standard — ${colorName}` : "default", 1, product.price, {
-      baseLabel: colorName || undefined, basePrice: product.price, image: hero,
-      addOns: colorName ? [{ label: `Fabric: ${colorName}`, price: 0 }] : [],
-    });
+    const line = readyCartLine(product, colorName);
+    addToCart(product.slug, line.key, 1, line.unitPrice, { baseLabel: line.baseLabel, basePrice: line.unitPrice, image: hero, addOns: line.addOns });
     setAdded(true); setTimeout(() => setAdded(false), 1400);
   }
 

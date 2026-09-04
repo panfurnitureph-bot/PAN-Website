@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { formatPrice, type Product } from "@/lib/products";
 import { useStore } from "@/components/store";
+import { readyCartLine } from "@/lib/ready-cart";
 
 export function openQuickView(product: Product) {
   window.dispatchEvent(new CustomEvent("pan:quickview", { detail: { product } }));
@@ -64,16 +65,9 @@ export default function QuickView() {
   function add(buyNow: boolean) {
     const colorName = colorNames[color] ?? "";
     const sizeName = sizes[size]?.size ?? "";
-    const key = [sizeName || "Standard", colorName].filter(Boolean).join(" — ");
-    addToCart(p!.slug, key || "default", qty, price, {
-      baseLabel: key || undefined,
-      basePrice: price,
-      image: hero,
-      addOns: [
-        ...(sizeName ? [{ label: `Size: ${sizeName}`, price: 0 }] : []),
-        ...(colorName ? [{ label: `Fabric: ${colorName}`, price: 0 }] : []),
-      ],
-    });
+    // Kapareho ng product page: as-is specs + size + kulay (2026-09-04).
+    const line = readyCartLine(p!, colorName, sizeName, price);
+    addToCart(p!.slug, line.key, qty, line.unitPrice, { baseLabel: line.baseLabel, basePrice: line.unitPrice, image: hero, addOns: line.addOns });
     if (buyNow) { window.location.href = "/checkout"; return; }
     setAdded(true); setTimeout(() => setAdded(false), 1500);
   }
