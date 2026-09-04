@@ -106,13 +106,13 @@ export default function ProductCard({
         </div>
         {variants.length > 1 && (
           <div className="flex items-center gap-1.5">
-            {variants.slice(0, 6).map((v, i) => (
+            {variants.slice(0, 4).map((v, i) => (
               <button key={v.name + i} type="button" onMouseEnter={() => setActiveIdx(i)} onClick={() => setActiveIdx(i)} title={v.name} aria-label={v.name}
-                className={`relative w-[22px] h-[22px] rounded bg-white overflow-hidden border-[1.5px] ${i === activeIdx ? "border-brown" : "border-sand"} ${v.stock !== undefined && v.stock <= 0 ? "opacity-40" : ""}`}>
-                <Image src={v.thumb} alt="" fill className="object-contain" sizes="22px" />
+                className={`relative w-[66px] h-[66px] rounded bg-white overflow-hidden border-[1.5px] ${i === activeIdx ? "border-brown" : "border-sand"} ${v.stock !== undefined && v.stock <= 0 ? "opacity-40" : ""}`}>
+                <Image src={v.thumb} alt="" fill className="object-contain" sizes="66px" />
               </button>
             ))}
-            {variants.length > 6 && <span className="text-[10px] text-stone">+{variants.length - 6}</span>}
+            {variants.length > 4 && <span className="text-[11px] text-stone">+{variants.length - 4}</span>}
           </div>
         )}
         {showAddToCart && (
