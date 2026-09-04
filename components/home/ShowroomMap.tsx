@@ -29,7 +29,7 @@ export default function ShowroomMap({ items }: { items: Item[] }) {
   const [i, setI] = useState(0);
   const s = items[i] ?? items[0];
   if (!s) return null;
-  const src = `https://www.google.com/maps?q=${encodeURIComponent(queryFor(s))}&z=16&output=embed`;
+  const src = `https://maps.google.com/maps?q=${encodeURIComponent(queryFor(s))}&z=16&output=embed`;
   return (
     <div className="border border-sand bg-white flex flex-col overflow-hidden min-h-[280px]">
       {items.length > 1 && (
