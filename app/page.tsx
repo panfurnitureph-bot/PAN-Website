@@ -62,8 +62,10 @@ export default async function HomePage() {
           {tiles.map((t) =>
             t.live ? (
               <Link key={t.slug} href={`/collections/${t.slug}`} className="group flex flex-col gap-2 text-center text-[12.5px] font-medium">
-                <span className="relative block aspect-square bg-sand overflow-hidden">
-                  <Image src={categoryTileImage(t.slug)} alt={t.label} fill className="object-cover transition-transform duration-500 group-hover:scale-[1.04]" sizes="(min-width: 1100px) 160px, 40vw" />
+                {/* Uniform na tile (2026-09-04): puting ground, buong litrato (contain) -
+                    pareho ang dating ng product photo at ng category photo, walang putol. */}
+                <span className="relative block aspect-square bg-white overflow-hidden border border-sand">
+                  <Image src={categoryTileImage(t.slug)} alt={t.label} fill className="object-contain p-3 transition-transform duration-500 group-hover:scale-[1.04]" sizes="(min-width: 1100px) 160px, 40vw" />
                 </span>
                 {t.label}
               </Link>
