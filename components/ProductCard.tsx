@@ -44,7 +44,10 @@ export default function ProductCard({
   // napiling kulay kung meron, kung wala ang susunod na litrato ng produkto na
   // iba sa hero — lahat ng may 2+ litrato ay nag-a-animate na.
   const alt = (active?.images ?? product.images).find((im) => im !== hero) ?? null;
-  const stock = product.stock ?? 0;
+  // STOCK NG NAPILING KULAY (Joe 2026-09-06, "kung san itapat ung kulay mag
+  // papakita mismo kung ilan ung stock nya, wag total"): ang badge ay ang bilang
+  // ng kulay na naka-hover/napili; kabuuan lang kapag walang kada-kulay na bilang.
+  const stock = active?.stock ?? product.stock ?? 0;
   const inStock = stock > 0;
 
   function add() {
