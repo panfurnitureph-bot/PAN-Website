@@ -9,6 +9,8 @@ import ChatBubble from "@/components/ChatBubble";
 import TrackButton from "@/components/TrackButton";
 import EmbedMode from "@/components/EmbedMode";
 import ContentLive from "@/components/ContentLive";
+import HydrationMark from "@/components/HydrationMark";
+import { BOOT_SCRIPT } from "@/components/boot-script";
 import { primeStoreContent } from "@/lib/content";
 import { NAV_LINKS, shopLinks } from "@/lib/products";
 
@@ -64,7 +66,16 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className={`${inter.variable} ${cormorant.variable}`}>
+      <head>
+        {/* Plain JS na tumatakbo BAGO ang React (2026-09-05): (1) minamarkahan
+            ang <html data-scrolled> sa pag-scroll para ang header ay maging
+            opaque kahit hindi nag-hydrate ang page; (2) kung hindi nabuhay ang
+            React pagkatapos mag-load (nabitawan ng CDN ang isang chunk), isang
+            reload — max 2 kada 10 min. */}
+        <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} />
+      </head>
       <body className="font-sans">
+        <HydrationMark />
         {/* page-clip: pumipigil sa pahalang na page drift. Nasa wrapper ito at
             HINDI sa html/body — sa iOS Safari, overflow-x sa root = hindi na
             ma-swipe ang mga carousel sa buong site. */}

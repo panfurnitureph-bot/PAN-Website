@@ -62,6 +62,7 @@ export default function Header({ site, nav = NAV_LINKS }: { site: SiteContent; n
     <>
       <header
         ref={ref}
+        data-site-header=""
         onMouseLeave={() => setOpenMenu(null)}
         className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${
           transparent ? "bg-transparent" : "bg-cream shadow-sm"
@@ -74,7 +75,7 @@ export default function Header({ site, nav = NAV_LINKS }: { site: SiteContent; n
         </div>
 
         {/* Main bar: left links · logo · right icons */}
-        <div className={`grid grid-cols-[auto_1fr_auto] lg:grid-cols-3 items-center px-4 sm:px-8 py-3 gap-2 ${txt}`}>
+        <div className={`hdr-txt grid grid-cols-[auto_1fr_auto] lg:grid-cols-3 items-center px-4 sm:px-8 py-3 gap-2 ${txt}`}>
           {/* Left: spacer (desktop, para nakasentro ang logo) / hamburger (mobile) */}
           <div className="hidden lg:block" />
           <button
@@ -153,7 +154,7 @@ export default function Header({ site, nav = NAV_LINKS }: { site: SiteContent; n
         )}
 
         {/* Desktop nav — may mega-menu sa hover */}
-        <nav className={`hidden lg:flex justify-center gap-8 pb-3 text-[15px] ${txt}`}>
+        <nav className={`hdr-txt hidden lg:flex justify-center gap-8 pb-3 text-[15px] ${txt}`}>
           {nav.map((link) => (
             <div key={link.href} onMouseEnter={() => setOpenMenu(link.children ? link.label : null)}>
               <Link

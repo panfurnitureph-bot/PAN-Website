@@ -114,3 +114,16 @@ input[type="number"].no-spinner {
 :root[data-embed="1"] main {
   margin: 0 !important;
 }
+
+/* HEADER NA HINDI UMAASA SA JS (2026-09-05): ang boot script sa root layout
+   ang nagmamarka ng <html data-scrolled="1"> sa pag-scroll. Kapag naka-scroll,
+   opaque ang header at itim ang teksto — kahit hindi pa (o hindi kailanman)
+   nag-hydrate ang React, hindi lulutang ang transparent na header sa ibabaw ng
+   laman. Kapag hydrated, pareho rin ang itinatakda ng React; walang tunggalian. */
+:root[data-scrolled="1"] [data-site-header] {
+  background-color: #FAF7F2;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+:root[data-scrolled="1"] [data-site-header] .hdr-txt {
+  color: #1A1A1A;
+}
