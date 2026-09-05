@@ -33,6 +33,44 @@ function DetailRow({ label, value, bold }: { label: string; value: React.ReactNo
   );
 }
 
+type ItemCard = { name: string; specs: string[]; qty: number; priceTotal: number | null; photoUrl: string | null; tag: string | null; tagBg: string | null; tagColor: string | null; dimmed: boolean };
+
+// ITEM CARDS (2026-09-06, "katulad nito") — parehong hilera ng out-for-delivery
+// email: litrato sa kaliwa, pangalan, buong specs kada linya, qty, presyo sa
+// kanan, at batch tag (DELIVERED / THIS DELIVERY / NEXT DELIVERY).
+function ItemCards({ items }: { items: ItemCard[] }) {
+  const thisCount = items.filter((i) => i.tag === "THIS DELIVERY").length;
+  return (
+    <div className="border-b border-[#efe9db] py-2.5">
+      <div className="flex items-start justify-between gap-4 mb-1">
+        <span className="text-xs text-[#8a8272]">Items</span>
+        <span className="text-[11px] text-[#8a8272]">{items.length} total{thisCount ? ` · ${thisCount} on this delivery` : ""}</span>
+      </div>
+      {items.map((it, i) => (
+        <div key={`${it.name}-${i}`} className={`flex gap-3 py-3 ${i ? "border-t border-[#f3eee2]" : ""} ${it.dimmed ? "opacity-60" : ""}`}>
+          <div className="w-14 h-14 shrink-0 rounded-md border border-[#e6dfcf] bg-white overflow-hidden flex items-center justify-center">
+            {it.photoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={it.photoUrl} alt="" className="w-full h-full object-contain" />
+            ) : <span className="text-[10px] text-[#b8b0a0]">No photo</span>}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-3">
+              <p className="text-[13px] font-bold text-[#2b2620] leading-snug">{i + 1}. {it.name}</p>
+              {it.priceTotal != null && it.priceTotal > 0 && <span className="text-[13px] font-bold text-[#2b2620] whitespace-nowrap">{peso(it.priceTotal)}</span>}
+            </div>
+            {it.specs.map((s, j) => <p key={j} className="text-[11px] leading-[1.7] text-[#6b6353]">{s}</p>)}
+            <p className="text-[11px] text-[#6b6353]">Quantity: {it.qty}</p>
+            {it.tag && (
+              <span className="inline-block mt-1.5 rounded-full px-2 py-0.5 text-[9px] font-bold tracking-wider" style={{ background: it.tagBg ?? "#f1efe9", color: it.tagColor ?? "#8a8272" }}>{it.tag}</span>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function Steps({ confirmed = false }: { confirmed?: boolean }) {
   return (
     <div className="flex items-center justify-center mt-6 mb-1">
@@ -65,12 +103,14 @@ export default function ConfirmClient({ token, summary }: {
     customerName: string | null;
     address: string | null;
     item?: string | null;
+    items?: ItemCard[];
     date: string | null;
     timeWindow?: string | null;
     balance: number;
     alreadyConfirmed: boolean;
   };
 }) {
+  const cards = summary.items ?? [];
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(summary.alreadyConfirmed);
   const [error, setError] = useState<string | null>(null);
@@ -133,7 +173,7 @@ export default function ConfirmClient({ token, summary }: {
                 kumpirmasyon. */}
             <div className="mt-4 mb-1">
               <DetailRow label="Order" value={<span className="font-mono text-[13px] font-bold">{ord}</span>} />
-              {summary.item && <DetailRow label="Item" value={summary.item} />}
+              {cards.length ? <ItemCards items={cards} /> : (summary.item && <DetailRow label="Item" value={summary.item} />)}
               {summary.customerName && <DetailRow label="Recipient" value={<b>{summary.customerName}</b>} />}
               {summary.address && <DetailRow label="Delivery address" value={<b>{summary.address}</b>} />}
               {summary.timeWindow && <DetailRow label="Time window" value={summary.timeWindow} />}
@@ -173,7 +213,7 @@ export default function ConfirmClient({ token, summary }: {
             {/* Details */}
             <div className="mt-4 mb-1">
               <DetailRow label="Order" value={<span className="font-mono text-[13px] font-bold">{ord}</span>} />
-              {summary.item && <DetailRow label="Item" value={summary.item} />}
+              {cards.length ? <ItemCards items={cards} /> : (summary.item && <DetailRow label="Item" value={summary.item} />)}
               {summary.customerName && <DetailRow label="Recipient" value={<b>{summary.customerName}</b>} />}
               {summary.address && <DetailRow label="Delivery address" value={<b>{summary.address}</b>} />}
               {summary.timeWindow && <DetailRow label="Time window" value={summary.timeWindow} />}

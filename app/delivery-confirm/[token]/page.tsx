@@ -15,6 +15,7 @@ type Summary = {
   customerName: string | null;
   address: string | null;
   item?: string | null;
+  items?: { name: string; specs: string[]; qty: number; priceTotal: number | null; photoUrl: string | null; tag: string | null; tagBg: string | null; tagColor: string | null; dimmed: boolean }[];
   date: string | null;
   timeWindow?: string | null;
   balance: number;
