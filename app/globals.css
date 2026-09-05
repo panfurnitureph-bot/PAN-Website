@@ -127,3 +127,17 @@ input[type="number"].no-spinner {
 :root[data-scrolled="1"] [data-site-header] .hdr-txt {
   color: #1A1A1A;
 }
+
+/* RAIL NA WALANG JS (2026-09-06, "di ba nasa-scroll pa right"): ang product
+   rail ay JS carousel (transform, overflow hidden). Hanggang hindi nag-hydrate
+   ang React (o kailanman, kung nabitawan ng CDN ang chunk), native na
+   pahalang na scroll ito para makita pa rin ang ibang produkto. Kapag
+   hydrated, ang JS na ang bahala (arrows, drag, autoplay). */
+html:not([data-hydrated]) .rail {
+  overflow-x: auto;
+  cursor: auto;
+  scroll-snap-type: x mandatory;
+}
+html:not([data-hydrated]) .rail > * {
+  scroll-snap-align: start;
+}

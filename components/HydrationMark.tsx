@@ -8,6 +8,8 @@ import { useEffect } from "react";
 export default function HydrationMark() {
   useEffect(() => {
     (window as unknown as { __pan_hydrated?: boolean }).__pan_hydrated = true;
+    // CSS hook: habang wala ito, native scroll ang mga JS carousel (Rail).
+    document.documentElement.setAttribute("data-hydrated", "1");
   }, []);
   return null;
 }
