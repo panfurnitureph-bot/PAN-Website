@@ -24,7 +24,8 @@ export async function generateStaticParams() {
   return products.map((p) => ({ slug: p.slug }));
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   // Punan din dito: hindi tiyak kung ano ang mauunang tumakbo — ito o ang page.
   // Kung hindi, ang bagong product mula sa admin ay makakakuha ng generic title.
   await primeStoreContent();
@@ -43,7 +44,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function ProductPage({ params }: { params: { slug: string } }) {
+export default async function ProductPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   // Punan muna bago basahin ang `products` / `COLLECTIONS` sa ibaba.
   await primeStoreContent();
 

@@ -37,7 +37,8 @@ export async function generateStaticParams() {
   return Object.keys(COLLECTIONS).map((category) => ({ category }));
 }
 
-export function generateMetadata({ params }: { params: { category: string } }) {
+export async function generateMetadata(props: { params: Promise<{ category: string }> }) {
+  const params = await props.params;
   const collection = COLLECTIONS[params.category];
   if (!collection) return { title: "PAN Furniture" };
   // Branded OG card (2026-09-03) - hindi na hinuhugot ng chat apps ang unang
@@ -50,11 +51,12 @@ export function generateMetadata({ params }: { params: { category: string } }) {
   };
 }
 
-export default async function CollectionPage({
-  params,
-}: {
-  params: { category: string };
-}) {
+export default async function CollectionPage(
+  props: {
+    params: Promise<{ category: string }>;
+  }
+) {
+  const params = await props.params;
   // Punan muna bago basahin ang `COLLECTIONS` / products sa ibaba.
   await primeStoreContent();
 
