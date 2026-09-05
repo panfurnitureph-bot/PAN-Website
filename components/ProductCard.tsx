@@ -124,8 +124,8 @@ export default function ProductCard({
           {variants.length > 1 && (<>
             {variants.slice(0, 4).map((v, i) => (
               <button key={v.name + i} type="button" onMouseEnter={() => setActiveIdx(i)} onClick={() => setActiveIdx(i)} title={v.name} aria-label={v.name}
-                className={`relative w-[66px] h-[66px] rounded bg-white overflow-hidden border-[1.5px] ${i === activeIdx ? "border-brown" : "border-sand"} ${v.stock !== undefined && v.stock <= 0 ? "opacity-40" : ""}`}>
-                <Image src={v.thumb} alt="" fill className="object-contain" sizes="66px" />
+                className={`relative w-[56px] h-[56px] shrink-0 rounded bg-white overflow-hidden border-[1.5px] ${i === activeIdx ? "border-brown" : "border-sand"} ${v.stock !== undefined && v.stock <= 0 ? "opacity-40" : ""}`}>
+                <Image src={v.thumb} alt="" fill className="object-contain" sizes="56px" />
               </button>
             ))}
             {variants.length > 4 && <span className="text-[11px] text-stone">+{variants.length - 4}</span>}

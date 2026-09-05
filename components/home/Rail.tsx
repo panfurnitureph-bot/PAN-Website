@@ -168,7 +168,10 @@ export default function Rail({
       >
         <div ref={track} className="flex will-change-transform [transform:translate3d(0,0,0)]" style={{ gap: GAP }}>
           {Children.map(children, (c) => (
-            <div className="shrink-0 grow-0" style={{ flexBasis: "var(--cw, 220px)" }}>{c}</div>
+            {/* min-w-0 + width (2026-09-06, "di na naman equal"): ang card na may
+                3 color thumbs ay mas malapad ang min-content kaysa sa slot, kaya
+                lumalaki ang flex item at tumatangkad ang square na litrato. */}
+            <div className="shrink-0 grow-0 min-w-0" style={{ flexBasis: "var(--cw, 220px)", width: "var(--cw, 220px)" }}>{c}</div>
           ))}
         </div>
       </div>
