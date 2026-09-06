@@ -99,6 +99,8 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
     fetch("/barangays.json").then((r) => r.json()).then(setBrgyData).catch(() => {});
   }, []);
   const [sending, setSending] = useState(false);
+  // m.me link ng naipadalang request — pindutan kapag hinarang ang popup.
+  const [messengerLink, setMessengerLink] = useState<string | null>(null);
   // Ang tanging bagay na nakikita ng customer kapag hindi tumuloy ang
   // Messenger. Kung wala ito, ang pagpindot sa Send ay walang epekto sa
   // screen — at walang paraang malaman kung nakarating ba o hindi.
@@ -195,6 +197,15 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
     if (Object.keys(e).length) return;
     setSendErr("");
     setSending(true);
+    // ANG TAB AY BINUBUKSAN SA MISMONG CLICK (2026-09-06, "pag sinend ko wala
+    // nangyayari"): ang window.open PAGKATAPOS ng await fetch ay wala nang user
+    // gesture — hinaharang ng popup blocker ng Chrome/Edge sa desktop, kaya
+    // naitatala ang MTO pero hindi bumubukas ang Messenger. Bukas na ang tab
+    // habang naghihintay; ilalagay ang m.me URL pagkatapos. Sa mobile ay
+    // same-tab pa rin (location.href).
+    const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+    const pre = !isMobile && handle ? window.open("about:blank", "_blank") : null;
+    if (pre) { try { pre.document.write("<p style=\"font:14px system-ui;padding:24px\">Opening Messenger\u2026</p>"); } catch { /* cross-origin later */ } }
     const slots = quote.map(({ id: _id, summary: _s, state: _st, ...rest }) => rest);
     let mtoRef: string | null = null;
     try {
@@ -237,6 +248,7 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
     // build na walang nakatanggap ay nagtatapon ng gawaing hindi na mababawi —
     // walang draft, walang history, wala nang mababalikan ang customer.
     if (!mtoRef) {
+      try { pre?.close(); } catch { /* nakasara na */ }
       setSendErr(
         "We could not send your request just now. Your builds are still here — please check your connection and try again.",
       );
@@ -254,8 +266,12 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
     }
 
     const url = messengerUrl(handle, `mto_${mtoRef}`);
-    if (/Android|iPhone|iPad/i.test(navigator.userAgent)) window.location.href = url;
-    else window.open(url, "_blank", "noopener,noreferrer");
+    setMessengerLink(url);
+    if (isMobile) { window.location.href = url; return; }
+    if (pre && !pre.closed) { try { pre.location.href = url; return; } catch { /* bumagsak sa ibaba */ } }
+    const w = window.open(url, "_blank", "noopener,noreferrer");
+    // Hinarang ng popup blocker — may pindutan sa ibaba para sa customer.
+    if (!w) setSendErr(`Request ${mtoRef} received. Tap "Open Messenger" to continue the conversation with our team.`);
   }
 
   // Ang listahan ay galing sa localStorage kaya blangko sa unang render;
@@ -588,6 +604,14 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
             <p className="mt-2 rounded bg-linen px-3 py-2 text-xs font-medium text-ink" role="alert">
               {sendErr}
             </p>
+          )}
+          {/* PAMBALIK KAPAG HINARANG ANG POPUP (2026-09-06): ang link ay nandito
+              pa rin — isang click ng customer ang kailangan ng browser. */}
+          {messengerLink && (
+            <a href={messengerLink} target="_blank" rel="noreferrer"
+              className="mt-2 flex w-full items-center justify-center gap-2 rounded bg-[#0084FF] px-4 py-3 text-sm font-bold text-white hover:bg-[#0070d9]">
+              Open Messenger
+            </a>
           )}
           <Link
             href="/collections/bed"
