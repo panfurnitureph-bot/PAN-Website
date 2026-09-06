@@ -32,6 +32,24 @@ export default function FabricPopup({ swatches }: { swatches: LibrarySwatch[] })
     document.addEventListener("keydown", key);
     return () => { window.removeEventListener("pan:fabrics", open); document.removeEventListener("keydown", key); };
   }, []);
+  // PAINIT NG LAHAT NG TELA PAGBUKAS (Joe 2026-09-06, "may delay na 1-2s"): ang
+  // bawat tab ay naghihintay noon sa network ng sarili nitong litrato. Ngayon,
+  // pagbukas ng popup ay kinukuha na ng browser ang LAHAT ng swatch (bukas na
+  // tab muna, saka ang iba, 12 kada 60ms para hindi masakal ang koneksyon) —
+  // paglipat ng tab ay galing na sa cache, agad na lumalabas.
+  useEffect(() => {
+    if (!on) return;
+    const ordered = [...groups.slice(tab), ...groups.slice(0, tab)];
+    const urls = ordered.flatMap((gr) => gr.items.map((x) => x.swatch)).filter((u): u is string => !!u);
+    let i = 0, t: ReturnType<typeof setTimeout> | null = null;
+    const tick = () => {
+      for (let k = 0; k < 12 && i < urls.length; k++, i++) { const im = new window.Image(); im.decoding = "async"; im.src = urls[i]; }
+      if (i < urls.length) t = setTimeout(tick, 60);
+    };
+    tick();
+    return () => { if (t) clearTimeout(t); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [on, groups]);
   function close() { setOn(false); document.body.style.overflow = ""; }
   if (!on) return null;
   const g = groups[tab] ?? groups[0];
@@ -45,7 +63,7 @@ export default function FabricPopup({ swatches }: { swatches: LibrarySwatch[] })
         </div>
         <div className="flex flex-wrap gap-0.5 border-b border-sand mb-4">
           {groups.map((gr, i) => (
-            <button key={gr.name} type="button" onClick={() => setTab(i)} className={`relative px-2.5 py-2 text-[11.5px] font-semibold tracking-[0.1em] uppercase ${i === tab ? "text-ink after:absolute after:left-2.5 after:right-2.5 after:-bottom-px after:h-0.5 after:bg-goldDeep" : "text-stone"}`}>
+            <button key={gr.name} type="button" onClick={() => setTab(i)} onMouseEnter={() => { for (const x of gr.items) if (x.swatch) { const im = new window.Image(); im.src = x.swatch; } }} className={`relative px-2.5 py-2 text-[11.5px] font-semibold tracking-[0.1em] uppercase ${i === tab ? "text-ink after:absolute after:left-2.5 after:right-2.5 after:-bottom-px after:h-0.5 after:bg-goldDeep" : "text-stone"}`}>
               {gr.name} <span className="font-normal text-stone ml-1 tabular-nums">{gr.items.length}</span>
             </button>
           ))}
@@ -58,7 +76,7 @@ export default function FabricPopup({ swatches }: { swatches: LibrarySwatch[] })
                   {/* Maliit na 200px JPEG na (~8KB) mula sa Storage CDN — laktawan ang
                       next/image optimizer (bawat isa ay server resize noon = mabagal ang
                       unang bukas); lazy para ang nakikitang tab lang ang kinukuha. */}
-                  {s.swatch && <Image src={s.swatch} alt={s.name} fill unoptimized loading="lazy" className="object-cover" sizes="110px" />}
+                  {s.swatch && <Image src={s.swatch} alt={s.name} fill unoptimized loading="eager" className="object-cover" sizes="110px" />}
                 </span>
                 <span className="text-[11px] font-medium text-ink truncate">{s.name.replace(g.name + " ", "")}</span>
               </button>
