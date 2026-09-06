@@ -185,9 +185,17 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
     // request, at ang eksaktong address ang nagtatakda ng delivery fee sa
     // quotation. Wala nang ibang pagkakataong itanong ito.
     const e: Record<string, string> = {};
+    // TUNAY NA PANGALAN AT NUMERO (2026-09-06): ang browser autofill ay
+    // naglalagay ng email sa First name at teksto sa Mobile, at dinadala iyon
+    // ng quotation nang buo ("panfurnitureph@gmail.com PAN" ang pangalan).
+    const looksEmail = (v: string) => /@|https?:///i.test(v);
+    const phDigits = mobile.replace(/[^d]/g, "");
     if (!firstName.trim()) e.firstName = "Required";
+    else if (looksEmail(firstName)) e.firstName = "Type your first name, not an email";
     if (!lastName.trim()) e.lastName = "Required";
+    else if (looksEmail(lastName)) e.lastName = "Type your last name, not an email";
     if (!mobile.trim()) e.mobile = "Required";
+    else if (!/^(09d{9}|639d{9})$/.test(phDigits)) e.mobile = "Enter an 11-digit PH mobile number (09xx xxx xxxx)";
     if (!province) e.province = "Required";
     if (!city) e.city = "Required";
     if (!barangay.trim()) e.barangay = "Required";
