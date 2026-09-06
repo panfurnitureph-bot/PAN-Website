@@ -6,7 +6,7 @@
 // Ang grupo at tabs ay sa IMS → Website → Homepage.
 
 import { useState } from "react";
-import Rail from "./Rail";
+import Marquee from "./Marquee";
 import ProductCard from "@/components/ProductCard";
 import type { HomepageContent, Product } from "@/lib/products";
 
@@ -48,9 +48,9 @@ function RowView({ row }: { row: { title: string; tabs: { label: string; slug: s
           ))}
         </div>
       </div>
-      <Rail key={t.slug} title="" link={{ label: `All ${t.label} →`, href: `/collections/${t.slug}` }} autoplay={false}>
+      <Marquee key={t.slug} title="" link={{ label: `All ${t.label} →`, href: `/collections/${t.slug}` }}>
         {t.items.map((p) => <ProductCard key={p.slug} product={p} showStock />)}
-      </Rail>
+      </Marquee>
     </section>
   );
 }

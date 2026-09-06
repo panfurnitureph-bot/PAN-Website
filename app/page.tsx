@@ -25,6 +25,7 @@ import FaqAccordion from "@/components/FaqAccordion";
 import GoogleReviews from "@/components/GoogleReviews";
 import ScrollTop from "@/components/ScrollTop";
 import Rail from "@/components/home/Rail";
+import Marquee from "@/components/home/Marquee";
 import TrustBar from "@/components/home/TrustBar";
 import ReadyToShip from "@/components/home/ReadyToShip";
 import PromoBeds from "@/components/home/PromoBeds";
@@ -86,9 +87,9 @@ export default async function HomePage() {
 
       {best.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-8 pt-12 pb-1">
-          <Rail title="Best sellers" sub={auto.length ? "The most-ordered pieces of the last 90 days." : "Featured pieces."} link={{ label: "Shop all →", href: "/collections/new-in" }}>
+          <Marquee title="Best sellers" sub={auto.length ? "The most-ordered pieces of the last 90 days." : "Featured pieces."} link={{ label: "Shop all →", href: "/collections/new-in" }}>
             {best.map((p) => <ProductCard key={p.slug} product={p} />)}
-          </Rail>
+          </Marquee>
         </section>
       )}
 
