@@ -61,7 +61,12 @@ export async function loadStoreContent(): Promise<StoreContent> {
 
   return {
     products: prodRows?.length ? prodRows.map((r) => r.data) : FALLBACK.products,
-    swatches: swatchRows?.length ? swatchRows.map((r) => r.data) : FALLBACK.swatches,
+    // PUBLISHED LANG SA SITE (2026-09-06): ang tela na naka-unpublish sa IMS Fabric
+    // Upholstered (`published: false`) ay hindi lumalabas sa homepage rail,
+    // fabric popup, at product fabric picker. Walang flag = published.
+    swatches: swatchRows?.length
+      ? swatchRows.map((r) => r.data).filter((sw) => (sw as { published?: boolean }).published !== false)
+      : FALLBACK.swatches,
     site: (docs.get("site") as SiteContent) ?? FALLBACK.site,
     // Isinasanib sa bundled JSON (2026-09-04): ang bagong homepage keys (trust
     // bar, promo beds, MTO, showrooms…) ay may default kahit hindi pa na-save
