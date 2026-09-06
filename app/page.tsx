@@ -24,7 +24,6 @@ import UgcGrid from "@/components/UgcGrid";
 import FaqAccordion from "@/components/FaqAccordion";
 import GoogleReviews from "@/components/GoogleReviews";
 import ScrollTop from "@/components/ScrollTop";
-import Rail from "@/components/home/Rail";
 import Marquee from "@/components/home/Marquee";
 import TrustBar from "@/components/home/TrustBar";
 import ReadyToShip from "@/components/home/ReadyToShip";
@@ -60,7 +59,7 @@ export default async function HomePage() {
       <TrustBar items={h.trustBar} />
 
       <section className="max-w-7xl mx-auto px-4 sm:px-8 pt-12 pb-1">
-        <Rail title="Shop by category" n={[7, 5, 4, 3]}>
+        <Marquee title="Shop by category" n={[7, 5, 4, 3]} speed={22}>
           {tiles.map((t) =>
             t.live ? (
               <Link key={t.slug} href={`/collections/${t.slug}`} className="group flex flex-col gap-2 text-center text-[12.5px] font-medium">
@@ -82,7 +81,7 @@ export default async function HomePage() {
               </div>
             ),
           )}
-        </Rail>
+        </Marquee>
       </section>
 
       {best.length > 0 && (
