@@ -39,7 +39,7 @@ export default function Marquee({
   const count = Children.count(children);
   // Ilang kopya ng listahan — sapat para laging may laman sa magkabilang
   // dulo kahit malapad ang screen at kaunti ang cards.
-  const copies = count === 0 ? 1 : Math.max(2, Math.ceil(12 / count) + 1);
+  const copies = count === 0 ? 1 : Math.max(2, Math.ceil(10 / count));
 
   useEffect(() => {
     const r = rail.current, t = track.current;
@@ -69,6 +69,8 @@ export default function Marquee({
       // Nudge mula sa arrow: mabilis na easing, saka balik sa normal na drift.
       if (nudge !== 0) { const d = nudge * 0.16; x += d; nudge -= d; if (Math.abs(nudge) < 0.5) nudge = 0; apply(); return; }
       if (paused || !visible || down || reduce || document.hidden) return;
+      // May video na nagpe-play (reviews) — huwag ilayo sa nanonood.
+      if (t.querySelector("video") && Array.from(t.querySelectorAll("video")).some((v) => !v.paused && !v.ended)) return;
       x -= (reverse ? -1 : 1) * speed * dt;
       apply();
     };
