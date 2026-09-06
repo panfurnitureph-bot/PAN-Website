@@ -19,6 +19,9 @@ export default function FabricPopup({ swatches }: { swatches: LibrarySwatch[] })
   const router = useRouter();
   const [on, setOn] = useState(false);
   const [tab, setTab] = useState(0);
+  // HOVER PREVIEW (Joe 2026-09-06): malaking litrato ng tela na sumusunod sa
+  // cursor habang naka-hover; nawawala pag-alis. Mouse lang — walang hover sa touch.
+  const [hov, setHov] = useState<{ s: LibrarySwatch; x: number; y: number } | null>(null);
   const groups = useMemo(() => {
     const by = new Map<string, LibrarySwatch[]>();
     for (const s of swatches) { const c = colOf(s.name); if (!by.has(c)) by.set(c, []); by.get(c)!.push(s); }
@@ -50,7 +53,7 @@ export default function FabricPopup({ swatches }: { swatches: LibrarySwatch[] })
     return () => { if (t) clearTimeout(t); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [on, groups]);
-  function close() { setOn(false); document.body.style.overflow = ""; }
+  function close() { setOn(false); setHov(null); document.body.style.overflow = ""; }
   if (!on) return null;
   const g = groups[tab] ?? groups[0];
   return (
@@ -68,10 +71,29 @@ export default function FabricPopup({ swatches }: { swatches: LibrarySwatch[] })
             </button>
           ))}
         </div>
+        {hov && hov.s.swatch && typeof window !== "undefined" && (() => {
+          const W = 260, H = 300, M = 18;
+          const left = Math.min(Math.max(hov.x + M, 8), window.innerWidth - W - 8);
+          const top = hov.y + M + H > window.innerHeight - 8 ? Math.max(hov.y - M - H, 8) : hov.y + M;
+          return (
+            <div className="pointer-events-none fixed z-[70] border border-black/10 bg-cream shadow-2xl" style={{ left, top, width: W }} aria-hidden>
+              <div className="relative h-[260px] w-full overflow-hidden" style={{ background: hov.s.color ?? "#D9CFC0" }}>
+                <Image src={hov.s.swatch} alt="" fill unoptimized className="object-cover" sizes="260px" />
+              </div>
+              <div className="px-3 py-2">
+                <p className="text-[12.5px] font-semibold text-ink truncate">{hov.s.name}</p>
+                {hov.s.material && <p className="text-[11px] text-stone truncate">{hov.s.material}</p>}
+              </div>
+            </div>
+          );
+        })()}
         {g && (
           <div className="grid gap-3.5 [grid-template-columns:repeat(auto-fill,minmax(92px,1fr))]">
             {g.items.map((s) => (
-              <button key={s.name} type="button" title={s.name} onClick={() => { close(); router.push(`/collections/customized-bed?fabric=${encodeURIComponent(s.name)}`); }} className="group flex flex-col gap-1.5 text-center">
+              <button key={s.name} type="button" title={s.name} onClick={() => { close(); router.push(`/collections/customized-bed?fabric=${encodeURIComponent(s.name)}`); }}
+                onMouseEnter={(e) => setHov({ s, x: e.clientX, y: e.clientY })}
+                onMouseMove={(e) => setHov((h) => (h && h.s === s ? { s, x: e.clientX, y: e.clientY } : { s, x: e.clientX, y: e.clientY }))}
+                onMouseLeave={() => setHov(null)} className="group flex flex-col gap-1.5 text-center">
                 <span className="relative block aspect-square border border-black/10 overflow-hidden transition-transform group-hover:scale-[1.06] group-hover:shadow-lg" style={{ background: s.color ?? "#D9CFC0" }}>
                   {/* Maliit na 200px JPEG na (~8KB) mula sa Storage CDN — laktawan ang
                       next/image optimizer (bawat isa ay server resize noon = mabagal ang
