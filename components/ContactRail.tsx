@@ -40,7 +40,7 @@ export default function ContactRail({ site }: { site: SiteContent }) {
   ].filter((x): x is Exclude<typeof x, false | "" | null | undefined> => !!x);
 
   return (
-    {/* NASA GITNA NG KALIWANG GILID (Joe 2026-09-12, "i-center, nasa baba e"). */}
+    // NASA GITNA NG KALIWANG GILID (Joe 2026-09-12, "i-center, nasa baba e").
     <div data-floating className="fixed left-4 top-1/2 z-50 flex -translate-y-1/2 flex-col gap-2.5 sm:left-5">
       {items.map((it) => (
         <div key={it.key} className="relative flex items-center"
