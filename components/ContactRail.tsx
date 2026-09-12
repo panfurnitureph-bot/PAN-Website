@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { contactLinks, type SiteContent } from "@/lib/products";
 
 // CONTACT RAIL (Joe 2026-09-12, "gawin na icon, ilagay sa left side, may
@@ -12,13 +12,29 @@ import { contactLinks, type SiteContent } from "@/lib/products";
 export default function ContactRail({ site }: { site: SiteContent }) {
   const cl = contactLinks(site);
   const [open, setOpen] = useState<string | null>(null);
+  // POP-UP NA MENSAHE (Joe 2026-09-12, "may animation tapos pop-up message
+  // bubble"): 3.5s pagkabukas ng pahina ay lumilitaw ang bati sa tabi ng
+  // Messenger icon; kusang nawawala pagkalipas ng 14s o kapag isinara /
+  // pinindot. Isang beses lang kada session (sessionStorage) — hindi nagngangawa
+  // sa bawat pahina.
+  const [greet, setGreet] = useState(false);
+  useEffect(() => {
+    let seen = false;
+    try { seen = sessionStorage.getItem("pan-rail-greeted") === "1"; } catch {}
+    if (seen) return;
+    const show = setTimeout(() => setGreet(true), 3500);
+    const hide = setTimeout(() => setGreet(false), 3500 + 14000);
+    return () => { clearTimeout(show); clearTimeout(hide); };
+  }, []);
+  const dismissGreet = () => { setGreet(false); try { sessionStorage.setItem("pan-rail-greeted", "1"); } catch {} };
+  const openChat = () => { dismissGreet(); window.dispatchEvent(new Event("pan-open-chat")); };
   const items = [
     // MESSENGER at TRACK (Joe 2026-09-12): mula sa kanang gilid, dito na —
     // isang hanay ng lahat ng paraan ng pakikipag-ugnayan. Event lang ang
     // ipinapadala; ang ChatBubble at TrackButton ang may hawak ng panel.
     {
       key: "messenger", label: "Messenger", text: "replies within the hour", bg: "#0084FF", badge: true,
-      onClick: () => window.dispatchEvent(new Event("pan-open-chat")),
+      onClick: () => openChat(),
       icon: (
         <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
           <path d="M12 2C6.5 2 2 6.1 2 11.3c0 2.9 1.4 5.5 3.7 7.2V22l3.4-1.9c.9.3 1.9.4 2.9.4 5.5 0 10-4.1 10-9.3S17.5 2 12 2zm1 12.5-2.6-2.7-5 2.7 5.5-5.8 2.6 2.7 5-2.7-5.5 5.8z" />
@@ -68,16 +84,30 @@ export default function ContactRail({ site }: { site: SiteContent }) {
   return (
     // NASA GITNA NG KALIWANG GILID (Joe 2026-09-12, "i-center, nasa baba e").
     <div data-floating className="fixed left-4 top-1/2 z-50 flex -translate-y-1/2 flex-col gap-2.5 sm:left-5">
-      {items.map((it) => (
-        <div key={it.key} className="relative flex items-center"
+      {/* ANIMATION (2026-09-12): sunud-sunod na pagpasok mula kaliwa, pintig na
+          singsing sa Messenger, at pop ng bati. Naka-off sa reduced-motion. */}
+      <style>{`
+        @keyframes pan-rail-in { from { opacity: 0; transform: translateX(-28px) scale(.9); } to { opacity: 1; transform: none; } }
+        @keyframes pan-rail-ring { 0% { transform: scale(1); opacity: .55; } 70% { transform: scale(1.75); opacity: 0; } 100% { transform: scale(1.75); opacity: 0; } }
+        @keyframes pan-rail-pop { from { opacity: 0; transform: translateX(-10px) scale(.94); } to { opacity: 1; transform: none; } }
+        @keyframes pan-rail-wiggle { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-10deg); } 40% { transform: rotate(9deg); } 60% { transform: rotate(-6deg); } 80% { transform: rotate(4deg); } }
+        .pan-rail-item { animation: pan-rail-in .55s cubic-bezier(.2,.9,.3,1.2) both; }
+        .pan-rail-ring { animation: pan-rail-ring 2.4s ease-out infinite; }
+        .pan-rail-pop { animation: pan-rail-pop .35s cubic-bezier(.2,.9,.3,1.2) both; }
+        .pan-rail-wiggle { animation: pan-rail-wiggle .9s ease-in-out 1.2s 2; }
+        @media (prefers-reduced-motion: reduce) { .pan-rail-item, .pan-rail-ring, .pan-rail-pop, .pan-rail-wiggle { animation: none !important; } }
+      `}</style>
+      {items.map((it, i) => (
+        <div key={it.key} className="pan-rail-item relative flex items-center" style={{ animationDelay: `${i * 90}ms` }}
           onMouseEnter={() => setOpen(it.key)} onMouseLeave={() => setOpen((o) => (o === it.key ? null : o))}>
+          {it.badge && <span aria-hidden="true" className="pan-rail-ring pointer-events-none absolute left-0 top-0 h-11 w-11 rounded-full" style={{ background: it.bg }} />}
           {it.onClick ? (
             <button
               type="button"
               aria-label={`${it.label} · ${it.text}`}
               onClick={it.onClick}
               onFocus={() => setOpen(it.key)} onBlur={() => setOpen(null)}
-              className="relative flex h-11 w-11 items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold"
+              className={`relative flex h-11 w-11 items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold ${it.badge ? "pan-rail-wiggle" : ""}`}
               style={{ background: it.bg }}
             >
               {it.icon}
@@ -96,10 +126,23 @@ export default function ContactRail({ site }: { site: SiteContent }) {
             {it.icon}
           </a>
           )}
+          {/* Pop-up na bati sa tabi ng Messenger — pinipindot para magbukas ng chat. */}
+          {it.badge && greet && (
+            <div className="pan-rail-pop absolute bottom-0 left-[56px] z-10 w-[15.5rem] rounded-xl border border-sand bg-white p-3 pr-8 shadow-2xl">
+              <span className="absolute -left-1.5 bottom-4 h-3 w-3 rotate-45 border-b border-l border-sand bg-white" />
+              <button type="button" aria-label="Close" onClick={dismissGreet} className="absolute right-2 top-2 text-[13px] leading-none text-stone hover:text-ink">✕</button>
+              <button type="button" onClick={openChat} className="flex items-start gap-2 text-left">
+                <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-sand bg-cream text-[10px] font-bold text-ink">PF</span>
+                <span className="text-[12.5px] leading-snug text-ink">
+                  <b>Hi there!</b> Need help with a build or an order? Message us — we reply within the hour.
+                </span>
+              </button>
+            </div>
+          )}
           {/* Bubble text — kanan ng icon, may maliit na tuldok na nakaturo. */}
           <span
             role="tooltip"
-            className={`pointer-events-none absolute left-[52px] whitespace-nowrap rounded-lg bg-ink px-3 py-1.5 text-[12px] font-semibold text-cream shadow-lg transition-opacity ${open === it.key ? "opacity-100" : "opacity-0"}`}
+            className={`pointer-events-none absolute left-[52px] whitespace-nowrap rounded-lg bg-ink px-3 py-1.5 text-[12px] font-semibold text-cream shadow-lg transition-opacity ${open === it.key && !(it.badge && greet) ? "opacity-100" : "opacity-0"}`}
           >
             <span className="absolute -left-1 top-1/2 h-2 w-2 -translate-y-1/2 rotate-45 bg-ink" />
             {it.label} · {it.text}
