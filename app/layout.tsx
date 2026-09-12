@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Suspense } from "react";
 import ChatBubble from "@/components/ChatBubble";
+import ContactRail from "@/components/ContactRail";
 import TrackButton from "@/components/TrackButton";
 import EmbedMode from "@/components/EmbedMode";
 import ContentLive from "@/components/ContentLive";
@@ -95,6 +96,7 @@ export default async function RootLayout({
           <Footer site={site} shop={shopLinks()} />
           <TrackButton />
           <ChatBubble site={site} />
+          <ContactRail site={site} />
         </StoreProvider>
         </div>
       </body>
