@@ -182,7 +182,7 @@ export const COLLECTIONS: Record<string, { title: string; categories: string[] }
   },
   "new-living": {
     title: "New Living",
-    categories: ["sofa", "accent-chair", "side-table", "ottoman-ph", "swivel-chair"],
+    categories: ["accent-chair", "side-table", "ottoman-ph", "swivel-chair"],
   },
   // --- Grupo (para sa top nav) ---
   beds: { title: "Beds", categories: ["bed", "sofa-bed", "mattress", "customized-bed"] },
@@ -194,7 +194,8 @@ export const COLLECTIONS: Record<string, { title: string; categories: string[] }
   living: {
     title: "Living",
     // DECOR (2026-09-12): figurines, mugs, lamp, vase — sa Living din.
-    categories: ["sofa", "accent-chair", "side-table", "ottoman-ph", "swivel-chair", "collective-figurines", "mugs", "lamp", "vase"],
+    // SOFA ay Sofas lang (Joe 2026-09-12) — tanggal sa Living.
+    categories: ["accent-chair", "side-table", "ottoman-ph", "swivel-chair", "collective-figurines", "mugs", "lamp", "vase"],
   },
   // --- Opisyal na categories — PAREHONG PANGALAN ng IMS MTO categories
   //     (lib/categories.ts sa IMS); ang slug ay URL lang, hindi binabago. ---
