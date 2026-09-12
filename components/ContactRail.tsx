@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { contactLinks, type SiteContent } from "@/lib/products";
 
 // CONTACT RAIL (Joe 2026-09-12, "gawin na icon, ilagay sa left side, may
@@ -13,6 +13,18 @@ export default function ContactRail({ site }: { site: SiteContent }) {
   const cl = contactLinks(site);
   const [open, setOpen] = useState<string | null>(null);
   const items = [
+    // MESSENGER at TRACK (Joe 2026-09-12): mula sa kanang gilid, dito na —
+    // isang hanay ng lahat ng paraan ng pakikipag-ugnayan. Event lang ang
+    // ipinapadala; ang ChatBubble at TrackButton ang may hawak ng panel.
+    {
+      key: "messenger", label: "Messenger", text: "replies within the hour", bg: "#0084FF", badge: true,
+      onClick: () => window.dispatchEvent(new Event("pan-open-chat")),
+      icon: (
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+          <path d="M12 2C6.5 2 2 6.1 2 11.3c0 2.9 1.4 5.5 3.7 7.2V22l3.4-1.9c.9.3 1.9.4 2.9.4 5.5 0 10-4.1 10-9.3S17.5 2 12 2zm1 12.5-2.6-2.7-5 2.7 5.5-5.8 2.6 2.7 5-2.7-5.5 5.8z" />
+        </svg>
+      ),
+    },
     cl.whatsapp && {
       key: "whatsapp", label: "WhatsApp", text: cl.whatsapp, href: cl.whatsappHref, external: true, bg: "#25D366",
       icon: (
@@ -37,7 +49,21 @@ export default function ContactRail({ site }: { site: SiteContent }) {
         </svg>
       ),
     },
-  ].filter((x): x is Exclude<typeof x, false | "" | null | undefined> => !!x);
+    {
+      key: "track", label: "Track your order", text: "live delivery map", bg: "#3b2a1a",
+      onClick: () => window.dispatchEvent(new Event("pan-open-track")),
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+          <path d="M3 7h11v8H3zM14 10h4l3 3v2h-7z" />
+          <circle cx="7" cy="17" r="1.6" />
+          <circle cx="17.5" cy="17" r="1.6" />
+        </svg>
+      ),
+    },
+  ].filter((x): x is Exclude<typeof x, false | "" | null | undefined> => !!x) as {
+    key: string; label: string; text: string; bg: string; icon: ReactNode;
+    href?: string; external?: boolean; onClick?: () => void; badge?: boolean;
+  }[];
 
   return (
     // NASA GITNA NG KALIWANG GILID (Joe 2026-09-12, "i-center, nasa baba e").
@@ -45,6 +71,19 @@ export default function ContactRail({ site }: { site: SiteContent }) {
       {items.map((it) => (
         <div key={it.key} className="relative flex items-center"
           onMouseEnter={() => setOpen(it.key)} onMouseLeave={() => setOpen((o) => (o === it.key ? null : o))}>
+          {it.onClick ? (
+            <button
+              type="button"
+              aria-label={`${it.label} · ${it.text}`}
+              onClick={it.onClick}
+              onFocus={() => setOpen(it.key)} onBlur={() => setOpen(null)}
+              className="relative flex h-11 w-11 items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold"
+              style={{ background: it.bg }}
+            >
+              {it.icon}
+              {it.badge && <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">1</span>}
+            </button>
+          ) : (
           <a
             href={it.href}
             target={it.external ? "_blank" : undefined}
@@ -56,6 +95,7 @@ export default function ContactRail({ site }: { site: SiteContent }) {
           >
             {it.icon}
           </a>
+          )}
           {/* Bubble text — kanan ng icon, may maliit na tuldok na nakaturo. */}
           <span
             role="tooltip"

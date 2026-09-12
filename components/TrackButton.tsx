@@ -96,22 +96,17 @@ export default function TrackButton() {
     };
   }, []);
 
+  // ANG LAUNCHER (truck) AY NASA CONTACT RAIL NA (Joe 2026-09-12, kaliwang
+  // gilid): ang rail ang nagpapadala ng event; dito ang modal lang.
+  useEffect(() => {
+    const on = () => openModal();
+    window.addEventListener("pan-open-track", on);
+    return () => window.removeEventListener("pan-open-track", on);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <>
-      <button
-        onClick={openModal}
-        aria-label="Track your order"
-        title="Track your order"
-        data-floating
-        className="fixed bottom-24 right-5 z-40 w-14 h-14 rounded-full bg-espresso text-cream shadow-lg flex items-center justify-center hover:bg-cognac transition-colors"
-      >
-        {/* Truck / delivery icon */}
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
-          <path d="M3 7h11v8H3zM14 10h4l3 3v2h-7z" />
-          <circle cx="7" cy="17" r="1.6" />
-          <circle cx="17.5" cy="17" r="1.6" />
-        </svg>
-      </button>
 
       {/* Modal shell — laging naka-render kaya naka-load na ang iframe;
           ipinapakita lang kapag bukas.

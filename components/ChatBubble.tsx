@@ -13,7 +13,7 @@
 // Kapag walang naka-set na Facebook page sa admin, bumabalik ito sa email at
 // telepono — mas mabuti nang may makontak kaysa may butong papunta sa mali.
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { contactLinks, type SiteContent } from "@/lib/products";
 import { messengerHandle, messengerUrl } from "@/lib/messenger";
 
@@ -24,6 +24,13 @@ export default function ChatBubble({ site }: { site: SiteContent }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const handle = messengerHandle((site as unknown as { social?: { facebook?: string } }).social?.facebook);
+  // ANG LAUNCHER AY NASA CONTACT RAIL NA (Joe 2026-09-12, kaliwang gilid):
+  // ang Messenger icon doon ang nagbubukas nito sa pamamagitan ng event.
+  useEffect(() => {
+    const on = () => setOpen((v) => !v);
+    window.addEventListener("pan-open-chat", on);
+    return () => window.removeEventListener("pan-open-chat", on);
+  }, []);
 
   // Ang pangalan at numero ay isinasama sa ref para makita ng bot sa pagbukas
   // ng thread — kaya hindi na itinatanong muli ang kakatipa lang nila.
@@ -40,9 +47,11 @@ export default function ChatBubble({ site }: { site: SiteContent }) {
   };
 
   return (
-    <div data-floating className="fixed bottom-5 right-5 z-50">
+    // KATABI NG CONTACT RAIL (2026-09-12): ang panel ay bumubukas sa kanan ng
+    // Messenger icon sa kaliwang gilid — hindi na sa kanang-ibaba.
+    <div data-floating className="fixed inset-x-3 top-1/2 z-50 -translate-y-1/2 sm:inset-x-auto sm:left-[4.75rem]">
       {open && (
-        <div className="absolute bottom-16 right-0 w-[21rem] max-w-[calc(100vw-2.5rem)] overflow-hidden rounded-xl border border-sand bg-white shadow-2xl">
+        <div className="ml-14 w-[21rem] max-w-[calc(100%-3.5rem)] overflow-hidden rounded-xl border border-sand bg-white shadow-2xl sm:ml-0 sm:max-w-[calc(100vw-6rem)]">
           {/* ── HEADER ── */}
           <div className="flex items-center gap-3 bg-stone-200/70 px-4 py-3">
             <div className="min-w-0 flex-1">
@@ -149,20 +158,7 @@ export default function ChatBubble({ site }: { site: SiteContent }) {
         </div>
       )}
 
-      <button
-        onClick={() => setOpen(!open)}
-        aria-label="Chat with us"
-        className="relative flex h-14 w-14 items-center justify-center rounded-full bg-ink text-cream shadow-lg transition-colors hover:bg-cognac"
-      >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-          <path d="M21 12a8 8 0 01-8 8H5l-2 2V12a8 8 0 018-8h2a8 8 0 018 8z" />
-        </svg>
-        {!open && (
-          <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] text-cream">
-            1
-          </span>
-        )}
-      </button>
+      {/* Walang launcher dito — nasa ContactRail (kaliwa) ang Messenger icon. */}
     </div>
   );
 }
