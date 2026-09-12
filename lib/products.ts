@@ -226,7 +226,9 @@ export type NavLink = { label: string; href: string; children?: NavChild[] };
 
 // NAV (2026-09-04): Beds · Sofas · Dining · Living lang — tanggal ang "New In"
 // (nasa homepage na ang bago bilang badge, at kakaunti pa ang catalog).
+// PROMO BED sa unahan (Joe 2026-09-12): direktang link, walang dropdown.
 export const NAV_LINKS: NavLink[] = [
+  { label: "Promo Bed", href: "/collections/bed" },
   {
     label: "Beds",
     href: "/collections/beds",
