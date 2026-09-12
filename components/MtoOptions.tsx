@@ -188,6 +188,15 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
       g!.options.push({ value: o, full: m ? `${gname}: ${o}` : c.label, price: per !== undefined ? per : (c.price ?? null) });
     });
   }
+  // "NONE" SA BAWAT CHOICE (Joe 2026-09-12): ang bawat dropdown ay
+  // kailangang masagot bago makapag-proceed, pero ang ilan ay talagang
+  // walang gusto ang customer (walang drawer, walang winged). Kaya may
+  // "None" na unang option, libre, sa grupong wala pang none/not/without —
+  // sagot ito (hindi na "Still needed"), pero hindi isinusulat sa sheet.
+  for (const g of choiceGroups) {
+    if (g.options.some((o) => /^(none|not|without)/i.test(o.value))) continue;
+    g.options.unshift({ value: "None", full: `${g.name}: None`, price: 0 });
+  }
 
   // Priced mode: LAHAT ng on-sizes may presyo (>0). Kung walang size rows,
   // priced kapag may base price ang product.
