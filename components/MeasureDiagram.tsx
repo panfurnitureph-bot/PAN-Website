@@ -14,7 +14,7 @@ const GOLD = "#8a7b2e";
 
 export type MeasureKind =
   | "sofa" | "dining-chair" | "accent-chair" | "barstool" | "ottoman"
-  | "side-table" | "wall-padding" | "dining-table" | "swivel-chair";
+  | "side-table" | "wall-padding" | "dining-table" | "swivel-chair" | "decor";
 
 export type MeasureRow = { k: string; label: string; value: string };
 
@@ -42,12 +42,16 @@ const SPECS: Record<MeasureKind, Spec> = {
   "swivel-chair": { title: "Swivel Chair", subject: "Chair", labels: [
     { label: "Total Height", def: 38 }, { label: "Seat Height", def: 18 }, { label: "Seat Width", def: 20 }, { label: "Base Diameter", def: 26 },
   ] },
+  // DECOR (IMS 2026-09-12): figurines, mugs, lamp, vase — kahon lang na may
+  // taas / haba / lapad; ang totoong sukat ay mula sa Configurator ng IMS.
+  decor: { title: "Decor", subject: "Piece", labels: [{ label: "Height", def: 12 }, { label: "Length", def: 8 }, { label: "Width", def: 8 }] },
 };
 
 // Website category slug → drawing. Regex para hindi masira kapag may
 // bahagyang iba ang slug (hal. "dining-chairs", "ottoman-ph", "bar-stool").
 export function measureKind(category: string): MeasureKind | null {
   const c = (category || "").toLowerCase();
+  if (/figurine|mug|lamp|vase/.test(c)) return "decor";
   if (/swivel/.test(c)) return "swivel-chair";
   if (/bar.?stool|stool/.test(c)) return "barstool";
   if (/wall/.test(c)) return "wall-padding";
@@ -198,6 +202,18 @@ function Drawing({ kind }: { kind: MeasureKind }) {
           </g>
           <g {...D}><DimV x={272} y1={72} y2={178} /><DimH y={58} x1={104} x2={236} /></g>
           <Lbl x={286} y={125} t="A" /><Lbl x={170} y={46} t="B" />
+        </>
+      );
+    case "decor":
+      return (
+        <>
+          <g {...O}>
+            <rect x="110" y="70" width="110" height="110" rx="4" />
+            <polygon points="110,70 140,46 250,46 220,70" /><polygon points="220,70 250,46 250,156 220,180" />
+            <line x1="80" y1="180" x2="270" y2="180" {...FLOOR} />
+          </g>
+          <g {...D}><DimV x={284} y1={46} y2={156} /><DimH y={196} x1={110} x2={220} /><line x1="232" y1="184" x2="262" y2="160" /></g>
+          <Lbl x={298} y={104} t="A" /><Lbl x={165} y={212} t="B" /><Lbl x={262} y={186} t="C" />
         </>
       );
     case "wall-padding":

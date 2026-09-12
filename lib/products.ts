@@ -174,7 +174,8 @@ export const COLLECTIONS: Record<string, { title: string; categories: string[] }
   },
   living: {
     title: "Living",
-    categories: ["sofa", "accent-chair", "side-table", "ottoman-ph", "swivel-chair"],
+    // DECOR (2026-09-12): figurines, mugs, lamp, vase — sa Living din.
+    categories: ["sofa", "accent-chair", "side-table", "ottoman-ph", "swivel-chair", "collective-figurines", "mugs", "lamp", "vase"],
   },
   // --- Opisyal na categories — PAREHONG PANGALAN ng IMS MTO categories
   //     (lib/categories.ts sa IMS); ang slug ay URL lang, hindi binabago. ---
@@ -193,6 +194,11 @@ export const COLLECTIONS: Record<string, { title: string; categories: string[] }
   // sa IMS publish, kaya ang na-publish doon ay lumalabas dito agad.
   barstool: { title: "Barstool", categories: ["barstool"] },
   "swivel-chair": { title: "Swivel Chair", categories: ["swivel-chair"] },
+  // DECOR (IMS 2026-09-12): Height / Length / Width lang ang sukat.
+  "collective-figurines": { title: "Collective Figurines", categories: ["collective-figurines"] },
+  mugs: { title: "Mugs", categories: ["mugs"] },
+  lamp: { title: "Lamp", categories: ["lamp"] },
+  vase: { title: "Vase", categories: ["vase"] },
 };
 
 // Main nav — may children = lalabas na mega-menu sa hover
@@ -243,6 +249,10 @@ export const NAV_LINKS: NavLink[] = [
       { label: "Ottoman", href: "/collections/ottoman-ph" },
       { label: "Accent Chair", href: "/collections/accent-chair" },
       { label: "Swivel Chair", href: "/collections/swivel-chair" },
+      { label: "Collective Figurines", href: "/collections/collective-figurines" },
+      { label: "Mugs", href: "/collections/mugs" },
+      { label: "Lamp", href: "/collections/lamp" },
+      { label: "Vase", href: "/collections/vase" },
     ],
   },
 ];
