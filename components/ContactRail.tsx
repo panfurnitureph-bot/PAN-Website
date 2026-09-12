@@ -90,25 +90,28 @@ export default function ContactRail({ site }: { site: SiteContent }) {
         @keyframes pan-rail-in { from { opacity: 0; transform: translateX(-28px) scale(.9); } to { opacity: 1; transform: none; } }
         @keyframes pan-rail-ring { 0% { transform: scale(1); opacity: .55; } 70% { transform: scale(1.75); opacity: 0; } 100% { transform: scale(1.75); opacity: 0; } }
         @keyframes pan-rail-pop { from { opacity: 0; transform: translateX(-10px) scale(.94); } to { opacity: 1; transform: none; } }
-        @keyframes pan-rail-wiggle { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-10deg); } 40% { transform: rotate(9deg); } 60% { transform: rotate(-6deg); } 80% { transform: rotate(4deg); } }
+        @keyframes pan-rail-wiggle { 0%, 14%, 100% { transform: rotate(0); } 3% { transform: rotate(-11deg); } 6% { transform: rotate(10deg); } 9% { transform: rotate(-7deg); } 12% { transform: rotate(4deg); } }
         .pan-rail-item { animation: pan-rail-in .55s cubic-bezier(.2,.9,.3,1.2) both; }
         .pan-rail-ring { animation: pan-rail-ring 2.4s ease-out infinite; }
         .pan-rail-pop { animation: pan-rail-pop .35s cubic-bezier(.2,.9,.3,1.2) both; }
-        .pan-rail-wiggle { animation: pan-rail-wiggle .9s ease-in-out 1.2s 2; }
+        .pan-rail-wiggle { animation: pan-rail-wiggle 7s ease-in-out infinite; }
         @media (prefers-reduced-motion: reduce) { .pan-rail-item, .pan-rail-ring, .pan-rail-pop, .pan-rail-wiggle { animation: none !important; } }
       `}</style>
       {items.map((it, i) => (
         <div key={it.key} className="pan-rail-item relative flex items-center" style={{ animationDelay: `${i * 90}ms` }}
           onMouseEnter={() => setOpen(it.key)} onMouseLeave={() => setOpen((o) => (o === it.key ? null : o))}>
-          {it.badge && <span aria-hidden="true" className="pan-rail-ring pointer-events-none absolute left-0 top-0 h-11 w-11 rounded-full" style={{ background: it.bg }} />}
+          {/* LAHAT NG ICON MAY ANIMATION (Joe 2026-09-12): pintig na singsing at
+              pana-panahong wiggle sa bawat isa, magkakaiba ang oras para hindi
+              sabay-sabay. */}
+          <span aria-hidden="true" className="pan-rail-ring pointer-events-none absolute left-0 top-0 h-11 w-11 rounded-full" style={{ background: it.bg, animationDelay: `${1200 + i * 480}ms` }} />
           {it.onClick ? (
             <button
               type="button"
               aria-label={`${it.label} · ${it.text}`}
               onClick={it.onClick}
               onFocus={() => setOpen(it.key)} onBlur={() => setOpen(null)}
-              className={`relative flex h-11 w-11 items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold ${it.badge ? "pan-rail-wiggle" : ""}`}
-              style={{ background: it.bg }}
+              className="pan-rail-wiggle relative flex h-11 w-11 items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold"
+              style={{ background: it.bg, animationDelay: `${1200 + i * 1400}ms` }}
             >
               {it.icon}
               {it.badge && <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">1</span>}
@@ -120,8 +123,8 @@ export default function ContactRail({ site }: { site: SiteContent }) {
             rel={it.external ? "noopener noreferrer" : undefined}
             aria-label={`${it.label} · ${it.text}`}
             onFocus={() => setOpen(it.key)} onBlur={() => setOpen(null)}
-            className="flex h-11 w-11 items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold"
-            style={{ background: it.bg }}
+            className="pan-rail-wiggle relative flex h-11 w-11 items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold"
+            style={{ background: it.bg, animationDelay: `${1200 + i * 1400}ms` }}
           >
             {it.icon}
           </a>
