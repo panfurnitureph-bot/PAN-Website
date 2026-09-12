@@ -58,10 +58,17 @@ export default function ContactRail({ site }: { site: SiteContent }) {
       ),
     },
     {
-      key: "email", label: "Email", text: cl.email2 || site.contact.email, href: `mailto:${cl.email2 || site.contact.email}`, external: false, bg: "#8a6a1f",
+      // GMAIL (Joe 2026-09-12): Gmail na logo, at ang click ay diretso sa
+      // Gmail compose (web o app) na naka-address na — hindi generic na mailto.
+      key: "email", label: "Gmail", text: cl.email2 || site.contact.email,
+      href: `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(cl.email2 || site.contact.email)}`, external: true, bg: "#ffffff",
       icon: (
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
-          <path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm-.6 2L12 11.2 4.6 6h14.8zM4 18V7.7l8 5.6 8-5.6V18H4z" />
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+          <path fill="#4285F4" d="M2 8v9.5A1.5 1.5 0 0 0 3.5 19H6V10.5L2 8z" />
+          <path fill="#34A853" d="M18 10.5V19h2.5a1.5 1.5 0 0 0 1.5-1.5V8l-4 2.5z" />
+          <path fill="#FBBC04" d="M2 8V6.4c0-1.6 1.7-2.5 3-1.6L6 5.5v5L2 8z" />
+          <path fill="#C5221F" d="M22 8V6.4c0-1.6-1.7-2.5-3-1.6L18 5.5v5L22 8z" />
+          <path fill="#EA4335" d="M6 5.5 12 10l6-4.5v5l-6 4.5-6-4.5v-5z" />
         </svg>
       ),
     },
@@ -103,7 +110,9 @@ export default function ContactRail({ site }: { site: SiteContent }) {
           {/* LAHAT NG ICON MAY ANIMATION (Joe 2026-09-12): pintig na singsing at
               pana-panahong wiggle sa bawat isa, magkakaiba ang oras para hindi
               sabay-sabay. */}
-          <span aria-hidden="true" className="pan-rail-ring pointer-events-none absolute left-0 top-0 h-11 w-11 rounded-full" style={{ background: it.bg, animationDelay: `${1200 + i * 480}ms` }} />
+          {/* Laging may halo (highlighted na bilog) ang bawat icon, gaya ng Messenger — at pintig na singsing sa ibabaw nito. */}
+          <span aria-hidden="true" className="pointer-events-none absolute -inset-1.5 rounded-full opacity-20" style={{ background: it.bg === "#ffffff" ? "#EA4335" : it.bg }} />
+          <span aria-hidden="true" className="pan-rail-ring pointer-events-none absolute left-0 top-0 h-11 w-11 rounded-full" style={{ background: it.bg === "#ffffff" ? "#EA4335" : it.bg, animationDelay: `${600 + i * 300}ms` }} />
           {it.onClick ? (
             <button
               type="button"
