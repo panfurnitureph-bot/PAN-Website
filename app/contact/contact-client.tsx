@@ -4,12 +4,13 @@
 // success message lang) + live chat placeholder.
 
 import { useState } from "react";
-import type { SiteContent } from "@/lib/products";
+import { contactLinks, type SiteContent } from "@/lib/products";
 
 // Ang `site` ay galing sa page.tsx (server) — doon lang nakukuha ang
 // sariwang laman mula sa Supabase.
 export default function ContactClient({ site }: { site: SiteContent }) {
   const [sent, setSent] = useState(false);
+  const cl = contactLinks(site);
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-12">
@@ -23,7 +24,21 @@ export default function ContactClient({ site }: { site: SiteContent }) {
             <a href={`mailto:${site.contact.email}`} className="text-cognac hover:underline">
               {site.contact.email}
             </a>
+            {cl.email2 && (
+              <p className="mt-1"><a href={`mailto:${cl.email2}`} className="text-cognac hover:underline">{cl.email2}</a></p>
+            )}
           </div>
+          {(cl.whatsapp || cl.viber) && (
+            <div>
+              <h2 className="font-bold tracking-widest2 text-sm mb-2">WHATSAPP · VIBER</h2>
+              {cl.whatsapp && (
+                <p><a href={cl.whatsappHref} target="_blank" rel="noopener noreferrer" className="text-cognac hover:underline">WhatsApp · {cl.whatsapp}</a></p>
+              )}
+              {cl.viber && (
+                <p className="mt-1"><a href={cl.viberHref} className="text-cognac hover:underline">Viber · {cl.viber}</a></p>
+              )}
+            </div>
+          )}
           <div>
             <h2 className="font-bold tracking-widest2 text-sm mb-2">PHONE</h2>
             <a href={`tel:${site.contact.phone}`} className="text-cognac hover:underline">

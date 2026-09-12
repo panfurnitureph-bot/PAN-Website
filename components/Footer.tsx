@@ -3,7 +3,7 @@
 // About/Careers; Cart at Quotation ay nasa header). Socials + payment sa bar.
 
 import Link from "next/link";
-import type { SiteContent } from "@/lib/products";
+import { contactLinks, type SiteContent } from "@/lib/products";
 
 const SHOP = [
   { label: "Beds & Mattress", href: "/collections/beds" },
@@ -21,6 +21,7 @@ const HELP = [
 ];
 
 export default function Footer({ site }: { site: SiteContent; shop?: { label: string; href: string }[] }) {
+  const cl = contactLinks(site);
   const social = Object.entries((site as unknown as { social?: Record<string, string> }).social ?? {}).filter(([, u]) => u && !/facebook\.com\/?$/.test(u));
   return (
     <footer className="bg-brownDeep text-cream mt-16">
@@ -34,7 +35,10 @@ export default function Footer({ site }: { site: SiteContent; shop?: { label: st
             <p className="text-[12.5px] text-cream/70 max-w-[32ch] mt-2.5">Made to order in San Pedro, Laguna. Delivered nationwide by our own team.</p>
             <ul className="list-none m-0 p-0 mt-3.5 text-[12.5px] text-cream/80 space-y-1.5">
               <li>Messenger · replies within the hour</li>
-              <li><a href="mailto:panfurnitureph@gmail.com">panfurnitureph@gmail.com</a></li>
+              {cl.whatsapp && <li><a href={cl.whatsappHref} target="_blank" rel="noopener noreferrer" className="hover:text-gold">WhatsApp · {cl.whatsapp}</a></li>}
+              {cl.viber && <li><a href={cl.viberHref} className="hover:text-gold">Viber · {cl.viber}</a></li>}
+              <li><a href={`mailto:${site.contact.email}`} className="hover:text-gold">{site.contact.email}</a></li>
+              {cl.email2 && <li><a href={`mailto:${cl.email2}`} className="hover:text-gold">{cl.email2}</a></li>}
               <li>2 showrooms · Mon–Sun 9 AM – 7 PM</li>
             </ul>
           </div>

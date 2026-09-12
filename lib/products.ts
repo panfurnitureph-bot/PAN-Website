@@ -97,6 +97,25 @@ export type Product = {
 // (Website > Promo & Site > Menu Images). Hindi kasama sa content/site.json —
 // opsyonal ito at galing sa Supabase, kaya nakadagdag sa tipo.
 export type SiteContent = typeof siteData & { menuImages?: Record<string, string> };
+
+// WHATSAPP / VIBER / PANGALAWANG EMAIL (Joe 2026-09-12): mula sa site.contact
+// ng IMS (Website Content › Site › Contact); kapag wala pa ang susi sa naka-save
+// na content, ang default ng site.json ang gamit. Blangko = itinatago.
+export function contactLinks(site: SiteContent) {
+  const c = site.contact as { whatsapp?: string; viber?: string; email2?: string };
+  const d = siteData.contact as { whatsapp?: string; viber?: string; email2?: string };
+  const wa = (c.whatsapp ?? d.whatsapp ?? "").trim();
+  const vb = (c.viber ?? d.viber ?? "").trim();
+  const e2 = (c.email2 ?? d.email2 ?? "").trim();
+  // 09XX… → 639XX… para sa wa.me / viber; ang ipinapakita ay 0962 120 7730.
+  const intl = (n: string) => { const g = n.replace(/\D/g, ""); return g.startsWith("0") ? "63" + g.slice(1) : g; };
+  const pretty = (n: string) => { const g = n.replace(/\D/g, ""); return g.length === 11 ? `${g.slice(0, 4)} ${g.slice(4, 7)} ${g.slice(7)}` : n; };
+  return {
+    whatsapp: wa ? pretty(wa) : "", whatsappHref: wa ? `https://wa.me/${intl(wa)}` : "",
+    viber: vb ? pretty(vb) : "", viberHref: vb ? `viber://chat?number=%2B${intl(vb)}` : "",
+    email2: e2,
+  };
+}
 export type HomepageContent = typeof homepageData;
 
 // ---------- Swatch library (name -> texture image + hex) ----------

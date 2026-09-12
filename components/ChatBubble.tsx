@@ -14,7 +14,7 @@
 // telepono — mas mabuti nang may makontak kaysa may butong papunta sa mali.
 
 import { useState } from "react";
-import type { SiteContent } from "@/lib/products";
+import { contactLinks, type SiteContent } from "@/lib/products";
 import { messengerHandle, messengerUrl } from "@/lib/messenger";
 
 // Ang `site` ay galing sa server (layout) — hindi na ito kinukuha dito,
@@ -138,7 +138,8 @@ export default function ChatBubble({ site }: { site: SiteContent }) {
                   <a href={`mailto:${site.contact.email}`} className="text-cognac underline">
                     {site.contact.email}
                   </a>{" "}
-                  or {site.contact.phone}.
+                  or {site.contact.phone}
+                  {contactLinks(site).whatsapp ? ` · WhatsApp / Viber ${contactLinks(site).whatsapp}` : ""}.
                 </p>
               </div>
             )}
