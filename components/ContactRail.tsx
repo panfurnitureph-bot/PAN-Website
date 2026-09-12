@@ -12,6 +12,13 @@ import { contactLinks, type SiteContent } from "@/lib/products";
 export default function ContactRail({ site }: { site: SiteContent }) {
   const cl = contactLinks(site);
   const [open, setOpen] = useState<string | null>(null);
+  // LOADING BAGO MAG-REDIRECT (Joe 2026-09-12): umiikot na singsing sa icon
+  // saglit bago bumukas ang app/tab — kita na may nangyayari. Ang bagong tab
+  // (WhatsApp, Gmail) ay binubuksan agad sa loob ng pindot (pinipigilan ng
+  // popup blocker kapag naantala); ang viber:// at ang chat/track panel ay
+  // naghihintay ng 650ms.
+  const [loading, setLoading] = useState<string | null>(null);
+  const spin = (key: string, ms = 650) => { setLoading(key); window.setTimeout(() => setLoading((k) => (k === key ? null : k)), ms + 250); };
   // POP-UP NA MENSAHE (Joe 2026-09-12, "may animation tapos pop-up message
   // bubble"): 3.5s pagkabukas ng pahina ay lumilitaw ang bati sa tabi ng
   // Messenger icon; kusang nawawala pagkalipas ng 14s o kapag isinara /
@@ -90,7 +97,7 @@ export default function ContactRail({ site }: { site: SiteContent }) {
 
   return (
     // NASA GITNA NG KALIWANG GILID (Joe 2026-09-12, "i-center, nasa baba e").
-    <div data-floating className="fixed left-4 top-1/2 z-50 flex -translate-y-1/2 flex-col gap-2.5 sm:left-5">
+    <div data-floating className="fixed left-4 top-1/2 z-50 flex -translate-y-1/2 flex-col gap-5 sm:left-5">
       {/* ANIMATION (2026-09-12): sunud-sunod na pagpasok mula kaliwa, pintig na
           singsing sa Messenger, at pop ng bati. Naka-off sa reduced-motion. */}
       <style>{`
@@ -102,6 +109,8 @@ export default function ContactRail({ site }: { site: SiteContent }) {
         .pan-rail-ring { animation: pan-rail-ring 2.4s ease-out infinite; }
         .pan-rail-pop { animation: pan-rail-pop .35s cubic-bezier(.2,.9,.3,1.2) both; }
         .pan-rail-wiggle { animation: pan-rail-wiggle 7s ease-in-out infinite; }
+        @keyframes pan-rail-spin { to { transform: rotate(360deg); } }
+        .pan-rail-spin { animation: pan-rail-spin .8s linear infinite; }
         @media (prefers-reduced-motion: reduce) { .pan-rail-item, .pan-rail-ring, .pan-rail-pop, .pan-rail-wiggle { animation: none !important; } }
       `}</style>
       {items.map((it, i) => (
@@ -117,13 +126,14 @@ export default function ContactRail({ site }: { site: SiteContent }) {
             <button
               type="button"
               aria-label={`${it.label} · ${it.text}`}
-              onClick={it.onClick}
+              onClick={() => { if (loading) return; spin(it.key); window.setTimeout(() => it.onClick?.(), 650); }}
               onFocus={() => setOpen(it.key)} onBlur={() => setOpen(null)}
               className="pan-rail-wiggle relative flex h-11 w-11 items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold"
               style={{ background: it.bg, animationDelay: `${1200 + i * 1400}ms` }}
             >
-              {it.icon}
-              {it.badge && <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">1</span>}
+              <span className={loading === it.key ? "opacity-30" : ""}>{it.icon}</span>
+              {loading === it.key && <span aria-hidden="true" className="pan-rail-spin absolute inset-1 rounded-full border-[3px] border-white/30 border-t-white" />}
+              {it.badge && loading !== it.key && <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">1</span>}
             </button>
           ) : (
           <a
@@ -131,11 +141,17 @@ export default function ContactRail({ site }: { site: SiteContent }) {
             target={it.external ? "_blank" : undefined}
             rel={it.external ? "noopener noreferrer" : undefined}
             aria-label={`${it.label} · ${it.text}`}
+            onClick={(e) => {
+              if (loading) { e.preventDefault(); return; }
+              spin(it.key, it.external ? 900 : 650);
+              if (!it.external) { e.preventDefault(); const href = it.href ?? ""; window.setTimeout(() => { window.location.href = href; }, 650); }
+            }}
             onFocus={() => setOpen(it.key)} onBlur={() => setOpen(null)}
             className="pan-rail-wiggle relative flex h-11 w-11 items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold"
             style={{ background: it.bg, animationDelay: `${1200 + i * 1400}ms` }}
           >
-            {it.icon}
+            <span className={loading === it.key ? "opacity-30" : ""}>{it.icon}</span>
+            {loading === it.key && <span aria-hidden="true" className="pan-rail-spin absolute inset-1 rounded-full border-[3px] border-black/10 border-t-current" style={{ color: it.bg === "#ffffff" ? "#EA4335" : "#ffffff" }} />}
           </a>
           )}
           {/* Pop-up na bati sa tabi ng Messenger — pinipindot para magbukas ng chat. */}
