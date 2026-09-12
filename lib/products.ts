@@ -214,6 +214,7 @@ export const COLLECTIONS: Record<string, { title: string; categories: string[] }
   barstool: { title: "Barstool", categories: ["barstool"] },
   "swivel-chair": { title: "Swivel Chair", categories: ["swivel-chair"] },
   // DECOR (IMS 2026-09-12): Height / Length / Width lang ang sukat.
+  decoration: { title: "Decoration", categories: ["collective-figurines", "mugs", "lamp", "vase"] },
   "collective-figurines": { title: "Collective Figurines", categories: ["collective-figurines"] },
   mugs: { title: "Mugs", categories: ["mugs"] },
   lamp: { title: "Lamp", categories: ["lamp"] },
@@ -270,10 +271,9 @@ export const NAV_LINKS: NavLink[] = [
       { label: "Ottoman", href: "/collections/ottoman-ph" },
       { label: "Accent Chair", href: "/collections/accent-chair" },
       { label: "Swivel Chair", href: "/collections/swivel-chair" },
-      { label: "Collective Figurines", href: "/collections/collective-figurines" },
-      { label: "Mugs", href: "/collections/mugs" },
-      { label: "Lamp", href: "/collections/lamp" },
-      { label: "Vase", href: "/collections/vase" },
+      // DECORATION (Joe 2026-09-12): isang entry para sa figurines, mugs,
+      // lamp at vase — /collections/decoration ang lahat ng ito.
+      { label: "Decoration", href: "/collections/decoration" },
     ],
   },
 ];
@@ -302,6 +302,8 @@ export const CATEGORY_TILES = [
 // ang nav children ng group, at ang homepage tile — kaya ang i-publish sa MTO
 // Configurator ay agad may lugar sa site nang walang code change. Idempotent:
 // tinatawag kada primeContent().
+// Mga category na nasa ilalim ng "Decoration" sa nav (Living group).
+export const DECOR_CATEGORIES = ["collective-figurines", "mugs", "lamp", "vase"];
 export function syncCategoriesFromProducts(list: Product[]): void {
   for (const p of list) {
     const slug = (p.category ?? "").trim();
@@ -320,6 +322,9 @@ export function syncCategoriesFromProducts(list: Product[]): void {
       if (!grp.categories.includes(slug)) grp.categories.push(slug);
       const newGrp = COLLECTIONS["new-" + g];
       if (newGrp && !newGrp.categories.includes(slug)) newGrp.categories.push(slug);
+      // Ang decor ay nasa iisang "Decoration" na nav entry — huwag idagdag
+      // bilang sariling child (pero kasama pa rin sa group at sa tiles).
+      if (DECOR_CATEGORIES.includes(slug)) { const dec = COLLECTIONS.decoration; if (dec && !dec.categories.includes(slug)) dec.categories.push(slug); continue; }
       const nav = NAV_LINKS.find((l) => l.href === "/collections/" + g);
       if (nav?.children) {
         const href = "/collections/" + slug;

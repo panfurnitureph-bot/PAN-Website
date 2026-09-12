@@ -20,14 +20,18 @@ export const dynamicParams = true;
 // Bed, Sofa Bed, Mattress; naka-highlight ang kasalukuyan)
 function getSubnav(slug: string) {
   const href = `/collections/${slug}`;
+  // Ang child na sumasaklaw sa slug (hal. /collections/mugs → "Decoration",
+  // dahil kasama ang mugs sa COLLECTIONS.decoration.categories).
+  const covers = (c: { href: string }) => c.href === href || (c.href !== group?.href && (COLLECTIONS[c.href.replace("/collections/", "")]?.categories ?? []).includes(slug));
   const group =
     NAV_LINKS.find((l) => l.href === href && l.children) ??
-    NAV_LINKS.find((l) => l.children?.some((c) => c.href === href));
+    NAV_LINKS.find((l) => l.children?.some((c) => c.href === href)) ??
+    NAV_LINKS.find((l) => l.children?.some((c) => c.href !== l.href && (COLLECTIONS[c.href.replace("/collections/", "")]?.categories ?? []).includes(slug)));
   if (!group?.children) return [];
   return group.children.map((c) => ({
     label: c.label,
     href: c.href,
-    active: c.href === href,
+    active: covers(c),
   }));
 }
 
