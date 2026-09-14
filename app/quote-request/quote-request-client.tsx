@@ -59,6 +59,7 @@ function Field({
         autoComplete={autoComplete}
         className={`w-full rounded-lg border bg-transparent px-3 py-2 text-sm focus:border-cognac focus:outline-none ${err ? "border-red-500" : "border-sand"}`}
       />
+      {err && <span className="mt-1 block text-[11px] font-medium text-red-600">{err}</span>}
     </div>
   );
 }
@@ -206,7 +207,9 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
     // TUNAY NA PANGALAN AT NUMERO (2026-09-06): ang browser autofill ay
     // naglalagay ng email sa First name at teksto sa Mobile, at dinadala iyon
     // ng quotation nang buo ("panfurnitureph@gmail.com PAN" ang pangalan).
-    const looksEmail = (v: string) => /@|https?:///i.test(v);
+    // May "@" o link — hindi pangalan. (Dati /@|https?:///i: ang "//" ay naging
+    // comment, kaya laging totoo at pulang-pula ang First/Last name.)
+    const looksEmail = (v: string) => /@|https?:\/\//i.test(v);
     // Digits lang (bawat + at espasyo ay tinatanggal); 09xxxxxxxxx o 639xxxxxxxxx.
     const phDigits = mobile.replace(/[^0-9]/g, "");
     if (!firstName.trim()) e.firstName = "Required";
