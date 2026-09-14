@@ -8,7 +8,7 @@
 // content/homepage.json → ugc.
 
 import Image from "next/image";
-import Marquee from "@/components/home/Marquee";
+import Rail from "@/components/home/Rail";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { averageRating, type HomepageContent, type Product } from "@/lib/products";
@@ -238,7 +238,7 @@ export default function UgcGrid({
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-8 py-12 md:py-14">
-      <Marquee title={title} sub={subtitle} n={[4, 3, 2, 2]}>
+      <Rail title={title} sub={subtitle} n={[4, 3, 2, 2]}>
         {[
           <div key="cap" className="aspect-square bg-brown text-cream p-5 flex flex-col justify-center gap-2 text-[13px]">
             {handle && <b className="text-gold text-xs tracking-[0.04em]">{handle}</b>}
@@ -261,7 +261,7 @@ export default function UgcGrid({
             </button>
           )),
         ]}
-      </Marquee>
+      </Rail>
 
       {/* Lightbox modal */}
       {openIdx !== null && (
