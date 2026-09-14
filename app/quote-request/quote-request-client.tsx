@@ -38,7 +38,7 @@ const REGION_OF: Record<string, string> = {
 };
 
 function Field({
-  label, value, onChange, placeholder, inputMode, err,
+  label, value, onChange, placeholder, inputMode, err, autoComplete,
 }: {
   label: string;
   value: string;
@@ -46,6 +46,7 @@ function Field({
   placeholder?: string;
   inputMode?: "tel" | "numeric";
   err?: string;
+  autoComplete?: string;
 }) {
   return (
     <div className="py-1">
@@ -55,6 +56,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         inputMode={inputMode}
+        autoComplete={autoComplete}
         className={`w-full rounded-lg border bg-transparent px-3 py-2 text-sm focus:border-cognac focus:outline-none ${err ? "border-red-500" : "border-sand"}`}
       />
     </div>
@@ -138,8 +140,24 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
       setProvince(prov.name);
       setRegion(REGION_OF[prov.name] ?? "");
       const hit = matchCity(d.city, prov.cities);
-      if (hit) setCity(hit);
-      else {
+      if (hit) {
+        setCity(hit);
+        // BARANGAY MULA SA LUGAR (2026-09-14): hinahanap ang opisyal na barangay
+        // ng bayan sa barangay/kalye/buong address ng napili ("Mayor's Boulevard,
+        // Maduya" → Maduya) — dati blangko ang dropdown at humihinto sa
+        // "complete the highlighted fields". Tinatanggal din sa kalye.
+        const opts = brgyData[`${prov.name}|${hit}`] ?? [];
+        const norm = (x: string) => x.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+        const hay = [d.barangay, d.street, d.name, d.formatted].filter(Boolean).map((x) => norm(String(x)));
+        const found = opts.find((o) => { const n = norm(o); return n.length >= 3 && hay.some((h) => (" " + h + " ").includes(" " + n + " ")); })
+          ?? (d.barangay ? opts.find((o) => norm(o) === norm(d.barangay)) : undefined);
+        if (found) {
+          setBarangay(found);
+          const st = (d.street || d.name || "");
+          const cleaned = st.split(",").map((x) => x.trim()).filter((x) => x && norm(x) !== norm(found)).join(", ");
+          if (cleaned !== st) setStreet(cleaned || st);
+        }
+      } else {
         setCity("");
         setSearchNote(`We don't deliver to ${d.city || "this area"} yet — pick the nearest town below.`);
       }
@@ -189,13 +207,14 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
     // naglalagay ng email sa First name at teksto sa Mobile, at dinadala iyon
     // ng quotation nang buo ("panfurnitureph@gmail.com PAN" ang pangalan).
     const looksEmail = (v: string) => /@|https?:///i.test(v);
-    const phDigits = mobile.replace(/[^d]/g, "");
+    // Digits lang (bawat + at espasyo ay tinatanggal); 09xxxxxxxxx o 639xxxxxxxxx.
+    const phDigits = mobile.replace(/[^0-9]/g, "");
     if (!firstName.trim()) e.firstName = "Required";
     else if (looksEmail(firstName)) e.firstName = "Type your first name, not an email";
     if (!lastName.trim()) e.lastName = "Required";
     else if (looksEmail(lastName)) e.lastName = "Type your last name, not an email";
     if (!mobile.trim()) e.mobile = "Required";
-    else if (!/^(09d{9}|639d{9})$/.test(phDigits)) e.mobile = "Enter an 11-digit PH mobile number (09xx xxx xxxx)";
+    else if (!/^(09[0-9]{9}|639[0-9]{9})$/.test(phDigits)) e.mobile = "Enter an 11-digit PH mobile number (09xx xxx xxxx)";
     if (!province) e.province = "Required";
     if (!city) e.city = "Required";
     if (!barangay.trim()) e.barangay = "Required";
@@ -401,10 +420,10 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
             <p className="mb-2 text-[10px] font-extrabold uppercase tracking-widest2 text-cognac">Where to deliver</p>
 
             <div className="grid grid-cols-2 gap-2">
-              <Field label="First name" value={firstName} onChange={setFirstName} placeholder="First name" err={errs.firstName} />
-              <Field label="Last name" value={lastName} onChange={setLastName} placeholder="Last name" err={errs.lastName} />
+              <Field label="First name" value={firstName} onChange={setFirstName} placeholder="First name" err={errs.firstName} autoComplete="given-name" />
+              <Field label="Last name" value={lastName} onChange={setLastName} placeholder="Last name" err={errs.lastName} autoComplete="family-name" />
             </div>
-            <Field label="Mobile" value={mobile} onChange={setMobile} placeholder="09XX XXX XXXX" inputMode="tel" err={errs.mobile} />
+            <Field label="Mobile" value={mobile} onChange={setMobile} placeholder="09XX XXX XXXX" inputMode="tel" err={errs.mobile} autoComplete="tel-national" />
 
             {/* Naka-lock sa Philippines, gaya ng checkout — doon lang tayo
                 naghahatid, at ang pagpapakita nito ay nagsasabi niyon nang
