@@ -4,7 +4,7 @@
 // HTML5 video player (play/pause, mute, progress), poster thumbnails.
 
 import { useRef, useState } from "react";
-import Rail from "@/components/home/Rail";
+import Marquee from "@/components/home/Marquee";
 import type { HomepageContent } from "@/lib/products";
 
 function VideoCard({
@@ -99,13 +99,13 @@ export default function VideoReviews({
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-8 py-12 md:py-14">
       {/* RAIL (2026-09-04): parehong carousel engine ng buong homepage */}
-      <Rail eyebrow={eyebrow} title={title} n={[4, 3, 2, 2]} autoplay={false}>
+      <Marquee eyebrow={eyebrow} title={title} n={[4, 3, 2, 2]}>
         {items
           .filter((v) => v.video) // laktawan ang mga walang video file
           .map((v, i) => (
             <VideoCard key={v.name + i} {...v} />
           ))}
-      </Rail>
+      </Marquee>
     </section>
   );
 }
