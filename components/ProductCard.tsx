@@ -34,7 +34,15 @@ export default function ProductCard({
   const onSale = !!product.compareAtPrice && product.compareAtPrice > product.price;
 
   const swatches = (product.colorSwatches ?? []).filter((s) => s.image || s.swatch || s.images?.length);
-  const variants = swatches.map((s) => ({ name: s.name, image: s.images?.[0] ?? s.image ?? product.images[0], images: s.images?.length ? s.images : undefined, thumb: s.images?.[0] ?? s.image ?? s.swatch ?? product.images[0], stock: s.stock }));
+  const colorVariants = swatches.map((s) => ({ name: s.name, image: s.images?.[0] ?? s.image ?? product.images[0], images: s.images?.length ? s.images : undefined, thumb: s.images?.[0] ?? s.image ?? s.swatch ?? product.images[0], stock: s.stock }));
+  // WALANG KULAY = LITRATO ANG BILOG (Joe 2026-09-24, "lagyan din tong mga
+  // mattress"): produktong walang color variant pero may 2+ litrato ay may
+  // parehong hilera ng bilog — bawat isa ay anggulo ng produkto, hover = palit
+  // ng hero. Iisang litrato = walang bilog, tulad ng dati.
+  const photoMode = colorVariants.length < 2 && product.images.length > 1;
+  const variants = photoMode
+    ? product.images.map((im, i) => ({ name: `${product.name} photo ${i + 1}`, image: im, images: undefined as string[] | undefined, thumb: im, stock: undefined as number | undefined }))
+    : colorVariants;
   // BILOG NA LITRATO NG PRODUKTO KADA KULAY (Joe 2026-09-24, "dapat is ganto"):
   // ang thumb ay ang litrato ng produkto sa kulay na iyon (tulad ng product
   // page), hindi ang tile ng tela; tela lang kapag walang litrato ang kulay.
@@ -117,7 +125,7 @@ export default function ProductCard({
             {onSale && <span className="text-stone line-through ml-2 text-xs font-normal">{formatPrice(product.compareAtPrice!)}</span>}
           </span>
           <span className="text-[11px] text-stone whitespace-nowrap">
-            {variants.length > 1 ? `${variants.length} colors` : inStock ? "Ships this week" : product.bedSizes?.length ? "Single–King" : ""}
+            {variants.length > 1 && !photoMode ? `${variants.length} colors` : inStock ? "Ships this week" : product.bedSizes?.length ? "Single–King" : ""}
           </span>
         </div>
         {/* UNIFORM NA TAAS (2026-09-04, "dapat uniform"): laging nakalaan ang
