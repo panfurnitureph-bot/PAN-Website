@@ -55,6 +55,12 @@ export default function ProductCard({
   // napiling kulay kung meron, kung wala ang susunod na litrato ng produkto na
   // iba sa hero — lahat ng may 2+ litrato ay nag-a-animate na.
   const alt = (active?.images ?? product.images).find((im) => im !== hero) ?? null;
+  // SUMUSUNOD ANG PREVIEW SA BILOG (Joe 2026-09-24, "di nasunod ung preview sa
+  // hover"): habang naka-hover/napili ang isang bilog, ang hero ay ang litratong
+  // iyon — walang hover swap na pumapatong. Sa photo mode ay ang mga bilog na
+  // mismo ang mga anggulo, kaya walang hover swap doon kailanman.
+  const [pinned, setPinned] = useState(false);
+  const showAlt = !!alt && !photoMode && !pinned;
   // STOCK NG NAPILING KULAY (Joe 2026-09-06, "kung san itapat ung kulay mag
   // papakita mismo kung ilan ung stock nya, wag total"): ang badge ay ang bilang
   // ng kulay na naka-hover/napili; kabuuan lang kapag walang kada-kulay na bilang.
@@ -100,8 +106,8 @@ export default function ProductCard({
         {/* Litrato = diretso sa product page (2026-09-04, "ang hirap i-click sa mobile");
             ang Quick view ay sa button lang. */}
         <Link href={`/products/${product.slug}`} className="absolute inset-0 block">
-          <FitImage src={hero} alt={product.name} className={`transition-opacity duration-300 ${alt ? "group-hover:opacity-0" : ""}`} sizes="(min-width: 1100px) 240px, (min-width: 640px) 33vw, 70vw" />
-          {alt && <FitImage src={alt} alt="" className="opacity-0 transition-opacity duration-300 group-hover:opacity-100" sizes="240px" />}
+          <FitImage src={hero} alt={product.name} className={`transition-opacity duration-300 ${showAlt ? "group-hover:opacity-0" : ""}`} sizes="(min-width: 1100px) 240px, (min-width: 640px) 33vw, 70vw" />
+          {showAlt && <FitImage src={alt!} alt="" className="opacity-0 transition-opacity duration-300 group-hover:opacity-100" sizes="240px" />}
         </Link>
         {quickView && (
           <button
@@ -131,10 +137,10 @@ export default function ProductCard({
         {/* UNIFORM NA TAAS (2026-09-04, "dapat uniform"): laging nakalaan ang
             hilera ng color thumbs (70px) kahit walang kulay ang produkto - kaya
             pare-pareho ang taas ng bawat card sa rail at collection. */}
-        <div className="relative z-[1] flex h-[70px] items-center gap-2">
+        <div className="relative z-[1] flex h-[70px] items-center gap-2" onMouseEnter={() => setPinned(true)} onMouseLeave={() => setPinned(false)}>
           {variants.length > 1 && (<>
             {variants.slice(0, 4).map((v, i) => (
-              <button key={v.name + i} type="button" onMouseEnter={() => setActiveIdx(i)} onClick={() => setActiveIdx(i)} title={v.name} aria-label={v.name}
+              <button key={v.name + i} type="button" onMouseEnter={() => setActiveIdx(i)} onClick={() => { setActiveIdx(i); setPinned(true); }} title={v.name} aria-label={v.name}
                 className={`relative w-[56px] h-[56px] shrink-0 rounded-full bg-white overflow-hidden border-[1.5px] ${i === activeIdx ? "border-brown ring-2 ring-offset-2 ring-brown" : "border-sand"} ${v.stock !== undefined && v.stock <= 0 ? "opacity-40" : ""}`}>
                 <Image src={v.thumb} alt="" fill className="object-contain" sizes="56px" />
               </button>
