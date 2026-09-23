@@ -592,37 +592,37 @@
   },
   "productTabs": {
     "shipping": {
-      "title": "Free shipping on all orders*",
-      "heading": "",
-      "body": "We offer **Free** Ground Shipping on all eligible orders.*",
-      "note": "*Certain areas excluded. Extended Area Delivery Surcharges may be added at checkout and are not refundable once the order ships.",
-      "note2": "Please note that all delivery dates are estimates and actual delivery times may vary or be subject to change.",
+      "title": "Delivery by our own team",
+      "heading": "Delivery fee by location",
+      "body": "We deliver with our own trucks and crew, not a courier. The fee depends on your city or municipality: **Cavite from ₱1,800**, **Laguna from ₱2,000**, **Metro Manila from ₱3,000**, with Rizal, Batangas, Bulacan and Quezon also served. Use **Estimate your shipping** above, or see the exact fee at checkout.",
+      "note": "In-stock pieces ship within the week. Made-to-order pieces are built in our San Pedro, Laguna workshop and delivered in **4–6 weeks**.",
+      "note2": "We confirm your delivery date by email and SMS before dispatch, and you can follow the truck with live tracking on the day. Once a date is confirmed, moving it carries a one-time ₱500 rescheduling fee.",
       "heading2": "",
       "body2": "",
-      "linkLabel": "See more",
+      "linkLabel": "Delivery & returns guide",
       "linkHref": "/shipping"
     },
     "guarantee": {
-      "title": "100-Day Happiness Guarantee",
-      "heading": "Shop with Confidence — 100-Day Returns",
-      "body": "We think you'll love your new piece, but if something isn't quite right, our **100-day return window** has you covered. Please see our Shipping & Returns guide for more details.",
-      "note": "",
-      "note2": "",
+      "title": "Returns & rescheduling",
+      "heading": "Inspect before you sign",
+      "body": "Our team delivers, sets up and walks you through the piece. Please inspect it before signing the delivery form: damage or a wrong item noted at delivery goes back with our team for **repair or replacement at no cost**.",
+      "note": "If nobody can receive the delivery on the confirmed date, the piece returns to our warehouse and we reschedule with you (one-time ₱500 fee).",
+      "note2": "Made-to-order pieces are built to your specifications, so change-of-mind returns are not accepted once production has started. Concerns after delivery are handled under the warranty.",
       "heading2": "",
       "body2": "",
-      "linkLabel": "Shipping & Returns guide",
+      "linkLabel": "Delivery & returns guide",
       "linkHref": "/shipping"
     },
     "warranty": {
       "title": "Warranty",
-      "heading": "Manufacturers Warranty",
-      "body": "Things don't always go as planned. In the unlikely event your item arrives damaged, please get in touch with us right away. Please inspect items before signing for the delivery.",
+      "heading": "Product Warranty Certificate",
+      "body": "Every delivery comes with a signed Product Warranty Certificate. Keep it with your official receipt; both are required for a claim.",
       "note": "",
       "note2": "",
-      "heading2": "1 Year Manufacturer's Warranty",
-      "body2": "Our standard manufacturer's warranty covers defects in materials and workmanship for one year from the product's delivery date.",
-      "linkLabel": "Learn more",
-      "linkHref": "/faqs"
+      "heading2": "6 months on promo items · 1 year on customized pieces",
+      "body2": "Covers manufacturing defects in materials and woodwork, structural defects of frames and joints under normal household use, defective mechanisms (swivel plates, hinges and other moving hardware) and premature peeling of the surface finish. Repairs are complimentary; pickup and delivery for warranty service are shouldered by the client. Normal wear and tear, misuse, moisture or sun damage, and unauthorized alterations are not covered.",
+      "linkLabel": "Warranty terms & how to claim",
+      "linkHref": "/shipping#warranty"
     }
   }
 }

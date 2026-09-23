@@ -899,7 +899,7 @@ export default function ProductDetail({
           </a>
         </div>
         <ul className="mt-4 pt-3.5 border-t border-sand flex flex-col gap-1.5 text-[12.5px] text-stone">
-          {["6-month warranty on frame, foam and workmanship", "Delivered nationwide by our own team · live tracking", "Pay via GCash, Maya, BDO, BPI or cash"].map((t) => (
+          {["6-month warranty on promo items, 1 year on customized pieces", "Delivered nationwide by our own team · live tracking", "Pay via GCash, Maya, BDO, BPI or cash"].map((t) => (
             <li key={t} className="flex items-center gap-2"><span className="h-1.5 w-1.5 bg-goldDeep shrink-0" />{t}</li>
           ))}
         </ul>
