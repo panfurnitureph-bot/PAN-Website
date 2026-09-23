@@ -156,7 +156,9 @@ export function primeContent(next: {
   homepage?: HomepageContent;
   swatches?: LibrarySwatch[];
 }): void {
-  if (next.products?.length) {
+  // Tinatanggap ang blangkong listahan (2026-09-24): 0 produkto sa IMS =
+  // 0 sa site. Ang bundled JSON ay nananatili lang kapag walang sagot (undefined).
+  if (next.products) {
     products = next.products;
     syncCategoriesFromProducts(products);
   }

@@ -60,7 +60,11 @@ export async function loadStoreContent(): Promise<StoreContent> {
   const docs = new Map((docRows ?? []).map((r) => [r.key, r.value]));
 
   return {
-    products: prodRows?.length ? prodRows.map((r) => r.data) : FALLBACK.products,
+    // ANG WEBSITE AY SUMUSUNOD SA PRODUCT MANAGEMENT (Joe 2026-09-24, "wala na
+    // dito pero may listing stock padin"): ang bundled JSON ay para LANG kapag
+    // hindi maabot ang Supabase (null). Ang 0 hilera ay totoong sagot — walang
+    // produkto sa IMS = walang listing sa site, hindi ang 48-item na demo.
+    products: prodRows ? prodRows.map((r) => r.data) : FALLBACK.products,
     // PUBLISHED LANG SA SITE (2026-09-06): ang tela na naka-unpublish sa IMS Fabric
     // Upholstered (`published: false`) ay hindi lumalabas sa homepage rail,
     // fabric popup, at product fabric picker. Walang flag = published.
