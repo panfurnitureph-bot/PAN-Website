@@ -2,7 +2,7 @@
 
 // Full-width na horizontal tabs sa ilalim ng product detail — tulad ng
 // tunay na site: serif na nakasentro (Description & Features |
-// Dimensions | Details & Care | Shipping, Returns & Warranty).
+// Dimensions | Shipping, Returns & Warranty).
 // Ang Shipping tab ay 3-column na may icons.
 
 import Image from "next/image";
@@ -18,7 +18,7 @@ import { frameFor } from "@/lib/double-walling";
 const TABS = [
   { id: "description", label: "Description & Features" },
   { id: "dimensions", label: "Dimensions" },
-  { id: "care", label: "Details & Care" },
+  // "Details & Care" tinanggal (Joe 2026-09-24): blangko lagi ang Materials/Care.
   { id: "shipping", label: "Shipping, Returns & Warranty" },
 ];
 
@@ -484,19 +484,6 @@ export default function ProductTabs({ product, site, mto }: { product: Product; 
         )}
 
         {tab === "dimensions" && <DimensionsPanel product={product} mto={mto} />}
-
-        {tab === "care" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-9">
-            <div>
-              <h3>Materials</h3>
-              <p className="max-w-[56ch] leading-[1.65] whitespace-pre-line">{product.materials}</p>
-            </div>
-            <div>
-              <h3>Care</h3>
-              <p className="max-w-[56ch] leading-[1.65] whitespace-pre-line">{product.care}</p>
-            </div>
-          </div>
-        )}
 
         {tab === "shipping" && (
           <div className="grid md:grid-cols-3 gap-9">
