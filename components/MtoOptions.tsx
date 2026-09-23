@@ -930,9 +930,9 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                   return (
                     <div key={l} className="rounded border border-sand bg-transparent px-4 py-3.5 text-sm">
                       <span className="block text-xs text-stone">Size</span>
-                      {/* MALUWAG NA GRID (Joe 2026-09-24, "dikit dikit"): tatlong tile kada
-                          hanay, size sa itaas at presyo sa ilalim — hindi pipilit na chips. */}
-                      <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+                      {/* LISTAHAN (Joe 2026-09-24, "gawin na parang listing"): isang size
+                          kada hilera — size sa kaliwa, presyo sa kanan, walang pipilit na chips. */}
+                      <div className="mt-3 flex flex-col gap-2">
                         {readySizeOpts.map((o) => {
                           const on = o.label === readySizePick?.label;
                           return (
@@ -944,10 +944,10 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                                 // Sabihan ang Dimensions tab — sumusunod ang diagram/table.
                                 window.dispatchEvent(new CustomEvent("pb-size-change", { detail: o.label }));
                               }}
-                              className={`flex flex-col items-center justify-center gap-0.5 rounded-lg border px-3 py-2.5 transition-colors ${on ? "border-espresso bg-espresso text-cream" : "border-stone/40 text-ink hover:border-ink"}`}
+                              className={`flex w-full items-center justify-between gap-4 rounded-lg border px-4 py-2.5 text-left transition-colors ${on ? "border-espresso bg-espresso text-cream" : "border-stone/40 text-ink hover:border-ink"}`}
                             >
                               <span className="text-[13px] font-bold tracking-wide">{o.label.replace(/x/i, "×")}</span>
-                              {o.price > 0 && <span className={`text-[11px] font-normal tabular-nums ${on ? "text-cream/80" : "text-stone"}`}>{formatPrice(o.price)}</span>}
+                              {o.price > 0 && <span className={`text-[12px] font-semibold tabular-nums ${on ? "text-cream/90" : "text-stone"}`}>{formatPrice(o.price)}</span>}
                             </button>
                           );
                         })}
