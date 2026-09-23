@@ -34,7 +34,10 @@ export default function ProductCard({
   const onSale = !!product.compareAtPrice && product.compareAtPrice > product.price;
 
   const swatches = (product.colorSwatches ?? []).filter((s) => s.image || s.swatch || s.images?.length);
-  const variants = swatches.map((s) => ({ name: s.name, image: s.images?.[0] ?? s.image ?? product.images[0], images: s.images?.length ? s.images : undefined, thumb: s.swatch ?? s.images?.[0] ?? s.image ?? product.images[0], stock: s.stock }));
+  const variants = swatches.map((s) => ({ name: s.name, image: s.images?.[0] ?? s.image ?? product.images[0], images: s.images?.length ? s.images : undefined, thumb: s.images?.[0] ?? s.image ?? s.swatch ?? product.images[0], stock: s.stock }));
+  // BILOG NA LITRATO NG PRODUKTO KADA KULAY (Joe 2026-09-24, "dapat is ganto"):
+  // ang thumb ay ang litrato ng produkto sa kulay na iyon (tulad ng product
+  // page), hindi ang tile ng tela; tela lang kapag walang litrato ang kulay.
   const [activeIdx, setActiveIdx] = useState(0);
   const [added, setAdded] = useState(false);
   const active = variants[activeIdx];
@@ -124,7 +127,7 @@ export default function ProductCard({
           {variants.length > 1 && (<>
             {variants.slice(0, 4).map((v, i) => (
               <button key={v.name + i} type="button" onMouseEnter={() => setActiveIdx(i)} onClick={() => setActiveIdx(i)} title={v.name} aria-label={v.name}
-                className={`relative w-[56px] h-[56px] shrink-0 rounded bg-white overflow-hidden border-[1.5px] ${i === activeIdx ? "border-brown" : "border-sand"} ${v.stock !== undefined && v.stock <= 0 ? "opacity-40" : ""}`}>
+                className={`relative w-[56px] h-[56px] shrink-0 rounded-full bg-white overflow-hidden border-[1.5px] ${i === activeIdx ? "border-brown ring-2 ring-offset-2 ring-brown" : "border-sand"} ${v.stock !== undefined && v.stock <= 0 ? "opacity-40" : ""}`}>
                 <Image src={v.thumb} alt="" fill className="object-contain" sizes="56px" />
               </button>
             ))}

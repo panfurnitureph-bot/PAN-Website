@@ -129,7 +129,7 @@ export default function QuickView() {
               <div className="flex gap-2.5 flex-wrap">
                 {colorNames.map((nm, i) => {
                   const s = swatches[i];
-                  const src = s?.swatch ?? s?.images?.[0] ?? s?.image;
+                  const src = s?.images?.[0] ?? s?.image ?? s?.swatch;
                   const out = s?.stock !== undefined && s.stock <= 0 && !mto;
                   return (
                     <button key={nm + i} type="button" title={nm} onMouseEnter={() => pickColor(i)} onClick={() => pickColor(i)}

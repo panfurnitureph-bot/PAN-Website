@@ -455,10 +455,11 @@ export default function ProductDetail({
         <div className="flex gap-2.5 mt-2 flex-wrap">
           {!hideOpts && product.colors.map((c, i) => {
             const sw = product.colorSwatches?.[i];
-            // Thumbnail box: tela swatch muna, tapos bed photo sa kulay
+            // Bilog na thumb: litrato ng produkto sa kulay muna (Joe 2026-09-24),
+            // tela lang kapag walang litrato ang kulay
             const swatchImg =
-              sw?.swatch ??
               sw?.image ??
+              sw?.swatch ??
               product.images[Math.min(i, product.images.length - 1)];
             // Malaking preview sa popup = ang TELA mismo (swatch), fallback
             // sa bed photo sa kulay na yun
