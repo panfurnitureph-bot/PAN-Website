@@ -145,6 +145,11 @@ function Dropdown({
   );
 }
 
+// Pangalan ng sukat ng mattress (kapareho ng SIZE_NAME sa ProductTabs).
+const MATTRESS_SIZE_NAME: Record<string, string> = {
+  "30x75": "Single", "36x75": "Single", "48x75": "Twin", "54x75": "Double/Full", "60x75": "Queen", "72x75": "King", "72x78": "King 2",
+};
+
 export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoItemConfig; product: Product; site: SiteContent; locked?: boolean }) {
   const { addToCart, toggleWishlist, wishlist, quote, addToQuote, clearQuote } = useStore();
   // MARAMING PRODUKTO KADA REQUEST (2026-08-21). Ang editId ay may laman kapag
@@ -933,6 +938,8 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                       {/* LISTAHAN (Joe 2026-09-24, "gawin na parang listing"): isang size
                           kada hilera — size sa kaliwa, presyo sa kanan, walang pipilit na chips. */}
                       <div className="mt-3 flex flex-col gap-2">
+                        {/* PANGALAN NG SUKAT (Joe 2026-09-24, "Single (36x75)"): parehong
+                            pangalan ng Dimensions tab; sukat na walang pangalan = sukat lang. */}
                         {readySizeOpts.map((o) => {
                           const on = o.label === readySizePick?.label;
                           return (
@@ -946,7 +953,11 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                               }}
                               className={`flex w-full items-center justify-between gap-4 rounded-lg border px-4 py-2.5 text-left transition-colors ${on ? "border-espresso bg-espresso text-cream" : "border-stone/40 text-ink hover:border-ink"}`}
                             >
-                              <span className="text-[13px] font-bold tracking-wide">{o.label.replace(/x/i, "×")}</span>
+                              <span className="text-[13px] font-bold tracking-wide">
+                                {MATTRESS_SIZE_NAME[o.label.replace(/\s+/g, "").toLowerCase()] ? (
+                                  <>{MATTRESS_SIZE_NAME[o.label.replace(/\s+/g, "").toLowerCase()]} <span className={`font-normal ${on ? "text-cream/80" : "text-stone"}`}>({o.label.replace(/x/i, "×")})</span></>
+                                ) : o.label.replace(/x/i, "×")}
+                              </span>
                               {o.price > 0 && <span className={`text-[12px] font-semibold tabular-nums ${on ? "text-cream/90" : "text-stone"}`}>{formatPrice(o.price)}</span>}
                             </button>
                           );
