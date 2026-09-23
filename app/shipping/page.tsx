@@ -6,7 +6,6 @@
 // customized). Walang "free shipping" o "100-day returns" — hindi natin iyon
 // proseso.
 import { primeStoreContent } from "@/lib/content";
-import { formatPrice } from "@/lib/products";
 
 export const metadata = { title: "Delivery, Returns & Warranty — PAN Furniture" };
 export const revalidate = 0;
@@ -16,14 +15,12 @@ type Province = { name: string; cities: City[] };
 
 export default async function ShippingPage() {
   const { site } = await primeStoreContent();
+  // WALANG HALAGA NG FEE DITO (Joe 2026-09-24, "wag lagay ung delivery fee
+  // mismo"): mga lugar lang na sineserbisyuhan; ang eksaktong bayad ay sa
+  // Estimate your shipping at sa checkout.
   const provinces = ((site as { shipping?: { provinces?: Province[] } }).shipping?.provinces ?? [])
-    .map((p) => {
-      // Laktawan ang typo na bayad (hal. 3) — hindi iyon totoong presyo.
-      const fees = p.cities.map((c) => Number(c.fee) || 0).filter((f) => f >= 100);
-      return { name: p.name, count: p.cities.length, min: fees.length ? Math.min(...fees) : 0, max: fees.length ? Math.max(...fees) : 0 };
-    })
-    .filter((p) => p.min > 0)
-    .sort((a, b) => a.min - b.min);
+    .filter((p) => p.cities.length > 0)
+    .map((p) => ({ name: p.name }));
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-12">
@@ -42,28 +39,9 @@ export default async function ShippingPage() {
             any product page, or see the exact fee at checkout after you pick your city.
           </p>
           {provinces.length > 0 && (
-            <div className="mt-5 overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-sand text-left text-[11px] uppercase tracking-[0.12em] text-stone">
-                    <th className="py-2 pr-4 font-semibold">Province</th>
-                    <th className="py-2 pr-4 font-semibold">Areas served</th>
-                    <th className="py-2 font-semibold text-right">Delivery fee</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {provinces.map((p) => (
-                    <tr key={p.name} className="border-b border-sand/70">
-                      <td className="py-2.5 pr-4 font-semibold text-ink">{p.name}</td>
-                      <td className="py-2.5 pr-4">{p.count} {p.count === 1 ? "area" : "areas"}</td>
-                      <td className="py-2.5 text-right tabular-nums">
-                        {p.min === p.max ? formatPrice(p.min) : `${formatPrice(p.min)} – ${formatPrice(p.max)}`}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <p className="mt-3">
+              <b className="text-ink">Areas we serve:</b> {provinces.map((p) => p.name).join(", ")}.
+            </p>
           )}
           <p className="mt-4">
             In-stock pieces ship within the week. Made-to-order pieces are built in our San Pedro, Laguna
