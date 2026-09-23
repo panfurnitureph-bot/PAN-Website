@@ -928,9 +928,11 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                   // MATTRESS: size buttons (hindi dropdown) — kita agad lahat ng
                   // size at presyo, isang pindot lang.
                   return (
-                    <div key={l} className="rounded border border-sand bg-transparent px-4 py-3 text-sm">
+                    <div key={l} className="rounded border border-sand bg-transparent px-4 py-3.5 text-sm">
                       <span className="block text-xs text-stone">Size</span>
-                      <div className="mt-2 flex flex-wrap gap-2">
+                      {/* MALUWAG NA GRID (Joe 2026-09-24, "dikit dikit"): tatlong tile kada
+                          hanay, size sa itaas at presyo sa ilalim — hindi pipilit na chips. */}
+                      <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
                         {readySizeOpts.map((o) => {
                           const on = o.label === readySizePick?.label;
                           return (
@@ -942,10 +944,10 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                                 // Sabihan ang Dimensions tab — sumusunod ang diagram/table.
                                 window.dispatchEvent(new CustomEvent("pb-size-change", { detail: o.label }));
                               }}
-                              className={`rounded-full border px-3 py-1.5 text-xs font-bold transition-colors ${on ? "border-espresso bg-espresso text-cream" : "border-stone/40 text-ink hover:border-ink"}`}
+                              className={`flex flex-col items-center justify-center gap-0.5 rounded-lg border px-3 py-2.5 transition-colors ${on ? "border-espresso bg-espresso text-cream" : "border-stone/40 text-ink hover:border-ink"}`}
                             >
-                              {o.label.replace(/x/i, "×")}
-                              {o.price > 0 && <span className={`ml-1.5 font-normal ${on ? "text-cream/80" : "text-stone"}`}>{formatPrice(o.price)}</span>}
+                              <span className="text-[13px] font-bold tracking-wide">{o.label.replace(/x/i, "×")}</span>
+                              {o.price > 0 && <span className={`text-[11px] font-normal tabular-nums ${on ? "text-cream/80" : "text-stone"}`}>{formatPrice(o.price)}</span>}
                             </button>
                           );
                         })}
