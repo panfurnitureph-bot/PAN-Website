@@ -23,6 +23,7 @@ import type { MtoAddon, MtoItemConfig } from "@/lib/content";
 import { messengerHandle } from "@/lib/messenger";
 import { useStore, type QuoteBuild } from "@/components/store";
 import { WALL_THICKNESSES, frameFor, frameLabel } from "@/lib/double-walling";
+import { MATTRESS_SIZE_NAME } from "@/lib/mattress-sizes";
 
 // Kolek­syon mula sa pangalan ng swatch ("New Sahara" = dalawang salita).
 const colOf = (n: string) => {
@@ -144,11 +145,6 @@ function Dropdown({
     </div>
   );
 }
-
-// Pangalan ng sukat ng mattress (kapareho ng SIZE_NAME sa ProductTabs).
-const MATTRESS_SIZE_NAME: Record<string, string> = {
-  "30x75": "Single", "36x75": "Single", "48x75": "Twin", "54x75": "Double/Full", "60x75": "Queen", "72x75": "King", "72x78": "King 2",
-};
 
 export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoItemConfig; product: Product; site: SiteContent; locked?: boolean }) {
   const { addToCart, toggleWishlist, wishlist, quote, addToQuote, clearQuote } = useStore();

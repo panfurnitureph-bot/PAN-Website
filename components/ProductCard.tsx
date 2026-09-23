@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { formatPrice, type Product } from "@/lib/products";
 import { useStore } from "@/components/store";
+import { parseMattressSizes } from "@/lib/mattress-sizes";
 import { openQuickView } from "@/components/home/QuickView";
 import { readyCartLine } from "@/lib/ready-cart";
 import FitImage from "@/components/FitImage";
@@ -34,15 +35,14 @@ export default function ProductCard({
   const onSale = !!product.compareAtPrice && product.compareAtPrice > product.price;
 
   const swatches = (product.colorSwatches ?? []).filter((s) => s.image || s.swatch || s.images?.length);
-  const colorVariants = swatches.map((s) => ({ name: s.name, image: s.images?.[0] ?? s.image ?? product.images[0], images: s.images?.length ? s.images : undefined, thumb: s.images?.[0] ?? s.image ?? s.swatch ?? product.images[0], stock: s.stock }));
-  // WALANG KULAY = LITRATO ANG BILOG (Joe 2026-09-24, "lagyan din tong mga
-  // mattress"): produktong walang color variant pero may 2+ litrato ay may
-  // parehong hilera ng bilog — bawat isa ay anggulo ng produkto, hover = palit
-  // ng hero. Iisang litrato = walang bilog, tulad ng dati.
-  const photoMode = colorVariants.length < 2 && product.images.length > 1;
-  const variants = photoMode
-    ? product.images.map((im, i) => ({ name: `${product.name} photo ${i + 1}`, image: im, images: undefined as string[] | undefined, thumb: im, stock: undefined as number | undefined }))
-    : colorVariants;
+  const variants = swatches.map((s) => ({ name: s.name, image: s.images?.[0] ?? s.image ?? product.images[0], images: s.images?.length ? s.images : undefined, thumb: s.images?.[0] ?? s.image ?? s.swatch ?? product.images[0], stock: s.stock }));
+  // MATTRESS = SIZE CHIPS SA HILERA (Joe 2026-09-24, "ung sa Sizes ng mattress
+  // un lang"): bilog na litrato ay para LANG sa color variant; ang mattress na
+  // walang kulay ay nagpapakita ng mga sukat (Single, Twin, …) sa parehong
+  // hilera — hover/tap sa sukat = presyo ng sukat na iyon sa card.
+  const sizes = variants.length > 1 ? [] : parseMattressSizes(product as unknown as Parameters<typeof parseMattressSizes>[0]);
+  const [sizeIdx, setSizeIdx] = useState(0);
+  const sizePick = sizes[sizeIdx] ?? sizes[0];
   // BILOG NA LITRATO NG PRODUKTO KADA KULAY (Joe 2026-09-24, "dapat is ganto"):
   // ang thumb ay ang litrato ng produkto sa kulay na iyon (tulad ng product
   // page), hindi ang tile ng tela; tela lang kapag walang litrato ang kulay.
@@ -60,7 +60,7 @@ export default function ProductCard({
   // iyon — walang hover swap na pumapatong. Sa photo mode ay ang mga bilog na
   // mismo ang mga anggulo, kaya walang hover swap doon kailanman.
   const [pinned, setPinned] = useState(false);
-  const showAlt = !!alt && !photoMode && !pinned;
+  const showAlt = !!alt && !pinned;
   // STOCK NG NAPILING KULAY (Joe 2026-09-06, "kung san itapat ung kulay mag
   // papakita mismo kung ilan ung stock nya, wag total"): ang badge ay ang bilang
   // ng kulay na naka-hover/napili; kabuuan lang kapag walang kada-kulay na bilang.
@@ -127,11 +127,11 @@ export default function ProductCard({
         <Link href={`/products/${product.slug}`} className="relative z-[1] text-[13.5px] font-semibold leading-snug hover:text-goldDeep line-clamp-1" title={product.name}>{product.name}</Link>
         <div className="flex items-baseline justify-between gap-2">
           <span className="text-[15px] font-bold tabular-nums">
-            {product.priceFrom ? <><span className="font-normal text-stone text-[11px] mr-1">from</span>{formatPrice(product.priceFrom)}</> : <span className={onSale ? "text-cognac" : ""}>{formatPrice(product.price)}</span>}
+            {sizePick && sizePick.price > 0 ? formatPrice(sizePick.price) : product.priceFrom ? <><span className="font-normal text-stone text-[11px] mr-1">from</span>{formatPrice(product.priceFrom)}</> : <span className={onSale ? "text-cognac" : ""}>{formatPrice(product.price)}</span>}
             {onSale && <span className="text-stone line-through ml-2 text-xs font-normal">{formatPrice(product.compareAtPrice!)}</span>}
           </span>
           <span className="text-[11px] text-stone whitespace-nowrap">
-            {variants.length > 1 && !photoMode ? `${variants.length} colors` : inStock ? "Ships this week" : product.bedSizes?.length ? "Single–King" : ""}
+            {variants.length > 1 ? `${variants.length} colors` : sizePick ? sizePick.label.replace(/x/i, "×") : inStock ? "Ships this week" : product.bedSizes?.length ? "Single–King" : ""}
           </span>
         </div>
         {/* UNIFORM NA TAAS (2026-09-04, "dapat uniform"): laging nakalaan ang
@@ -147,6 +147,16 @@ export default function ProductCard({
             ))}
             {variants.length > 4 && <span className="text-[11px] text-stone">+{variants.length - 4}</span>}
           </>)}
+          {variants.length <= 1 && sizes.length > 1 && (
+            <div className="flex flex-wrap gap-1.5">
+              {sizes.map((s, i) => (
+                <button key={s.label} type="button" onMouseEnter={() => setSizeIdx(i)} onClick={() => setSizeIdx(i)} title={`${s.label.replace(/x/i, "×")}${s.price > 0 ? ` · ${formatPrice(s.price)}` : ""}`}
+                  className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold leading-none transition-colors ${i === sizeIdx ? "border-espresso bg-espresso text-cream" : "border-stone/40 text-ink hover:border-ink"}`}>
+                  {s.name}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
         {showAddToCart && (
           <button type="button" onClick={add} disabled={added} className={`relative z-[1] mt-auto w-full py-2 text-[12px] font-semibold border ${added ? "bg-[#2F7D4F] border-[#2F7D4F] text-white" : "border-brown text-brown hover:bg-brown hover:text-cream"}`}>
