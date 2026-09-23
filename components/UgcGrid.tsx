@@ -41,7 +41,7 @@ function UgcModal({
   onNav,
   ugc,
 }: {
-  items: { src: string; product: Product }[];
+  items: { src: string; product?: Product }[];
   index: number;
   onClose: () => void;
   onNav: (i: number) => void;
@@ -56,10 +56,13 @@ function UgcModal({
   const caption =
     (ugc as any).caption ??
     "A little look at how our pieces are living in your homes ✨\n\nDifferent styles, different spaces, but one thing stays the same — furniture that feels like you.";
-  const rating = averageRating(product) ?? 5.0;
-  const count = product.reviews.length || fakeCount(product.slug);
-  const title =
-    product.colors[0] && product.colors[0] !== "Default"
+  // WALANG PRODUKTO (2026-09-24): kapag blangko ang Product Management ay
+  // wala ring maikakabit sa litrato — nawawala lang ang product card.
+  const rating = (product && averageRating(product)) ?? 5.0;
+  const count = product ? (product.reviews.length || fakeCount(product.slug)) : 0;
+  const title = !product
+    ? "PAN Furniture"
+    : product.colors[0] && product.colors[0] !== "Default"
       ? `${product.name} | ${product.colors[0]}`
       : product.name;
 
@@ -101,7 +104,7 @@ function UgcModal({
       <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto grid md:grid-cols-2">
         {/* ---------- LEFT: PHOTO + ARROWS ---------- */}
         <div className="relative aspect-square md:aspect-auto md:min-h-[480px] bg-sand">
-          <Image src={src} alt={product.name} fill className="object-cover md:rounded-l-xl" sizes="(min-width: 768px) 450px, 100vw" />
+          <Image src={src} alt={title} fill className="object-cover md:rounded-l-xl" sizes="(min-width: 768px) 450px, 100vw" />
           <button
             onClick={prev}
             aria-label="Previous"
@@ -130,7 +133,7 @@ function UgcModal({
           </button>
 
           {/* Product card */}
-          <div className="flex gap-4 items-start pr-8">
+          {product && <div className="flex gap-4 items-start pr-8">
             <Link
               href={`/products/${product.slug}`}
               className="relative w-24 h-24 bg-[#F1EAE0] rounded overflow-hidden shrink-0"
@@ -156,7 +159,7 @@ function UgcModal({
                 SHOP NOW
               </Link>
             </div>
-          </div>
+          </div>}
 
           {/* Handle + date */}
           <div className="flex items-center gap-3 mt-6">
@@ -223,7 +226,7 @@ export default function UgcGrid({
   // gagamitin (hal. mga FB post photos mo). Kung wala, fallback sa
   // product photos.
   const customPhotos: string[] = (ugc as any).photos ?? [];
-  const fallbackProduct = products.find((p) => p.images.length > 0)!;
+  const fallbackProduct = products.find((p) => p.images.length > 0);
   const allPhotos =
     customPhotos.length > 0
       ? customPhotos.map((src) => ({ src, product: fallbackProduct }))
@@ -246,14 +249,14 @@ export default function UgcGrid({
           </div>,
           ...photos.map((ph, i) => (
             <button
-              key={ph.product.slug + i}
+              key={ph.src + i}
               onClick={() => setOpenIdx(i)}
               className="relative block w-full aspect-square overflow-hidden group bg-sand"
-              aria-label={`View ${ph.product.name}`}
+              aria-label={`View ${ph.product?.name ?? "photo"}`}
             >
               <Image
                 src={ph.src}
-                alt={ph.product.name}
+                alt={ph.product?.name ?? "PAN Furniture"}
                 fill
                 className={`${ph.src.includes("/card-") ? "object-contain bg-[#f7f0e4]" : "object-cover"} group-hover:scale-105 transition-transform duration-500`}
                 sizes="(min-width: 1100px) 25vw, 60vw"
