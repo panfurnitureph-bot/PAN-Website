@@ -531,13 +531,37 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   const fieldLines = fields
     .filter((f) => (fieldVal[f.label] ?? "").trim())
     .map((f) => ({ label: `${f.label}: ${fieldVal[f.label].trim()}`, price: 0 }));
+  // OPSYONAL NA DETALYE NG KAMA (Joe 2026-10-04, "dapat nasa website din kase
+  // pwede sila mag custom dun"): kapareho ng bed builder ng IMS — Bedbase
+  // Height, kapal ng headboard/sideboards/footboard, Wall Padding (taas at
+  // lapad, cm o inches) at Gold Accent na may sukat. WALANG REQUIRED dito:
+  // blangko = walang linya, at hindi ito hinahanap ng "Still needed". Nakatago
+  // sa `fieldVal` sa ilalim ng mga susing may "__" — kaya kasama na sa
+  // pag-save at pagbalik ng build (state.fieldVal) nang walang bagong hugis.
+  const isBedCfg = /^(custom|promo) bed$/i.test(String(cfg.category ?? "").trim());
+  const xv = (k: string) => (fieldVal[k] ?? "").trim();
+  const setX = (k: string, v: string) => setFieldVal((prev) => ({ ...prev, [k]: v }));
+  const numOnly = (v: string) => v.replace(/[^\d.]/g, "");
+  const wpUnit = fieldVal["__wpU"] === "inches" ? "inches" : "cm";
+  const goldInDw = doubleWallOn && dwAccent;
+  const extraLines: { label: string; price: number }[] = !isBedCfg
+    ? []
+    : [
+        ...(xv("__base") ? [{ label: `Bedbase Height: ${xv("__base")} inches`, price: 0 }] : []),
+        ...(xv("__thick") ? [{ label: `Headboard, sideboards and footboard thickness: ${xv("__thick")} inches`, price: 0 }] : []),
+        ...(xv("__wpH") ? [{ label: `Wall Padding — Height: ${xv("__wpH")} ${wpUnit}`, price: 0 }] : []),
+        ...(xv("__wpW") ? [{ label: `Wall Padding — Width: ${xv("__wpW")} ${wpUnit}`, price: 0 }] : []),
+        // Kapag naka-on ang Gold accent ng Double Walling, doon isinusulat ang
+        // sukat (iisang linya, may presyo) — hindi dinodoble rito.
+        ...(xv("__gold") && !goldInDw ? [{ label: `Gold Accent: ${xv("__gold")} inches`, price: 0 }] : []),
+      ];
   const measureLines = measures
     .filter((m) => (measVal[m.label] ?? 0) > 0)
     .map((m) => ({ label: `${m.label}: ${fmtHalf(measVal[m.label])} ${m.unit}`, price: 0 }));
 
   function handleAdd(buyNow: boolean) {
     const baseLabel = [fabric || null, size || null].filter(Boolean).join(" / ") || product.name;
-    const addOnLines = [...measureLines, ...pickedAddonLines, ...fieldLines];
+    const addOnLines = [...measureLines, ...pickedAddonLines, ...extraLines, ...fieldLines];
     const variantKey = addOnLines.length ? `${baseLabel} + ${addOnLines.map((a) => a.label).join("+")}` : baseLabel;
     addToCart(product.slug, variantKey, qty, total, {
       baseLabel,
@@ -649,9 +673,10 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             ...(parseHalf(dwPad) > 0 ? [{ label: `Thickness: ${dwPad.trim()} in`, price: 0 }] : []),
             ...(parseHalf(dwW) > 0 ? [{ label: `Width: ${dwW.trim()} in`, price: 0 }] : []),
             ...(dwNails ? [{ label: `Decorative Nails: ${dwNails}`, price: dwPriceAt("decorative nails", dwNails === "Gold" ? 0 : 1) }] : []),
-            ...(dwAccent ? [{ label: "Gold Accent: Yes", price: dwOpt("gold accent")?.price ?? 0 }] : []),
+            ...(dwAccent ? [{ label: isBedCfg && xv("__gold") ? `Gold Accent: ${xv("__gold")} inches` : "Gold Accent: Yes", price: dwOpt("gold accent")?.price ?? 0 }] : []),
           ]
         : []),
+      ...extraLines,
       ...fieldLines.map((l) => ({ label: l.label, price: 0 })),
     ];
   }
@@ -1318,6 +1343,53 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
         </div>
         </div>
       ))}
+
+      {/* ── OPSYONAL NA DETALYE NG KAMA (2026-10-04) ── wala ritong required. */}
+      {isBedCfg && (
+        <div className="mb-3 overflow-hidden rounded-lg border border-sand">
+          <div className="flex items-center gap-2 border-b border-sand bg-linen px-4 py-2.5">
+            <span className="text-xs font-bold tracking-widest2">MORE DETAILS</span>
+            <span className="text-[11px] text-stone">optional — leave blank if not needed</span>
+          </div>
+          <div className="px-4 py-2">
+            <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
+              <span className="text-sm text-stone">Bedbase height</span>
+              <div className="flex items-center gap-2">
+                <input value={fieldVal["__base"] ?? ""} onChange={(e) => setX("__base", numOnly(e.target.value))} inputMode="decimal" placeholder="e.g. 10" className="w-28 rounded-lg border border-sand bg-transparent px-3 py-2.5 text-sm focus:border-cognac focus:outline-none" />
+                <span className="text-sm text-stone">inches</span>
+              </div>
+            </div>
+            <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
+              <span className="text-sm text-stone">Board thickness</span>
+              <div className="flex flex-wrap items-center gap-2">
+                <input value={fieldVal["__thick"] ?? ""} onChange={(e) => setX("__thick", numOnly(e.target.value))} inputMode="decimal" placeholder="e.g. 6" className="w-28 rounded-lg border border-sand bg-transparent px-3 py-2.5 text-sm focus:border-cognac focus:outline-none" />
+                <span className="text-sm text-stone">inches</span>
+                <span className="text-[11px] text-stone">headboard, sideboards and footboard</span>
+              </div>
+            </div>
+            <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
+              <span className="text-sm text-stone">Wall padding</span>
+              <div className="flex flex-wrap items-center gap-2">
+                <input value={fieldVal["__wpH"] ?? ""} onChange={(e) => setX("__wpH", numOnly(e.target.value))} inputMode="decimal" placeholder="Height" aria-label="Wall padding height" className="w-24 rounded-lg border border-sand bg-transparent px-3 py-2.5 text-sm focus:border-cognac focus:outline-none" />
+                <span className="text-sm text-stone">×</span>
+                <input value={fieldVal["__wpW"] ?? ""} onChange={(e) => setX("__wpW", numOnly(e.target.value))} inputMode="decimal" placeholder="Width" aria-label="Wall padding width" className="w-24 rounded-lg border border-sand bg-transparent px-3 py-2.5 text-sm focus:border-cognac focus:outline-none" />
+                <span className="flex overflow-hidden rounded-full border border-sand">
+                  {(["cm", "inches"] as const).map((u) => (
+                    <button key={u} type="button" onClick={() => setX("__wpU", u)} className={`px-3 py-1.5 text-xs font-semibold ${wpUnit === u ? "bg-cognac text-white" : "text-stone hover:text-ink"}`}>{u === "inches" ? "in" : u}</button>
+                  ))}
+                </span>
+              </div>
+            </div>
+            <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
+              <span className="text-sm text-stone">Gold accent</span>
+              <div className="flex items-center gap-2">
+                <input value={fieldVal["__gold"] ?? ""} onChange={(e) => setX("__gold", numOnly(e.target.value))} inputMode="decimal" placeholder="e.g. 2" className="w-28 rounded-lg border border-sand bg-transparent px-3 py-2.5 text-sm focus:border-cognac focus:outline-none" />
+                <span className="text-sm text-stone">inches</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── ADD-ON checkbox rows ── */}
       {checks.length > 0 && (
