@@ -538,7 +538,9 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   // blangko = walang linya, at hindi ito hinahanap ng "Still needed". Nakatago
   // sa `fieldVal` sa ilalim ng mga susing may "__" — kaya kasama na sa
   // pag-save at pagbalik ng build (state.fieldVal) nang walang bagong hugis.
-  const isBedCfg = /^(custom|promo) bed$/i.test(String(cfg.category ?? "").trim());
+  // CUSTOM BED LANG (Joe 2026-10-04, "custom lang mismo. wala sa promo"): ang
+  // Promo Bed ay nakatakdang disenyo — walang dagdag na detalye roon.
+  const isBedCfg = /^custom bed$/i.test(String(cfg.category ?? "").trim());
   const xv = (k: string) => (fieldVal[k] ?? "").trim();
   const setX = (k: string, v: string) => setFieldVal((prev) => ({ ...prev, [k]: v }));
   const numOnly = (v: string) => v.replace(/[^\d.]/g, "");
@@ -1344,7 +1346,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
         </div>
       ))}
 
-      {/* ── OPSYONAL NA DETALYE NG KAMA (2026-10-04) ── wala ritong required. */}
+      {/* ── OPSYONAL NA DETALYE NG KAMA (2026-10-04) ── Custom Bed lang; wala ritong required. */}
       {isBedCfg && (
         <div className="mb-3 overflow-hidden rounded-lg border border-sand">
           <div className="flex items-center gap-2 border-b border-sand bg-linen px-4 py-2.5">
