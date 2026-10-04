@@ -508,9 +508,25 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
       .map((a) => ({ label: a.label, price: a.price ?? 0 })),
     // Ang "None" ay pagtanggi sa option, hindi sagot — walang saysay itong
     // isulat sa sheet ("Mattress Insert: None" ay hindi nagsasabi ng gagawin).
-    ...pickedChoices
-      .filter((o) => !/^(none|not|without)/i.test(o.value))
-      .map((o) => ({ label: o.full, price: o.price ?? 0 })),
+    // KAPAREHO NG BED BUILDER NG IMS (Joe 2026-10-04, "make sure lahat ng changes
+    // natin ma fifix din sa website"): sa kama, ang paa ay isinusulat bilang
+    // "<estilo> Wood Legs: 4 inches" (Standard / Platform Style / Floating) at
+    // ang walang piniling insert ay "Mattress Insert: 2 inches" (standard) —
+    // parehong salita ng quotation, order at workshop sheet. Ang presyo ng
+    // pinili ay hindi nagbabago; kilala ng IMS ang bagong linya.
+    //
+    // AYOS DIN (2026-10-04): ang `not\b` dito ay naging literal na backspace
+    // (nasirang escape), kaya ang "Not winged" ay naisusulat sa sheet kahit
+    // pagtanggi lang ito. Ibinalik ang word boundary.
+    ...pickedChoices.flatMap((o) => {
+      const price = o.price ?? 0;
+      if (/^(custom|promo) bed$/i.test(String(cfg.category ?? "").trim())) {
+        const lg = /^Legs:\s*(Standard|Platform Style|Floating)$/i.exec(o.full);
+        if (lg) return [{ label: `${lg[1]} Wood Legs: 4 inches`, price }];
+        if (/^Mattress Insert:\s*None\b/i.test(o.full)) return [{ label: "Mattress Insert: 2 inches", price: 0 }];
+      }
+      return /^(none|not\b|without)/i.test(o.value) ? [] : [{ label: o.full, price }];
+    }),
   ];
   const fieldLines = fields
     .filter((f) => (fieldVal[f.label] ?? "").trim())

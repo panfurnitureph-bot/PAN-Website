@@ -157,7 +157,7 @@ export async function POST(req: NextRequest) {
       // Ang bahaging nasa unahan mismo ng bayan ang karaniwang barangay.
       if (at > 0) {
         const before = parts[at - 1];
-        if (before && !/^\d/.test(before) && !/(st|street|road|rd|ave|avenue|highway|hwy|blvd)/i.test(before)) brgy = before;
+        if (before && !/^\d/.test(before) && !/\b(st|street|road|rd|ave|avenue|highway|hwy|blvd)\b/i.test(before)) brgy = before;
       }
     }
 
