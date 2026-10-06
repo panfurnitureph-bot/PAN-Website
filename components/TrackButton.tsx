@@ -125,14 +125,14 @@ export default function TrackButton() {
         aria-hidden={!open}
       >
         <div
-          className={`absolute inset-0 bg-ink/70 backdrop-blur-sm transition-opacity ${open ? "opacity-100" : "opacity-0"}`}
+          className={`absolute inset-0 bg-[#1A140C]/60 backdrop-blur-[3px] transition-opacity ${open ? "opacity-100" : "opacity-0"}`}
           onClick={() => setOpen(false)}
         />
-        <div className="relative bg-cream w-full max-w-lg rounded-xl shadow-2xl overflow-hidden max-h-[90vh]">
+        <div className="pf-pop relative bg-[#FBF7EF] w-full max-w-lg rounded-[20px] shadow-[0_0_0_1px_rgba(226,194,122,.45),0_40px_80px_-30px_rgba(0,0,0,.8)] overflow-hidden max-h-[90vh]">
           <button
             onClick={() => setOpen(false)}
             aria-label="Close"
-            className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-white/90 text-ink shadow flex items-center justify-center text-xl leading-none hover:bg-white"
+            className="absolute top-3.5 right-3.5 z-10 grid h-9 w-9 place-items-center rounded-full bg-white text-ink shadow-[0_0_0_1.5px_#B08A3E,0_8px_16px_-10px_rgba(62,50,32,.5)] transition hover:bg-brownDeep hover:text-gold"
           >
             ×
           </button>

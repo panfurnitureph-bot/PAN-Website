@@ -80,10 +80,10 @@ export default function ContactRail({ site }: { site: SiteContent }) {
       ),
     },
     {
-      key: "track", label: "Track your order", text: "live delivery map", bg: "#3b2a1a",
+      key: "track", label: "Track your order", text: "live delivery map", bg: "#3E3220",
       onClick: () => window.dispatchEvent(new Event("pan-open-track")),
       icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E2C27A" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M3 7h11v8H3zM14 10h4l3 3v2h-7z" />
           <circle cx="7" cy="17" r="1.6" />
           <circle cx="17.5" cy="17" r="1.6" />
@@ -128,7 +128,7 @@ export default function ContactRail({ site }: { site: SiteContent }) {
               aria-label={`${it.label} · ${it.text}`}
               onClick={() => { if (loading) return; spin(it.key); window.setTimeout(() => it.onClick?.(), 650); }}
               onFocus={() => setOpen(it.key)} onBlur={() => setOpen(null)}
-              className="pan-rail-wiggle relative flex h-11 w-11 items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold"
+              className="pan-rail-wiggle relative flex h-11 w-11 items-center justify-center rounded-full text-white shadow-[0_0_0_1.5px_rgba(226,194,122,.55),0_12px_22px_-12px_rgba(0,0,0,.7)] transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold"
               style={{ background: it.bg, animationDelay: `${1200 + i * 1400}ms` }}
             >
               <span className={loading === it.key ? "opacity-30" : ""}>{it.icon}</span>
@@ -147,7 +147,7 @@ export default function ContactRail({ site }: { site: SiteContent }) {
               if (!it.external) { e.preventDefault(); const href = it.href ?? ""; window.setTimeout(() => { window.location.href = href; }, 650); }
             }}
             onFocus={() => setOpen(it.key)} onBlur={() => setOpen(null)}
-            className="pan-rail-wiggle relative flex h-11 w-11 items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold"
+            className="pan-rail-wiggle relative flex h-11 w-11 items-center justify-center rounded-full text-white shadow-[0_0_0_1.5px_rgba(226,194,122,.55),0_12px_22px_-12px_rgba(0,0,0,.7)] transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold"
             style={{ background: it.bg, animationDelay: `${1200 + i * 1400}ms` }}
           >
             <span className={loading === it.key ? "opacity-30" : ""}>{it.icon}</span>
@@ -156,11 +156,11 @@ export default function ContactRail({ site }: { site: SiteContent }) {
           )}
           {/* Pop-up na bati sa tabi ng Messenger — pinipindot para magbukas ng chat. */}
           {it.badge && greet && (
-            <div className="pan-rail-pop absolute bottom-0 left-[56px] z-10 w-[15.5rem] rounded-xl border border-sand bg-white p-3 pr-8 shadow-2xl">
-              <span className="absolute -left-1.5 bottom-4 h-3 w-3 rotate-45 border-b border-l border-sand bg-white" />
-              <button type="button" aria-label="Close" onClick={dismissGreet} className="absolute right-2 top-2 text-[13px] leading-none text-stone hover:text-ink">✕</button>
+            <div className="pan-rail-pop absolute bottom-0 left-[56px] z-10 w-[15.5rem] rounded-2xl bg-[#FBF7EF] p-3 pr-8 shadow-[0_0_0_1px_rgba(226,194,122,.5),0_30px_50px_-20px_rgba(0,0,0,.5)]">
+              <span className="absolute -left-1.5 bottom-4 h-3 w-3 rotate-45 bg-[#FBF7EF] shadow-[-1px_1px_0_rgba(226,194,122,.5)]" />
+              <button type="button" aria-label="Close" onClick={dismissGreet} className="absolute right-2 top-2 grid h-6 w-6 place-items-center rounded-full text-stone transition hover:bg-brownDeep hover:text-gold"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden><path d="M6 6l12 12M18 6 6 18" /></svg></button>
               <button type="button" onClick={openChat} className="flex items-start gap-2 text-left">
-                <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-sand bg-cream text-[10px] font-bold text-ink">PF</span>
+                <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brownDeep text-[10px] font-bold text-gold shadow-[0_0_0_1.5px_#B08A3E]">PF</span>
                 <span className="text-[12.5px] leading-snug text-ink">
                   <b>Hi there!</b> Need help with a build or an order? Message us — we reply within the hour.
                 </span>
@@ -170,9 +170,9 @@ export default function ContactRail({ site }: { site: SiteContent }) {
           {/* Bubble text — kanan ng icon, may maliit na tuldok na nakaturo. */}
           <span
             role="tooltip"
-            className={`pointer-events-none absolute left-[52px] whitespace-nowrap rounded-lg bg-ink px-3 py-1.5 text-[12px] font-semibold text-cream shadow-lg transition-opacity ${open === it.key && !(it.badge && greet) ? "opacity-100" : "opacity-0"}`}
+            className={`pointer-events-none absolute left-[52px] whitespace-nowrap rounded-full bg-brownDeep px-3.5 py-1.5 text-[12px] font-semibold text-[#F7EEDC] shadow-[inset_0_0_0_1px_rgba(226,194,122,.4),0_12px_22px_-12px_rgba(0,0,0,.7)] transition-opacity ${open === it.key && !(it.badge && greet) ? "opacity-100" : "opacity-0"}`}
           >
-            <span className="absolute -left-1 top-1/2 h-2 w-2 -translate-y-1/2 rotate-45 bg-ink" />
+            <span className="absolute -left-1 top-1/2 h-2 w-2 -translate-y-1/2 rotate-45 bg-brownDeep" />
             {it.label} · {it.text}
           </span>
         </div>
