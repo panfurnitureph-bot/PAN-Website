@@ -361,7 +361,7 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
             </div>
           </div>
         )}
-        <a href="/measuring" className="inline-block mt-5 text-[11.5px] font-bold tracking-[0.14em] uppercase text-ink border-b-[1.5px] border-goldDeep pb-0.5 hover:text-goldDeep">
+        <a href="/measuring" className="inline-block mt-5 text-[13px] font-semibold text-ink border-b-[1.5px] border-goldDeep pb-px hover:text-goldDeep">
           Measure for delivery
         </a>
       </div>
@@ -369,7 +369,7 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
       {/* KANAN: diagram */}
       <div>
         {isMattress ? (
-          <div className="bg-white border border-sand p-4"><MattressDiagram sizes={bedSizes} focus={sizeFocus} onFocus={setSizeFocus} thickness={mattT} /></div>
+          <div className="pf-card p-4"><MattressDiagram sizes={bedSizes} focus={sizeFocus} onFocus={setSizeFocus} thickness={mattT} /></div>
         ) : isBed && selected && product.images.length > 0 ? (
           // KAMA (2026-09-04): litrato rin - headboard view + haba, sukat ng
           // NAPILING size (A-E), live sa customizer (headboard/base height).
@@ -384,7 +384,7 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
             ].filter((r) => /[0-9]/.test(r.value))}
           />
         ) : isBed ? (
-          <div className="bg-white border border-sand p-4"><FrameDiagram
+          <div className="pf-card p-4"><FrameDiagram
             sizes={bedSizes}
             focus={sizeFocus}
             onFocus={setSizeFocus}
@@ -423,6 +423,11 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
 // bundled site.json ang default kapag wala pa sa web_content doc.
 type TabCol = { title: string; heading?: string; body?: string; note?: string; note2?: string; heading2?: string; body2?: string; linkLabel?: string; linkHref?: string };
 const rich = (t: string) => t.split(/\*\*(.+?)\*\*/g).map((part, i) => (i % 2 ? <strong key={i} className="text-ink">{part}</strong> : part));
+const TAB_ICON: Record<string, JSX.Element> = {
+  description: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M6 3h9l4 4v14H6z" /><path d="M14 3v5h5M9 12h7M9 16h7" /></svg>,
+  dimensions: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden><rect x="3" y="8" width="18" height="8" rx="2" /><path d="M7 8v3M11 8v4M15 8v3" /></svg>,
+  shipping: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M1 7h12v9H1zM13 10h5l3 3v3h-8z" /><circle cx="6" cy="18" r="1.8" /><circle cx="17" cy="18" r="1.8" /></svg>,
+};
 const ICONS: Record<string, JSX.Element> = {
   shipping: <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3"><path d="M1 7h12v9H1zM13 10h5l3 3v3h-8z" /><circle cx="6" cy="18" r="1.8" /><circle cx="17" cy="18" r="1.8" /></svg>,
   guarantee: <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3"><path d="M21 12a9 9 0 11-3-6.7" /><path d="M21 4v4h-4" /><path d="M12 10.5c-.8-.9-2.2-.9-3 0-.7.8-.7 2 0 2.8L12 16l3-2.7c.7-.8.7-2 0-2.8-.8-.9-2.2-.9-3 0z" /></svg>,
@@ -448,37 +453,57 @@ export default function ProductTabs({ product, site, mto }: { product: Product; 
   return (
     // MOCKUP 2026-09-04: linen na kahon na may border, tab bar sa kaliwa na may
     // gold na underline, uppercase na maliliit na heading sa bawat pane.
-    <section id="dimensions" className="bg-linen border border-sand mt-14 scroll-mt-40">
-      <div className="flex gap-1 border-b border-sand px-5 overflow-x-auto">
+    // PREMIUM (Joe 2026-10-07, "eto naman" — ang Product page ng mockup): tab bar
+    // na may icon at gintong guhit; ang Description ay "About this piece" na may
+    // tsek na listahan at katabing "Product details" na card; ang Shipping ay
+    // tatlong card. Parehong teksto at pinagmumulan ng dati.
+    <section id="dimensions" className="mt-12 md:mt-14 scroll-mt-40">
+      <div className="flex gap-1 border-b border-[#E6DCCB] overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {TABS.map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`whitespace-nowrap px-4 py-[18px] text-sm border-b-2 -mb-px transition-colors ${
-              tab === t.id ? "border-goldDeep text-ink font-semibold" : "border-transparent text-stone hover:text-ink"
+            className={`relative inline-flex shrink-0 items-center gap-2.5 whitespace-nowrap px-3 sm:px-4 py-4 text-[14px] transition-colors ${
+              tab === t.id ? "text-ink font-semibold after:absolute after:inset-x-3 after:bottom-0 after:h-[2px] after:rounded-full after:bg-[linear-gradient(90deg,#B08A3E,#E2C27A)]" : "text-stone hover:text-ink"
             }`}
           >
+            <span className={tab === t.id ? "text-goldDeep" : "text-stone/70"}>{TAB_ICON[t.id]}</span>
             {t.label}
           </button>
         ))}
       </div>
 
-      <div className="px-5 py-6 md:px-9 md:py-8 text-sm text-stone leading-relaxed [&_h3]:text-[13px] [&_h3]:font-bold [&_h3]:tracking-[0.12em] [&_h3]:uppercase [&_h3]:text-ink [&_h3]:mb-3">
+      <div className="py-7 md:py-9 text-sm text-stone leading-relaxed [&_h3]:text-[11px] [&_h3]:font-bold [&_h3]:tracking-[0.16em] [&_h3]:uppercase [&_h3]:text-goldDeep [&_h3]:mb-3">
         {tab === "description" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-9">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] gap-8 lg:gap-12 items-start">
             <div>
-              <h3>Description</h3>
-              <p className="max-w-[56ch] leading-[1.65] whitespace-pre-line">{product.description}</p>
-            </div>
-            <div>
-              <h3>Features</h3>
-              <ul className="list-disc pl-[18px] leading-[1.8]">
-                {product.colors.length > 0 && <li>Upholstered in {product.colors.length === 1 ? product.colors[0] : `${product.colors.length} colors — ${product.colors.slice(0, 3).join(", ")}${product.colors.length > 3 ? "…" : ""}`}</li>}
-                {product.materials && <li>{product.materials.split(/[;\n]/)[0].trim()}</li>}
-                <li>{(product.stock ?? 0) > 0 ? "Ready unit — ships within the week" : "Made to order in our San Pedro, Laguna workshop · 4–6 weeks"}</li>
-                <li>Delivered and set up by our own team, nationwide</li>
-                <li>6-month warranty on frame, foam and workmanship</li>
+              <h3>About this piece</h3>
+              <p className="max-w-[60ch] text-[15px] leading-[1.7] whitespace-pre-line">{product.description}</p>
+              <ul className="mt-5 grid gap-2.5 text-[14.5px] text-ink">
+                {[
+                  product.colors.length > 0 ? `Upholstered in ${product.colors.length === 1 ? product.colors[0] : `${product.colors.length} colors — ${product.colors.slice(0, 3).join(", ")}${product.colors.length > 3 ? "…" : ""}`}` : "",
+                  product.materials ? product.materials.split(/[;\n]/)[0].trim() : "",
+                  (product.stock ?? 0) > 0 ? "Ready unit — ships within the week" : "Made to order in our San Pedro, Laguna workshop · 4–6 weeks",
+                  "Delivered and set up by our own team, nationwide",
+                  "6-month warranty on frame, foam and workmanship",
+                ].filter(Boolean).map((t) => (
+                  <li key={t} className="flex items-start gap-3"><i aria-hidden className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-goldSoft text-goldDeep shadow-[inset_0_0_0_1px_rgba(176,138,62,.35)]"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7" /></svg></i>{t}</li>
+                ))}
               </ul>
+            </div>
+            <div className="pf-card p-5 sm:p-6">
+              <h3>Product details</h3>
+              <dl className="divide-y divide-[#EBE2D2] text-[13.5px]">
+                {[
+                  ["Category", (product.categoryTitle ?? product.category.replace(/-/g, " "))],
+                  ["Availability", (product.stock ?? 0) > 0 ? "In stock" : "Made to order"],
+                  ["Ships", (product.stock ?? 0) > 0 ? "Within the week" : "4–6 weeks"],
+                  ["Material", product.materials ? product.materials.split(/[;\n]/)[0].trim() : ""],
+                  ["Colors", product.colors.length > 1 ? `${product.colors.length} options` : product.colors[0] ?? ""],
+                ].filter(([, v]) => v).map(([k, v]) => (
+                  <div key={k} className="flex items-baseline justify-between gap-4 py-3"><dt className="text-stone">{k}</dt><dd className="text-right font-semibold capitalize text-ink">{v}</dd></div>
+                ))}
+              </dl>
             </div>
           </div>
         )}
@@ -486,13 +511,14 @@ export default function ProductTabs({ product, site, mto }: { product: Product; 
         {tab === "dimensions" && <DimensionsPanel product={product} mto={mto} />}
 
         {tab === "shipping" && (
-          <div className="grid md:grid-cols-3 gap-9">
+          <div className="grid md:grid-cols-3 gap-4 lg:gap-5">
             {(["shipping", "guarantee", "warranty"] as const).map((k) => {
               const c = tabs[k];
               if (!c) return null;
               return (
-                <div key={k}>
-                  <h3 className="flex items-center gap-3">{ICONS[k]}{c.title}</h3>
+                <div key={k} className="pf-card p-5 sm:p-6">
+                  <span className="mb-4 grid h-11 w-11 place-items-center rounded-full bg-goldSoft text-brownDeep shadow-[inset_0_0_0_1px_rgba(176,138,62,.35)] [&_svg]:h-[22px] [&_svg]:w-[22px]">{ICONS[k]}</span>
+                  <h3 className="!text-[17px] !normal-case !tracking-[-0.01em] !text-ink font-cormorant !font-semibold">{c.title}</h3>
                   {c.heading && <p className="font-bold text-ink">{c.heading}</p>}
                   {c.body && <p className={c.heading ? "mt-2" : ""}>{rich(c.body)}</p>}
                   {c.note && <p className="mt-2">{rich(c.note)}</p>}
@@ -500,7 +526,7 @@ export default function ProductTabs({ product, site, mto }: { product: Product; 
                   {c.heading2 && <p className="font-bold text-ink mt-3">{c.heading2}</p>}
                   {c.body2 && <p className="mt-2">{rich(c.body2)}</p>}
                   {c.linkLabel && c.linkHref && (
-                    <a href={c.linkHref} className="inline-block mt-4 text-xs font-bold uppercase tracking-widest2 border-b border-ink pb-0.5 text-ink hover:text-cognac hover:border-cognac">{c.linkLabel}</a>
+                    <a href={c.linkHref} className="inline-block mt-4 text-[13px] font-semibold border-b-[1.5px] border-goldDeep pb-px text-ink hover:text-goldDeep">{c.linkLabel}</a>
                   )}
                 </div>
               );

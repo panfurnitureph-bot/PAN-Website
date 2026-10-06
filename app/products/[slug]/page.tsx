@@ -60,15 +60,15 @@ export default async function ProductPage(props: { params: Promise<{ slug: strin
     COLLECTIONS[product.category]?.title ?? product.category.replace(/-/g, " ");
 
   return (
-    <div className="max-w-7xl mx-auto px-6 pt-8 pb-4">
+    <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-6 md:pt-8 pb-6">
       {/* Breadcrumbs */}
-      <nav className="text-xs text-stone mb-6">
-        <Link href="/" className="hover:text-cognac">Home</Link>
-        <span className="mx-2">/</span>
-        <Link href={`/collections/${product.category}`} className="hover:text-cognac">
+      <nav className="text-[12.5px] text-stone mb-5" aria-label="Breadcrumb">
+        <Link href="/" className="hover:text-goldDeep">Home</Link>
+        <span className="mx-1.5">/</span>
+        <Link href={`/collections/${product.category}`} className="hover:text-goldDeep">
           {categoryTitle}
         </Link>
-        <span className="mx-2">/</span>
+        <span className="mx-1.5">/</span>
         <span className="text-ink">{product.name}</span>
       </nav>
 

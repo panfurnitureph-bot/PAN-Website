@@ -864,9 +864,9 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
 
   // ── Shipping estimator (kapareho ng classic page; rates sa site.json) ──
   const shipBlock = (
-    <div className="mt-4 text-sm">
-      <button type="button" onClick={() => setShipOpen((v) => !v)} className="flex items-center gap-2 text-ink hover:text-cognac transition-colors">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" className="text-olive">
+    <div className="mt-5 text-sm">
+      <button type="button" onClick={() => setShipOpen((v) => !v)} aria-expanded={shipOpen} className="flex items-center gap-2.5 text-ink hover:text-goldDeep transition-colors">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="text-goldDeep" aria-hidden>
           <path d="M1 7h12v9H1zM13 10h5l3 3v3h-8z" />
           <circle cx="6" cy="18" r="1.8" />
           <circle cx="17" cy="18" r="1.8" />
@@ -877,29 +877,46 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             /quote-request; ang pagtatanong dito rin ay dalawang beses na
             paghingi ng parehong bagay. Kaya wala nang "optional" na tanda:
             walang hinihinging sagot, pagtataya lang ito. */}
-        <span className="border-b border-ink/40">Estimate your shipping</span>
-        <span className="text-stone text-xs">{shipOpen ? "▲" : "▼"}</span>
+        <span className="border-b-[1.5px] border-goldDeep pb-px text-[14px] font-semibold">Estimate your shipping</span>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className={`text-stone transition-transform ${shipOpen ? "rotate-180" : ""}`} aria-hidden><path d="M6 9l6 6 6-6" /></svg>
       </button>
       {shipOpen && (
-        <div className="mt-3 border border-stone/25 rounded p-3 bg-linen/40 space-y-2">
-          <select value={shipProvince} onChange={(e) => { setShipProvince(e.target.value); setShipCity(""); }} className="w-full border border-stone/30 bg-white px-3 py-2 text-sm rounded focus:outline-none focus:border-cognac">
+        <div className="pf-card mt-3 p-4 grid gap-3">
+          <div className="grid gap-3 sm:grid-cols-2">
+          <label className="relative block">
+            <span className="mb-1.5 block text-[10.5px] font-bold tracking-[0.16em] uppercase text-goldDeep">Province</span>
+            <span className="relative block">
+          <select value={shipProvince} onChange={(e) => { setShipProvince(e.target.value); setShipCity(""); }} className="w-full h-12 appearance-none rounded-xl bg-white pl-3.5 pr-9 text-[14px] font-medium text-ink shadow-[inset_0_0_0_1px_#E0D5C1] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E] disabled:bg-[#F6F0E4] disabled:text-stone">
             <option value="">Select province</option>
             {SHIP_PROVINCES.map((p) => (<option key={p.name} value={p.name}>{p.name}</option>))}
           </select>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-stone" aria-hidden><path d="M6 9l6 6 6-6" /></svg>
+            </span>
+          </label>
+          <label className="relative block">
+            <span className="mb-1.5 block text-[10.5px] font-bold tracking-[0.16em] uppercase text-goldDeep">City / Town</span>
+            <span className="relative block">
           <select
             value={shipCity}
             disabled={!shipProvince}
             onChange={(e) => { setShipCity(e.target.value); try { localStorage.setItem("pb_ship_loc", JSON.stringify({ province: shipProvince, city: e.target.value })); } catch {} }}
-            className="w-full border border-stone/30 bg-white px-3 py-2 text-sm rounded focus:outline-none focus:border-cognac disabled:bg-sand/40 disabled:text-stone"
+            className="w-full h-12 appearance-none rounded-xl bg-white pl-3.5 pr-9 text-[14px] font-medium text-ink shadow-[inset_0_0_0_1px_#E0D5C1] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E] disabled:bg-[#F6F0E4] disabled:text-stone"
           >
             <option value="">{shipProvince ? "Select city / town" : "Select a province first"}</option>
             {shipCityList.map((c) => (<option key={c.name} value={c.name}>{c.name}</option>))}
           </select>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-stone" aria-hidden><path d="M6 9l6 6 6-6" /></svg>
+            </span>
+          </label>
+          </div>
+          {shipFee === null && (
+            <p className="flex items-center gap-2 text-[12.5px] text-stone"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-goldDeep" aria-hidden><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></svg>Choose your province and city to see the delivery fee.</p>
+          )}
           {shipFee !== null && (
-            <div className="pt-2 border-t border-sand space-y-1.5">
+            <div className="pt-3 border-t border-[#E6DCCB] space-y-1.5">
               <p className="flex justify-between items-baseline">
                 <span className="text-stone">Estimated shipping to {shipCity}</span>
-                <span className="font-bold text-cognac">{formatPrice(shipFee)}</span>
+                <span className="font-cormorant text-[20px] font-bold text-brownDeep tabular-nums">{formatPrice(shipFee)}</span>
               </p>
               <p className="text-[11px] text-stone leading-snug">
                 Estimate only. Final fee is confirmed after we check your exact address — you&apos;ll pin your location at
@@ -916,7 +933,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     <button
       onClick={() => toggleWishlist(product.slug)}
       aria-label="Add to wishlist"
-      className="w-12 h-12 shrink-0 border border-sand bg-white flex items-center justify-center hover:border-goldDeep"
+      className="w-12 h-12 shrink-0 rounded-xl bg-white shadow-[inset_0_0_0_1px_#E0D5C1] flex items-center justify-center transition hover:shadow-[inset_0_0_0_1px_#B08A3E]"
     >
       <svg width="20" height="20" viewBox="0 0 24 24" fill={wished ? "#B87333" : "none"} stroke={wished ? "#B87333" : "#1A1A1A"} strokeWidth="1.6">
         <path d="M12 21C7 16.5 3 13 3 8.8 3 6 5.2 4 7.8 4c1.7 0 3.2.9 4.2 2.3C13 4.9 14.5 4 16.2 4 18.8 4 21 6 21 8.8c0 4.2-4 7.7-9 12.2z" />
@@ -931,12 +948,13 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   // Mockup 2026-09-04: "In stock · N units" na berdeng bar + Ships this week.
   const unitsNow = pickStock ?? product.stock ?? 0;
   const etaCard = (
-    <div className="mt-4 border border-sand bg-white">
-      <div className={`flex items-center gap-2 px-3.5 py-2.5 text-[13px] font-semibold ${shipsNow ? "bg-[#E6F2EA] text-[#2F7D4F]" : "bg-goldSoft text-brown"}`}>
-        <span className={`h-2 w-2 rounded-full ${shipsNow ? "bg-[#2F7D4F]" : "bg-goldDeep"}`} />
+    <div className="pf-card mt-4 overflow-hidden">
+      <div className={`flex items-center gap-2 px-4 py-2.5 text-[13px] font-semibold ${shipsNow ? "bg-[#E6F2EA] text-[#2F7D4F]" : "bg-goldSoft text-brown"}`}>
+        <span className={`h-2 w-2 rounded-full ${shipsNow ? "bg-[#2F7D4F] pf-ping" : "bg-goldDeep"}`} />
         {shipsNow ? `In stock · ${unitsNow} unit${unitsNow === 1 ? "" : "s"}` : "Made to order"}
+        <span className="ml-auto text-[10.5px] font-bold tracking-[0.14em] uppercase opacity-80">{shipsNow ? "Ready to ship" : "4–6 weeks"}</span>
       </div>
-      <div className="px-3.5 py-3 text-[12.5px] text-stone">
+      <div className="px-4 py-3.5 text-[12.5px] text-stone">
         {shipsNow ? (
           <>
             <b className="block text-ink font-semibold text-[13.5px]">Ships this week</b>
@@ -955,14 +973,14 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
   if (locked || view === "ready") {
     return (
       <div>
-        <div className="flex items-baseline gap-3 flex-wrap border-y border-sand py-3.5 mb-4">
-          <span className="text-[28px] font-semibold">{formatPrice(readyPrice)}</span>
+        <div className="flex items-baseline gap-3 flex-wrap border-y border-[#E6DCCB] py-4 mb-5">
+          <span className="font-cormorant text-[32px] font-semibold tabular-nums tracking-[-0.01em]"><span className="mr-0.5 align-[0.5em] text-[0.55em] font-semibold text-stone">₱</span>{formatPrice(readyPrice).replace(/^₱/, "")}</span>
         </div>
         {/* As-is spec sheet ng yari nang unit — MOCK STYLE: bold value + gray
             label sub, presyo/"included" sa kanan (galing sa config prices). */}
         {readySizeOpts.length > 0 && (
-          <div className="rounded-lg border border-sand overflow-hidden">
-            <div className="p-3 space-y-2">
+          <div className="overflow-hidden">
+            <div className="space-y-2">
               {readySpecs.map((l) => {
                 const m = /^([^:]+):\s*(.+)$/.exec(l);
                 const label = m ? m[1].trim() : "";
@@ -972,8 +990,8 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                   // MATTRESS: size buttons (hindi dropdown) — kita agad lahat ng
                   // size at presyo, isang pindot lang.
                   return (
-                    <div key={l} className="rounded border border-sand bg-transparent px-4 py-3.5 text-sm">
-                      <span className="block text-xs text-stone">Size</span>
+                    <div key={l} className="text-sm">
+                      <span className="block text-[13.5px] font-semibold">Size <span className="font-normal text-stone ml-1.5">{readySizePick?.label.replace(/x/i, "×")}</span></span>
                       {/* LISTAHAN (Joe 2026-09-24, "gawin na parang listing"): isang size
                           kada hilera — size sa kaliwa, presyo sa kanan, walang pipilit na chips. */}
                       <div className="mt-3 flex flex-col gap-2">
@@ -990,14 +1008,14 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                                 // Sabihan ang Dimensions tab — sumusunod ang diagram/table.
                                 window.dispatchEvent(new CustomEvent("pb-size-change", { detail: o.label }));
                               }}
-                              className={`flex w-full items-center justify-between gap-4 rounded-lg border px-4 py-2.5 text-left transition-colors ${on ? "border-espresso bg-espresso text-cream" : "border-stone/40 text-ink hover:border-ink"}`}
+                              className={`flex w-full items-center justify-between gap-4 rounded-xl px-4 py-3 text-left transition ${on ? "pf-dark" : "bg-white text-ink shadow-[inset_0_0_0_1px_#E0D5C1] hover:shadow-[inset_0_0_0_1px_#B08A3E]"}`}
                             >
                               <span className="text-[13px] font-bold tracking-wide">
                                 {MATTRESS_SIZE_NAME[o.label.replace(/\s+/g, "").toLowerCase()] ? (
-                                  <>{MATTRESS_SIZE_NAME[o.label.replace(/\s+/g, "").toLowerCase()]} <span className={`font-normal ${on ? "text-cream/80" : "text-stone"}`}>({o.label.replace(/x/i, "×")})</span></>
+                                  <>{MATTRESS_SIZE_NAME[o.label.replace(/\s+/g, "").toLowerCase()]} <span className={`font-normal ${on ? "text-[#CFC2A4]" : "text-stone"}`}>({o.label.replace(/x/i, "×")})</span></>
                                 ) : o.label.replace(/x/i, "×")}
                               </span>
-                              {o.price > 0 && <span className={`text-[12px] font-semibold tabular-nums ${on ? "text-cream/90" : "text-stone"}`}>{formatPrice(o.price)}</span>}
+                              {o.price > 0 && <span className={`text-[13px] font-semibold tabular-nums ${on ? "text-gold" : "text-stone"}`}>{formatPrice(o.price)}</span>}
                             </button>
                           );
                         })}
@@ -1007,7 +1025,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                 }
                 if (/^sizes$/i.test(label) && readySizeOpts.length) {
                   return (
-                    <label key={l} className="flex items-center gap-3 rounded border border-sand bg-transparent px-4 py-3 text-sm">
+                    <label key={l} className="flex items-center gap-3 rounded-xl bg-white px-4 py-3 text-sm shadow-[inset_0_0_0_1px_#E0D5C1] focus-within:shadow-[inset_0_0_0_1.5px_#B08A3E]">
                       <span className="min-w-0 flex-1">
                         <select
                           value={readySizePick?.label ?? ""}
@@ -1036,8 +1054,8 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           // POLY & BARK STYLE (2026-09-03): "Color: <pangalan>" na linya, maliliit
           // na parisukat na tile ng produkto sa bawat kulay, madilim na border
           // sa napili; ang pangalan ay nagpapalit sa click.
-          <div className="mt-4">
-            <p className="text-[13px] font-semibold">
+          <div className="mt-5">
+            <p className="text-[13.5px] font-semibold">
               Color <span className="font-normal text-stone ml-1.5">{readyFabricPick?.name ?? ""}</span>
               {pickStock !== undefined && pickStock <= 0 && <span className="ml-2 text-xs text-stone">Out of stock in this color — made to order</span>}
               {pickStock !== undefined && pickStock > 0 && pickStock <= 3 && <span className="ml-2 text-xs text-cognac">Only {pickStock} left</span>}
@@ -1058,7 +1076,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                       }}
                       title={out ? `${l.name} — out of stock, made to order` : l.name}
                       aria-label={l.name}
-                      className={`relative h-11 w-11 overflow-hidden rounded-full bg-white border border-sand transition ${on ? "ring-2 ring-ink ring-offset-2 ring-offset-cream" : "hover:border-stone/60"} ${out ? "opacity-50" : ""}`}
+                      className={`relative h-12 w-12 overflow-hidden rounded-full bg-white border-[1.5px] transition ${on ? "border-brownDeep ring-2 ring-offset-2 ring-offset-cream ring-goldDeep" : "border-sand hover:border-goldDeep"} ${out ? "opacity-50" : ""}`}
                     >
                       {preview ? (
                         <Image src={preview} alt={l.name} fill className="object-cover" sizes="44px" />
@@ -1070,7 +1088,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                     </button>
                     {/* Hover popup - produkto sa kulay na ito + pangalan + material */}
                     {hoverFab === l.name && preview && (
-                      <div className="pointer-events-none absolute bottom-full left-0 z-30 mb-2 hidden w-56 overflow-hidden rounded-lg border border-sand bg-white shadow-2xl md:block">
+                      <div className="pointer-events-none absolute bottom-full left-0 z-30 mb-2 hidden w-56 overflow-hidden rounded-2xl bg-[#FBF7EF] shadow-[0_0_0_1px_rgba(226,194,122,.5),0_30px_50px_-20px_rgba(0,0,0,.5)] md:block">
                         <div className="relative aspect-square bg-white">
                           <Image src={preview} alt={l.name} fill className="object-contain p-2" sizes="224px" />
                         </div>
@@ -1088,24 +1106,24 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
         )}
         {shipBlock}
         {etaCard}
-        <div className="mt-3 flex gap-2.5">
-          <div className="flex items-center h-12 border border-sand bg-white">
-            <button onClick={() => setQty(Math.max(1, qty - 1))} className="w-10 h-full hover:text-goldDeep" aria-label="Decrease quantity">−</button>
-            <span className="w-11 text-center text-sm font-semibold">{qty}</span>
-            <button onClick={() => setQty(qty + 1)} className="w-10 h-full hover:text-goldDeep" aria-label="Increase quantity">+</button>
+        <div className="mt-3 grid grid-cols-[auto_minmax(0,1fr)_auto] sm:grid-cols-[auto_minmax(0,1fr)_minmax(0,1fr)_auto] gap-2.5">
+          <div className="flex items-center h-12 rounded-xl bg-white shadow-[inset_0_0_0_1px_#E0D5C1]">
+            <button onClick={() => setQty(Math.max(1, qty - 1))} className="w-10 h-full text-[18px] hover:text-goldDeep" aria-label="Decrease quantity">−</button>
+            <span className="w-9 text-center text-sm font-semibold tabular-nums">{qty}</span>
+            <button onClick={() => setQty(qty + 1)} className="w-10 h-full text-[18px] hover:text-goldDeep" aria-label="Increase quantity">+</button>
           </div>
-          <button onClick={() => handleBuyReady(false)} className="flex-1 h-12 border-[1.5px] border-brown bg-white px-4 text-xs font-bold tracking-[0.14em] uppercase text-brown transition-colors hover:bg-brown hover:text-cream">
+          <button onClick={() => handleBuyReady(false)} className="h-12 rounded-xl bg-white px-4 text-[13.5px] font-bold text-brownDeep shadow-[inset_0_0_0_1.5px_#3E3220] transition hover:bg-brownDeep hover:text-gold">
             {added ? "Added ✓" : "Add to cart"}
           </button>
-          <button onClick={() => handleBuyReady(true)} className="flex-1 h-12 bg-brown px-4 text-xs font-bold tracking-[0.14em] uppercase text-cream transition-colors hover:bg-brownDeep">
-            Buy now
+          <button onClick={() => handleBuyReady(true)} className="pf-dark pf-btn col-span-3 sm:col-span-1 inline-flex h-12 items-center justify-center gap-2 rounded-xl px-4 text-[13.5px] font-bold hover:text-gold">
+            Buy now <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg>
           </button>
-          {heartBtn}
+          <span className="row-start-1 col-start-3 sm:col-start-4">{heartBtn}</span>
         </div>
         {!locked && (
           <button
             onClick={() => setView("mto")}
-            className="mt-3 flex w-full items-center justify-center gap-2 rounded border border-ink py-3 px-4 text-sm font-bold tracking-widest2 transition-colors hover:bg-ink hover:text-cream"
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-white py-3 px-4 text-[13.5px] font-semibold text-ink shadow-[inset_0_0_0_1px_#C9B98F] transition hover:shadow-[inset_0_0_0_1.5px_#B08A3E] hover:text-goldDeep"
           >
             ✎ MADE TO ORDER — CUSTOMIZE
           </button>

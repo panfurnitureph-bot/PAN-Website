@@ -272,9 +272,9 @@ export default function ProductDetail({
           <button
             onClick={() => setLightbox(false)}
             aria-label="Close"
-            className="absolute top-5 right-6 text-cream text-4xl leading-none z-10"
+            className="absolute top-5 right-6 z-10 grid h-11 w-11 place-items-center rounded-full bg-white/15 text-cream backdrop-blur-sm hover:bg-white/30"
           >
-            ×
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><path d="M6 6l12 12M18 6 6 18" /></svg>
           </button>
           <button
             onClick={() => setImageIdx((imageIdx - 1 + galleryImages.length) % galleryImages.length)}
@@ -299,10 +299,10 @@ export default function ProductDetail({
       {/* ---------- GALLERY ---------- */}
       <div>
         {/* MOBILE: swipe carousel na may dots — kagaya ng tunay na site */}
-        <div className="lg:hidden -mx-6">
+        <div className="lg:hidden">
           <div
             ref={galleryTrack}
-            className="flex overflow-x-auto snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="flex overflow-x-auto snap-x snap-mandatory rounded-[20px] shadow-[0_0_0_1px_#E4DACA,0_22px_38px_-28px_rgba(62,50,32,.5)] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             onScroll={(e) => {
               const el = e.currentTarget;
               const idx = Math.round(el.scrollLeft / el.clientWidth);
@@ -317,7 +317,7 @@ export default function ProductDetail({
               <button
                 key={img}
                 onClick={() => setLightbox(true)}
-                className="relative w-full shrink-0 snap-center aspect-square bg-white"
+                className="relative w-full shrink-0 snap-center aspect-square pf-stage"
                 aria-label={`Image ${i + 1}`}
               >
                 <Image
@@ -329,7 +329,7 @@ export default function ProductDetail({
                   // habang nag-sw-swipe, nasisira ang snap-point cache ng iOS
                   // WebKit at nagfi-freeze ang gallery pagkatapos ng unang hagod.
                   loading="eager"
-                  className="object-contain"
+                  className="object-contain p-5 mix-blend-multiply"
                   sizes="100vw"
                 />
               </button>
@@ -337,14 +337,17 @@ export default function ProductDetail({
           </div>
           {/* Dots */}
           {galleryImages.length > 1 && (
-            <div className="flex justify-center gap-1.5 mt-3">
-              {galleryImages.map((_, i) => (
-                <span
-                  key={i}
-                  className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                    i === imageIdx ? "bg-ink" : "bg-stone/40"
-                  }`}
-                />
+            <div className="flex gap-2.5 mt-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {galleryImages.map((img, i) => (
+                <button
+                  key={img}
+                  type="button"
+                  onClick={() => galleryTrack.current?.scrollTo({ left: i * galleryTrack.current.clientWidth, behavior: "smooth" })}
+                  className={`relative w-16 h-16 shrink-0 overflow-hidden rounded-[14px] pf-stage transition ${i === imageIdx ? "shadow-[0_0_0_2px_#3E3220]" : "shadow-[0_0_0_1px_#E4DACA]"}`}
+                  aria-label={`Image ${i + 1}`}
+                >
+                  <Image src={img} alt="" fill className="object-contain p-1.5 mix-blend-multiply" sizes="64px" />
+                </button>
               ))}
             </div>
           )}
@@ -352,7 +355,7 @@ export default function ProductDetail({
 
         {/* DESKTOP (2026-09-04 mockup): 72px na puting thumbs sa kaliwa (hover =
             palit agad), puting stage na may hover-to-zoom; click = fullscreen. */}
-        <div className="hidden lg:grid grid-cols-[72px_1fr] gap-3.5 items-start">
+        <div className="hidden lg:grid grid-cols-[72px_1fr] gap-4 items-start">
           <div className="relative">
             <div
               ref={thumbRailRef}
@@ -363,17 +366,17 @@ export default function ProductDetail({
                   key={img}
                   onClick={() => setImageIdx(i)}
                   onMouseEnter={() => setImageIdx(i)}
-                  className={`relative w-[72px] h-[72px] bg-white border shrink-0 p-1.5 ${i === imageIdx ? "border-ink" : "border-sand hover:border-stone/60"}`}
+                  className={`relative w-[72px] h-[72px] shrink-0 overflow-hidden rounded-[14px] pf-stage transition ${i === imageIdx ? "shadow-[0_0_0_2px_#3E3220,0_10px_18px_-12px_rgba(62,50,32,.6)]" : "shadow-[0_0_0_1px_#E4DACA] hover:shadow-[0_0_0_1.5px_#B08A3E]"}`}
                   aria-label={`Image ${i + 1}`}
                 >
-                  <Image src={img} alt="" fill className="object-contain p-1.5" sizes="72px" />
+                  <Image src={img} alt="" fill className="object-contain p-2 mix-blend-multiply" sizes="72px" />
                 </button>
               ))}
             </div>
             {galleryImages.length > 7 && (
               <button
                 onClick={() => thumbRailRef.current?.scrollBy({ top: 220, behavior: "smooth" })}
-                className="absolute bottom-0 left-1/2 flex h-8 w-12 -translate-x-1/2 items-center justify-center bg-white/90 shadow-md hover:bg-white"
+                className="absolute bottom-0 left-1/2 flex h-8 w-12 -translate-x-1/2 items-center justify-center rounded-full bg-white/90 shadow-md hover:bg-white"
                 aria-label="Scroll thumbnails down"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6" /></svg>
@@ -384,16 +387,17 @@ export default function ProductDetail({
             onClick={() => setLightbox(true)}
             onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setZoom({ x: ((e.clientX - r.left) / r.width) * 100, y: ((e.clientY - r.top) / r.height) * 100 }); }}
             onMouseLeave={() => setZoom(null)}
-            className="relative aspect-square w-full bg-white border border-sand overflow-hidden cursor-zoom-in"
+            className="relative aspect-square w-full pf-stage overflow-hidden rounded-[22px] shadow-[0_0_0_1px_#E4DACA,0_30px_50px_-36px_rgba(62,50,32,.6)] cursor-zoom-in"
             aria-label="Open fullscreen gallery"
           >
-            <Image src={galleryImages[imageIdx]} alt={product.name} fill priority className="object-contain p-8" sizes="620px" />
+            <i aria-hidden className="pf-floor" />
+            <Image src={galleryImages[imageIdx]} alt={product.name} fill priority className="object-contain p-10 mix-blend-multiply" sizes="620px" />
             <span
               aria-hidden
               className={`pointer-events-none absolute inset-0 bg-white bg-no-repeat transition-opacity duration-150 ${zoom ? "opacity-100" : "opacity-0"}`}
               style={{ backgroundImage: `url("${galleryImages[imageIdx]}")`, backgroundSize: "220%", backgroundPosition: zoom ? `${zoom.x}% ${zoom.y}%` : "center" }}
             />
-            <span className="absolute bottom-3 right-3 bg-cream/90 text-stone text-[11px] px-2 py-1">Hover to zoom · click for full screen</span>
+            <span className="absolute bottom-3.5 right-3.5 rounded-full bg-white/90 px-3 py-1.5 text-[11px] text-stone shadow-[0_0_0_1px_#E4DACA]">Hover to zoom · click for full screen</span>
           </button>
         </div>
       </div>
@@ -401,8 +405,8 @@ export default function ProductDetail({
       {/* ---------- INFO ---------- */}
       <div>
         {/* Eyebrow (category) · pangalan · rating — mockup 2026-09-04 */}
-        {categoryTitle && <p className="text-[11px] font-bold tracking-[0.16em] uppercase text-goldDeep">{categoryTitle}</p>}
-        <h1 className="font-cormorant font-semibold text-3xl sm:text-4xl leading-[1.1] mt-1.5">
+        {categoryTitle && <p className="text-[11px] font-bold tracking-[0.18em] uppercase text-goldDeep">{categoryTitle}</p>}
+        <h1 className="font-cormorant font-semibold text-[30px] sm:text-[36px] leading-[1.1] tracking-[-0.02em] mt-2">
           {product.name}
           {mtoActive && mtoView === "mto" ? " — Made to Order" : ""}
         </h1>
@@ -421,8 +425,8 @@ export default function ProductDetail({
 
         {/* Price block */}
         {!hideOpts && (
-        <div className="flex items-baseline gap-3 flex-wrap border-y border-sand py-3.5">
-          <span className="text-[28px] font-semibold">{formatPrice(price)}</span>
+        <div className="flex items-baseline gap-3 flex-wrap border-y border-[#E6DCCB] py-4">
+          <span className="font-cormorant text-[32px] font-semibold tabular-nums tracking-[-0.01em]"><span className="mr-0.5 align-[0.5em] text-[0.55em] font-semibold text-stone">₱</span>{formatPrice(price).replace(/^₱/, "")}</span>
           {compareAt && compareAt > price && (
             <span className="text-xs text-stone">
               <span className="line-through">{formatPrice(compareAt)}</span> Comp Value{" "}
@@ -448,7 +452,7 @@ export default function ProductDetail({
         )}
         {/* Color circles (mockup 2026-09-04) — itinatago kung walang kulay */}
         {!hideOpts && product.colors.length > 0 && (
-          <p className="mt-4 text-[13px] font-semibold">
+          <p className="mt-5 text-[13.5px] font-semibold">
             Color <span className="font-normal text-stone ml-1.5">{color}</span>
           </p>
         )}
@@ -478,8 +482,8 @@ export default function ProductDetail({
                 <button
                   onClick={() => pickColor(i)}
                   aria-label={c}
-                  className={`relative w-11 h-11 bg-white rounded-full overflow-hidden border border-sand transition ${
-                    i === colorIdx ? "ring-2 ring-ink ring-offset-2 ring-offset-cream" : "hover:border-stone/60"
+                  className={`relative w-12 h-12 bg-white rounded-full overflow-hidden border-[1.5px] transition ${
+                    i === colorIdx ? "border-brownDeep ring-2 ring-offset-2 ring-offset-cream ring-goldDeep" : "border-sand hover:border-goldDeep"
                   }`}
                 >
                   <Image src={swatchImg} alt={c} fill className="object-cover" sizes="44px" />
@@ -487,7 +491,7 @@ export default function ProductDetail({
 
                 {/* Hover popup — malaking TELA swatch + pangalan + material */}
                 {hoverColor === i && (
-                  <div className="hidden md:block absolute left-0 bottom-full mb-3 z-30 w-48 bg-white rounded-lg shadow-2xl border border-sand overflow-hidden">
+                  <div className="hidden md:block absolute left-0 bottom-full mb-3 z-30 w-48 overflow-hidden rounded-2xl bg-[#FBF7EF] shadow-[0_0_0_1px_rgba(226,194,122,.5),0_30px_50px_-20px_rgba(0,0,0,.5)]">
                     <div className="relative aspect-square bg-sand">
                       <Image src={previewImg} alt={c} fill className="object-cover" sizes="192px" />
                     </div>
@@ -505,9 +509,9 @@ export default function ProductDetail({
         {/* Size — filled buttons */}
         {!hideOpts && hasSize && (
           <>
-            <hr className="border-sand my-5" />
-            <p className="text-sm">
-              Size: <span className="text-stone">{size}</span>
+            <hr className="border-[#E6DCCB] my-5" />
+            <p className="text-[13.5px] font-semibold">
+              Size <span className="font-normal text-stone ml-1.5">{size}</span>
             </p>
             <div className="flex gap-2 mt-3 flex-wrap">
               {SIZES.map((s) => (
@@ -520,10 +524,10 @@ export default function ProductDetail({
                       new CustomEvent("pb-size-change", { detail: s.id })
                     );
                   }}
-                  className={`px-6 py-2.5 text-sm rounded transition-colors ${
+                  className={`h-10 px-5 rounded-full text-[13.5px] font-semibold transition ${
                     s.id === size
-                      ? "bg-espresso text-cream"
-                      : "bg-olive/70 text-cream hover:bg-olive"
+                      ? "pf-dark"
+                      : "bg-white text-ink shadow-[inset_0_0_0_1px_#E0D5C1] hover:shadow-[inset_0_0_0_1px_#B08A3E]"
                   }`}
                 >
                   {s.id}
@@ -549,7 +553,7 @@ export default function ProductDetail({
             ).length;
             return (
             <div key={groupName}>
-              <hr className="border-sand my-5" />
+              <hr className="border-[#E6DCCB] my-5" />
               <button
                 type="button"
                 onClick={() =>
@@ -559,12 +563,12 @@ export default function ProductDetail({
                       : [...prev, groupName]
                   )
                 }
-                className="flex items-center justify-between w-full text-sm mb-3 group"
+                className="flex items-center justify-between w-full text-[13.5px] font-semibold mb-3 group"
               >
                 <span className="flex items-center gap-2">
                   {groupName}
                   {pickedInGroup > 0 && (
-                    <span className="text-xs bg-cognac/10 text-cognac font-bold px-2 py-0.5 rounded">
+                    <span className="text-[11px] bg-goldSoft text-brownDeep font-bold px-2 py-0.5 rounded-full">
                       {pickedInGroup} selected
                     </span>
                   )}
@@ -580,8 +584,8 @@ export default function ProductDetail({
                   return (
                     <label
                       key={a.id}
-                      className={`flex items-center gap-3 border rounded px-4 py-3 transition-colors ${
-                        blocked ? "border-stone/20 opacity-50 cursor-not-allowed" : on ? "border-cognac bg-cognac/5 cursor-pointer" : "border-stone/30 hover:border-stone/60 cursor-pointer"
+                      className={`flex items-center gap-3 rounded-2xl bg-white px-4 py-3 transition ${
+                        blocked ? "opacity-50 cursor-not-allowed shadow-[inset_0_0_0_1px_#E0D5C1]" : on ? "cursor-pointer shadow-[inset_0_0_0_1.5px_#B08A3E,0_12px_20px_-16px_rgba(62,50,32,.5)]" : "cursor-pointer shadow-[inset_0_0_0_1px_#E0D5C1] hover:shadow-[inset_0_0_0_1px_#B08A3E]"
                       }`}
                     >
                       <input
@@ -595,7 +599,7 @@ export default function ProductDetail({
                               : isFourDrawers(a) ? [...prev.filter((x) => !addOns.some((o) => o.id === x && isSibling(o))), a.id] : [...prev, a.id]
                           )
                         }
-                        className="accent-cognac w-4 h-4"
+                        className="pf-check"
                       />
                       <span className="flex-1">
                         <span className="block text-sm font-medium">{a.label}</span>
@@ -613,7 +617,7 @@ export default function ProductDetail({
                       {/* Dami — para sa per-unit na add-on (hal. /ft) */}
                       {a.perUnit && on && (
                         <span
-                          className="flex items-center border border-stone/40 rounded"
+                          className="flex items-center rounded-full bg-white shadow-[inset_0_0_0_1px_#E0D5C1]"
                           onClick={(e) => e.preventDefault()}
                         >
                           <button
@@ -669,7 +673,7 @@ export default function ProductDetail({
 
         {/* MTO: ang estimator ay nasa loob na ng MTO panel (tamang ayos). */}
         {!hideOpts && (<>
-        <hr className="border-sand my-5" />
+        <hr className="border-[#E6DCCB] my-5" />
 
         {/* Shipping estimator — pumili ng lugar, lalabas ang SF.
             Ang rates ay galing sa site.json (editable sa admin). */}
@@ -677,32 +681,43 @@ export default function ProductDetail({
           <button
             type="button"
             onClick={() => setShipOpen((v) => !v)}
-            className="flex items-center gap-2 text-ink hover:text-cognac transition-colors"
+            aria-expanded={shipOpen}
+            className="flex items-center gap-2.5 text-ink hover:text-goldDeep transition-colors"
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" className="text-olive">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="text-goldDeep" aria-hidden>
               <path d="M1 7h12v9H1zM13 10h5l3 3v3h-8z" />
               <circle cx="6" cy="18" r="1.8" />
               <circle cx="17" cy="18" r="1.8" />
             </svg>
-            <span className="border-b border-ink/40">Estimate your shipping</span>
-            <span className="text-stone text-xs">{shipOpen ? "▲" : "▼"}</span>
+            <span className="border-b-[1.5px] border-goldDeep pb-px text-[14px] font-semibold">Estimate your shipping</span>
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className={`text-stone transition-transform ${shipOpen ? "rotate-180" : ""}`} aria-hidden><path d="M6 9l6 6 6-6" /></svg>
           </button>
 
           {shipOpen && (
-            <div className="mt-3 border border-stone/25 rounded p-3 bg-linen/40 space-y-2">
+            <div className="pf-card mt-3 p-4 grid gap-3">
+              <div className="grid gap-3 sm:grid-cols-2">
+              <label className="relative block">
+                <span className="mb-1.5 block text-[10.5px] font-bold tracking-[0.16em] uppercase text-goldDeep">Province</span>
+              <span className="relative block">
               <select
                 value={shipProvince}
                 onChange={(e) => {
                   setShipProvince(e.target.value);
                   setShipCity("");
                 }}
-                className="w-full border border-stone/30 bg-white px-3 py-2 text-sm rounded focus:outline-none focus:border-cognac"
+                className="w-full h-12 appearance-none rounded-xl bg-white pl-3.5 pr-9 text-[14px] font-medium text-ink shadow-[inset_0_0_0_1px_#E0D5C1] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E] disabled:bg-[#F6F0E4] disabled:text-stone"
               >
                 <option value="">Select province</option>
                 {SHIP_PROVINCES.map((p: any) => (
                   <option key={p.name} value={p.name}>{p.name}</option>
                 ))}
               </select>
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-stone" aria-hidden><path d="M6 9l6 6 6-6" /></svg>
+              </span>
+              </label>
+              <label className="relative block">
+                <span className="mb-1.5 block text-[10.5px] font-bold tracking-[0.16em] uppercase text-goldDeep">City / Town</span>
+              <span className="relative block">
               <select
                 value={shipCity}
                 disabled={!shipProvince}
@@ -716,7 +731,7 @@ export default function ProductDetail({
                     );
                   } catch {}
                 }}
-                className="w-full border border-stone/30 bg-white px-3 py-2 text-sm rounded focus:outline-none focus:border-cognac disabled:bg-sand/40 disabled:text-stone"
+                className="w-full h-12 appearance-none rounded-xl bg-white pl-3.5 pr-9 text-[14px] font-medium text-ink shadow-[inset_0_0_0_1px_#E0D5C1] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E] disabled:bg-[#F6F0E4] disabled:text-stone"
               >
                 <option value="">
                   {shipProvince ? "Select city / town" : "Select a province first"}
@@ -725,13 +740,20 @@ export default function ProductDetail({
                   <option key={c.name} value={c.name}>{c.name}</option>
                 ))}
               </select>
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-stone" aria-hidden><path d="M6 9l6 6 6-6" /></svg>
+              </span>
+              </label>
+              </div>
+              {shipFee === null && (
+                <p className="flex items-center gap-2 text-[12.5px] text-stone"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-goldDeep" aria-hidden><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></svg>Choose your province and city to see the delivery fee.</p>
+              )}
               {shipFee !== null && (
-                <div className="pt-2 border-t border-sand space-y-1.5">
+                <div className="pt-3 border-t border-[#E6DCCB] space-y-1.5">
                   <p className="flex justify-between items-baseline">
                     <span className="text-stone">
                       Estimated shipping to {shipCity}
                     </span>
-                    <span className="font-bold text-cognac">
+                    <span className="font-cormorant text-[20px] font-bold text-brownDeep tabular-nums">
                       {formatPrice(shipFee)}
                     </span>
                   </p>
@@ -750,19 +772,19 @@ export default function ProductDetail({
         {/* Availability + lead time — enterprise style: malinaw na
             hierarchy, may icon, at trust signals sa ilalim */}
         {!hideOpts && ((product.stock ?? 1) > 0 ? (
-          <div className="mt-4 border border-sand bg-white">
-            <div className="flex items-center gap-2 px-3.5 py-2.5 bg-[#E6F2EA] text-[#2F7D4F] text-[13px] font-semibold">
-              <span className="h-2 w-2 rounded-full bg-[#2F7D4F]" />
+          <div className="pf-card mt-4 overflow-hidden">
+            <div className="flex items-center gap-2 px-4 py-2.5 bg-[#E6F2EA] text-[#2F7D4F] text-[13px] font-semibold">
+              <span className="h-2 w-2 rounded-full bg-[#2F7D4F] pf-ping" />
               In stock{product.stock !== undefined && product.stock > 0 ? ` · ${product.stock} unit${product.stock === 1 ? "" : "s"}` : ""}
-              {(product.stock ?? 99) <= 3 && <span className="ml-auto text-xs font-bold text-goldDeep">Only {product.stock} left</span>}
+              <span className="ml-auto text-[10.5px] font-bold tracking-[0.14em] uppercase">{(product.stock ?? 99) <= 3 ? `Only ${product.stock} left` : "Ready to ship"}</span>
             </div>
-            <div className="px-3.5 py-3 text-[12.5px] text-stone">
+            <div className="px-4 py-3.5 text-[12.5px] text-stone">
               <b className="block text-ink font-semibold text-[13.5px]">Delivery in 4–6 weeks</b>
               Made to order in San Pedro, Laguna — delivered and set up by our own team. Delivery fee shown at checkout.
             </div>
           </div>
         ) : (
-          <div className="mt-4 border border-red-200 rounded-lg overflow-hidden">
+          <div className="mt-4 border border-red-200 rounded-2xl overflow-hidden bg-white">
             <div className="flex items-center gap-2.5 px-4 py-3 bg-red-50 border-b border-red-100">
               <span className="w-2.5 h-2.5 rounded-full bg-red-600 shrink-0" />
               <span className="text-sm font-bold text-red-800">Out of stock</span>
@@ -776,28 +798,28 @@ export default function ProductDetail({
 
         {/* Qty + Add to cart / Sold out + heart */}
         {!hideOpts && (product.stock ?? 1) > 0 ? (
-          <div className="flex gap-2.5 mt-3">
-            <div className="flex items-center h-12 border border-sand bg-white">
-              <button onClick={() => setQtyState(Math.max(1, qty - 1))} className="w-10 h-full hover:text-goldDeep" aria-label="Decrease quantity">−</button>
-              <span className="w-11 text-center text-sm font-semibold">{qty}</span>
-              <button onClick={() => setQtyState(qty + 1)} className="w-10 h-full hover:text-goldDeep" aria-label="Increase quantity">+</button>
+          <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] sm:grid-cols-[auto_minmax(0,1fr)_minmax(0,1fr)_auto] gap-2.5 mt-3">
+            <div className="flex items-center h-12 rounded-xl bg-white shadow-[inset_0_0_0_1px_#E0D5C1]">
+              <button onClick={() => setQtyState(Math.max(1, qty - 1))} className="w-10 h-full text-[18px] hover:text-goldDeep" aria-label="Decrease quantity">−</button>
+              <span className="w-9 text-center text-sm font-semibold tabular-nums">{qty}</span>
+              <button onClick={() => setQtyState(qty + 1)} className="w-10 h-full text-[18px] hover:text-goldDeep" aria-label="Increase quantity">+</button>
             </div>
             <button
               onClick={handleAdd}
-              className="flex-1 h-12 border-[1.5px] border-brown bg-white text-brown text-xs font-bold tracking-[0.14em] uppercase px-4 hover:bg-brown hover:text-cream transition-colors"
+              className="h-12 rounded-xl bg-white px-4 text-[13.5px] font-bold text-brownDeep shadow-[inset_0_0_0_1.5px_#3E3220] transition hover:bg-brownDeep hover:text-gold"
             >
               {added ? "Added ✓" : "Add to cart"}
             </button>
             <button
               onClick={handleBuyNow}
-              className="flex-1 h-12 bg-brown text-cream text-xs font-bold tracking-[0.14em] uppercase px-4 hover:bg-brownDeep transition-colors"
+              className="pf-dark pf-btn col-span-3 sm:col-span-1 inline-flex h-12 items-center justify-center gap-2 rounded-xl px-4 text-[13.5px] font-bold hover:text-gold"
             >
-              Buy now
+              Buy now <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg>
             </button>
             <button
               onClick={() => toggleWishlist(product.slug)}
               aria-label="Add to wishlist"
-              className="w-12 h-12 border border-sand bg-white flex items-center justify-center hover:border-goldDeep"
+              className="row-start-1 col-start-3 sm:col-start-4 w-12 h-12 rounded-xl bg-white shadow-[inset_0_0_0_1px_#E0D5C1] flex items-center justify-center transition hover:shadow-[inset_0_0_0_1px_#B08A3E]"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill={wished ? "#B87333" : "none"} stroke={wished ? "#B87333" : "#1A1A1A"} strokeWidth="1.6">
                 <path d="M12 21C7 16.5 3 13 3 8.8 3 6 5.2 4 7.8 4c1.7 0 3.2.9 4.2 2.3C13 4.9 14.5 4 16.2 4 18.8 4 21 6 21 8.8c0 4.2-4 7.7-9 12.2z" />
@@ -808,7 +830,7 @@ export default function ProductDetail({
 
         {/* Babala kung may add-on na range ang presyo */}
         {!hideOpts && (product.stock ?? 1) > 0 && hasQuotedAddOn && (
-          <p className="mt-2 text-xs text-stone bg-linen rounded px-3 py-2">
+          <p className="mt-2 text-xs text-stone bg-goldSoft rounded-xl px-3.5 py-2.5">
             Some selected add-ons are priced on a range — we&apos;ll confirm the
             exact amount with you before production.
           </p>
@@ -820,14 +842,14 @@ export default function ProductDetail({
             <div className="flex gap-3">
               <button
                 disabled
-                className="flex-1 bg-stone/50 text-cream text-base font-medium rounded py-3 px-4 cursor-not-allowed"
+                className="flex-1 bg-stone/50 text-cream text-base font-medium rounded-xl py-3 px-4 cursor-not-allowed"
               >
                 Sold out
               </button>
               <button
                 onClick={() => toggleWishlist(product.slug)}
                 aria-label="Add to wishlist"
-                className="border border-stone/40 rounded px-4 hover:border-cognac"
+                className="rounded-xl bg-white px-4 shadow-[inset_0_0_0_1px_#E0D5C1] hover:shadow-[inset_0_0_0_1px_#B08A3E]"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill={wished ? "#B87333" : "none"} stroke={wished ? "#B87333" : "#1A1A1A"} strokeWidth="1.6">
                   <path d="M12 21C7 16.5 3 13 3 8.8 3 6 5.2 4 7.8 4c1.7 0 3.2.9 4.2 2.3C13 4.9 14.5 4 16.2 4 18.8 4 21 6 21 8.8c0 4.2-4 7.7-9 12.2z" />
@@ -849,9 +871,9 @@ export default function ProductDetail({
                   value={notifyEmail}
                   onChange={(e) => setNotifyEmail(e.target.value)}
                   placeholder="Your email"
-                  className="flex-1 border border-stone/40 rounded px-4 py-3 text-sm focus:outline-none focus:border-cognac"
+                  className="flex-1 rounded-xl bg-white px-4 py-3 text-sm shadow-[inset_0_0_0_1px_#E0D5C1] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E]"
                 />
-                <button type="submit" className="border border-ink rounded px-5 text-sm font-bold hover:bg-ink hover:text-cream transition-colors">
+                <button type="submit" className="pf-dark rounded-xl px-5 text-sm font-bold">
                   Email me when available
                 </button>
               </form>
@@ -881,9 +903,9 @@ export default function ProductDetail({
                   window.location.href = messengerUrl(handle, ref);
                 }
               }}
-              className="mt-3 flex items-center justify-center gap-2 w-full h-12 border-[1.5px] border-ink bg-white px-4 text-xs font-bold tracking-[0.14em] uppercase hover:bg-ink hover:text-cream transition-colors"
+              className="mt-3 flex items-center justify-center gap-2.5 w-full h-12 rounded-xl bg-white px-4 text-[13.5px] font-semibold text-ink shadow-[inset_0_0_0_1px_#C9B98F] transition hover:shadow-[inset_0_0_0_1.5px_#B08A3E] hover:text-goldDeep"
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" className="text-brownDeep" aria-hidden>
                 <path d="M12 2C6.5 2 2 6.14 2 11.25c0 2.88 1.42 5.45 3.65 7.15V22l3.34-1.83c.96.27 1.97.41 3.01.41 5.5 0 10-4.14 10-9.25S17.5 2 12 2zm1.03 12.42l-2.54-2.71-4.96 2.71 5.45-5.79 2.6 2.71 4.9-2.71-5.45 5.79z"/>
               </svg>
               Ask about this item on Messenger
@@ -892,15 +914,16 @@ export default function ProductDetail({
         })()}
 
         {/* Will it fit? + View dimensions, tapos trust list (mockup 2026-09-04) */}
-        <div className="flex flex-wrap items-center gap-6 mt-5">
+        <div className="flex flex-wrap items-center gap-6 mt-6">
           {packaged && <FitModal name={product.name} packaged={packaged} />}
-          <a href="#dimensions" className="text-[11.5px] font-bold tracking-[0.14em] uppercase border-b-[1.5px] border-goldDeep pb-0.5 hover:text-goldDeep transition-colors">
+          <a href="#dimensions" className="inline-flex items-center gap-2 text-[14px] font-semibold border-b-[1.5px] border-goldDeep pb-px hover:text-goldDeep transition-colors">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" className="text-goldDeep" aria-hidden><rect x="3" y="8" width="18" height="8" rx="2" /><path d="M7 8v3M11 8v4M15 8v3" /></svg>
             View dimensions
           </a>
         </div>
-        <ul className="mt-4 pt-3.5 border-t border-sand flex flex-col gap-1.5 text-[12.5px] text-stone">
+        <ul className="mt-5 pt-4 border-t border-[#E6DCCB] flex flex-col gap-2 text-[13px] text-stone">
           {["6-month warranty on promo items, 1 year on customized pieces", "Delivered nationwide by our own team · live tracking", "Pay via GCash, Maya, BDO, BPI or cash"].map((t) => (
-            <li key={t} className="flex items-center gap-2"><span className="h-1.5 w-1.5 bg-goldDeep shrink-0" />{t}</li>
+            <li key={t} className="flex items-center gap-2.5"><span className="h-1.5 w-1.5 rounded-full bg-goldDeep shrink-0" />{t}</li>
           ))}
         </ul>
       </div>
