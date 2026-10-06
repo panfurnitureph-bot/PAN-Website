@@ -16,7 +16,35 @@ import FitImage from "@/components/FitImage";
 import { useSubjectBoxes } from "@/lib/subject-box";
 
 type Card = { name?: string; price?: string; image?: string; sizes?: string; colors?: string; sizeList?: { size: string; price: string }[]; colorList?: { name: string; image?: string; focus?: string; hex?: string }[] };
-type Tile = { key: string; name: string; href: string; image: string; from: number; sizes: { size: string; price: number }[]; colors: { name: string; hex?: string; swatch?: string; focus?: string }[] };
+type Tile = { key: string; name: string; href: string; image: string; from: number; sizes: { size: string; price: number }[]; colors: { name: string; hex?: string; swatch?: string; focus?: string }[]; feat: string; fabric: string };
+
+// TAMPOK AT TELA NG KAMA (Joe 2026-10-07, "ETO" — dapat kapareho ng mockup ang
+// "2 built-in drawers" at "Beige"): binabasa mula sa NAKA-SAVE NA SPECS ng
+// produkto sa IMS (ang `dimensions` na text, hal.
+//   Promo Bed — With Add-ons / Size: … / Fabric: Beige / Drawers: 2 built-in drawers — Left / Legs: Standard).
+// Walang inimbento: ang tela ay ang "Fabric" na linya; ang tampok ay ang mga
+// linyang add-on (lahat maliban sa Size, Headboard Height, Fabric at Legs); kapag
+// walang add-on, ang nasa unang linya pagkatapos ng gatlang (hal. "Knockdown
+// (no add-ons)"). Walang specs = walang linya, gaya ng dati.
+function specOf(text: string): { feat: string; fabric: string } {
+  const lines = (text || "").split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  const pair = (l: string) => /^([^:]{1,40}):\s*(.+)$/.exec(l);
+  const head = lines.find((l) => !pair(l)) ?? "";
+  const pairs = lines.map(pair).filter((m): m is RegExpExecArray => !!m).map((m) => [m[1].trim(), m[2].trim()] as const);
+  const times = (s: string) => s.replace(/(\d)\s*x\s*(\d)/gi, "$1×$2");
+  const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+  const fabric = pairs.find(([k]) => /^fabric$/i.test(k))?.[1] ?? "";
+  const feats = pairs.filter(([k]) => !/^(size|sizes|headboard height|fabric|legs|model)$/i.test(k)).map(([k, v]) => {
+    const [main, ...rest] = v.split(/\s+[—–-]\s+/);
+    if (/^yes$/i.test(main)) return cap(k) + (rest.length ? `, ${rest.join(", ").toLowerCase()}` : "");
+    // "Drawers: 2 built-in drawers" — nasa halaga na ang pangalan, huwag ulitin
+    if (main.toLowerCase().includes(k.toLowerCase().split(" ")[0].replace(/s$/, ""))) return times(main);
+    return `${cap(k)} ${times(main)}`;
+  });
+  const tail = head.split(/\s+[—–]\s+/).slice(1).join(" ");
+  const fallback = tail && !/^with add-?ons$/i.test(tail) ? cap(tail.replace(/\s*\(([^)]+)\)/, ", $1")) : "";
+  return { fabric, feat: feats.length ? feats.join(" · ") : fallback };
+}
 
 // LITRATO SA STUDIO — gaya ng FitImage (sinusukat ang kama sa litrato para
 // pare-pareho ang laki), pero NAKATAYO SA SAHIG: ang ilalim ng kama ay laging
@@ -80,6 +108,7 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
       from: b.priceFrom ?? b.price,
       sizes: (b.bedSizes ?? []).filter((s) => s.enabled !== false && (s.price ?? 0) > 0).map((s) => ({ size: s.size, price: s.price! })),
       colors: (b.colorSwatches ?? []).length ? b.colorSwatches!.map((c) => ({ name: c.name, hex: c.hex, swatch: c.image || c.swatch })) : b.colors.map((c) => ({ name: c })),
+      ...specOf(b.dimensions || (b as { mtoReadySpecs?: string }).mtoReadySpecs || ""),
     }));
     const fs = (copy as { featuredSlug?: string } | undefined)?.featuredSlug;
     const fi = Math.max(0, tiles.findIndex((t) => t.key === fs || (fs === "" && beds.find((b) => b.slug === t.key)?.featured)));
@@ -93,6 +122,7 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
       // "Single 18799 · …" na text ay binabasa pa rin.
       sizes: (c.sizeList?.length ? c.sizeList.map((s) => ({ size: s.size, price: num(s.price) })) : (c.sizes ?? "").split("·").map((s) => s.trim()).filter(Boolean).map((s) => { const m = /^(.+?)\s+([\d,.]+)$/.exec(s); return m ? { size: m[1], price: num(m[2]) } : { size: s, price: 0 }; })).filter((s) => s.price > 0),
       colors: c.colorList?.length ? c.colorList.filter((x) => x.name || x.image).map((x, k) => ({ name: x.name || `Color ${k + 1}`, hex: x.hex, swatch: x.image, focus: x.focus })) : (c.colors ?? "").split("·").map((s) => s.trim()).filter(Boolean).map((n) => ({ name: n })),
+      feat: "", fabric: "",
     }));
   }
   const count = Math.min(tiles.length, 5);
@@ -166,6 +196,7 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
             <div className="relative flex flex-col gap-2.5 px-5 pb-6 pt-1 sm:px-7 lg:order-1 lg:py-11 lg:pl-12 lg:pr-0">
               <span className="inline-flex w-max items-center h-[26px] px-3 rounded-full bg-brownDeep text-gold text-[10px] font-bold tracking-[0.18em] uppercase">{cur === featured ? "Best seller" : label}</span>
               <b className="font-cormorant font-semibold text-[clamp(26px,3vw,38px)] leading-[1.05] tracking-[-0.025em] text-[#231B11]">{split(cur.name).title}</b>
+              {cur.feat && <span className="text-[15px] text-[#6B5D45]">{cur.feat}</span>}
               {cur.sizes.length > 0 ? (
                 <div className="flex gap-2 flex-wrap">
                   {cur.sizes.map((s) => (
@@ -177,9 +208,9 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
               ) : cur.from > 0 ? (
                 <span className="text-[15px] text-[#6B5D45]">from {formatPrice(cur.from)}</span>
               ) : null}
-              {(split(cur.name).size || cur.colors.length > 0) && (
+              {(split(cur.name).size || cur.fabric || cur.colors.length > 0) && (
                 <div className="flex items-center gap-1.5 flex-wrap text-xs text-[#6B5D45]">
-                  {split(cur.name).size && <span className="inline-flex items-center h-[26px] px-3 rounded-full bg-white/60 shadow-[inset_0_0_0_1px_rgba(62,50,32,.28)] text-[11.5px] font-semibold text-[#3E3220]">{split(cur.name).size}</span>}
+                  {[split(cur.name).size, cur.colors.length ? "" : cur.fabric].filter(Boolean).map((c) => <span key={c} className="inline-flex items-center h-[26px] px-3 rounded-full bg-white/60 shadow-[inset_0_0_0_1px_rgba(62,50,32,.28)] text-[11.5px] font-semibold text-[#3E3220]">{c}</span>)}
                   {cur.colors.slice(0, 4).map((c) => <i key={c.name} title={c.name} className="w-[22px] h-[22px] rounded-full border-2 border-white shadow-[0_0_0_1px_rgba(62,50,32,.25)] inline-block overflow-hidden relative" style={{ background: c.hex ?? "#CFC2A8" }}>{c.swatch && <Image src={c.swatch} alt="" fill className="object-cover" style={{ objectPosition: c.focus || "50% 50%" }} sizes="24px" />}</i>)}
                   {cur.colors.length > 0 && <span>{cur.colors.map((c) => c.name).slice(0, 3).join(" · ")}</span>}
                 </div>
@@ -216,7 +247,7 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
                 <span className="grid min-w-0 gap-[3px] max-sm:px-1">
                   <i className={`not-italic text-[10.5px] font-bold tracking-[0.16em] ${on ? "text-[#5B4A2F]" : "text-gold"}`}>{String(i + 1).padStart(2, "0")}</i>
                   <b className="font-cormorant font-semibold text-[15px] sm:text-[16.5px] leading-[1.15] tracking-[-0.01em]">{split(b.name).title}</b>
-                  {(noteOf(b) || b.from > 0) && <small className={`truncate text-[12px] leading-snug ${on ? "text-[#4A3B25]" : "text-[#CFC2A4]"}`}>{b.from > 0 ? `from ${formatPrice(b.from)}` : noteOf(b)}</small>}
+                  {(b.feat || noteOf(b) || b.from > 0) && <small className={`truncate text-[12px] leading-snug ${on ? "text-[#4A3B25]" : "text-[#CFC2A4]"}`}>{b.feat || (b.from > 0 ? `from ${formatPrice(b.from)}` : noteOf(b))}</small>}
                 </span>
                 {on && run && <em key={sel} aria-hidden className="pf-fill absolute inset-x-0 bottom-0 h-[3px] bg-[#2E2417]" />}
               </Link>
