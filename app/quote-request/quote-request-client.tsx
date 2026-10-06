@@ -21,7 +21,7 @@ import { messengerHandle, messengerUrl } from "@/lib/messenger";
 const LocationPicker = dynamic(() => import("@/components/LocationPicker"), {
   ssr: false,
   loading: () => (
-    <div className="mb-3 flex h-64 w-full items-center justify-center rounded border border-stone/40 bg-sand/40 text-sm text-stone">
+    <div className="mb-3 flex h-64 w-full items-center justify-center rounded-2xl bg-[#F6F0E4] text-sm text-stone shadow-[inset_0_0_0_1px_#E4DACA]">
       Loading map…
     </div>
   ),
@@ -50,16 +50,16 @@ function Field({
 }) {
   return (
     <div className="py-1">
-      <span className="mb-1 block text-[11px] font-bold text-stone">{label}</span>
+      <span className="block text-[12px] font-semibold text-ink mb-1.5">{label}</span>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         inputMode={inputMode}
         autoComplete={autoComplete}
-        className={`w-full rounded-lg border bg-transparent px-3 py-2 text-sm focus:border-cognac focus:outline-none ${err ? "border-red-500" : "border-sand"}`}
+        className={`w-full h-11 rounded-xl bg-white px-3.5 text-[14px] text-ink shadow-[inset_0_0_0_1px_#D8CCB9] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.3)] placeholder:text-stone/60 ${err ? "shadow-[inset_0_0_0_1.5px_#C0392B]" : ""}`}
       />
-      {err && <span className="mt-1 block text-[11px] font-medium text-red-600">{err}</span>}
+      {err && <span className="mt-1 block text-[12px] text-[#B23A2E]">{err}</span>}
     </div>
   );
 }
@@ -313,15 +313,15 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
 
   if (!quote.length) {
     return (
-      <div className="mx-auto max-w-6xl px-6 py-16">
-        <h1 className="mb-2 text-2xl font-semibold">Your quote request</h1>
-        <p className="mb-6 text-sm text-stone">
+      <div className="mx-auto max-w-7xl px-4 sm:px-8 py-8">
+        <h1 className="font-cormorant font-semibold text-[clamp(30px,3.6vw,40px)] leading-[1.05] tracking-[-0.02em] mb-2">Your quote request</h1>
+        <p className="mb-6 text-[14.5px] text-stone">
           Nothing here yet. Configure a made-to-order piece and choose <b className="text-ink">Add to request</b> to
           price several together.
         </p>
         <Link
           href="/collections/bed"
-          className="inline-block rounded border border-ink px-5 py-3 text-xs font-bold uppercase tracking-widest2 transition-colors hover:bg-ink hover:text-cream"
+          className="pf-dark pf-btn inline-flex h-12 items-center rounded-full px-7 text-[14px] font-bold hover:text-gold"
         >
           Browse made to order
         </Link>
@@ -330,85 +330,75 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-8">
-      <nav className="mb-6 text-xs text-stone">
-        <Link href="/" className="hover:text-cognac">Home</Link>
-        <span className="mx-2">/</span>
+    <div className="mx-auto max-w-7xl px-4 sm:px-8 py-6 md:py-8">
+      <nav className="mb-3 text-[12.5px] text-stone" aria-label="Breadcrumb">
+        <Link href="/" className="hover:text-goldDeep">Home</Link>
+        <span className="mx-1.5">/</span>
         <span className="text-ink">Your quote request</span>
       </nav>
+      {/* PREMIUM (Joe 2026-10-07, ang Quote request ng mockup): pamagat at paliwanag,
+          bawat build bilang card na may litrato, pangalan, kategorya, mga linya
+          bilang tuldok, "Edit build / Remove" at "Quoted by our team" o presyo;
+          ang address at pagpapadala sa kanang card. Parehong mga field at logic. */}
+      <div className="mb-6">
+        <h1 className="font-cormorant font-semibold text-[clamp(30px,3.6vw,40px)] leading-[1.05] tracking-[-0.02em]">Your quote request</h1>
+        <p className="mt-2 text-[14.5px] text-stone">Custom builds are priced by our team. Send the list and we reply on Messenger with your quotation. · {quote.length} {quote.length === 1 ? "product" : "products"} · one delivery</p>
+      </div>
 
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+      <div className="grid gap-5 lg:gap-7 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] items-start">
         {/* ── ANG MGA PRODUKTO, BUONG BUILD ── */}
         <div>
-          <h1 className="text-2xl font-semibold">Your quote request</h1>
-          <p className="mb-5 text-sm text-stone">
-            {quote.length} {quote.length === 1 ? "product" : "products"} · one delivery
-          </p>
-
+          <div data-stagger className="pf-card divide-y divide-[#EBE2D2] overflow-hidden">
           {quote.map((b, i) => (
-            <div key={b.id} className="flex gap-4 border-b border-sand py-5 last:border-0">
-              <span className="w-4 shrink-0 pt-1 text-xs tabular-nums text-stone">{i + 1}</span>
-              <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded border border-sand bg-linen">
-                {b.image ? <Image src={b.image} alt="" fill sizes="64px" className="object-cover" /> : null}
+            <div key={b.id} className="flex gap-4 p-4 sm:p-5">
+              <span className="relative h-[88px] w-[88px] shrink-0 overflow-hidden rounded-[14px] pf-stage shadow-[inset_0_0_0_1px_rgba(176,138,62,.25)]">
+                {b.image ? <Image src={b.image} alt="" fill sizes="88px" className="object-contain p-1.5 mix-blend-multiply" /> : null}
               </span>
 
               <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <span className="font-semibold">{b.name}</span>
-                  {b.category && (
-                    <span className="text-[10px] uppercase tracking-widest2 text-stone">{categoryTitle(b.category)}</span>
-                  )}
-                  <span className="ml-auto font-bold tabular-nums">
-                    {b.build?.priced && b.build?.total ? formatPrice(b.build.total) : "For quotation"}
+                <div className="flex flex-wrap items-start gap-x-3 gap-y-1">
+                  <span className="min-w-0">
+                    <span className="block font-cormorant text-[18px] font-semibold leading-tight tracking-[-0.01em]">{b.name}</span>
+                    {b.category && <span className="block text-[13px] text-stone mt-0.5">{categoryTitle(b.category)} · made to order</span>}
+                  </span>
+                  <span className="ml-auto text-right">
+                    {b.build?.priced && b.build?.total ? (
+                      <span className="font-cormorant text-[18px] font-semibold tabular-nums">{formatPrice(b.build.total)}</span>
+                    ) : (
+                      <><span className="block font-cormorant text-[18px] font-semibold">Quoted</span><span className="block text-[12px] text-stone">by our team</span></>
+                    )}
                   </span>
                   {/* EDIT — balik sa made-to-order ng MISMONG produkto, dala
                       ang slot id: pinapalitan nito ang item na ito imbes na
                       magdagdag ng bago. */}
-                  <span className="flex shrink-0 items-center gap-3 text-xs">
-                    <Link href={`/products/${b.slug}?edit=${b.id}`} className="font-semibold text-cognac hover:underline">
-                      Edit
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={() => removeFromQuote(b.id)}
-                      aria-label={`Remove ${b.name} from your request`}
-                      className="text-stone hover:text-ink"
-                    >
-                      ✕
-                    </button>
-                  </span>
                 </div>
 
                 {/* BAWAT LINYA, hindi pinutol na buod — dito tinitingnan ng
                     customer kung tama ang pagkakabuo ng pangalawang kama. */}
-                {groupBuildLines(b.build?.lines ?? []).map((g) => (
-                  <div key={g.title} className="mt-2">
-                    <p className="text-[9px] font-extrabold uppercase tracking-widest2 text-cognac">{g.title}</p>
-                    <ul className="mt-0.5 space-y-0.5">
-                      {g.lines.map((l) => (
-                        <li key={l.label} className="text-[12px] leading-snug text-stone">
-                          {l.label}
-                          {Number(l.price) > 0 && (
-                            <span className="ml-1.5 text-[10px] font-semibold text-cognac">
-                              +{formatPrice(Number(l.price))}
-                            </span>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
+                <ul className="mt-2.5 grid gap-1 text-[13px] text-stone">
+                  {groupBuildLines(b.build?.lines ?? []).flatMap((g) => g.lines).map((l) => (
+                    <li key={l.label} className="flex items-start gap-2 leading-snug">
+                      <span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-goldDeep" />
+                      <span>{l.label}{Number(l.price) > 0 && <span className="ml-1.5 font-semibold text-brownDeep">+{formatPrice(Number(l.price))}</span>}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-3.5 flex items-center gap-4 text-[13.5px]">
+                  <Link href={`/products/${b.slug}?edit=${b.id}`} className="font-semibold text-ink border-b-[1.5px] border-goldDeep pb-px transition-colors hover:text-goldDeep">Edit build</Link>
+                  <button type="button" onClick={() => removeFromQuote(b.id)} aria-label={`Remove ${b.name} from your request`} className="font-semibold text-ink border-b-[1.5px] border-goldDeep pb-px transition-colors hover:text-goldDeep">Remove</button>
+                </div>
               </div>
             </div>
           ))}
+          </div>
 
-          <div className="mt-4 flex items-baseline border-t-2 border-ink pt-3">
-            <span className="text-sm font-bold text-stone">Estimate, before delivery</span>
-            <span className="ml-auto text-xl font-extrabold tabular-nums">
+          <div className="mt-4 flex items-baseline px-1">
+            <span className="text-[13.5px] font-semibold text-stone">Estimate, before delivery</span>
+            <span className="ml-auto font-cormorant text-[22px] font-semibold tabular-nums tracking-[-0.01em]">
               {quoteTotal > 0 ? formatPrice(quoteTotal) : "For quotation"}
             </span>
           </div>
-          <p className="mt-2 rounded bg-linen px-3 py-2 text-xs text-stone">
+          <p className="mt-2 rounded-xl bg-goldSoft/60 px-3.5 py-2.5 text-xs text-stone">
             An estimate only. Our team replies on Messenger with a formal quotation confirming the final total.
           </p>
         </div>
@@ -418,9 +408,10 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
             request at wala nang ibang pagkakataong itanong ito. Ang eksaktong
             address ang nagtatakda ng delivery fee sa quotation at siyang
             binabasa ng delivery team — hindi sapat ang "City, Province". */}
-        <div className="lg:sticky lg:top-6 lg:self-start">
-          <div className="rounded-lg border border-sand p-4">
-            <p className="mb-2 text-[10px] font-extrabold uppercase tracking-widest2 text-cognac">Where to deliver</p>
+        <div className="lg:sticky lg:top-24 lg:self-start">
+          <div className="pf-card overflow-hidden">
+            <h2 className="flex items-center justify-between gap-4 border-b border-[#EBE2D2] px-5 py-3.5"><span className="text-[15px] font-semibold">Send this request</span><span className="text-[12px] text-stone">Where to deliver</span></h2>
+            <div className="px-5 pt-3 pb-5 grid gap-0.5">
 
             <div className="grid grid-cols-2 gap-2">
               <Field label="First name" value={firstName} onChange={setFirstName} placeholder="First name" err={errs.firstName} autoComplete="given-name" />
@@ -432,8 +423,8 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
                 naghahatid, at ang pagpapakita nito ay nagsasabi niyon nang
                 hindi kailangang itanong. */}
             <div className="py-1">
-              <span className="mb-1 block text-[11px] font-bold text-stone">Country</span>
-              <select value="PH" disabled className="w-full rounded-lg border border-sand bg-sand/40 px-3 py-2 text-sm text-stone">
+              <span className="block text-[12px] font-semibold text-ink mb-1.5">Country</span>
+              <select value="PH" disabled className="w-full h-11 rounded-xl bg-white px-3.5 text-[14px] text-ink shadow-[inset_0_0_0_1px_#D8CCB9] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.3)] placeholder:text-stone/60 appearance-none disabled:bg-[#F6F0E4] disabled:text-stone">
                 <option value="PH">Philippines</option>
               </select>
             </div>
@@ -445,9 +436,9 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
             <div className="py-1">
               <AddressSearch onPick={applyPlace} onClear={clearPlace} />
               {searchNote ? (
-                <p className="-mt-1 mb-2 rounded bg-cognac/10 px-3 py-2 text-[11px] font-medium leading-snug text-cognac">{searchNote}</p>
+                <p className="mt-2 rounded-xl bg-goldSoft px-3 py-2 text-[11.5px] font-medium leading-snug text-brownDeep">{searchNote}</p>
               ) : (
-                <p className="-mt-1 mb-2 text-[11px] leading-snug text-stone">
+                <p className="mt-2 text-[11.5px] leading-snug text-stone">
                   Type a house, school, church, or town — this fills in the address below. Puwede ring punan nang manu-mano.
                 </p>
               )}
@@ -457,11 +448,11 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
                 → Street → Postal. Ang region ay hinahango sa province, kaya
                 ang pagpili ng alinman sa dalawa ay nagtatakda ng isa pa. */}
             <div className="py-1">
-              <span className="mb-1 block text-[11px] font-bold text-stone">Region</span>
+              <span className="block text-[12px] font-semibold text-ink mb-1.5">Region</span>
               <select
                 value={region}
                 onChange={(e) => { setRegion(e.target.value); setProvince(""); setCity(""); setBarangay(""); }}
-                className="w-full rounded-lg border border-sand bg-transparent px-3 py-2 text-sm focus:border-cognac focus:outline-none"
+                className="w-full h-11 rounded-xl bg-white px-3.5 text-[14px] text-ink shadow-[inset_0_0_0_1px_#D8CCB9] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.3)] placeholder:text-stone/60 appearance-none"
               >
                 <option value="">— Select —</option>
                 {Array.from(new Set(PROVINCES.map((p) => REGION_OF[p.name] ?? "Other"))).map((r) => (
@@ -471,7 +462,7 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
             </div>
 
             <div className="py-1">
-              <span className="mb-1 block text-[11px] font-bold text-stone">Province</span>
+              <span className="block text-[12px] font-semibold text-ink mb-1.5">Province</span>
               <select
                 value={province}
                 onChange={(e) => {
@@ -480,7 +471,7 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
                   setBarangay("");
                   if (e.target.value) setRegion(REGION_OF[e.target.value] ?? "");
                 }}
-                className={`w-full rounded-lg border bg-transparent px-3 py-2 text-sm focus:border-cognac focus:outline-none ${errs.province ? "border-red-500" : "border-sand"}`}
+                className={`w-full h-11 rounded-xl bg-white px-3.5 text-[14px] text-ink shadow-[inset_0_0_0_1px_#D8CCB9] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.3)] placeholder:text-stone/60 appearance-none ${errs.province ? "shadow-[inset_0_0_0_1.5px_#C0392B]" : ""}`}
               >
                 <option value="">— Select —</option>
                 {PROVINCES.filter((p) => !region || (REGION_OF[p.name] ?? "Other") === region).map((p) => (
@@ -490,12 +481,12 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
             </div>
 
             <div className="py-1">
-              <span className="mb-1 block text-[11px] font-bold text-stone">City / Town</span>
+              <span className="block text-[12px] font-semibold text-ink mb-1.5">City / Town</span>
               <select
                 value={city}
                 onChange={(e) => { setCity(e.target.value); setBarangay(""); }}
                 disabled={!province}
-                className={`w-full rounded-lg border bg-transparent px-3 py-2 text-sm focus:border-cognac focus:outline-none disabled:opacity-50 ${errs.city ? "border-red-500" : "border-sand"}`}
+                className={`w-full h-11 rounded-xl bg-white px-3.5 text-[14px] text-ink shadow-[inset_0_0_0_1px_#D8CCB9] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.3)] placeholder:text-stone/60 appearance-none disabled:bg-[#F6F0E4] disabled:text-stone ${errs.city ? "shadow-[inset_0_0_0_1.5px_#C0392B]" : ""}`}
               >
                 <option value="">{province ? "— Select —" : "Select a province first"}</option>
                 {cityList.map((c) => (<option key={c.name} value={c.name}>{c.name}</option>))}
@@ -505,13 +496,13 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
             {/* Opisyal na PSGC list kapag alam ang city; kung wala, tinitipa —
                 huwag hadlangan ang customer sa listahang hindi kumpleto. */}
             <div className="py-1">
-              <span className="mb-1 block text-[11px] font-bold text-stone">Barangay</span>
+              <span className="block text-[12px] font-semibold text-ink mb-1.5">Barangay</span>
               {brgyOptions.length > 0 ? (
                 <select
                   value={barangay}
                   onChange={(e) => setBarangay(e.target.value)}
                   disabled={!city}
-                  className={`w-full rounded-lg border bg-transparent px-3 py-2 text-sm focus:border-cognac focus:outline-none disabled:opacity-50 ${errs.barangay ? "border-red-500" : "border-sand"}`}
+                  className={`w-full h-11 rounded-xl bg-white px-3.5 text-[14px] text-ink shadow-[inset_0_0_0_1px_#D8CCB9] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.3)] placeholder:text-stone/60 appearance-none disabled:bg-[#F6F0E4] disabled:text-stone ${errs.barangay ? "shadow-[inset_0_0_0_1.5px_#C0392B]" : ""}`}
                 >
                   <option value="">{city ? "— Select —" : "Select a city first"}</option>
                   {brgyOptions.map((b) => (<option key={b} value={b}>{b}</option>))}
@@ -522,7 +513,7 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
                   onChange={(e) => setBarangay(e.target.value)}
                   disabled={!city}
                   placeholder={city ? "Type your barangay" : "Select a city first"}
-                  className={`w-full rounded-lg border bg-transparent px-3 py-2 text-sm focus:border-cognac focus:outline-none disabled:opacity-50 ${errs.barangay ? "border-red-500" : "border-sand"}`}
+                  className={`w-full h-11 rounded-xl bg-white px-3.5 text-[14px] text-ink shadow-[inset_0_0_0_1px_#D8CCB9] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.3)] placeholder:text-stone/60 appearance-none disabled:bg-[#F6F0E4] disabled:text-stone ${errs.barangay ? "shadow-[inset_0_0_0_1.5px_#C0392B]" : ""}`}
                 />
               )}
             </div>
@@ -560,16 +551,15 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
             </div>
 
             {shipFee !== null && (
-              <p className="mt-2 flex items-baseline gap-2 rounded bg-linen px-3 py-2 text-xs">
+              <p className="pf-estin mt-2 flex items-center gap-2 rounded-xl bg-[linear-gradient(180deg,#F8EFD8,#F1E3BF)] px-3.5 py-3 text-xs shadow-[inset_0_0_0_1px_rgba(176,138,62,.28)]">
                 <span className="text-stone">Estimated shipping to {city}</span>
-                <span className="ml-auto font-bold text-cognac">{formatPrice(shipFee)}</span>
+                <span className="ml-auto font-cormorant text-[18px] font-bold text-brownDeep tabular-nums">{formatPrice(shipFee)}</span>
               </p>
             )}
             <p className="mt-2 text-[11px] leading-snug text-stone">
               Delivery is quoted <b className="text-ink">once for the whole request</b> — one van, one fee. Final fee is
               confirmed after we check your exact address.
             </p>
-          </div>
 
           {/* MAPA — ang eksaktong lokasyon, hindi lang ang address. Ang
               "9173 Brgy Maduya" ay hindi mahahanap ng driver; ang pin ay
@@ -582,7 +572,7 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
               ang mali, at ang pagpapalit ng bayan sa ilalim nila ay
               nagbabago ng presyo nang hindi nila napapansin. */}
           {pinMismatch(pin, { city, province }) && (
-            <p className="mt-3 rounded-lg border border-[#caa45a] bg-linen px-3 py-2 text-[11px] leading-snug text-olive">
+            <p className="mt-3 rounded-xl bg-goldSoft px-3.5 py-2.5 text-[11.5px] leading-snug text-brownDeep shadow-[inset_0_0_0_1px_rgba(176,138,62,.45)]">
               <b>Your pin is in {pinMismatch(pin, { city, province })}</b> but you selected {city}, {province}.
               The shipping fee follows the selection — change it above if the pin is right.
             </p>
@@ -606,14 +596,14 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
               />
             </div>
           ) : (
-            <p className="mt-3 rounded bg-linen px-3 py-2 text-[11px] text-stone">
+            <p className="mt-3 rounded-xl bg-goldSoft/60 px-3.5 py-2.5 text-[11.5px] text-stone">
               Complete your address and a map will appear — drag the pin to your exact house so our
               driver finds you easily.
             </p>
           )}
 
           {Object.keys(errs).length > 0 && (
-            <p className="mt-3 rounded border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800">
+            <p className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-xs text-red-800">
               Please complete the highlighted fields — your quotation is priced and delivered to this address.
             </p>
           )}
@@ -626,12 +616,12 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
             type="button"
             onClick={() => void send()}
             disabled={sending}
-            className="mt-3 flex w-full items-center justify-center rounded bg-espresso px-4 py-3 text-base font-medium text-cream transition-colors hover:bg-cognac disabled:cursor-not-allowed disabled:bg-stone/50"
+            className="pf-dark pf-btn mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl text-[14px] font-bold hover:text-gold disabled:cursor-not-allowed disabled:bg-[#C9BFAE] disabled:bg-none disabled:text-white/85 disabled:shadow-none disabled:hover:translate-y-0"
           >
-            {sending ? "Sending…" : `Send request · ${quote.length} ${quote.length === 1 ? "product" : "products"}`}
+            {sending ? "Sending…" : <>Send on Messenger · {quote.length} {quote.length === 1 ? "product" : "products"} <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg></>}
           </button>
           {sendErr && (
-            <p className="mt-2 rounded bg-linen px-3 py-2 text-xs font-medium text-ink" role="alert">
+            <p className="mt-2 rounded-xl bg-goldSoft px-3.5 py-2.5 text-xs font-medium text-ink" role="alert">
               {sendErr}
             </p>
           )}
@@ -639,19 +629,25 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
               pa rin — isang click ng customer ang kailangan ng browser. */}
           {messengerLink && (
             <a href={messengerLink} target="_blank" rel="noreferrer"
-              className="mt-2 flex w-full items-center justify-center gap-2 rounded bg-[#0084FF] px-4 py-3 text-sm font-bold text-white hover:bg-[#0070d9]">
+              className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-[#0084FF] px-4 py-3 text-sm font-bold text-white hover:bg-[#0070d9]">
               Open Messenger
             </a>
           )}
           <Link
             href="/collections/bed"
-            className="mt-2 block rounded border border-ink py-3 text-center text-xs font-bold uppercase tracking-widest2 transition-colors hover:bg-ink hover:text-cream"
+            className="mt-2 flex h-11 w-full items-center justify-center rounded-xl bg-white text-[13.5px] font-semibold text-ink shadow-[inset_0_0_0_1px_#C9B98F] transition hover:text-goldDeep hover:shadow-[inset_0_0_0_1.5px_#B08A3E]"
           >
             Keep browsing
           </Link>
-          <p className="mt-2 rounded bg-linen px-3 py-2 text-[11px] text-stone">
+          <ul className="mt-4 grid gap-2 text-[12.5px] text-stone">
+            <li className="flex items-center gap-2.5"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-goldDeep" aria-hidden><path d="M4 5h16v11H9l-5 4z" /></svg>We reply within the hour during store hours</li>
+            <li className="flex items-center gap-2.5"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-goldDeep" aria-hidden><rect x="3" y="6" width="18" height="12" rx="2" /><path d="M3 10h18" /></svg>30% downpayment once you approve the quote</li>
+          </ul>
+          <p className="mt-2 text-[11.5px] text-stone">
             Your builds will be sent to our team on Messenger — we&apos;ll reply there with a formal quotation.
           </p>
+          </div>
+          </div>
         </div>
       </div>
     </div>
