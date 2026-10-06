@@ -128,8 +128,8 @@ export default function StreetSuggest({
   }
 
   return (
-    <label className="block mb-3 col-span-2">
-      <span className="block text-xs font-bold text-stone mb-1">{fieldLabel}</span>
+    <label className="block mb-3.5 col-span-2">
+      <span className="block text-[12px] font-semibold text-ink mb-1.5">{fieldLabel}</span>
       <div ref={boxRef} className="relative">
         <input
           value={value}
@@ -144,12 +144,12 @@ export default function StreetSuggest({
             else if (e.key === "Enter" && active >= 0) { e.preventDefault(); pick(results[active]); }
             else if (e.key === "Escape") setOpen(false);
           }}
-          className={`w-full border bg-white px-4 py-3 text-sm rounded focus:outline-none focus:border-cognac ${
+          className={`w-full h-12 rounded-xl bg-white px-4 text-[14px] text-ink shadow-[inset_0_0_0_1px_#D8CCB9] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.3)] placeholder:text-stone/60 ${
             error ? "border-red-600" : "border-stone/40"
           }`}
         />
         {open && (loading || results.length > 0) && (
-          <div className="absolute z-50 mt-1 max-h-72 w-full overflow-auto rounded border border-stone/40 bg-white shadow-xl">
+          <div className="pf-estin absolute z-50 mt-1.5 max-h-72 w-full overflow-auto rounded-xl bg-white shadow-[0_0_0_1px_#E4DACA,0_20px_44px_-18px_rgba(62,50,32,.5)]">
             {loading && <div className="px-4 py-2 text-xs text-stone">Searching…</div>}
             {results.map((f, i) => (
               <button

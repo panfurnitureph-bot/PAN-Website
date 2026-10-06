@@ -242,21 +242,22 @@ export default function LocationPicker({
 
   return (
     <div className="mb-3">
-      <div className="flex items-center justify-between mb-1">
-        <span className="text-xs font-bold text-stone">
-          📍 Pin your exact location (for delivery)
+      <div className="flex items-center justify-between gap-3 mb-2">
+        <span className="flex items-center gap-1.5 text-[12.5px] font-semibold text-ink">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-goldDeep" aria-hidden><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></svg>
+          Pin your exact location (for delivery)
         </span>
         <button
           type="button"
           onClick={locateMe}
-          className="text-xs text-cognac hover:text-ink font-bold"
+          className="text-[12.5px] font-semibold text-ink border-b-[1.5px] border-goldDeep pb-px hover:text-goldDeep"
         >
-          🎯 Find me
+          Find me
         </button>
       </div>
       <div
         ref={mapEl}
-        className="w-full h-64 rounded border border-stone/40 overflow-hidden z-0"
+        className="w-full h-72 rounded-2xl overflow-hidden z-0 shadow-[0_0_0_1px_#E4DACA,0_22px_38px_-28px_rgba(62,50,32,.5)]"
       />
       <p className="text-xs text-stone mt-1 leading-snug">
         {loading

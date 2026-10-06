@@ -193,19 +193,19 @@ function Field({
   maxLength?: number;
 }) {
   return (
-    <label className={`block mb-3 ${half ? "" : "col-span-2"}`}>
-      <span className="block text-xs font-bold text-stone mb-1">{label}</span>
+    <label className={`block mb-3.5 ${half ? "max-sm:col-span-2" : "col-span-2"}`}>
+      <span className="block text-[12px] font-semibold text-ink mb-1.5">{label}</span>
       <input
         value={value}
         placeholder={placeholder}
         inputMode={inputMode}
         maxLength={maxLength}
         onChange={(e) => onChange(e.target.value)}
-        className={`w-full border bg-white px-4 py-3 text-sm rounded focus:outline-none focus:border-cognac ${
-          error ? "border-red-600" : "border-stone/40"
+        className={`w-full h-12 rounded-xl bg-white px-4 text-[14px] text-ink shadow-[inset_0_0_0_1px_#D8CCB9] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.3)] placeholder:text-stone/60 ${
+          error ? "shadow-[inset_0_0_0_1.5px_#C0392B]" : ""
         }`}
       />
-      {error && <span className="text-red-700 text-xs">{error}</span>}
+      {error && <span className="mt-1 block text-[12px] text-[#B23A2E]">{error}</span>}
     </label>
   );
 }
@@ -759,12 +759,12 @@ export default function CheckoutClient({
   // ---------- EMPTY CART ----------
   if (rows.length === 0) {
     return (
-      <div className="max-w-2xl mx-auto px-6 py-24 text-center">
-        <h1 className="text-3xl font-bold mb-4">Your cart is empty</h1>
+      <div className="max-w-2xl mx-auto px-4 sm:px-8 py-16 md:py-24 text-center pf-card">
+        <h1 className="font-cormorant font-semibold text-[30px] tracking-[-0.02em] mb-3">Your cart is empty</h1>
         <p className="text-stone mb-8">Add something to your cart before checking out.</p>
         <Link
           href="/collections/sofas"
-          className="inline-block bg-ink text-cream px-8 py-4 text-sm font-bold tracking-widest2 hover:bg-cognac transition-colors"
+          className="pf-dark pf-btn inline-flex h-12 items-center rounded-full px-7 text-[14px] font-bold hover:text-gold"
         >
           SHOP SOFAS
         </Link>
@@ -774,18 +774,33 @@ export default function CheckoutClient({
 
   // ---------- CHECKOUT FORM ----------
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10">
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_460px] gap-12 items-start">
+    <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6 md:py-8">
+      <h1 className="font-cormorant font-semibold text-[clamp(30px,3.6vw,40px)] leading-[1.05] tracking-[-0.02em] mb-4">Checkout</h1>
+      {/* Tatlong hakbang (premium, 2026-10-07) — tanda lang: iisang pahina pa rin ang form. */}
+      <ol className="mb-6 grid grid-cols-3 items-center gap-2 text-[12.5px] font-semibold text-ink" aria-label="Checkout steps">
+        {["Contact", "Delivery", "Payment"].map((t, i) => (
+          <li key={t} className="flex items-center gap-2.5 min-w-0">
+            <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-[12px] font-bold ${i === 0 ? "bg-brownDeep text-gold" : "bg-white text-stone shadow-[inset_0_0_0_1px_#D8CCB9]"}`}>{i + 1}</span>
+            <span className="truncate">{t}</span>
+            {i < 2 && <span className="ml-1 hidden sm:block h-px flex-1 bg-[#E6DCCB]" aria-hidden />}
+          </li>
+        ))}
+      </ol>
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_400px] gap-5 lg:gap-7 items-start">
         {/* ---------- LEFT: FORM ---------- */}
-        <div>
+        <div className="grid gap-4">
           {/* Contact */}
-          <h2 className="text-xl font-bold mb-4">Contact</h2>
-          <div className="grid grid-cols-2 gap-x-3">
+          <section className="pf-card overflow-hidden">
+          <h2 className="flex items-center justify-between gap-4 border-b border-[#EBE2D2] px-5 py-3.5"><span className="text-[15px] font-semibold">Contact</span><span className="text-[12px] text-stone">Order updates go here</span></h2>
+          <div className="grid grid-cols-2 gap-x-3 px-5 pt-4 pb-1">
             <Field label="Email" value={email} onChange={setEmail} placeholder="you@email.com" inputMode="email" error={errors.email} />
           </div>
+          </section>
 
           {/* Delivery */}
-          <h2 className="text-xl font-bold mb-4 mt-8">Delivery</h2>
+          <section className="pf-card overflow-hidden">
+          <h2 className="flex items-center justify-between gap-4 border-b border-[#EBE2D2] px-5 py-3.5"><span className="text-[15px] font-semibold">Delivery</span><span className="text-[12px] text-stone">Search once, the address fills in</span></h2>
+          <div className="px-5 pt-4 pb-5">
           <div className="grid grid-cols-2 gap-x-3">
             <Field label="First name" value={firstName} onChange={setFirstName} half error={errors.firstName} />
             <Field label="Last name" value={lastName} onChange={setLastName} half error={errors.lastName} />
@@ -793,9 +808,9 @@ export default function CheckoutClient({
 
             {/* Shopee-style: Country → Region → Province → City → Barangay,
                 saka ang street — at ang mapa ay lalabas lang pag kumpleto. */}
-            <label className="block mb-3 col-span-2 sm:col-span-1">
-              <span className="block text-xs font-bold text-stone mb-1">Country</span>
-              <select value="PH" disabled className="w-full border border-stone/40 bg-sand/50 px-4 py-3 text-sm rounded text-stone">
+            <label className="relative block mb-3.5 col-span-2 sm:col-span-1">
+              <span className="block text-[12px] font-semibold text-ink mb-1.5">Country</span>
+              <select value="PH" disabled className="w-full h-12 rounded-xl bg-white px-4 text-[14px] text-ink shadow-[inset_0_0_0_1px_#D8CCB9] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.3)] placeholder:text-stone/60 appearance-none pr-10 disabled:bg-[#F6F0E4] disabled:text-stone disabled:shadow-[inset_0_0_0_1px_#E0D5C1]">
                 <option value="PH">Philippines</option>
               </select>
             </label>
@@ -804,23 +819,23 @@ export default function CheckoutClient({
                 Street at ang pin — kasama ang tamang shipping fee. Ang mga
                 dropdown sa ibaba ay para sa pag-aayos at para sa lugar na hindi
                 mahanap ng search. */}
-            <div className="col-span-2 mb-1">
+            <div className="col-span-2 mb-4 rounded-2xl bg-[linear-gradient(180deg,#FBF4E4,#F6EEDF)] px-4 pt-3.5 pb-3 shadow-[inset_0_0_0_1px_rgba(176,138,62,.3)]">
               <AddressSearch onPick={applyPlace} onClear={clearPlace} />
               {searchNote ? (
-                <p className="-mt-2 mb-3 rounded bg-cognac/10 px-3 py-2 text-[11px] font-medium leading-snug text-cognac">{searchNote}</p>
+                <p className="mt-2 rounded-xl bg-white/70 px-3 py-2 text-[11.5px] font-medium leading-snug text-brownDeep">{searchNote}</p>
               ) : (
-                <p className="-mt-2 mb-3 text-[11px] leading-snug text-stone">
+                <p className="mt-2 text-[11.5px] leading-snug text-stone">
                   Type a house, school, church, or town — this fills in the address below.
                 </p>
               )}
             </div>
 
-            <label className="block mb-3 col-span-2 sm:col-span-1">
-              <span className="block text-xs font-bold text-stone mb-1">Region</span>
+            <label className="relative block mb-3.5 col-span-2 sm:col-span-1">
+              <span className="block text-[12px] font-semibold text-ink mb-1.5">Region</span>
               <select
                 value={region}
                 onChange={(e) => { setRegion(e.target.value); setProvince(""); setCity(""); setBarangay(""); }}
-                className="w-full border border-stone/40 bg-white px-4 py-3 text-sm rounded focus:outline-none focus:border-cognac"
+                className="w-full h-12 rounded-xl bg-white px-4 text-[14px] text-ink shadow-[inset_0_0_0_1px_#D8CCB9] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.3)] placeholder:text-stone/60 appearance-none pr-10 disabled:bg-[#F6F0E4] disabled:text-stone disabled:shadow-[inset_0_0_0_1px_#E0D5C1]"
               >
                 <option value="">— Select —</option>
                 {Array.from(new Set(SHIP_LOCATIONS.map((p) => REGION_OF[p.name] ?? "Other"))).map((r) => (
@@ -830,8 +845,8 @@ export default function CheckoutClient({
             </label>
 
             {/* Province dropdown → nagse-set ng shipping fee kasama ang city */}
-            <label className="block mb-3 col-span-2 sm:col-span-1">
-              <span className="block text-xs font-bold text-stone mb-1">Province</span>
+            <label className="relative block mb-3.5 col-span-2 sm:col-span-1">
+              <span className="block text-[12px] font-semibold text-ink mb-1.5">Province</span>
               <select
                 value={province}
                 onChange={(e) => {
@@ -840,8 +855,8 @@ export default function CheckoutClient({
                   setBarangay("");
                   if (e.target.value) setRegion(REGION_OF[e.target.value] ?? "");
                 }}
-                className={`w-full border bg-white px-4 py-3 text-sm rounded focus:outline-none focus:border-cognac ${
-                  errors.province ? "border-red-600" : "border-stone/40"
+                className={`w-full h-12 rounded-xl bg-white px-4 text-[14px] text-ink shadow-[inset_0_0_0_1px_#D8CCB9] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.3)] placeholder:text-stone/60 appearance-none pr-10 disabled:bg-[#F6F0E4] disabled:text-stone disabled:shadow-[inset_0_0_0_1px_#E0D5C1] ${
+                  errors.province ? "shadow-[inset_0_0_0_1.5px_#C0392B]" : ""
                 }`}
               >
                 <option value="">— Select —</option>
@@ -849,18 +864,18 @@ export default function CheckoutClient({
                   <option key={p.name} value={p.name}>{p.name}</option>
                 ))}
               </select>
-              {errors.province && <span className="text-red-700 text-xs">{errors.province}</span>}
+              {errors.province && <span className="mt-1 block text-[12px] text-[#B23A2E]">{errors.province}</span>}
             </label>
 
             {/* City dropdown — depende sa napiling province */}
-            <label className="block mb-3 col-span-2 sm:col-span-1">
-              <span className="block text-xs font-bold text-stone mb-1">City / Town</span>
+            <label className="relative block mb-3.5 col-span-2 sm:col-span-1">
+              <span className="block text-[12px] font-semibold text-ink mb-1.5">City / Town</span>
               <select
                 value={city}
                 disabled={!province}
                 onChange={(e) => { setCity(e.target.value); setBarangay(""); }}
-                className={`w-full border bg-white px-4 py-3 text-sm rounded focus:outline-none focus:border-cognac disabled:bg-sand/50 disabled:text-stone ${
-                  errors.city ? "border-red-600" : "border-stone/40"
+                className={`w-full h-12 rounded-xl bg-white px-4 text-[14px] text-ink shadow-[inset_0_0_0_1px_#D8CCB9] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.3)] placeholder:text-stone/60 appearance-none pr-10 disabled:bg-[#F6F0E4] disabled:text-stone disabled:shadow-[inset_0_0_0_1px_#E0D5C1] ${
+                  errors.city ? "shadow-[inset_0_0_0_1.5px_#C0392B]" : ""
                 }`}
               >
                 <option value="">{province ? "— Select —" : "Select a province first"}</option>
@@ -870,18 +885,18 @@ export default function CheckoutClient({
                   </option>
                 ))}
               </select>
-              {errors.city && <span className="text-red-700 text-xs">{errors.city}</span>}
+              {errors.city && <span className="mt-1 block text-[12px] text-[#B23A2E]">{errors.city}</span>}
             </label>
 
             {/* Barangay — opisyal na PSGC list ng napiling city */}
-            <label className="block mb-3 col-span-2 sm:col-span-1">
-              <span className="block text-xs font-bold text-stone mb-1">Barangay</span>
+            <label className="relative block mb-3.5 col-span-2 sm:col-span-1">
+              <span className="block text-[12px] font-semibold text-ink mb-1.5">Barangay</span>
               {brgyOptions.length > 0 ? (
                 <select
                   value={barangay}
                   disabled={!city}
                   onChange={(e) => setBarangay(e.target.value)}
-                  className={`w-full border bg-white px-4 py-3 text-sm rounded focus:outline-none focus:border-cognac disabled:bg-sand/50 disabled:text-stone ${errors.barangay ? "border-red-600" : "border-stone/40"}`}
+                  className={`w-full h-12 rounded-xl bg-white px-4 text-[14px] text-ink shadow-[inset_0_0_0_1px_#D8CCB9] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.3)] placeholder:text-stone/60 appearance-none pr-10 disabled:bg-[#F6F0E4] disabled:text-stone disabled:shadow-[inset_0_0_0_1px_#E0D5C1] ${errors.barangay ? "shadow-[inset_0_0_0_1.5px_#C0392B]" : "border-stone/40"}`}
                 >
                   <option value="">{city ? "— Select —" : "Select a city first"}</option>
                   {brgyOptions.map((b) => <option key={b} value={b}>{b}</option>)}
@@ -892,10 +907,10 @@ export default function CheckoutClient({
                   disabled={!city}
                   onChange={(e) => setBarangay(e.target.value)}
                   placeholder={city ? "Type your barangay" : "Select a city first"}
-                  className="w-full border border-stone/40 bg-white px-4 py-3 text-sm rounded focus:outline-none focus:border-cognac disabled:bg-sand/50"
+                  className="w-full h-12 rounded-xl bg-white px-4 text-[14px] text-ink shadow-[inset_0_0_0_1px_#D8CCB9] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.3)] placeholder:text-stone/60 disabled:bg-[#F6F0E4]"
                 />
               )}
-              {errors.barangay && <span className="text-red-700 text-xs">{errors.barangay}</span>}
+              {errors.barangay && <span className="mt-1 block text-[12px] text-[#B23A2E]">{errors.barangay}</span>}
             </label>
 
             {/* Shopee-style typeahead: habang nagta-type, live na suggestions
@@ -947,14 +962,14 @@ export default function CheckoutClient({
           </div>
 
           {shippingKnown && (
-            <div className="bg-linen rounded px-4 py-3 mt-2 mb-4 text-sm">
-              <div className="flex justify-between items-center">
+            <div className="pf-estin rounded-2xl bg-[linear-gradient(180deg,#F8EFD8,#F1E3BF)] px-4 py-3.5 mt-1 mb-4 text-sm shadow-[inset_0_0_0_1px_rgba(176,138,62,.28),inset_0_1px_0_rgba(255,255,255,.7)]">
+              <div className="flex justify-between items-center gap-3">
                 <span className="text-stone">
                   Shipping fee to <strong className="text-ink">{city}</strong>
                 </span>
-                <span className="font-bold text-cognac">{formatPrice(shippingCost)}</span>
+                <span className="font-cormorant text-[22px] font-bold text-brownDeep tabular-nums">{formatPrice(shippingCost)}</span>
               </div>
-              <p className="text-[11px] text-stone mt-1.5 leading-snug">
+              <p className="text-[11.5px] text-stone mt-1.5 leading-snug">
                 Pin your exact location below so we can confirm this fee.
                 Far-end or boundary areas may be adjusted — we&apos;ll contact
                 you before dispatch if it changes.
@@ -968,7 +983,7 @@ export default function CheckoutClient({
           {/* Tingnan ang paliwanag sa /quote-request — parehong bitag: ang
               bayad ay galing sa dropdown, hindi sa pin. */}
           {pinMismatch(pin, { city, province }) && (
-            <p className="mb-3 rounded border border-[#caa45a] bg-linen px-3 py-2 text-xs leading-snug text-olive">
+            <p className="mb-3 rounded-xl bg-goldSoft px-3.5 py-2.5 text-xs leading-snug text-brownDeep shadow-[inset_0_0_0_1px_rgba(176,138,62,.45)]">
               <b>Your pin is in {pinMismatch(pin, { city, province })}</b> but you selected {city}, {province}.
               The shipping fee follows the selection — change it above if the pin is right.
             </p>
@@ -990,15 +1005,20 @@ export default function CheckoutClient({
               }}
             />
           ) : (
-            <p className="text-xs text-stone bg-linen rounded px-3 py-2">
+            <p className="text-xs text-stone bg-goldSoft/60 rounded-xl px-3.5 py-2.5">
               Complete your address (province, city, barangay, street) and the map will appear —
               drag the pin to your exact house so our driver finds you easily.
             </p>
           )}
 
+          </div>
+          </section>
+
           {/* Payment */}
-          <h2 className="text-xl font-bold mb-1 mt-8">Payment</h2>
-          <p className="text-xs text-stone mb-4">
+          <section className="pf-card overflow-hidden">
+          <h2 className="flex items-center justify-between gap-4 border-b border-[#EBE2D2] px-5 py-3.5"><span className="text-[15px] font-semibold">Payment</span><span className="text-[12px] text-stone">30% now, balance before delivery</span></h2>
+          <div className="px-5 pt-4 pb-5">
+          <p className="text-[13px] text-stone mb-4">
             A <strong>30% downpayment</strong> ({formatPrice(downpayment)}) confirms
             your order. The balance is settled before delivery.
           </p>
@@ -1008,12 +1028,14 @@ export default function CheckoutClient({
             <button
               type="button"
               onClick={() => setPayMethod("qr")}
-              className={`border rounded p-4 text-left transition-colors ${
+              aria-pressed={payMethod === "qr"}
+              className={`relative rounded-2xl bg-white p-4 pr-11 text-left transition ${
                 payMethod === "qr"
-                  ? "border-cognac bg-cognac/5"
-                  : "border-stone/30 hover:border-stone/60"
+                  ? "shadow-[inset_0_0_0_1.5px_#B08A3E,0_12px_20px_-16px_rgba(62,50,32,.5)] bg-[linear-gradient(180deg,#FFFDF8,#FBF4E4)]"
+                  : "shadow-[inset_0_0_0_1px_#E0D5C1] hover:shadow-[inset_0_0_0_1px_#B08A3E]"
               }`}
             >
+              <span aria-hidden className={`absolute right-4 top-1/2 -translate-y-1/2 grid h-5 w-5 place-items-center rounded-full ${payMethod === "qr" ? "bg-brownDeep" : "shadow-[inset_0_0_0_1.5px_#C9B98F]"}`}>{payMethod === "qr" && <span className="h-2 w-2 rounded-full bg-gold" />}</span>
               <span className="block text-sm font-bold">QR Ph</span>
               <span className="block text-xs text-stone mt-0.5">
                 GCash · Maya · GoTyme · any bank app
@@ -1022,12 +1044,14 @@ export default function CheckoutClient({
             <button
               type="button"
               onClick={() => setPayMethod("card")}
-              className={`border rounded p-4 text-left transition-colors ${
+              aria-pressed={payMethod === "card"}
+              className={`relative rounded-2xl bg-white p-4 pr-11 text-left transition ${
                 payMethod === "card"
-                  ? "border-cognac bg-cognac/5"
-                  : "border-stone/30 hover:border-stone/60"
+                  ? "shadow-[inset_0_0_0_1.5px_#B08A3E,0_12px_20px_-16px_rgba(62,50,32,.5)] bg-[linear-gradient(180deg,#FFFDF8,#FBF4E4)]"
+                  : "shadow-[inset_0_0_0_1px_#E0D5C1] hover:shadow-[inset_0_0_0_1px_#B08A3E]"
               }`}
             >
+              <span aria-hidden className={`absolute right-4 top-1/2 -translate-y-1/2 grid h-5 w-5 place-items-center rounded-full ${payMethod === "card" ? "bg-brownDeep" : "shadow-[inset_0_0_0_1.5px_#C9B98F]"}`}>{payMethod === "card" && <span className="h-2 w-2 rounded-full bg-gold" />}</span>
               <span className="block text-sm font-bold">Card</span>
               <span className="block text-xs text-stone mt-0.5">
                 Visa · Mastercard — secure page
@@ -1035,43 +1059,47 @@ export default function CheckoutClient({
             </button>
           </div>
 
+          </div>
+          </section>
+
           <button
             onClick={placeOrder}
             disabled={placing}
-            className="w-full mt-6 bg-ink text-cream py-4 text-sm font-bold tracking-widest2 hover:bg-cognac transition-colors disabled:opacity-60"
+            className="pf-dark pf-btn inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl text-[15px] font-bold hover:text-gold disabled:opacity-60 disabled:hover:translate-y-0"
           >
             {placing
-              ? "PROCESSING…"
-              : `PLACE ORDER · PAY ${formatPrice(downpayment)} NOW`}
+              ? "Processing…"
+              : <>Place order · Pay {formatPrice(downpayment)} now <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg></>}
           </button>
-          <p className="text-xs text-stone text-center mt-3">
+          <p className="text-xs text-stone text-center -mt-1">
             Questions? {site.contact.email} · {site.contact.phone}
           </p>
         </div>
 
         {/* ---------- RIGHT: ORDER SUMMARY ---------- */}
-        <aside className="bg-linen p-6 rounded lg:sticky lg:top-40">
-          <h2 className="font-bold text-lg mb-5">Order Summary</h2>
+        <aside className="pf-card overflow-hidden lg:sticky lg:top-24">
+          <h2 className="flex items-center justify-between gap-4 border-b border-[#EBE2D2] px-5 py-3.5"><span className="text-[15px] font-semibold">Order summary</span><Link href="/cart" className="text-[12.5px] font-semibold border-b-[1.5px] border-goldDeep pb-px transition-colors hover:text-goldDeep">Edit cart</Link></h2>
+          <div className="px-5 pt-4">
           <div className="space-y-4 mb-5">
             {rows.map(({ item, product }) => (
               <div key={`${item.slug}-${item.color}`} className="text-sm">
                 {/* Header: larawan + pangalan + kabuuan ng linyang ito */}
                 <div className="flex gap-3 items-start">
-                  <div className="relative w-16 h-14 bg-sand rounded overflow-hidden shrink-0">
-                    <Image src={item.image || product!.images[0]} alt={product!.name} fill className="object-contain bg-white" sizes="64px" />
-                    <span className="absolute -top-0 -right-0 bg-stone text-cream text-[10px] rounded-bl px-1.5">
+                  <div className="relative w-14 h-14 rounded-[12px] pf-stage overflow-hidden shrink-0 shadow-[inset_0_0_0_1px_rgba(176,138,62,.25)]">
+                    <Image src={item.image || product!.images[0]} alt={product!.name} fill className="object-contain p-1.5 mix-blend-multiply" sizes="56px" />
+                    <span className="absolute top-0 right-0 bg-brownDeep text-gold text-[10px] font-bold rounded-bl-lg px-1.5">
                       {item.qty}
                     </span>
                   </div>
                   <div className="flex-1">
-                    <p className="font-bold text-base leading-snug">{product!.name}</p>
+                    <p className="font-cormorant font-semibold text-[16px] leading-snug tracking-[-0.01em]">{product!.name}</p>
                     <p className="text-sm text-stone">
                       {/* Lumang cart (walang breakdown): kunin lang ang unang
                           bahagi bago ang "+" para hindi mahaba */}
                       {item.baseLabel ?? item.color.split(" + ")[0]}
                     </p>
                   </div>
-                  <p className="font-bold text-base whitespace-nowrap">
+                  <p className="font-cormorant font-semibold text-[17px] whitespace-nowrap tabular-nums">
                     {formatPrice((item.unitPrice ?? product!.price) * item.qty)}
                   </p>
                 </div>
@@ -1140,25 +1168,37 @@ export default function CheckoutClient({
               </div>
             ))}
           </div>
-          <div className="space-y-2 text-sm border-t border-sand pt-4">
+          </div>
+          <div className="space-y-2 text-sm border-t border-[#EBE2D2] px-5 py-4">
             <div className="flex justify-between">
               <span className="text-stone">Subtotal</span>
-              <span>{formatPrice(subtotal)}</span>
+              <span className="font-semibold tabular-nums">{formatPrice(subtotal)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-stone">
                 Shipping{shippingKnown && <span className="text-xs"> ({city})</span>}
               </span>
               {shippingKnown ? (
-                <span>{formatPrice(shippingCost)}</span>
+                <span className="font-semibold tabular-nums">{formatPrice(shippingCost)}</span>
               ) : (
                 <span className="text-xs text-stone italic">Select a location</span>
               )}
             </div>
-            <div className="flex justify-between border-t border-sand pt-3 mt-2 font-bold text-base">
-              <span>Total</span>
-              <span>{shippingKnown ? formatPrice(total) : formatPrice(subtotal) + " + SF"}</span>
+            <div className="flex items-baseline justify-between border-t border-[#EBE2D2] pt-3 mt-2">
+              <span className="font-cormorant text-[20px] font-semibold">Total</span>
+              <span className="font-cormorant text-[24px] font-semibold tabular-nums tracking-[-0.01em]">{shippingKnown ? formatPrice(total) : formatPrice(subtotal) + " + SF"}</span>
             </div>
+            {/* Downpayment at balanse (mockup, 2026-10-07) — parehong `downpayment` na ibinabayad sa Place order. */}
+            <div className="flex justify-between pt-1 text-[13.5px]">
+              <span className="text-stone">Downpayment due now (30%)</span>
+              <span className="font-semibold tabular-nums text-brownDeep">{formatPrice(downpayment)}</span>
+            </div>
+            {shippingKnown && (
+              <div className="flex justify-between text-[13.5px]">
+                <span className="text-stone">Balance before delivery</span>
+                <span className="font-semibold tabular-nums">{formatPrice(total - downpayment)}</span>
+              </div>
+            )}
           </div>
         </aside>
       </div>

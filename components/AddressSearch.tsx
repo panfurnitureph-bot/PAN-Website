@@ -119,10 +119,10 @@ export default function AddressSearch({
 
   return (
     <div className="mb-3" ref={box}>
-      <span className="mb-1 block text-[11px] font-bold text-stone">📍 {label}</span>
+      <span className="mb-1.5 flex items-center gap-1.5 text-[12.5px] font-semibold text-ink"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-goldDeep" aria-hidden><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></svg>{label}</span>
       <div className="relative">
-        <div className="flex items-center gap-2 rounded border-[1.5px] border-cognac bg-white px-3 py-2.5 focus-within:ring-2 focus-within:ring-cognac/20">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" className="shrink-0 text-cognac" aria-hidden="true">
+        <div className="flex h-[50px] items-center gap-2.5 rounded-xl bg-white px-3.5 shadow-[inset_0_0_0_1.5px_#B08A3E,0_8px_18px_-14px_rgba(62,50,32,.5)] transition-shadow focus-within:shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.32)]">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="shrink-0 text-stone" aria-hidden="true">
             <circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" />
           </svg>
           <input
@@ -140,7 +140,7 @@ export default function AddressSearch({
             <button
               type="button"
               onClick={() => { setQ(""); setList([]); setOpen(false); onClear?.(); }}
-              className="shrink-0 text-stone hover:text-ink"
+              className="grid h-[30px] w-[30px] shrink-0 place-items-center rounded-full bg-[#F4EFE6] text-stone transition-colors hover:bg-brownDeep hover:text-gold"
               aria-label="Clear"
             >
               ✕
@@ -149,7 +149,7 @@ export default function AddressSearch({
         </div>
 
         {open && (
-          <div className="absolute left-0 right-0 top-[calc(100%+4px)] z-30 overflow-hidden rounded border border-stone/30 bg-white shadow-lg">
+          <div className="pf-estin absolute left-0 right-0 top-[calc(100%+6px)] z-30 overflow-hidden rounded-xl bg-white shadow-[0_0_0_1px_#E4DACA,0_20px_44px_-18px_rgba(62,50,32,.5)]">
             {list.length === 0 ? (
               <p className="px-3 py-3 text-xs text-stone">
                 No matches. Try the town name, or fill in the address below.
@@ -161,7 +161,7 @@ export default function AddressSearch({
                   type="button"
                   onClick={() => void choose(s)}
                   onMouseEnter={() => setHi(i)}
-                  className={`flex w-full items-start gap-2.5 border-t border-stone/15 px-3 py-2.5 text-left first:border-t-0 ${i === hi ? "bg-sand" : "hover:bg-sand"}`}
+                  className={`flex w-full items-start gap-2.5 border-t border-[#EBE2D2] px-3.5 py-2.5 text-left transition-colors first:border-t-0 ${i === hi ? "bg-goldSoft" : "hover:bg-[#F6F0E4]"}`}
                 >
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" className="mt-0.5 shrink-0 text-stone" aria-hidden="true">
                     <circle cx="12" cy="10" r="3" /><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z" />
