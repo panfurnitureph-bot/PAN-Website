@@ -12,9 +12,30 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { formatPrice, type HomepageContent, type Product } from "@/lib/products";
+import FitImage from "@/components/FitImage";
+import { useSubjectBoxes } from "@/lib/subject-box";
 
 type Card = { name?: string; price?: string; image?: string; sizes?: string; colors?: string; sizeList?: { size: string; price: string }[]; colorList?: { name: string; image?: string; focus?: string; hex?: string }[] };
 type Tile = { key: string; name: string; href: string; image: string; from: number; sizes: { size: string; price: number }[]; colors: { name: string; hex?: string; swatch?: string; focus?: string }[] };
+
+// LITRATO SA ENTABLADO — gaya ng FitImage (sinusukat ang kama sa litrato para
+// pare-pareho ang laki), pero NAKATAYO SA SAHIG: ang ilalim ng kama ay laging
+// nasa parehong linya (FLOOR) kung saan naroon ang anino, kaya walang kamang
+// lumulutang kahit iba-iba ang hugis at puting margin ng litrato. Walang sukat
+// (CORS, sirang file) = buong litrato, contain, gaya ng dati.
+const FLOOR = 84; // % mula sa itaas ng parisukat na studio
+const CEIL = 15;
+function StagePhoto({ src, alt, on, priority }: { src: string; alt: string; on: boolean; priority?: boolean }) {
+  const [box] = useSubjectBoxes([src]);
+  let style: React.CSSProperties | undefined;
+  if (box) {
+    const bw = box.r - box.l, bh = box.b - box.t; // % ng studio
+    const s = Math.min(2.2, 80 / Math.max(bw, 1), (FLOOR - CEIL) / Math.max(bh, 1));
+    const cx = (box.l + box.r) / 2;
+    style = { transform: `translate(${(50 - cx * s).toFixed(2)}%, ${(FLOOR - box.b * s).toFixed(2)}%) scale(${s.toFixed(3)})`, transformOrigin: "0 0" };
+  }
+  return <Image src={src} alt={alt} fill priority={priority} className={`object-contain mix-blend-multiply transition-opacity duration-500 ease-out ${on ? "opacity-100" : "opacity-0"}`} style={style} sizes="(min-width: 1024px) 45vw, 100vw" />;
+}
 
 const num = (s: string) => Number(String(s).replace(/[^\d.]/g, "")) || 0;
 const norm = (s: string) => s.trim().toLowerCase();
@@ -83,29 +104,37 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
     : /mattress|foam/i.test(f) ? <path d="M3 15h18v4H3zM5 15v-3a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v3" />
     : <><rect x="3" y="6" width="18" height="12" rx="2" /><path d="M3 10h18" /></>;
   const arrow = <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg>;
-  const chip = "inline-flex items-center h-6 px-2.5 rounded-full shadow-[inset_0_0_0_1px_rgba(226,194,122,.4)] text-[11px] font-semibold text-[#E9DDC4]";
+  const caps = "text-[10.5px] font-bold tracking-[0.16em] uppercase text-gold/90";
 
   return (
     <section className="pf-band relative py-12 md:py-16">
       <span aria-hidden className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(226,194,122,.7)_25%,rgba(226,194,122,.7)_75%,transparent)]" />
       <span aria-hidden className="absolute inset-x-0 bottom-0 h-px bg-[linear-gradient(90deg,transparent,rgba(226,194,122,.7)_25%,rgba(226,194,122,.7)_75%,transparent)]" />
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 grid gap-8 lg:gap-14 lg:grid-cols-[0.95fr_1.05fr] items-center">
-        <div data-reveal className="lg:self-stretch flex">
-          <Link ref={stage} href={cur.href} className="group relative isolate flex flex-1 flex-col min-h-[400px] lg:min-h-[560px] rounded-[22px] sm:rounded-[26px] overflow-hidden text-cream bg-[radial-gradient(ellipse_at_50%_46%,#fff_0,#FBF6EC_46%,#EFE4D0_100%)] shadow-[0_0_0_1px_rgba(226,194,122,.55),0_0_0_8px_rgba(226,194,122,.08),0_40px_70px_-36px_rgba(0,0,0,.95)]">
-            {cur === featured && <span className="absolute z-[2] left-4 top-4 sm:left-5 sm:top-5 inline-flex items-center h-7 px-3 rounded-full bg-brownDeep text-gold text-[10px] font-bold tracking-[0.18em] uppercase">Best seller</span>}
-            <span aria-hidden className="absolute z-[2] right-4 top-2 sm:right-5 sm:top-3 font-cormorant font-semibold text-[54px] sm:text-[76px] leading-none tracking-[-0.04em] text-transparent [-webkit-text-stroke:1.2px_rgba(176,138,62,.6)]">{String(sel + 1).padStart(2, "0")}</span>
-            <div className="relative flex-1 min-h-[230px]">
-              <i aria-hidden className="absolute left-[16%] right-[16%] bottom-[9%] h-6 rounded-[50%] bg-[radial-gradient(closest-side,rgba(62,50,32,.3),transparent)]" />
-              {/* key = bagong litrato → tumatakbo ulit ang pasok na galaw (pf-pbin).
-                  Ang galaw ay NASA LITRATO MISMO, hindi sa balot: ang balot na may
-                  opacity/transform ay nagiging hiwalay na grupo, kaya habang gumagalaw
-                  ay hindi umaabot ang multiply sa cream na entablado at lumilitaw ang
-                  puting background ng litrato (Joe 2026-10-07, "bakit may white background"). */}
-              <Image key={curImage} src={curImage} alt={cur.name} fill className="pf-pbin object-contain p-[7%] pt-[12%] mix-blend-multiply transition-transform duration-700 group-hover:scale-[1.04]" sizes="(min-width: 1024px) 45vw, 100vw" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 grid gap-8 lg:gap-14 lg:grid-cols-[0.92fr_1.08fr] items-center">
+        <div data-reveal>
+          {/* VITRINA (Joe 2026-10-07, "eto nalang ang hindi pang premium"): madilim na
+              kuwadro na may gintong gilid; sa loob ay parisukat na studio (pader at
+              sahig) kung saan nakatayo ang kama, at sa ilalim ang pangalan at button.
+              Ang kama ay sinusukat ng FitImage kaya PAREHO ang laki ng bawat kama kahit
+              iba-iba ang puting margin ng litrato. Lahat ng litrato ay nakapatong at
+              nagpapalitan sa pamamagitan ng opacity (walang talon, walang puting kahon:
+              ang galaw ay nasa litrato mismo at ang zoom ay nasa balot na may sariling
+              studio na background). */}
+          <Link ref={stage} href={cur.href} className="group relative isolate flex flex-col rounded-[24px] sm:rounded-[28px] p-2.5 sm:p-3 text-cream bg-[linear-gradient(180deg,#4A3B25,#2A2014)] shadow-[0_0_0_1px_rgba(226,194,122,.55),0_0_0_8px_rgba(226,194,122,.07),0_44px_70px_-36px_rgba(0,0,0,.95)]">
+            <div className="relative aspect-square overflow-hidden rounded-[16px] sm:rounded-[18px]">
+              <div className="pf-studio absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-[1.035]">
+                <i aria-hidden className="absolute left-[12%] right-[12%] top-[80.5%] h-[7%] rounded-[50%] bg-[radial-gradient(closest-side,rgba(62,50,32,.36),transparent)]" />
+                {list.map((b, i) => (
+                  <StagePhoto key={b.key} src={b === featured ? featuredImage : b.image} alt={i === sel ? b.name : ""} on={i === sel} priority={i === 0} />
+                ))}
+              </div>
+              <span aria-hidden className="pointer-events-none absolute inset-2.5 rounded-[10px] sm:rounded-[12px] shadow-[inset_0_0_0_1px_rgba(176,138,62,.3)]" />
+              {cur === featured && <span className="absolute z-[2] left-5 top-5 sm:left-6 sm:top-6 inline-flex items-center h-7 px-3 rounded-full bg-brownDeep text-gold text-[10px] font-bold tracking-[0.18em] uppercase">Best seller</span>}
+              <span aria-hidden className="absolute z-[2] right-5 top-3 sm:right-6 sm:top-4 font-cormorant font-semibold text-[54px] sm:text-[76px] leading-none tracking-[-0.04em] text-transparent [-webkit-text-stroke:1.2px_rgba(176,138,62,.6)]">{String(sel + 1).padStart(2, "0")}</span>
             </div>
-            <div className="relative z-[2] m-2.5 sm:m-3.5 mt-0 sm:mt-0 rounded-[18px] px-4 py-4 sm:px-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-[#2E2518]/90 backdrop-blur-md shadow-[inset_0_0_0_1px_rgba(226,194,122,.35),0_18px_30px_-18px_rgba(0,0,0,.7)]">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-2 sm:px-3 pt-4 pb-2">
               <div className="flex min-w-0 flex-col gap-2">
-                <div className="font-cormorant text-[20px] sm:text-[22px] leading-tight font-semibold tracking-[-0.015em] text-[#FBF4E4]">{split(cur.name).title}</div>
+                <div className="font-cormorant text-[21px] sm:text-2xl leading-tight font-semibold tracking-[-0.015em] text-[#FBF4E4]">{split(cur.name).title}</div>
                 {cur.sizes.length > 0 ? (
                   <div className="flex gap-2 flex-wrap">
                     {cur.sizes.map((s) => (
@@ -119,13 +148,13 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
                 ) : null}
                 {(split(cur.name).size || cur.colors.length > 0) && (
                   <div className="flex items-center gap-1.5 flex-wrap text-xs text-[#D8CBB0]">
-                    {split(cur.name).size && <span className={chip}>{split(cur.name).size}</span>}
+                    {split(cur.name).size && <span className={caps}>{split(cur.name).size}</span>}
                     {cur.colors.slice(0, 4).map((c) => <i key={c.name} title={c.name} className="w-[22px] h-[22px] rounded-full border-2 border-cream/60 inline-block overflow-hidden relative" style={{ background: c.hex ?? "#CFC2A8" }}>{c.swatch && <Image src={c.swatch} alt="" fill className="object-cover" style={{ objectPosition: c.focus || "50% 50%" }} sizes="24px" />}</i>)}
                     {cur.colors.length > 0 && <span>{cur.colors.map((c) => c.name).slice(0, 3).join(" · ")}</span>}
                   </div>
                 )}
               </div>
-              <span className="pf-gold inline-flex shrink-0 items-center justify-center gap-2 h-[46px] px-6 rounded-full text-[13.5px] font-bold whitespace-nowrap">Build this bed <span className="transition-transform group-hover:translate-x-0.5">{arrow}</span></span>
+              <span className="pf-gold inline-flex shrink-0 items-center justify-center gap-2 h-[48px] px-6 rounded-full text-[13.5px] font-bold whitespace-nowrap">Build this bed <span className="transition-transform group-hover:translate-x-0.5">{arrow}</span></span>
             </div>
           </Link>
         </div>
@@ -138,7 +167,7 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
           {copy?.sub && <p className="text-[15px] leading-relaxed mt-2.5 max-w-[58ch] text-[#D8CBB0]">{copy.sub}</p>}
 
           <div className="relative grid gap-0.5 mt-6">
-            {list.length > 1 && <i aria-hidden className="absolute left-[18px] sm:left-[21px] top-7 bottom-7 w-[1.5px] bg-[linear-gradient(180deg,#E2C27A,rgba(226,194,122,.25))]" />}
+            {list.length > 1 && <i aria-hidden className="absolute left-[18px] sm:left-[21px] top-9 bottom-9 w-[1.5px] bg-[linear-gradient(180deg,#E2C27A,rgba(226,194,122,.25))]" />}
             {list.map((b, i) => {
               const on = i === sel;
               return (
@@ -154,16 +183,19 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
                     // ang entablado), ang pangalawa ang nagbubukas ng kama.
                     if (touch.current && !on) { e.preventDefault(); setSel(i); stage.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }); }
                   }}
-                  className={`group/row relative grid grid-cols-[38px_minmax(0,1fr)_auto] sm:grid-cols-[44px_minmax(0,1fr)_auto] items-center gap-3 sm:gap-4 rounded-[18px] py-2.5 sm:py-3 pr-2.5 sm:pr-4 outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-gold ${on ? "bg-[linear-gradient(90deg,rgba(226,194,122,.14),rgba(226,194,122,.04))]" : ""}`}
+                  className={`relative grid grid-cols-[38px_minmax(0,1fr)_auto_auto] sm:grid-cols-[44px_minmax(0,1fr)_auto_auto] items-center gap-3 sm:gap-4 rounded-[18px] py-2 pr-2.5 sm:pr-3.5 outline-none transition duration-300 focus-visible:ring-2 focus-visible:ring-gold ${on ? "bg-[linear-gradient(90deg,rgba(226,194,122,.16),rgba(226,194,122,.05))] shadow-[inset_0_0_0_1px_rgba(226,194,122,.3)]" : "hover:bg-white/[.03]"}`}
                 >
-                  <i className={`relative grid place-items-center w-[38px] h-[38px] sm:w-11 sm:h-11 rounded-full font-cormorant font-semibold not-italic text-[15px] sm:text-[17px] transition duration-300 ${on ? "bg-[linear-gradient(180deg,#EDD494,#D2AB56)] text-[#2A2116] scale-105 shadow-[0_0_0_6px_#30261A]" : "bg-[#2E2417] text-gold shadow-[0_0_0_1.5px_rgba(226,194,122,.7),0_0_0_6px_#30261A]"}`}>{i + 1}</i>
+                  <i className={`relative grid place-items-center w-[38px] h-[38px] sm:w-11 sm:h-11 rounded-full font-cormorant font-semibold not-italic text-[15px] sm:text-[17px] transition duration-300 ${on ? "bg-[linear-gradient(180deg,#EDD494,#D2AB56)] text-[#2A2116] scale-105 shadow-[0_0_0_6px_#33281A]" : "bg-[#2E2417] text-gold shadow-[0_0_0_1.5px_rgba(226,194,122,.7),0_0_0_6px_#30261A]"}`}>{i + 1}</i>
                   <span className="flex min-w-0 flex-col gap-1">
-                    <b className={`font-cormorant font-semibold text-[16.5px] sm:text-[19px] leading-tight tracking-[-0.01em] transition-colors ${on ? "text-white" : "text-[#F4EAD8]"}`}>{split(b.name).title}</b>
+                    <b className={`font-cormorant font-semibold text-[17px] sm:text-[20px] leading-tight tracking-[-0.01em] transition-colors ${on ? "text-white" : "text-[#F4EAD8]"}`}>{split(b.name).title}</b>
+                    {chipsOf(b).length > 0 && <span className={`${caps} leading-snug`}>{chipsOf(b).join(" · ")}</span>}
                     {b.from > 0 && <span className="text-xs text-gold">from {formatPrice(b.from)}</span>}
-                    {chipsOf(b).length > 0 && <span className="flex flex-wrap gap-1.5 mt-0.5">{chipsOf(b).map((c) => <em key={c} className={`${chip} not-italic`}>{c}</em>)}</span>}
+                  </span>
+                  <span className={`relative w-[54px] h-[54px] sm:w-[64px] sm:h-[64px] shrink-0 overflow-hidden rounded-[13px] pf-stage transition duration-300 ${on ? "shadow-[0_0_0_1.5px_#E2C27A,0_10px_18px_-10px_rgba(0,0,0,.8)]" : "shadow-[0_0_0_1px_rgba(226,194,122,.35)]"}`}>
+                    <FitImage src={b === featured ? featuredImage : b.image} alt="" fill={0.82} className="mix-blend-multiply" sizes="64px" />
                   </span>
                   <span className="inline-flex items-center gap-2.5 text-[12.5px] font-bold text-gold whitespace-nowrap">
-                    <span className={`hidden sm:inline transition duration-300 ${on ? "opacity-100" : "opacity-0 translate-x-1.5"}`}>Build this bed</span>
+                    <span className={`hidden xl:inline transition duration-300 ${on ? "opacity-100" : "opacity-0 translate-x-1.5"}`}>Build this bed</span>
                     <i aria-hidden className={`grid place-items-center w-[34px] h-[34px] sm:w-[38px] sm:h-[38px] rounded-full transition duration-300 ${on ? "bg-gold text-[#2A2116]" : "shadow-[inset_0_0_0_1px_rgba(226,194,122,.45)]"}`}>{arrow}</i>
                   </span>
                 </Link>

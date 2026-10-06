@@ -164,6 +164,13 @@ html:not([data-hydrated]) .rail > * {
   .pf-stage {
     background: radial-gradient(ellipse at 50% 74%, #fff 0, #FBF6EC 55%, #F3EADB 100%);
   }
+  /* Studio ng promo beds: maliwanag na pader sa itaas, bahagyang mas madilim na
+     sahig sa ibaba, at ilaw sa gitna — parang nakatayo ang kama sa showroom. */
+  .pf-studio {
+    background:
+      radial-gradient(ellipse 70% 52% at 50% 40%, #fff 0, rgba(255, 255, 255, 0.85) 34%, rgba(255, 255, 255, 0) 72%),
+      linear-gradient(180deg, #F3E9D7 0, #F6EEDF 46%, #EFE3CD 63%, #E2D2B4 71%, #EADDC4 84%, #F0E6D2 100%);
+  }
   .pf-floor {
     position: absolute;
     left: 20%;
