@@ -183,46 +183,66 @@ export default function Header({ site, nav = NAV_LINKS }: { site: SiteContent; n
           // walang naka-upload.
           const menuImg = site.menuImages?.[openMenu.toLowerCase()] || `/images/category-${featuredSlug}.jpg`;
           return (
-            <div className="hidden lg:block absolute inset-x-0 top-full bg-cream border-t border-sand shadow-lg">
-              <div className="max-w-6xl mx-auto grid grid-cols-[240px_1fr] gap-12 px-10 py-10">
+            // PREMIUM MEGA MENU (Joe 2026-10-07, mockup): kaliwa ang listahan na may
+            // icon na litrato at bilang (ang "Custom Bed" ay "Build yours" na pill), at
+            // "Shop all …" na button; kanan ang mga tile ng subcategory na may litrato.
+            // Parehong mga link at pagkakasunod ng dati.
+            <div className="pf-estin hidden lg:block absolute inset-x-0 top-full rounded-b-[22px] bg-[#FBF7EF] shadow-[0_0_0_1px_#E4DACA,0_40px_70px_-30px_rgba(62,50,32,.55)]">
+              <div className="max-w-7xl mx-auto grid grid-cols-[250px_1fr] gap-10 px-8 py-7">
                 {/* Links column */}
                 <div>
-                  <p className="font-cormorant text-2xl text-ink mb-5">{link.label}</p>
-                  <ul className="space-y-3">
-                    {link.children.map((c) => (
+                  <p className="text-[10.5px] font-bold tracking-[0.18em] uppercase text-goldDeep">Shop</p>
+                  <p className="font-cormorant text-[26px] font-semibold tracking-[-0.015em] text-ink mt-1 mb-4">{link.label}</p>
+                  <ul className="grid gap-1">
+                    {link.children.map((c) => {
+                      const custom = /custom/i.test(c.label);
+                      return (
                       <li key={c.href}>
                         <Link
                           href={c.href}
                           onClick={() => setOpenMenu(null)}
-                          className="text-sm text-ink hover:text-cognac border-b border-transparent hover:border-cognac pb-0.5 transition-colors"
+                          className="group flex items-center gap-3 rounded-[14px] px-2 py-1.5 text-[14.5px] text-ink transition-colors hover:bg-white hover:shadow-[0_0_0_1px_rgba(176,138,62,.35)]"
                         >
-                          {c.label}
+                          <span className="relative grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-[10px] pf-stage text-goldDeep shadow-[inset_0_0_0_1px_rgba(176,138,62,.25)]">
+                            {c.image ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={c.image} alt="" className="h-full w-full object-contain p-1 mix-blend-multiply" />
+                            ) : custom ? (
+                              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M4 20h4l10-10-4-4L4 16z" /><path d="m12 8 4 4" /></svg>
+                            ) : (
+                              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden><rect x="4" y="4" width="7" height="7" rx="2" /><rect x="13" y="4" width="7" height="7" rx="2" /><rect x="4" y="13" width="7" height="7" rx="2" /><rect x="13" y="13" width="7" height="7" rx="2" /></svg>
+                            )}
+                          </span>
+                          <span className="min-w-0 flex-1 truncate">{c.label}</span>
+                          {custom ? (
+                            <span className="rounded-full bg-brownDeep px-2.5 py-1 text-[10.5px] font-bold text-gold">Build yours</span>
+                          ) : typeof c.count === "number" ? (
+                            <span className="grid h-6 min-w-[24px] place-items-center rounded-full bg-goldSoft px-1.5 text-[11px] font-bold tabular-nums text-brown">{c.count}</span>
+                          ) : null}
                         </Link>
                       </li>
-                    ))}
+                      );
+                    })}
                   </ul>
+                  <Link href={link.href} onClick={() => setOpenMenu(null)} className="pf-dark pf-btn mt-4 inline-flex h-10 items-center gap-2 rounded-full px-5 text-[13px] font-bold hover:text-gold">
+                    Shop all {link.label.toLowerCase()} <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                  </Link>
                 </div>
-                {/* Featured image */}
-                <Link
-                  href={link.href}
-                  onClick={() => setOpenMenu(null)}
-                  className="relative block h-72 overflow-hidden group bg-white"
-                >
-                  {/* BUONG LITRATO (2026-09-04, "putol mga image dapat auto fit"):
-                      ang mga product shot ay puting canvas na iba-iba ang hugis -
-                      ang cover crop ay pinuputol ang upuan. Contain + padding,
-                      at ang label ay nasa madilim na banda sa ibaba para
-                      laging kita kahit puti ang litrato. */}
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={menuImg}
-                    alt={link.label}
-                    className="w-full h-full object-contain p-4 pb-10 group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/80 to-ink/0 px-4 pb-3 pt-8 text-sm text-cream">
-                    {link.label} Collection
-                  </span>
-                </Link>
+                {/* Tiles ng subcategory (may litrato) — ang "All …" at "Custom Bed" ay nasa listahan lang */}
+                <div className="grid grid-cols-3 content-start gap-4">
+                  {link.children.filter((c) => c.href !== link.href && !/custom/i.test(c.label)).map((c) => (
+                    <Link key={c.href} href={c.href} onClick={() => setOpenMenu(null)} className="group pf-card pf-lift flex flex-col overflow-hidden">
+                      <span className="relative block aspect-[4/3] pf-stage">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={c.image || menuImg} alt={c.label} className="absolute inset-0 h-full w-full object-contain p-5 mix-blend-multiply transition-transform duration-500 group-hover:scale-105" />
+                      </span>
+                      <span className="flex items-center justify-between gap-2 px-3.5 py-2.5 text-[13.5px] font-semibold text-ink">
+                        {c.label}
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-goldDeep transition-transform group-hover:translate-x-1" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                      </span>
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
           );

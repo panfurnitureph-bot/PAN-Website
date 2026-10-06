@@ -225,7 +225,7 @@ export const COLLECTIONS: Record<string, { title: string; categories: string[] }
 };
 
 // Main nav — may children = lalabas na mega-menu sa hover
-export type NavChild = { label: string; href: string };
+export type NavChild = { label: string; href: string; count?: number; image?: string };
 export type NavLink = { label: string; href: string; children?: NavChild[] };
 
 // NAV (2026-09-04): Beds · Sofas · Dining · Living lang — tanggal ang "New In"

@@ -15,7 +15,7 @@ import Reveal from "@/components/home/Reveal";
 import Toast from "@/components/Toast";
 import { BOOT_SCRIPT } from "@/components/boot-script";
 import { primeStoreContent } from "@/lib/content";
-import { NAV_LINKS, shopLinks, swatchLibrary } from "@/lib/products";
+import { NAV_LINKS, shopLinks, swatchLibrary, getCollectionProducts, categoryTileImage } from "@/lib/products";
 import QuickView from "@/components/home/QuickView";
 import FabricPopup from "@/components/home/FabricPopup";
 
@@ -68,6 +68,9 @@ export default async function RootLayout({
   // kinukuha ang `site` at ipinapasa bilang props, dahil sa browser ay
   // hindi tumatakbo ang primeContent().
   const { site } = await primeStoreContent();
+  // Mega menu (premium, 2026-10-07): bilang ng produkto at litrato ng bawat
+  // subcategory — kinukuwenta dito sa server, hindi sa browser.
+  const navWithCounts = NAV_LINKS.map((l) => l.children ? { ...l, children: l.children.map((c) => { const s = c.href.replace("/collections/", ""); const n = getCollectionProducts(s).length; return { ...c, count: n, image: c.href !== l.href && n > 0 ? categoryTileImage(s) : undefined }; }) } : l);
 
   return (
     <html lang="en" className={`${inter.variable} ${cormorant.variable}`}>
@@ -95,7 +98,7 @@ export default async function RootLayout({
           <Suspense fallback={null}>
             <EmbedMode />
           </Suspense>
-          <Header site={site} nav={NAV_LINKS} />
+          <Header site={site} nav={navWithCounts} />
           <main className="bg-cream">{children}</main>
           <Footer site={site} shop={shopLinks()} />
           <TrackButton />

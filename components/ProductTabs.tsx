@@ -496,13 +496,14 @@ export default function ProductTabs({ product, site, mto }: { product: Product; 
               <h3>Product details</h3>
               <dl className="divide-y divide-[#EBE2D2] text-[13.5px]">
                 {[
+                  ["SKU", product.sku ?? ""],
                   ["Category", (product.categoryTitle ?? product.category.replace(/-/g, " "))],
                   ["Availability", (product.stock ?? 0) > 0 ? "In stock" : "Made to order"],
                   ["Ships", (product.stock ?? 0) > 0 ? "Within the week" : "4–6 weeks"],
                   ["Material", product.materials ? product.materials.split(/[;\n]/)[0].trim() : ""],
                   ["Colors", product.colors.length > 1 ? `${product.colors.length} options` : product.colors[0] ?? ""],
                 ].filter(([, v]) => v).map(([k, v]) => (
-                  <div key={k} className="flex items-baseline justify-between gap-4 py-3"><dt className="text-stone">{k}</dt><dd className="text-right font-semibold capitalize text-ink">{v}</dd></div>
+                  <div key={k} className="flex items-baseline justify-between gap-4 py-3"><dt className="text-stone">{k}</dt><dd className={`text-right font-semibold text-ink ${k === "SKU" ? "tabular-nums tracking-[0.04em]" : "capitalize"}`}>{v}</dd></div>
                 ))}
               </dl>
             </div>
