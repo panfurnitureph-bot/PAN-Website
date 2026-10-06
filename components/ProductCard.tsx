@@ -145,11 +145,11 @@ export default function ProductCard({
         {/* UNIFORM NA TAAS (2026-09-04, "dapat uniform"): laging nakalaan ang
             hilera ng color thumbs (70px) kahit walang kulay ang produkto - kaya
             pare-pareho ang taas ng bawat card sa rail at collection. */}
-        <div className="relative z-[1] flex h-[70px] items-center gap-2" onMouseEnter={() => setPinned(true)} onMouseLeave={() => setPinned(false)}>
+        <div className="relative z-[1] flex h-[70px] items-center gap-1.5 sm:gap-2" onMouseEnter={() => setPinned(true)} onMouseLeave={() => setPinned(false)}>
           {variants.length > 1 && (<>
             {variants.slice(0, 4).map((v, i) => (
               <button key={v.name + i} type="button" onMouseEnter={() => setActiveIdx(i)} onClick={() => { setActiveIdx(i); setPinned(true); }} title={v.name} aria-label={v.name}
-                className={`relative w-[56px] h-[56px] shrink-0 rounded-full bg-white overflow-hidden border-[1.5px] transition ${i === activeIdx ? "border-brownDeep ring-2 ring-offset-2 ring-offset-[#FBF7EF] ring-goldDeep" : "border-sand hover:border-goldDeep"} ${v.stock !== undefined && v.stock <= 0 ? "opacity-40" : ""}`}>
+                className={`relative w-11 h-11 sm:w-[56px] sm:h-[56px] shrink-0 rounded-full bg-white overflow-hidden border-[1.5px] transition ${i === activeIdx ? "border-brownDeep ring-2 ring-offset-2 ring-offset-[#FBF7EF] ring-goldDeep" : "border-sand hover:border-goldDeep"} ${v.stock !== undefined && v.stock <= 0 ? "opacity-40" : ""}`}>
                 <Image src={v.thumb} alt="" fill className="object-contain" sizes="56px" />
               </button>
             ))}

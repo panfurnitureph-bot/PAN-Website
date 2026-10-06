@@ -4,7 +4,7 @@
 
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { COLLECTIONS, NAV_LINKS, getCollectionProducts, swatchLibrary } from "@/lib/products";
+import { COLLECTIONS, NAV_LINKS, getCollectionProducts, swatchLibrary, categoryTileImage } from "@/lib/products";
 import { primeStoreContent } from "@/lib/content";
 import CollectionView from "@/components/CollectionView";
 
@@ -28,11 +28,13 @@ function getSubnav(slug: string) {
     NAV_LINKS.find((l) => l.children?.some((c) => c.href === href)) ??
     NAV_LINKS.find((l) => l.children?.some((c) => c.href !== l.href && (COLLECTIONS[c.href.replace("/collections/", "")]?.categories ?? []).includes(slug)));
   if (!group?.children) return [];
-  return group.children.map((c) => ({
-    label: c.label,
-    href: c.href,
-    active: covers(c),
-  }));
+  // Bilang at litrato ng bawat subcategory para sa Category card (premium,
+  // 2026-10-07); ang "All …" ng grupo ay walang litrato (grid icon).
+  return group.children.map((c) => {
+    const s = c.href.replace("/collections/", "");
+    const count = getCollectionProducts(s).length;
+    return { label: c.label, href: c.href, active: covers(c), count, image: c.href !== group.href && count > 0 ? categoryTileImage(s) : undefined };
+  });
 }
 
 export async function generateStaticParams() {
@@ -70,20 +72,19 @@ export default async function CollectionPage(
   const items = getCollectionProducts(params.category);
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6 md:py-8">
       {/* Breadcrumbs */}
-      <nav className="text-xs text-stone mb-6">
-        <Link href="/" className="hover:text-cognac">Home</Link>
-        <span className="mx-2">/</span>
+      <nav className="text-[12.5px] text-stone mb-3" aria-label="Breadcrumb">
+        <Link href="/" className="hover:text-goldDeep">Home</Link>
+        <span className="mx-1.5">/</span>
         <span className="text-ink">{collection.title}</span>
       </nav>
-
-      <h1 className="font-cormorant font-medium text-3xl sm:text-4xl mb-6">{collection.title}</h1>
 
       <CollectionView
         products={items}
         swatches={swatchLibrary}
         subnav={getSubnav(params.category)}
+        title={collection.title}
       />
     </div>
   );
