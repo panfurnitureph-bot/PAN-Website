@@ -77,7 +77,7 @@ function fmtDate(s?: string | null) {
 // Maliit na label sa itaas ng bawat pangkat — kaparehong treatment ng buong site.
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[11px] font-bold tracking-widest2 text-stone mb-4">{children}</p>
+    <p className="text-[10.5px] font-bold tracking-[0.18em] uppercase text-goldDeep mb-3">{children}</p>
   );
 }
 
@@ -168,8 +168,7 @@ function TrackerInner() {
     return () => window.removeEventListener("message", onReset);
   }, []);
 
-  const field =
-    "w-full border border-sand bg-white px-4 py-3.5 text-sm rounded focus:outline-none focus:border-cognac transition-colors placeholder:text-stone/50";
+  const field = "w-full h-12 rounded-xl bg-white px-4 text-[14px] text-ink shadow-[inset_0_0_0_1px_#D8CCB9] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.3)] placeholder:text-stone/60";
 
   return (
     <>
@@ -177,38 +176,38 @@ function TrackerInner() {
       {/* Sa pop-up, itago ang form kapag may resulta na o naghahanap — para ang
           resulta lang ang lumabas at tama ang taas ng modal. */}
       <div
-        className="max-w-lg mx-auto px-6 py-16 sm:py-24"
+        className="max-w-xl mx-auto px-4 sm:px-8 py-12 sm:py-16"
         hidden={embed && (busy || !!result)}
       >
         <div className="text-center mb-10">
           {/* olive, hindi cognac — ang cognac sa cream ay 3.55:1, kulang para
               sa maliit na teksto. Ang olive ay 9.49:1 at nasa palette pa rin. */}
-          <p className="text-[11px] font-bold tracking-widest2 text-olive mb-3">
-            ORDER TRACKER
+          <p className="text-[10.5px] font-bold tracking-[0.18em] uppercase text-goldDeep mb-3">
+            Order tracker
           </p>
-          <h1 className="font-cormorant font-medium text-4xl sm:text-5xl leading-tight mb-3">
-            Where&apos;s my order?
+          <h1 className="font-cormorant font-semibold text-[clamp(30px,3.6vw,40px)] leading-[1.05] tracking-[-0.02em] mb-3">
+            Track my delivery
           </h1>
-          <p className="text-stone text-sm leading-relaxed">
+          <p className="text-stone text-[14.5px] leading-relaxed">
             Enter your order number and the email or mobile number you used at checkout.
           </p>
         </div>
 
-        <form onSubmit={look} className="bg-white border border-sand rounded-lg p-6 sm:p-7">
+        <form onSubmit={look} className="pf-card p-5 sm:p-6">
           <label className="block mb-4">
-            <span className="block text-[11px] font-bold tracking-widest2 text-stone mb-2">
-              ORDER NUMBER
+            <span className="block text-[12px] font-semibold text-ink mb-1.5">
+              Order number
             </span>
             <input
               value={order}
               onChange={(e) => setOrder(e.target.value)}
               placeholder="ORD-000093"
-              className={`${field} font-mono tracking-wide`}
+              className={`${field} font-semibold tabular-nums tracking-[0.04em]`}
             />
           </label>
           <label className="block mb-5">
-            <span className="block text-[11px] font-bold tracking-widest2 text-stone mb-2">
-              EMAIL OR MOBILE
+            <span className="block text-[12px] font-semibold text-ink mb-1.5">
+              Email or mobile
             </span>
             <input
               value={verify}
@@ -220,18 +219,18 @@ function TrackerInner() {
           <button
             type="submit"
             disabled={busy || !order.trim() || !verify.trim()}
-            className="w-full bg-ink text-cream py-4 text-xs font-bold tracking-widest2 rounded hover:bg-cognac transition-colors disabled:opacity-40 disabled:hover:bg-ink"
+            className="pf-dark pf-btn inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl text-[14px] font-bold hover:text-gold disabled:opacity-40 disabled:hover:translate-y-0"
           >
-            {busy ? "CHECKING…" : "TRACK ORDER"}
+            {busy ? "Checking…" : <>Track <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg></>}
           </button>
           {error && (
-            <p className="text-red-700 text-sm mt-4 text-center leading-relaxed">{error}</p>
+            <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-center text-[13px] text-red-800">{error}</p>
           )}
         </form>
 
         <p className="text-xs text-stone text-center mt-6 leading-relaxed">
           Can&apos;t find your order number? It&apos;s in your confirmation email, or{" "}
-          <Link href="/contact" className="text-olive underline underline-offset-2 hover:text-cognac transition-colors">
+          <Link href="/contact" className="font-semibold text-ink border-b-[1.5px] border-goldDeep pb-px transition-colors hover:text-goldDeep">
             message us
           </Link>
           .
@@ -253,10 +252,10 @@ function TrackerInner() {
             className={
               embed
                 ? "text-center"
-                : "bg-cream rounded-lg px-10 py-9 text-center shadow-2xl max-w-xs w-full"
+                : "pf-pop bg-[#FBF7EF] rounded-[20px] px-10 py-9 text-center shadow-[0_0_0_1px_rgba(226,194,122,.45),0_40px_80px_-30px_rgba(0,0,0,.8)] max-w-xs w-full"
             }
           >
-            <div className="mx-auto mb-5 h-9 w-9 animate-spin rounded-full border-2 border-sand border-t-cognac" />
+            <div className="mx-auto mb-5 h-9 w-9 animate-spin rounded-full border-2 border-[#E6DCCB] border-t-goldDeep" />
             <p className="font-cormorant text-xl">Looking up your order</p>
             <p className="mt-1.5 text-xs text-stone">This only takes a moment.</p>
           </div>
@@ -269,7 +268,7 @@ function TrackerInner() {
           className={
             embed
               ? "bg-cream" // INLINE sa pop-up — walang fixed overlay
-              : "fixed inset-0 z-50 overflow-y-auto bg-espresso/50 backdrop-blur-sm p-4 sm:p-8"
+              : "pf-fade fixed inset-0 z-50 overflow-y-auto bg-[#1A140C]/60 backdrop-blur-[3px] p-4 sm:p-8"
           }
           onClick={embed ? undefined : () => setResult(null)}
         >
@@ -277,30 +276,31 @@ function TrackerInner() {
             className={
               embed
                 ? "bg-cream overflow-hidden"
-                : "mx-auto max-w-xl bg-cream rounded-lg overflow-hidden shadow-2xl"
+                : "pf-pop mx-auto max-w-xl bg-[#FBF7EF] rounded-[20px] overflow-hidden shadow-[0_0_0_1px_rgba(226,194,122,.45),0_40px_80px_-30px_rgba(0,0,0,.8)]"
             }
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header — madilim, para agad mabasa ang estado */}
-            <div className="relative bg-espresso text-cream px-6 py-7 sm:px-8">
+            <div className="pf-band relative text-cream px-6 py-6 sm:px-8">
               {/* Sa pop-up, ang X ng modal ang nagsasara — huwag nang doblehin. */}
               {!embed && (
                 <button
                   onClick={() => setResult(null)}
                   aria-label="Close"
-                  className="absolute top-4 right-4 h-8 w-8 rounded-full text-cream/60 hover:bg-cream/10 hover:text-cream text-xl leading-none transition-colors"
+                  className="absolute top-4 right-4 grid h-9 w-9 place-items-center rounded-full bg-white/10 text-cream shadow-[inset_0_0_0_1px_rgba(226,194,122,.4)] transition hover:bg-gold hover:text-brownDeep"
                 >
-                  ×
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><path d="M6 6l12 12M18 6 6 18" /></svg>
                 </button>
               )}
-              <p className="text-[11px] font-bold tracking-widest2 text-cream/50 mb-1.5">
-                ORDER
+              <p className="text-[10.5px] font-bold tracking-[0.18em] uppercase text-gold mb-1.5">
+                Order
               </p>
-              <p className="font-mono text-lg tracking-wide mb-4">{result.order_number}</p>
-              <p className="font-cormorant text-3xl leading-tight">
+              <p className="text-[17px] font-semibold tabular-nums tracking-[0.04em] mb-3">{result.order_number}</p>
+              <p className="inline-flex items-center gap-2 rounded-full bg-gold/[.12] px-3.5 py-1.5 text-[13px] font-semibold text-[#FBF4E4] shadow-[inset_0_0_0_1px_rgba(226,194,122,.45)]">
+                <span className={`h-2 w-2 rounded-full ${result.cancelled ? "bg-red-400" : "bg-gold pf-ping"}`} />
                 {result.cancelled ? "Cancelled" : result.status}
               </p>
-              <p className="text-sm text-cream/60 mt-2">
+              <p className="text-sm text-[#CFC2A4] mt-3">
                 {result.customer_name}
                 {fmtDate(result.placed_at) && <> · placed {fmtDate(result.placed_at)}</>}
               </p>
@@ -309,8 +309,8 @@ function TrackerInner() {
 
             {/* Timeline */}
             {!result.cancelled && (
-              <div className="px-6 py-7 sm:px-8 border-b border-sand">
-                <SectionLabel>PROGRESS</SectionLabel>
+              <div className="px-6 py-6 sm:px-8 border-b border-[#EBE2D2]">
+                <SectionLabel>Progress</SectionLabel>
                 <ol>
                   {result.stages.map((s, i) => {
                     const last = i === result.stages.length - 1;
@@ -324,19 +324,18 @@ function TrackerInner() {
                           <span
                             className={`shrink-0 rounded-full flex items-center justify-center transition-all ${
                               s.current
-                                ? "w-6 h-6 bg-cognac ring-4 ring-cognac/25 -ml-1.5 mt-0.5"
+                                ? "w-7 h-7 bg-white shadow-[0_0_0_2px_#B08A3E,0_0_0_6px_rgba(226,194,122,.25)] -ml-2 mt-0"
                                 : s.done
-                                  ? "w-3 h-3 bg-cognac mt-2"
-                                  : "w-3 h-3 border-2 border-sand bg-cream mt-2"
+                                  ? "w-6 h-6 bg-brownDeep text-gold shadow-[0_0_0_1.5px_#B08A3E] -ml-1.5 mt-0.5"
+                                  : "w-6 h-6 bg-white shadow-[inset_0_0_0_1.5px_#D8CCB9] -ml-1.5 mt-0.5"
                             }`}
                           >
-                            {s.current && (
-                              <span className="w-2 h-2 rounded-full bg-cream" />
-                            )}
+                            {s.current && <span className="w-2.5 h-2.5 rounded-full bg-goldDeep" />}
+                            {!s.current && s.done && <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12.5l4.5 4.5L19 7" /></svg>}
                           </span>
                           {!last && (
                             <span
-                              className={`w-px flex-1 min-h-[34px] ${s.done ? "bg-cognac" : "bg-sand"}`}
+                              className={`w-[2px] flex-1 min-h-[34px] rounded-full ${s.done ? "bg-[linear-gradient(180deg,#B08A3E,#E2C27A)]" : "bg-[#E6DCCB]"}`}
                             />
                           )}
                         </div>
@@ -344,21 +343,21 @@ function TrackerInner() {
                           <p
                             className={`leading-none ${
                               s.current
-                                ? "text-base font-bold text-ink mt-1"
+                                ? "text-[16px] font-semibold text-ink mt-1"
                                 : s.done
-                                  ? "text-sm text-ink"
-                                  : "text-sm text-stone/50"
+                                  ? "text-[15px] font-semibold text-ink mt-0.5"
+                                  : "text-[15px] text-stone/60 mt-0.5"
                             }`}
                           >
                             {s.name}
                             {s.current && (
-                              <span className="ml-2 align-middle text-[10px] font-bold tracking-widest2 text-cognac">
-                                NOW
+                              <span className="ml-2 align-middle rounded-full bg-goldSoft px-2 py-0.5 text-[10px] font-bold tracking-[0.12em] uppercase text-brownDeep">
+                                Now
                               </span>
                             )}
                           </p>
                           {fmtDate(s.at) && (
-                            <p className="text-xs text-stone mt-1.5">{fmtDate(s.at)}</p>
+                            <p className="text-[13px] text-stone mt-1">{fmtDate(s.at)}</p>
                           )}
                         </div>
                       </li>
@@ -370,8 +369,8 @@ function TrackerInner() {
 
             {/* Produkto */}
             {result.items.length > 0 && (
-              <div className="px-6 py-7 sm:px-8 border-b border-sand">
-                <SectionLabel>YOUR ORDER</SectionLabel>
+              <div className="px-6 py-6 sm:px-8 border-b border-[#EBE2D2]">
+                <SectionLabel>Your order</SectionLabel>
                 {result.items.map((it, i) => {
                   // Ang description ay pangalan sa unang linya, tapos bullet
                   // bawat detalye (kulay, sukat, frame, kategorya) — mula sa
@@ -381,31 +380,31 @@ function TrackerInner() {
                   const details = lines.slice(1).map((l) => l.replace(/^[•·-]\s*/, ""));
                   const qty = it.qty ?? 1;
                   return (
-                    <div key={i} className="flex gap-4 py-4 border-b border-sand/60 last:border-0 last:pb-0">
+                    <div key={i} className="flex gap-4 py-4 border-b border-[#EBE2D2] first:pt-0 last:border-0 last:pb-0">
                       {it.image && (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={it.image}
                           alt=""
-                          className="w-20 h-20 object-cover rounded border border-sand shrink-0"
+                          className="w-[72px] h-[72px] object-contain p-1.5 rounded-[14px] pf-stage mix-blend-multiply shadow-[inset_0_0_0_1px_rgba(176,138,62,.25)] shrink-0"
                         />
                       )}
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold leading-snug">
+                        <p className="font-cormorant text-[16px] font-semibold leading-snug tracking-[-0.01em]">
                           {qty > 1 && <span className="text-stone">{qty}× </span>}
                           {title}
                         </p>
                         {details.length > 0 && (
                           <ul className="mt-1.5 space-y-0.5">
                             {details.map((d, x) => (
-                              <li key={x} className="text-xs text-stone leading-relaxed">
+                              <li key={x} className="flex items-start gap-2 text-[12.5px] text-stone leading-relaxed"><span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-goldDeep" />
                                 {d}
                               </li>
                             ))}
                           </ul>
                         )}
                       </div>
-                      <p className="text-sm font-bold whitespace-nowrap tabular-nums">
+                      <p className="font-cormorant text-[16px] font-semibold whitespace-nowrap tabular-nums">
                         {formatPrice((it.unitPrice ?? 0) * qty)}
                       </p>
                     </div>
@@ -415,7 +414,7 @@ function TrackerInner() {
             )}
 
             {/* Bayad */}
-            <div className="px-6 py-7 sm:px-8 border-b border-sand text-sm">
+            <div className="px-6 py-6 sm:px-8 border-b border-[#EBE2D2] text-sm">
               <SectionLabel>PAYMENT</SectionLabel>
               {result.shipping_fee > 0 && (
                 <>
@@ -431,15 +430,15 @@ function TrackerInner() {
                   </div>
                 </>
               )}
-              <div className={`flex justify-between py-1.5 ${result.shipping_fee > 0 ? "border-t border-sand/60 mt-1 pt-2.5" : ""}`}>
+              <div className={`flex justify-between py-1.5 ${result.shipping_fee > 0 ? "border-t border-[#EBE2D2] mt-1 pt-2.5" : ""}`}>
                 <span className="text-stone">Order total</span>
                 <span className="tabular-nums">{formatPrice(result.total)}</span>
               </div>
               <div className="flex justify-between py-1.5">
                 <span className="text-stone">Paid</span>
-                <span className="tabular-nums text-green-700">{formatPrice(result.paid)}</span>
+                <span className="tabular-nums font-semibold text-[#2F7D4F]">{formatPrice(result.paid)}</span>
               </div>
-              <div className="flex justify-between border-t border-sand mt-2 pt-3 font-bold">
+              <div className="flex items-baseline justify-between border-t border-[#EBE2D2] mt-2 pt-3 font-cormorant text-[18px] font-semibold">
                 <span>{result.balance === 0 ? "Fully paid" : "Balance"}</span>
                 <span className="tabular-nums">{formatPrice(result.balance)}</span>
               </div>
@@ -451,15 +450,15 @@ function TrackerInner() {
               const when = deliveryLine(result);
               if (!when && !result.address) return null;
               return (
-                <div className="px-6 py-7 sm:px-8 border-b border-sand text-sm">
-                  <SectionLabel>DELIVERY</SectionLabel>
+                <div className="px-6 py-6 sm:px-8 border-b border-[#EBE2D2] text-sm">
+                  <SectionLabel>Delivery</SectionLabel>
 
                   {when && (
-                    <div className={result.address ? "mb-5 pb-5 border-b border-sand/60" : ""}>
-                      <p className="text-[11px] font-bold tracking-widest2 text-stone mb-1.5">
+                    <div className={`rounded-2xl bg-[linear-gradient(180deg,#FFFDF8,#FBF4E4)] px-4 py-3.5 shadow-[inset_0_0_0_1px_rgba(176,138,62,.3)] ${result.address ? "mb-4" : ""}`}>
+                      <p className="text-[10.5px] font-bold tracking-[0.18em] uppercase text-goldDeep mb-1">
                         {when.label}
                       </p>
-                      <p className="font-cormorant text-2xl leading-tight text-ink">{when.value}</p>
+                      <p className="font-cormorant text-[24px] font-semibold leading-tight tracking-[-0.01em] text-ink">{when.value}</p>
                       {!when.firm && (
                         <p className="text-xs text-stone mt-1.5">
                           We&apos;ll confirm the exact date once it&apos;s ready to ship.
@@ -474,14 +473,14 @@ function TrackerInner() {
             })()}
 
             {/* Tulong */}
-            <div className="px-6 py-7 sm:px-8 bg-linen text-sm">
-              <SectionLabel>NEED HELP?</SectionLabel>
+            <div className="px-6 py-6 sm:px-8 bg-[linear-gradient(180deg,#FAF5EC,#F5EDDF)] text-sm">
+              <SectionLabel>Need help?</SectionLabel>
               <p className="text-stone leading-relaxed">
-                <a href={`mailto:${site.contact.email}`} className="text-olive underline underline-offset-2 hover:text-cognac transition-colors">
+                <a href={`mailto:${site.contact.email}`} className="font-semibold text-ink border-b-[1.5px] border-goldDeep pb-px transition-colors hover:text-goldDeep">
                   {site.contact.email}
                 </a>
                 {" · "}
-                <a href={`tel:${site.contact.phone}`} className="text-olive underline underline-offset-2 hover:text-cognac transition-colors">
+                <a href={`tel:${site.contact.phone}`} className="font-semibold text-ink border-b-[1.5px] border-goldDeep pb-px transition-colors hover:text-goldDeep">
                   {site.contact.phone}
                 </a>
               </p>
