@@ -12,7 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { averageRating, formatPrice, type Product, type SiteContent } from "@/lib/products";
+import { formatPrice, type Product, type SiteContent } from "@/lib/products";
 import { useSwipeFallback } from "@/components/useSwipeFallback";
 import { messengerHandle, messengerUrl } from "@/lib/messenger";
 import { useStore } from "@/components/store";
@@ -20,6 +20,7 @@ import MtoOptions from "@/components/MtoOptions";
 import type { MtoItemConfig } from "@/lib/content";
 import FitModal from "@/components/FitModal";
 import { packagedFrom } from "@/lib/packaged";
+import FitImage from "@/components/FitImage";
 import { toast } from "@/components/Toast";
 
 // Fallback na 6 bed sizes kung walang custom na bedSizes ang product
@@ -206,7 +207,7 @@ export default function ProductDetail({
 
   // Shipping estimator — rates galing sa site.json (editable sa admin)
   const SHIP_PROVINCES: any[] = (site as any).shipping?.provinces ?? [];
-  const [shipOpen, setShipOpen] = useState(false);
+  const [shipOpen, setShipOpen] = useState(true); // bukas agad, gaya ng mockup (2026-10-07)
   const [shipProvince, setShipProvince] = useState("");
   const [shipCity, setShipCity] = useState("");
   const shipCityList =
@@ -215,7 +216,7 @@ export default function ProductDetail({
     shipCityList.find((c: any) => c.name === shipCity)?.fee ?? null;
 
   const wished = wishlist.includes(product.slug);
-  const rating = averageRating(product) ?? 5;
+  // (walang bituin sa pahina na, 2026-10-07)
 
   function handleAdd() {
     // Kung walang kulay ang product, size lang ang ilalagay (iwas "undefined")
@@ -331,7 +332,7 @@ export default function ProductDetail({
                   // habang nag-sw-swipe, nasisira ang snap-point cache ng iOS
                   // WebKit at nagfi-freeze ang gallery pagkatapos ng unang hagod.
                   loading="eager"
-                  className="object-contain p-5 mix-blend-multiply"
+                  className="object-contain p-8 mix-blend-multiply"
                   sizes="100vw"
                 />
               </button>
@@ -393,7 +394,7 @@ export default function ProductDetail({
             aria-label="Open fullscreen gallery"
           >
             <i aria-hidden className="pf-floor" />
-            <Image src={galleryImages[imageIdx]} alt={product.name} fill priority className="object-contain p-10 mix-blend-multiply" sizes="620px" />
+            <FitImage src={galleryImages[imageIdx]} alt={product.name} fill={0.76} priority className="mix-blend-multiply" sizes="620px" />
             <span
               aria-hidden
               className={`pointer-events-none absolute inset-0 bg-white bg-no-repeat transition-opacity duration-150 ${zoom ? "opacity-100" : "opacity-0"}`}
@@ -412,14 +413,8 @@ export default function ProductDetail({
           {product.name}
           {mtoActive && mtoView === "mto" ? " — Made to Order" : ""}
         </h1>
-        <a href="#reviews" className="inline-flex items-center gap-2 mt-2 text-xs text-stone hover:opacity-70">
-          <span className="text-goldDeep tracking-[2px] text-[13px]">
-            {"★".repeat(Math.round(rating))}
-            {"☆".repeat(5 - Math.round(rating))}
-          </span>
-          <span>{rating.toFixed(1)}{product.reviews?.length ? ` · ${product.reviews.length} reviews` : ""}</span>
-        </a>
-        <div className="mb-4" />
+        {/* Walang bituin sa ilalim ng pangalan (mockup 2026-10-07). */}
+        <div className="mb-5" />
 
         {/* MADE-TO-ORDER panel — pumapalit sa classic options kapag may
             published config ang item sa IMS configurator. */}
@@ -750,19 +745,12 @@ export default function ProductDetail({
                 <p className="flex items-center gap-2 text-[12.5px] text-stone"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-goldDeep" aria-hidden><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></svg>Choose your province and city to see the delivery fee.</p>
               )}
               {shipFee !== null && (
-                <div key={shipCity} className="pf-estin pt-3 border-t border-[#E6DCCB] space-y-1.5">
-                  <p className="flex justify-between items-baseline">
-                    <span className="text-stone">
-                      Estimated shipping to {shipCity}
-                    </span>
-                    <span className="font-cormorant text-[20px] font-bold text-brownDeep tabular-nums">
-                      {formatPrice(shipFee)}
-                    </span>
-                  </p>
-                  <p className="text-[11px] text-stone leading-snug">
-                    Estimate only. Final fee is confirmed after we check your
+                <div key={shipCity} className="grid gap-2.5">
+                  <div className="pf-estin flex items-center gap-3 rounded-xl bg-[linear-gradient(180deg,#F8EFD8,#F1E3BF)] px-4 py-3.5 shadow-[inset_0_0_0_1px_rgba(176,138,62,.28),inset_0_1px_0_rgba(255,255,255,.7)]"><span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-white text-goldDeep shadow-[0_0_0_1px_rgba(176,138,62,.35),0_4px_10px_-4px_rgba(62,50,32,.3)]"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></svg></span><span className="grid min-w-0 flex-1 gap-0.5"><small className="text-[9.5px] font-bold tracking-[0.16em] uppercase text-brown">Delivering to</small><strong className="text-[15px] font-semibold leading-tight text-ink">{shipCity}</strong></span><span className="grid shrink-0 justify-items-end gap-0.5"><small className="text-[9.5px] font-bold tracking-[0.16em] uppercase text-brown">Estimate</small><b className="font-cormorant text-[24px] font-bold leading-none tabular-nums tracking-[-0.01em] text-brownDeep">{formatPrice(shipFee)}</b></span></div>
+                  <p className="flex items-start gap-2 px-0.5 text-[11.5px] text-stone leading-snug">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="mt-0.5 shrink-0 text-goldDeep" aria-hidden><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h.01" /></svg><span>Estimate only. Final fee is confirmed after we check your
                     exact address — you&apos;ll pin your location at checkout.
-                    Far-end or boundary areas may differ.
+                    Far-end or boundary areas may differ.</span>
                   </p>
                 </div>
               )}
@@ -924,7 +912,7 @@ export default function ProductDetail({
           </a>
         </div>
         <ul className="mt-5 pt-4 border-t border-[#E6DCCB] flex flex-col gap-2 text-[13px] text-stone">
-          {["6-month warranty on promo items, 1 year on customized pieces", "Delivered nationwide by our own team · live tracking", "Pay via GCash, Maya, BDO, BPI or cash"].map((t) => (
+          {["6-month warranty on promo items, 1 year on customized pieces", "Delivered nationwide by our own team, with live tracking", "Pay via GCash, Maya, BDO, BPI or cash"].map((t) => (
             <li key={t} className="flex items-center gap-2.5"><span className="h-1.5 w-1.5 rounded-full bg-goldDeep shrink-0" />{t}</li>
           ))}
         </ul>

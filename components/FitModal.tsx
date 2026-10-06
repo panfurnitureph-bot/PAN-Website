@@ -41,13 +41,14 @@ export default function FitModal({ name, packaged }: { name: string; packaged: P
 
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className="text-[11.5px] font-bold tracking-[0.14em] uppercase border-b-[1.5px] border-goldDeep pb-0.5 hover:text-goldDeep transition-colors">
+      <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-2 text-[14px] font-semibold border-b-[1.5px] border-goldDeep pb-px hover:text-goldDeep transition-colors">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="text-goldDeep" aria-hidden><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16M9 21v-5h6v5" /></svg>
         Will it fit? Check your door
       </button>
       {open && (
-        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-ink/55 p-4" onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }} role="dialog" aria-modal="true" aria-label="Will it fit?">
-          <div className="relative w-full max-w-[520px] max-h-[92vh] overflow-auto bg-white">
-            <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="absolute top-0 right-0 z-10 h-9 w-9 bg-ink text-white text-xl">×</button>
+        <div className="pf-fade fixed inset-0 z-[90] flex items-center justify-center bg-[#1A140C]/60 backdrop-blur-[3px] p-4" onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }} role="dialog" aria-modal="true" aria-label="Will it fit?">
+          <div className="pf-pop relative w-full max-w-[520px] max-h-[92vh] overflow-auto rounded-[20px] bg-[#FBF7EF] shadow-[0_0_0_1px_rgba(226,194,122,.45),0_40px_80px_-30px_rgba(0,0,0,.8)]">
+            <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="absolute top-3.5 right-3.5 z-10 grid h-9 w-9 place-items-center rounded-full bg-white text-ink shadow-[0_0_0_1.5px_#B08A3E,0_8px_16px_-10px_rgba(62,50,32,.5)] transition hover:bg-brownDeep hover:text-gold"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><path d="M6 6l12 12M18 6 6 18" /></svg></button>
             <div className="px-6 pt-6 pb-1.5">
               <p className="text-[11px] font-bold tracking-[0.16em] uppercase text-goldDeep">Will it fit?</p>
               <h3 className="font-cormorant text-2xl font-semibold mt-1.5">{name} · packaged {packaged.w} × {packaged.d} × {packaged.h} in</h3>
