@@ -47,13 +47,13 @@ export default function MadeToOrder({ copy, swatches, fallbackImage }: { copy: H
                   <h3 className="font-cormorant text-[19px] sm:text-[20px] font-semibold tracking-[-0.01em]">{s.title}</h3>
                   <p className="m-0 text-[14.5px] text-stone leading-relaxed max-w-[52ch]">{s.text}</p>
                   {i === 0 && (
-                    <div className="flex flex-wrap gap-1.5 items-center mt-1">
+                    <div className="flex flex-wrap gap-[7px] items-center mt-1.5">
                       {mosaic.map((sw) => (
-                        <span key={sw.name} title={sw.name} className="relative w-[26px] h-[26px] block rounded-[7px] shadow-[inset_0_0_0_1px_rgba(0,0,0,.1)] overflow-hidden" style={{ background: sw.color ?? "#D9CFC0" }}>
-                          {sw.swatch && <Image src={sw.swatch} alt="" fill className="object-cover" sizes="26px" />}
+                        <span key={sw.name} title={sw.name} className="relative w-[30px] h-[30px] block rounded-lg shadow-[inset_0_0_0_1px_rgba(62,50,32,.18),0_2px_5px_-2px_rgba(62,50,32,.4)] overflow-hidden transition duration-150 hover:z-[1] hover:-translate-y-[3px] hover:scale-[1.12] hover:shadow-[inset_0_0_0_1px_rgba(62,50,32,.18),0_10px_16px_-8px_rgba(62,50,32,.6)]" style={{ background: sw.color ?? "#D9CFC0" }}>
+                          {sw.swatch && <Image src={sw.swatch} alt="" fill className="object-cover" sizes="30px" />}
                         </span>
                       ))}
-                      <button type="button" onClick={openFabrics} className="h-[26px] ml-1 rounded-full px-3 text-[11.5px] font-bold text-brownDeep shadow-[inset_0_0_0_1px_#3E3220] transition-colors hover:bg-brownDeep hover:text-gold">See all {swatches.length} →</button>
+                      <button type="button" onClick={openFabrics} className="h-[30px] ml-1 rounded-full bg-white px-3.5 text-[12px] font-semibold text-brownDeep shadow-[inset_0_0_0_1px_#5B4A2F] transition duration-150 hover:-translate-y-0.5 hover:bg-brownDeep hover:text-gold">See all {swatches.length} →</button>
                     </div>
                   )}
                   {i === 1 && (
@@ -79,7 +79,7 @@ export default function MadeToOrder({ copy, swatches, fallbackImage }: { copy: H
             ))}
           </ol>
           <div className="mt-7">
-            <button type="button" onClick={openMessenger} className="pf-dark inline-flex items-center gap-2 h-[46px] px-6 rounded-full text-[13.5px] font-bold transition-colors hover:text-gold">{copy?.messengerLabel ?? "Talk to us on Messenger"} <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg></button>
+            <button type="button" onClick={openMessenger} className="pf-dark pf-btn inline-flex items-center gap-2 h-[46px] px-6 rounded-full text-[13.5px] font-bold hover:text-gold">{copy?.messengerLabel ?? "Talk to us on Messenger"} <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg></button>
           </div>
         </div>
       </div>

@@ -178,7 +178,7 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
             ); })}
           </div>
 
-          <Link href="/collections/bed" className="group pf-gold inline-flex items-center gap-2 h-[50px] px-6 mt-6 rounded-full text-sm font-bold whitespace-nowrap">See all promo beds <span className="transition-transform group-hover:translate-x-0.5">{arrow}</span></Link>
+          <Link href="/collections/bed" className="group pf-gold pf-btn inline-flex items-center gap-2 h-[50px] px-6 mt-6 rounded-full text-sm font-bold whitespace-nowrap">See all promo beds <span className="transition-transform group-hover:translate-x-0.5">{arrow}</span></Link>
         </div>
       </div>
     </section>

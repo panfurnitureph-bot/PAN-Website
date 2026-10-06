@@ -23,7 +23,7 @@ export default function Rail({
 }: {
   eyebrow?: string;
   title: string;
-  sub?: string;
+  sub?: ReactNode;
   link?: { label: string; href: string };
   // cards per row: [≥1100px, ≥900px, ≥640px, phone]
   n?: [number, number, number, number];

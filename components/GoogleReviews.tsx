@@ -7,7 +7,7 @@
 // Editable ang laman sa content/homepage.json → googleReviews.
 
 import Image from "next/image";
-import Rail from "@/components/home/Rail";
+import Marquee from "@/components/home/Marquee";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { averageRating, type HomepageContent, type Product } from "@/lib/products";
@@ -320,6 +320,21 @@ function ReviewModal({
   );
 }
 
+// "2026-07" → "July 2026"; ang ibang anyo ng petsa ay ipinapakita kung paano ito nakasulat.
+function niceDate(d: string): string {
+  const m = /^(\d{4})-(\d{2})$/.exec(d ?? "");
+  return m ? `${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][Number(m[2]) - 1] ?? ""} ${m[1]}`.trim() : d;
+}
+
+const GMARK = (
+  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden>
+    <path fill="#4285F4" d="M21.6 12.2c0-.7-.1-1.3-.2-1.9H12v3.7h5.4c-.2 1.2-.9 2.3-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.3z" />
+    <path fill="#34A853" d="M12 22c2.7 0 5-.9 6.6-2.5l-3.2-2.5c-.9.6-2 1-3.400 1-2.600 0-4.800-1.800-5.600-4.100H3.100v2.600C4.700 19.800 8.100 22 12 22z" />
+    <path fill="#FBBC05" d="M6.4 13.9c-.2-.6-.3-1.200-.3-1.900s.1-1.300.3-1.900V7.500H3.100C2.400 8.900 2 10.400 2 12s.4 3.100 1.100 4.500l3.300-2.600z" />
+    <path fill="#EA4335" d="M12 6c1.500 0 2.800.5 3.800 1.500l2.900-2.900C17 3 14.700 2 12 2 8.100 2 4.700 4.200 3.100 7.500l3.300 2.600C7.200 7.800 9.400 6 12 6z" />
+  </svg>
+);
+
 // ---------- SECTION ----------
 export default function GoogleReviews({
   googleReviews,
@@ -337,16 +352,18 @@ export default function GoogleReviews({
 
   return (
     <section id="reviews" className="max-w-7xl mx-auto px-4 sm:px-8 py-12 md:py-14">
-      {/* RAIL (2026-09-04): isang hilera, parehong carousel engine; lightbox
-          at "Write a review" ay nananatili. */}
-      <Rail title={title} sub={`${rating} ★ · ${count.toLocaleString()} reviews · verified on Google`} n={[3, 2, 2, 1]} autoplay={false}>
+      {/* Format ng mockup (Joe 2026-10-07, "gawin mo ung format na nasa artifact"):
+          text card — bituin, panipi, ang review (hanggang anim na linya), pangalan,
+          petsa at G — sa tuloy-tuloy na carousel. Parehong mga review (4–5 bituin)
+          at parehong lightbox sa pag-click; doon pa rin makikita ang mga larawan. */}
+      <Marquee
+        title={title}
+        sub={<span className="inline-flex items-center gap-2 flex-wrap text-[13px]">{GMARK}<b className="font-cormorant text-[15px] font-bold text-ink">{rating}</b><span className="text-[14px] tracking-[1px] text-goldDeep" aria-hidden>★★★★★</span><span>{count.toLocaleString()} reviews · verified on Google</span></span>}
+        n={[4, 3, 2, 1]}
+        speed={36}
+      >
         {items.map((r, i) => {
-          const isLong = r.text.length > 160;
-          const preview = isLong ? r.text.slice(0, 157).trimEnd() + "…" : r.text;
-          // Unang tunay na larawan (hindi generated na card), kung meron.
-          const realPhoto = r.photos.find((p) => !p.includes("/card-"));
-          const cardPhoto = r.photos.find((p) => p.includes("/card-"));
-          const extra = r.photos.length - 1;
+          const stars = Math.max(0, Math.min(5, Math.round(r.rating ?? 5)));
           return (
             <div
               key={r.name + r.date}
@@ -354,49 +371,25 @@ export default function GoogleReviews({
               role="button"
               tabIndex={0}
               onKeyDown={(e) => e.key === "Enter" && setOpenIdx(i)}
-              className="pf-card pf-lift p-5 sm:p-6 cursor-pointer"
+              className="pf-card pf-lift relative flex h-full min-h-[280px] flex-col gap-3 px-[22px] pt-[22px] pb-[18px] cursor-pointer"
             >
-              <div className="flex items-center gap-3 mb-3">
-                <Avatar name={r.name} index={i} />
-                <div>
-                  <p className="font-bold text-sm">{r.name}</p>
-                  <Stars n={r.rating} />
+              <span aria-hidden className="absolute top-1.5 right-[18px] select-none font-cormorant font-semibold text-[72px] leading-none text-goldSoft">“</span>
+              <span className="relative text-[16px] tracking-[2px] text-[#C99A2E]" aria-label={`${stars} out of 5 stars`}>
+                {"★".repeat(stars)}<i className="not-italic text-[#DDD2C3]">{"★".repeat(5 - stars)}</i>
+              </span>
+              <p className="relative flex-1 text-[15px] leading-[1.6] text-ink/90 line-clamp-6">{r.text}</p>
+              <div className="flex items-center gap-2.5 pt-3.5 border-t border-sand">
+                <span className="grid place-items-center w-[38px] h-[38px] shrink-0 rounded-full bg-[linear-gradient(180deg,#F7EED6,#EBDDB6)] text-brown font-bold">{r.name.charAt(0)}</span>
+                <div className="min-w-0 flex-1">
+                  <b className="block text-[13px] font-semibold leading-snug">{r.name}</b>
+                  <small className="text-stone text-xs">{niceDate(r.date)}</small>
                 </div>
+                <span title="Posted on Google" className="grid place-items-center w-[30px] h-[30px] shrink-0 rounded-full bg-white shadow-[inset_0_0_0_1px_#E4DACA]">{GMARK}</span>
               </div>
-
-              {realPhoto ? (
-                // May tunay na larawan → branded na card na may larawan sa taas
-                // at review bilang quote sa ibaba (walang doble na teksto).
-                <div className="relative mt-1">
-                  <ReviewCardImage photo={realPhoto} text={r.text} rating={r.rating} compact />
-                  {extra > 0 && (
-                    <span className="absolute top-2 right-2 bg-ink/70 text-cream text-xs px-2 py-1 rounded">
-                      +{extra} more
-                    </span>
-                  )}
-                </div>
-              ) : cardPhoto ? (
-                // Walang tunay na larawan → ang generated na "CUSTOM MADE" card
-                // (may naka-embed nang teksto) lang, walang plain na teksto.
-                <div className="relative mt-1 aspect-square">
-                  <Image src={cardPhoto} alt={r.name} fill className="object-cover" sizes="340px" />
-                </div>
-              ) : (
-                // Walang larawan man lang → plain na teksto.
-                <p className="text-sm text-ink/90 leading-relaxed min-h-[60px]">
-                  {preview}
-                  {isLong && (
-                    <span className="block mt-1 text-xs font-bold tracking-widest2 text-stone underline underline-offset-2">
-                      SEE MORE
-                    </span>
-                  )}
-                </p>
-              )}
-              <p className="text-stone text-xs mt-4">{r.date}</p>
             </div>
           );
         })}
-      </Rail>
+      </Marquee>
 
       <div className="text-center mt-8 space-y-4">
         <p className="flex items-center justify-center gap-2 text-sm text-stone">

@@ -218,9 +218,12 @@ html:not([data-hydrated]) .rail > * {
     cursor: default;
   }
 }
+/* Pangunahing button: bahagyang angat at liwanag sa hover (gaya ng mockup). */
+.pf-btn { transition: transform 0.2s, filter 0.2s, background 0.2s, color 0.2s; }
+.pf-btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
 @media (prefers-reduced-motion: reduce) {
-  .pf-lift { transition: none; }
-  .pf-lift:hover { transform: none; }
+  .pf-lift, .pf-btn { transition: none; }
+  .pf-lift:hover, .pf-btn:hover { transform: none; }
 }
 
 /* GALAW NG PREMIUM HOME (Joe 2026-10-07, "makuha pati mga animation at
