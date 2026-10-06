@@ -478,7 +478,7 @@ export default function CollectionView({
               No products match your filters. Try removing some filters.
             </p>
           ) : (
-            <div className="grid grid-cols-2 xl:grid-cols-3 gap-2.5 sm:gap-4">
+            <div key={`${cur}-${resultKey}`} data-stagger className="grid grid-cols-2 xl:grid-cols-3 gap-2.5 sm:gap-4">
               {shown.map((p) => (
                 <ProductCard key={p.slug} product={p} />
               ))}

@@ -281,6 +281,9 @@ html:not([data-hydrated]) .rail > * {
 @keyframes pf-pop { from { transform: scale(0); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes pf-bump { 40% { transform: scale(1.45); } }
 @keyframes pf-fill { from { transform: scaleX(0); } to { transform: none; } }
+@keyframes pf-estin { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes pf-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pf-popin { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: none; } }
 @keyframes pf-ping { 0% { box-shadow: 0 0 0 0 rgba(47, 125, 79, 0.45); } 100% { box-shadow: 0 0 0 9px rgba(47, 125, 79, 0); } }
 
 .pf-rise { animation: pf-rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
@@ -290,6 +293,10 @@ html:not([data-hydrated]) .rail > * {
 .pf-pop { animation: pf-pop 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.4) backwards; }
 .pf-bump { animation: pf-bump 0.35s ease; }
 .pf-ping { animation: pf-ping 1.8s ease-out infinite; }
+.pf-estin { animation: pf-estin 0.38s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+.pf-tabin { animation: pf-rise 0.3s ease backwards; }
+.pf-fade { animation: pf-fade 0.2s ease backwards; }
+.pf-pop { animation: pf-popin 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
 .pf-fill { transform-origin: left; animation: pf-fill 5s linear both; }
 
 [data-reveal] { transition: opacity 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); }
@@ -308,7 +315,7 @@ html:not([data-hydrated]) .rail > * {
 [data-reveal].pf-pre .pf-pop { animation: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  .pf-rise, .pf-kb, .pf-pbin, .pf-grow, .pf-pop, .pf-bump, .pf-ping, .pf-fill, [data-stagger] > * { animation: none; }
+  .pf-rise, .pf-kb, .pf-pbin, .pf-grow, .pf-pop, .pf-bump, .pf-ping, .pf-fill, .pf-estin, .pf-tabin, .pf-fade, [data-stagger] > * { animation: none; }
   [data-reveal] { transition: none; }
   [data-reveal].pf-pre { opacity: 1; transform: none; }
 }

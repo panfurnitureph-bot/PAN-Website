@@ -16,6 +16,7 @@ import { parseMattressSizes } from "@/lib/mattress-sizes";
 import { openQuickView } from "@/components/home/QuickView";
 import { readyCartLine } from "@/lib/ready-cart";
 import FitImage from "@/components/FitImage";
+import { toast } from "@/components/Toast";
 
 export default function ProductCard({
   product,
@@ -79,13 +80,14 @@ export default function ProductCard({
     const line = readyCartLine(product, colorName);
     addToCart(product.slug, line.key, 1, line.unitPrice, { baseLabel: line.baseLabel, basePrice: line.unitPrice, image: hero, addOns: line.addOns });
     setAdded(true); setTimeout(() => setAdded(false), 1400);
+    toast(`${product.name} added to cart`);
   }
 
   return (
     <div className="group relative flex flex-col h-full pf-card pf-lift overflow-hidden [contain:content]">
       <button
         aria-label={wished ? "Remove from wishlist" : "Add to wishlist"}
-        onClick={() => toggleWishlist(product.slug)}
+        onClick={() => { toggleWishlist(product.slug); toast(wished ? "Removed from wishlist" : "Saved to wishlist"); }}
         className={`absolute top-3 right-3 z-10 grid h-[38px] w-[38px] place-items-center rounded-full bg-white/90 backdrop-blur-sm shadow-[0_0_0_1px_rgba(226,194,122,.55),0_8px_16px_-10px_rgba(62,50,32,.55)] transition hover:scale-105 ${wished ? "opacity-100" : "opacity-0 group-hover:opacity-100 max-lg:opacity-100"}`}
       >
         <svg className={wished ? "pf-bump" : undefined} width="16" height="16" viewBox="0 0 24 24" fill={wished ? "#B08A3E" : "none"} stroke={wished ? "#B08A3E" : "#1A1A1A"} strokeWidth="1.6">

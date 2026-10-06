@@ -34,7 +34,6 @@ import Showrooms from "@/components/home/Showrooms";
 import QuickView from "@/components/home/QuickView";
 import FabricPopup from "@/components/home/FabricPopup";
 import MessengerModal from "@/components/home/MessengerModal";
-import Reveal from "@/components/home/Reveal";
 
 export const revalidate = 0;
 
@@ -117,7 +116,6 @@ export default async function HomePage() {
       <QuickView />
       <FabricPopup swatches={swatchLibrary} />
       <MessengerModal handle={handle} />
-      <Reveal />
     </div>
   );
 }

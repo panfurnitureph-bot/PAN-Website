@@ -11,6 +11,8 @@ import TrackButton from "@/components/TrackButton";
 import EmbedMode from "@/components/EmbedMode";
 import ContentLive from "@/components/ContentLive";
 import HydrationMark from "@/components/HydrationMark";
+import Reveal from "@/components/home/Reveal";
+import Toast from "@/components/Toast";
 import { BOOT_SCRIPT } from "@/components/boot-script";
 import { primeStoreContent } from "@/lib/content";
 import { NAV_LINKS, shopLinks } from "@/lib/products";
@@ -97,6 +99,8 @@ export default async function RootLayout({
           <TrackButton />
           <ChatBubble site={site} />
           <ContactRail site={site} />
+          <Reveal />
+          <Toast />
         </StoreProvider>
         </div>
       </body>

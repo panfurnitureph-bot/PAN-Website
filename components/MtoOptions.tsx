@@ -20,6 +20,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatPrice, swatchLibrary, type LibrarySwatch, type Product, type SiteContent } from "@/lib/products";
 import type { MtoAddon, MtoItemConfig } from "@/lib/content";
+import { toast } from "@/components/Toast";
 import { messengerHandle } from "@/lib/messenger";
 import { useStore, type QuoteBuild } from "@/components/store";
 import { WALL_THICKNESSES, frameFor, frameLabel } from "@/lib/double-walling";
@@ -574,6 +575,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     else {
       setAdded(true);
       setTimeout(() => setAdded(false), 2000);
+      toast(`${product.name} added to cart`);
     }
   }
 
@@ -859,6 +861,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
     else {
       setAdded(true);
       setTimeout(() => setAdded(false), 2000);
+      toast(`${product.name} added to cart`);
     }
   }
 
@@ -883,29 +886,29 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
       {shipOpen && (
         <div className="pf-card mt-3 p-4 grid gap-3">
           <div className="grid gap-3 sm:grid-cols-2">
-          <label className="relative block">
+          <label className="group relative block">
             <span className="mb-1.5 block text-[10.5px] font-bold tracking-[0.16em] uppercase text-goldDeep">Province</span>
             <span className="relative block">
-          <select value={shipProvince} onChange={(e) => { setShipProvince(e.target.value); setShipCity(""); }} className="w-full h-12 appearance-none rounded-xl bg-white pl-3.5 pr-9 text-[14px] font-medium text-ink shadow-[inset_0_0_0_1px_#E0D5C1] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E] disabled:bg-[#F6F0E4] disabled:text-stone">
+          <select value={shipProvince} onChange={(e) => { setShipProvince(e.target.value); setShipCity(""); }} className="w-full h-12 appearance-none rounded-xl bg-white pl-3.5 pr-9 text-[14px] font-medium text-ink shadow-[inset_0_0_0_1px_#E0D5C1] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.32)] disabled:bg-[#F6F0E4] disabled:text-stone disabled:shadow-[inset_0_0_0_1px_#E0D5C1]">
             <option value="">Select province</option>
             {SHIP_PROVINCES.map((p) => (<option key={p.name} value={p.name}>{p.name}</option>))}
           </select>
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-stone" aria-hidden><path d="M6 9l6 6 6-6" /></svg>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-stone transition-transform group-focus-within:rotate-180" aria-hidden><path d="M6 9l6 6 6-6" /></svg>
             </span>
           </label>
-          <label className="relative block">
+          <label className="group relative block">
             <span className="mb-1.5 block text-[10.5px] font-bold tracking-[0.16em] uppercase text-goldDeep">City / Town</span>
             <span className="relative block">
           <select
             value={shipCity}
             disabled={!shipProvince}
             onChange={(e) => { setShipCity(e.target.value); try { localStorage.setItem("pb_ship_loc", JSON.stringify({ province: shipProvince, city: e.target.value })); } catch {} }}
-            className="w-full h-12 appearance-none rounded-xl bg-white pl-3.5 pr-9 text-[14px] font-medium text-ink shadow-[inset_0_0_0_1px_#E0D5C1] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E] disabled:bg-[#F6F0E4] disabled:text-stone"
+            className="w-full h-12 appearance-none rounded-xl bg-white pl-3.5 pr-9 text-[14px] font-medium text-ink shadow-[inset_0_0_0_1px_#E0D5C1] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.32)] disabled:bg-[#F6F0E4] disabled:text-stone disabled:shadow-[inset_0_0_0_1px_#E0D5C1]"
           >
             <option value="">{shipProvince ? "Select city / town" : "Select a province first"}</option>
             {shipCityList.map((c) => (<option key={c.name} value={c.name}>{c.name}</option>))}
           </select>
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-stone" aria-hidden><path d="M6 9l6 6 6-6" /></svg>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-stone transition-transform group-focus-within:rotate-180" aria-hidden><path d="M6 9l6 6 6-6" /></svg>
             </span>
           </label>
           </div>
@@ -913,7 +916,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             <p className="flex items-center gap-2 text-[12.5px] text-stone"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-goldDeep" aria-hidden><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></svg>Choose your province and city to see the delivery fee.</p>
           )}
           {shipFee !== null && (
-            <div className="pt-3 border-t border-[#E6DCCB] space-y-1.5">
+            <div key={shipCity} className="pf-estin pt-3 border-t border-[#E6DCCB] space-y-1.5">
               <p className="flex justify-between items-baseline">
                 <span className="text-stone">Estimated shipping to {shipCity}</span>
                 <span className="font-cormorant text-[20px] font-bold text-brownDeep tabular-nums">{formatPrice(shipFee)}</span>
@@ -931,7 +934,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
 
   const heartBtn = (
     <button
-      onClick={() => toggleWishlist(product.slug)}
+      onClick={() => { toggleWishlist(product.slug); toast(wished ? "Removed from wishlist" : "Saved to wishlist"); }}
       aria-label="Add to wishlist"
       className="w-12 h-12 shrink-0 rounded-xl bg-white shadow-[inset_0_0_0_1px_#E0D5C1] flex items-center justify-center transition hover:shadow-[inset_0_0_0_1px_#B08A3E]"
     >
@@ -1107,10 +1110,10 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
         {shipBlock}
         {etaCard}
         <div className="mt-3 grid grid-cols-[auto_minmax(0,1fr)_auto] sm:grid-cols-[auto_minmax(0,1fr)_minmax(0,1fr)_auto] gap-2.5">
-          <div className="flex items-center h-12 rounded-xl bg-white shadow-[inset_0_0_0_1px_#E0D5C1]">
-            <button onClick={() => setQty(Math.max(1, qty - 1))} className="w-10 h-full text-[18px] hover:text-goldDeep" aria-label="Decrease quantity">−</button>
+          <div className="flex items-center h-12 overflow-hidden rounded-xl bg-white shadow-[inset_0_0_0_1px_#E0D5C1] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E]">
+            <button onClick={() => setQty(Math.max(1, qty - 1))} className="w-10 h-full text-[18px] text-brown transition-colors hover:bg-[#F6EFE0] hover:text-brownDeep" aria-label="Decrease quantity">−</button>
             <span className="w-9 text-center text-sm font-semibold tabular-nums">{qty}</span>
-            <button onClick={() => setQty(qty + 1)} className="w-10 h-full text-[18px] hover:text-goldDeep" aria-label="Increase quantity">+</button>
+            <button onClick={() => setQty(qty + 1)} className="w-10 h-full text-[18px] text-brown transition-colors hover:bg-[#F6EFE0] hover:text-brownDeep" aria-label="Increase quantity">+</button>
           </div>
           <button onClick={() => handleBuyReady(false)} className="h-12 rounded-xl bg-white px-4 text-[13.5px] font-bold text-brownDeep shadow-[inset_0_0_0_1.5px_#3E3220] transition hover:bg-brownDeep hover:text-gold">
             {added ? "Added ✓" : "Add to cart"}

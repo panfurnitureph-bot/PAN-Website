@@ -8,8 +8,10 @@
 // ang lahat gaya ng dati. Walang binabago sa laman o sa mga link.
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 export default function Reveal() {
+  const path = usePathname();
   useEffect(() => {
     if (!("IntersectionObserver" in window)) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -25,6 +27,6 @@ export default function Reveal() {
       if (el.getBoundingClientRect().top > vh * 0.94) { el.classList.add("pf-pre"); io.observe(el); }
     });
     return () => { io.disconnect(); els.forEach(show); };
-  }, []);
+  }, [path]);
   return null;
 }

@@ -132,7 +132,7 @@ export default function Header({ site, nav = NAV_LINKS }: { site: SiteContent; n
               </svg>
               <span className="hidden lg:inline text-sm">Cart</span>
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-cognac text-cream text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
+                <span key={cartCount} className="pf-bump absolute -top-2 -right-2 grid min-w-[18px] h-[18px] px-1 place-items-center rounded-full bg-gold text-brownDeep text-[11px] font-bold tabular-nums">
                   {cartCount}
                 </span>
               )}

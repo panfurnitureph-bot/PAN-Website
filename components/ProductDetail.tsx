@@ -20,6 +20,7 @@ import MtoOptions from "@/components/MtoOptions";
 import type { MtoItemConfig } from "@/lib/content";
 import FitModal from "@/components/FitModal";
 import { packagedFrom } from "@/lib/packaged";
+import { toast } from "@/components/Toast";
 
 // Fallback na 6 bed sizes kung walang custom na bedSizes ang product
 const DEFAULT_SIZES = [
@@ -247,6 +248,7 @@ export default function ProductDetail({
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
+    toast(`${product.name} added to cart`);
   }
 
   // Buy now — idagdag sa cart tapos diretso sa checkout.
@@ -268,7 +270,7 @@ export default function ProductDetail({
     <div className="grid grid-cols-1 lg:grid-cols-[55%_1fr] gap-10">
       {/* ---------- FULLSCREEN LIGHTBOX ---------- */}
       {lightbox && (
-        <div className="fixed inset-0 z-[100] bg-ink/90 flex items-center justify-center p-4">
+        <div className="pf-fade fixed inset-0 z-[100] bg-ink/90 flex items-center justify-center p-4">
           <button
             onClick={() => setLightbox(false)}
             aria-label="Close"
@@ -283,7 +285,7 @@ export default function ProductDetail({
           >
             ‹
           </button>
-          <div className="relative w-full h-full max-w-5xl" onClick={() => setLightbox(false)}>
+          <div key={imageIdx} className="pf-pop relative w-full h-full max-w-5xl" onClick={() => setLightbox(false)}>
             <Image src={galleryImages[imageIdx]} alt={product.name} fill className="object-contain" sizes="100vw" />
           </div>
           <button
@@ -696,7 +698,7 @@ export default function ProductDetail({
           {shipOpen && (
             <div className="pf-card mt-3 p-4 grid gap-3">
               <div className="grid gap-3 sm:grid-cols-2">
-              <label className="relative block">
+              <label className="group relative block">
                 <span className="mb-1.5 block text-[10.5px] font-bold tracking-[0.16em] uppercase text-goldDeep">Province</span>
               <span className="relative block">
               <select
@@ -705,17 +707,17 @@ export default function ProductDetail({
                   setShipProvince(e.target.value);
                   setShipCity("");
                 }}
-                className="w-full h-12 appearance-none rounded-xl bg-white pl-3.5 pr-9 text-[14px] font-medium text-ink shadow-[inset_0_0_0_1px_#E0D5C1] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E] disabled:bg-[#F6F0E4] disabled:text-stone"
+                className="w-full h-12 appearance-none rounded-xl bg-white pl-3.5 pr-9 text-[14px] font-medium text-ink shadow-[inset_0_0_0_1px_#E0D5C1] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.32)] disabled:bg-[#F6F0E4] disabled:text-stone disabled:shadow-[inset_0_0_0_1px_#E0D5C1]"
               >
                 <option value="">Select province</option>
                 {SHIP_PROVINCES.map((p: any) => (
                   <option key={p.name} value={p.name}>{p.name}</option>
                 ))}
               </select>
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-stone" aria-hidden><path d="M6 9l6 6 6-6" /></svg>
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-stone transition-transform group-focus-within:rotate-180" aria-hidden><path d="M6 9l6 6 6-6" /></svg>
               </span>
               </label>
-              <label className="relative block">
+              <label className="group relative block">
                 <span className="mb-1.5 block text-[10.5px] font-bold tracking-[0.16em] uppercase text-goldDeep">City / Town</span>
               <span className="relative block">
               <select
@@ -731,7 +733,7 @@ export default function ProductDetail({
                     );
                   } catch {}
                 }}
-                className="w-full h-12 appearance-none rounded-xl bg-white pl-3.5 pr-9 text-[14px] font-medium text-ink shadow-[inset_0_0_0_1px_#E0D5C1] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E] disabled:bg-[#F6F0E4] disabled:text-stone"
+                className="w-full h-12 appearance-none rounded-xl bg-white pl-3.5 pr-9 text-[14px] font-medium text-ink shadow-[inset_0_0_0_1px_#E0D5C1] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.32)] disabled:bg-[#F6F0E4] disabled:text-stone disabled:shadow-[inset_0_0_0_1px_#E0D5C1]"
               >
                 <option value="">
                   {shipProvince ? "Select city / town" : "Select a province first"}
@@ -740,7 +742,7 @@ export default function ProductDetail({
                   <option key={c.name} value={c.name}>{c.name}</option>
                 ))}
               </select>
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-stone" aria-hidden><path d="M6 9l6 6 6-6" /></svg>
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-stone transition-transform group-focus-within:rotate-180" aria-hidden><path d="M6 9l6 6 6-6" /></svg>
               </span>
               </label>
               </div>
@@ -748,7 +750,7 @@ export default function ProductDetail({
                 <p className="flex items-center gap-2 text-[12.5px] text-stone"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-goldDeep" aria-hidden><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></svg>Choose your province and city to see the delivery fee.</p>
               )}
               {shipFee !== null && (
-                <div className="pt-3 border-t border-[#E6DCCB] space-y-1.5">
+                <div key={shipCity} className="pf-estin pt-3 border-t border-[#E6DCCB] space-y-1.5">
                   <p className="flex justify-between items-baseline">
                     <span className="text-stone">
                       Estimated shipping to {shipCity}
@@ -799,10 +801,10 @@ export default function ProductDetail({
         {/* Qty + Add to cart / Sold out + heart */}
         {!hideOpts && (product.stock ?? 1) > 0 ? (
           <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] sm:grid-cols-[auto_minmax(0,1fr)_minmax(0,1fr)_auto] gap-2.5 mt-3">
-            <div className="flex items-center h-12 rounded-xl bg-white shadow-[inset_0_0_0_1px_#E0D5C1]">
-              <button onClick={() => setQtyState(Math.max(1, qty - 1))} className="w-10 h-full text-[18px] hover:text-goldDeep" aria-label="Decrease quantity">−</button>
+            <div className="flex items-center h-12 overflow-hidden rounded-xl bg-white shadow-[inset_0_0_0_1px_#E0D5C1] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E]">
+              <button onClick={() => setQtyState(Math.max(1, qty - 1))} className="w-10 h-full text-[18px] text-brown transition-colors hover:bg-[#F6EFE0] hover:text-brownDeep" aria-label="Decrease quantity">−</button>
               <span className="w-9 text-center text-sm font-semibold tabular-nums">{qty}</span>
-              <button onClick={() => setQtyState(qty + 1)} className="w-10 h-full text-[18px] hover:text-goldDeep" aria-label="Increase quantity">+</button>
+              <button onClick={() => setQtyState(qty + 1)} className="w-10 h-full text-[18px] text-brown transition-colors hover:bg-[#F6EFE0] hover:text-brownDeep" aria-label="Increase quantity">+</button>
             </div>
             <button
               onClick={handleAdd}
@@ -817,7 +819,7 @@ export default function ProductDetail({
               Buy now <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg>
             </button>
             <button
-              onClick={() => toggleWishlist(product.slug)}
+              onClick={() => { toggleWishlist(product.slug); toast(wished ? "Removed from wishlist" : "Saved to wishlist"); }}
               aria-label="Add to wishlist"
               className="row-start-1 col-start-3 sm:col-start-4 w-12 h-12 rounded-xl bg-white shadow-[inset_0_0_0_1px_#E0D5C1] flex items-center justify-center transition hover:shadow-[inset_0_0_0_1px_#B08A3E]"
             >

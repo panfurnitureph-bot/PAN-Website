@@ -463,17 +463,18 @@ export default function ProductTabs({ product, site, mto }: { product: Product; 
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`relative inline-flex shrink-0 items-center gap-2.5 whitespace-nowrap px-3 sm:px-4 py-4 text-[14px] transition-colors ${
-              tab === t.id ? "text-ink font-semibold after:absolute after:inset-x-3 after:bottom-0 after:h-[2px] after:rounded-full after:bg-[linear-gradient(90deg,#B08A3E,#E2C27A)]" : "text-stone hover:text-ink"
+            aria-selected={tab === t.id}
+            className={`relative inline-flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-t-xl px-3 sm:px-4 py-4 text-[14px] transition-colors after:absolute after:inset-x-3 after:bottom-0 after:h-[2.5px] after:origin-left after:rounded-t after:bg-[linear-gradient(90deg,#B08A3E,#D9B769)] after:transition-transform after:duration-300 after:ease-[cubic-bezier(.2,.7,.2,1)] hover:bg-gold/[.14] ${
+              tab === t.id ? "text-ink font-semibold after:scale-x-100" : "text-stone hover:text-ink after:scale-x-0"
             }`}
           >
-            <span className={tab === t.id ? "text-goldDeep" : "text-stone/70"}>{TAB_ICON[t.id]}</span>
+            <span className={`transition-colors ${tab === t.id ? "text-goldDeep" : "text-stone/70"}`}>{TAB_ICON[t.id]}</span>
             {t.label}
           </button>
         ))}
       </div>
 
-      <div className="py-7 md:py-9 text-sm text-stone leading-relaxed [&_h3]:text-[11px] [&_h3]:font-bold [&_h3]:tracking-[0.16em] [&_h3]:uppercase [&_h3]:text-goldDeep [&_h3]:mb-3">
+      <div key={tab} className="pf-tabin py-7 md:py-9 text-sm text-stone leading-relaxed [&_h3]:text-[11px] [&_h3]:font-bold [&_h3]:tracking-[0.16em] [&_h3]:uppercase [&_h3]:text-goldDeep [&_h3]:mb-3">
         {tab === "description" && (
           <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] gap-8 lg:gap-12 items-start">
             <div>
@@ -516,7 +517,7 @@ export default function ProductTabs({ product, site, mto }: { product: Product; 
               const c = tabs[k];
               if (!c) return null;
               return (
-                <div key={k} className="pf-card p-5 sm:p-6">
+                <div key={k} className="pf-card pf-lift p-5 sm:p-6">
                   <span className="mb-4 grid h-11 w-11 place-items-center rounded-full bg-goldSoft text-brownDeep shadow-[inset_0_0_0_1px_rgba(176,138,62,.35)] [&_svg]:h-[22px] [&_svg]:w-[22px]">{ICONS[k]}</span>
                   <h3 className="!text-[17px] !normal-case !tracking-[-0.01em] !text-ink font-cormorant !font-semibold">{c.title}</h3>
                   {c.heading && <p className="font-bold text-ink">{c.heading}</p>}
@@ -526,7 +527,7 @@ export default function ProductTabs({ product, site, mto }: { product: Product; 
                   {c.heading2 && <p className="font-bold text-ink mt-3">{c.heading2}</p>}
                   {c.body2 && <p className="mt-2">{rich(c.body2)}</p>}
                   {c.linkLabel && c.linkHref && (
-                    <a href={c.linkHref} className="inline-block mt-4 text-[13px] font-semibold border-b-[1.5px] border-goldDeep pb-px text-ink hover:text-goldDeep">{c.linkLabel}</a>
+                    <a href={c.linkHref} className="group mt-4 inline-flex items-center gap-2 text-[13px] font-semibold text-ink hover:text-goldDeep"><span className="border-b-[1.5px] border-goldDeep pb-px">{c.linkLabel}</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-goldDeep transition-transform duration-200 group-hover:translate-x-[5px]" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg></a>
                   )}
                 </div>
               );
