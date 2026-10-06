@@ -96,10 +96,12 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
             <span aria-hidden className="absolute z-[2] right-4 top-2 sm:right-5 sm:top-3 font-cormorant font-semibold text-[54px] sm:text-[76px] leading-none tracking-[-0.04em] text-transparent [-webkit-text-stroke:1.2px_rgba(176,138,62,.6)]">{String(sel + 1).padStart(2, "0")}</span>
             <div className="relative flex-1 min-h-[230px]">
               <i aria-hidden className="absolute left-[16%] right-[16%] bottom-[9%] h-6 rounded-[50%] bg-[radial-gradient(closest-side,rgba(62,50,32,.3),transparent)]" />
-              {/* key = bagong litrato → tumatakbo ulit ang pasok na galaw (pf-pbin) */}
-              <div key={curImage} className="pf-pbin absolute inset-0">
-                <Image src={curImage} alt={cur.name} fill className="object-contain p-[7%] pt-[12%] mix-blend-multiply transition-transform duration-700 group-hover:scale-[1.04]" sizes="(min-width: 1024px) 45vw, 100vw" />
-              </div>
+              {/* key = bagong litrato → tumatakbo ulit ang pasok na galaw (pf-pbin).
+                  Ang galaw ay NASA LITRATO MISMO, hindi sa balot: ang balot na may
+                  opacity/transform ay nagiging hiwalay na grupo, kaya habang gumagalaw
+                  ay hindi umaabot ang multiply sa cream na entablado at lumilitaw ang
+                  puting background ng litrato (Joe 2026-10-07, "bakit may white background"). */}
+              <Image key={curImage} src={curImage} alt={cur.name} fill className="pf-pbin object-contain p-[7%] pt-[12%] mix-blend-multiply transition-transform duration-700 group-hover:scale-[1.04]" sizes="(min-width: 1024px) 45vw, 100vw" />
             </div>
             <div className="relative z-[2] m-2.5 sm:m-3.5 mt-0 sm:mt-0 rounded-[18px] px-4 py-4 sm:px-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-[#2E2518]/90 backdrop-blur-md shadow-[inset_0_0_0_1px_rgba(226,194,122,.35),0_18px_30px_-18px_rgba(0,0,0,.7)]">
               <div className="flex min-w-0 flex-col gap-2">
