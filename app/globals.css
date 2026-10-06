@@ -171,6 +171,20 @@ html:not([data-hydrated]) .rail > * {
       radial-gradient(ellipse 70% 52% at 50% 40%, #fff 0, rgba(255, 255, 255, 0.85) 34%, rgba(255, 255, 255, 0) 72%),
       linear-gradient(180deg, #F3E9D7 0, #F6EEDF 46%, #EFE3CD 63%, #E2D2B4 71%, #EADDC4 84%, #F0E6D2 100%);
   }
+  /* Malapad na studio ng promo beds gallery: ang ilaw ay nasa kanan kung saan
+     nakatayo ang kama; sa telepono ay nasa gitna. */
+  .pf-studio-wide {
+    background:
+      radial-gradient(ellipse 62% 46% at 64% 40%, #fff 0, rgba(255, 255, 255, 0.86) 36%, rgba(255, 255, 255, 0) 74%),
+      linear-gradient(180deg, #F1E6D3 0, #F6EEDF 44%, #EFE3CD 62%, #DFCDAC 70%, #E9DBC1 84%, #F1E7D4 100%);
+  }
+  @media (max-width: 1023px) {
+    .pf-studio-wide {
+      background:
+        radial-gradient(ellipse 80% 34% at 50% 26%, #fff 0, rgba(255, 255, 255, 0.86) 36%, rgba(255, 255, 255, 0) 74%),
+        linear-gradient(180deg, #F1E6D3 0, #F6EEDF 26%, #EFE3CD 38%, #DFCDAC 44%, #E9DBC1 56%, #F1E7D4 100%);
+    }
+  }
   .pf-floor {
     position: absolute;
     left: 20%;
@@ -245,6 +259,7 @@ html:not([data-hydrated]) .rail > * {
 @keyframes pf-grow { from { transform: scaleX(0); } to { transform: none; } }
 @keyframes pf-pop { from { transform: scale(0); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes pf-bump { 40% { transform: scale(1.45); } }
+@keyframes pf-fill { from { transform: scaleX(0); } to { transform: none; } }
 @keyframes pf-ping { 0% { box-shadow: 0 0 0 0 rgba(47, 125, 79, 0.45); } 100% { box-shadow: 0 0 0 9px rgba(47, 125, 79, 0); } }
 
 .pf-rise { animation: pf-rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
@@ -254,6 +269,7 @@ html:not([data-hydrated]) .rail > * {
 .pf-pop { animation: pf-pop 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.4) backwards; }
 .pf-bump { animation: pf-bump 0.35s ease; }
 .pf-ping { animation: pf-ping 1.8s ease-out infinite; }
+.pf-fill { transform-origin: left; animation: pf-fill 5s linear both; }
 
 [data-reveal] { transition: opacity 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); }
 [data-reveal].pf-pre { opacity: 0; transform: translateY(18px); }
@@ -271,7 +287,7 @@ html:not([data-hydrated]) .rail > * {
 [data-reveal].pf-pre .pf-pop { animation: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  .pf-rise, .pf-kb, .pf-pbin, .pf-grow, .pf-pop, .pf-bump, .pf-ping, [data-stagger] > * { animation: none; }
+  .pf-rise, .pf-kb, .pf-pbin, .pf-grow, .pf-pop, .pf-bump, .pf-ping, .pf-fill, [data-stagger] > * { animation: none; }
   [data-reveal] { transition: none; }
   [data-reveal].pf-pre { opacity: 1; transform: none; }
 }
