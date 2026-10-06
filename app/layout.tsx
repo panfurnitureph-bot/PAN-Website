@@ -99,7 +99,10 @@ export default async function RootLayout({
             <EmbedMode />
           </Suspense>
           <Header site={site} nav={navWithCounts} />
-          <main className="bg-cream">{children}</main>
+          {/* pb sa main, hindi mt sa footer: brownDeep ang balot, kaya ang margin
+              ng footer ay lumalabas na kayumangging banda sa ibabaw ng gintong
+              linya (Joe 2026-10-07, "naging doble may line ulit"). */}
+          <main className="bg-cream pb-12">{children}</main>
           <Footer site={site} shop={shopLinks()} />
           <TrackButton />
           <ChatBubble site={site} />

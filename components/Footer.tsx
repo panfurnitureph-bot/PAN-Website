@@ -45,7 +45,7 @@ export default function Footer({ site }: { site: SiteContent; shop?: { label: st
   const allSame = rooms.length > 0 && rooms.every((s) => (s.hours ?? "") === (hours ?? ""));
   const care = (site.contact as { hours?: string }).hours;
   return (
-    <footer className="relative mt-16 text-cream bg-[radial-gradient(900px_380px_at_8%_-10%,rgba(226,194,122,.14),transparent_70%),linear-gradient(180deg,#3A2E1D,#241B11)]">
+    <footer className="relative text-cream bg-[radial-gradient(900px_380px_at_8%_-10%,rgba(226,194,122,.14),transparent_70%),linear-gradient(180deg,#3A2E1D,#241B11)]">
       <span aria-hidden className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(226,194,122,.7)_25%,rgba(226,194,122,.7)_75%,transparent)]" />
       <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-12 pb-6">
         <div className={`grid gap-8 sm:grid-cols-2 ${rooms.length ? "lg:grid-cols-[1.35fr_.8fr_1fr_1.45fr]" : "lg:grid-cols-[1.6fr_1fr_1fr]"} text-[13px]`}>
