@@ -25,6 +25,7 @@ import { messengerHandle } from "@/lib/messenger";
 import { useStore, type QuoteBuild } from "@/components/store";
 import { WALL_THICKNESSES, frameFor, frameLabel } from "@/lib/double-walling";
 import { MATTRESS_SIZE_NAME } from "@/lib/mattress-sizes";
+import { openFabrics } from "@/components/home/FabricPopup";
 
 // Kolek­syon mula sa pangalan ng swatch ("New Sahara" = dalawang salita).
 const colOf = (n: string) => {
@@ -1243,7 +1244,21 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           <div ref={fabRef} className="relative">
             <button
               type="button"
-              onClick={() => setFabOpen((v) => !v)}
+              // "CHOOSE A FABRIC" NA LIBRARY (Joe 2026-10-07, "dapat hindi ganyan"):
+              // ang parehong modal ng Home, limitado sa mga telang pinapayagan ng
+              // config; parehong pagpili (hanggang maxFabrics, Whole bed / Headboard)
+              // at parehong leather ↔ Lift Storage na ban ng dating inline na panel.
+              onClick={() => openFabrics({
+                name: fabrics_[0]?.name,
+                swatches: fabrics,
+                disabled: (l: LibrarySwatch) => (liftOn && /leather/i.test(l.name) ? "not available with Lift Storage" : undefined),
+                onUse: (name: string) => setFabrics_((p) => {
+                  if (p.some((f) => f.name === name)) return p;
+                  if (maxFabrics === 1) return [{ name, part: "Whole bed" }];
+                  if (p.length >= maxFabrics) return p;
+                  return [...p, { name, part: p.length ? "Headboard" : "Whole bed" }];
+                }),
+              })}
               className={`relative flex h-11 w-full items-center justify-center gap-2 rounded-[10px] bg-white px-10 text-[14.5px] font-semibold text-ink transition-shadow ${fabOpen ? "shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.3)]" : "shadow-[inset_0_0_0_1px_#D8CCB9,inset_0_1px_2px_rgba(62,50,32,.05)] hover:shadow-[inset_0_0_0_1px_#B08A3E]"}`}
             >
               {fabrics_.length ? (

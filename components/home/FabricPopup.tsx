@@ -23,26 +23,35 @@ const colOf = (n: string) => { const w = n.trim().split(/\s+/); return w[0]?.toL
 const num = (s: string) => { const m = /(\d+)/.exec(s); return m ? +m[1] : 0; };
 const EVENT = "pan:fabrics";
 
+// Pagbukas mula sa MTO form: ang mga telang pinapayagan ng config, kung aling
+// tela ang bawal ngayon (hal. leather habang naka-Lift Storage), at ang
+// gagawin sa "Use this fabric" sa halip na pumunta sa Custom Bed page.
+export type FabricOpenOpts = { name?: string; swatches?: LibrarySwatch[]; disabled?: (s: LibrarySwatch) => string | undefined; onUse?: (name: string) => void };
+
 export default function FabricPopup({ swatches }: { swatches: LibrarySwatch[] }) {
   const router = useRouter();
   const [on, setOn] = useState(false);
   const [tab, setTab] = useState(-1); // -1 = All
   const [q, setQ] = useState("");
   const [pick, setPick] = useState<string | null>(null);
+  const [opts, setOpts] = useState<FabricOpenOpts>({});
   const grid = useRef<HTMLDivElement>(null);
+  const list = opts.swatches ?? swatches;
   // HOVER PREVIEW (Joe 2026-09-06): malaking litrato ng tela na sumusunod sa
   // cursor habang naka-hover; nawawala pag-alis. Mouse lang — walang hover sa touch.
   const [hov, setHov] = useState<{ s: LibrarySwatch; x: number; y: number } | null>(null);
   const groups = useMemo(() => {
     const by = new Map<string, LibrarySwatch[]>();
-    for (const s of swatches) { const c = colOf(s.name); if (!by.has(c)) by.set(c, []); by.get(c)!.push(s); }
+    for (const s of list) { const c = colOf(s.name); if (!by.has(c)) by.set(c, []); by.get(c)!.push(s); }
     const cols = [...ORDER.filter((c) => by.has(c)), ...Array.from(by.keys()).filter((c) => !ORDER.includes(c))];
     return cols.map((c) => ({ name: c, items: by.get(c)!.sort((a, b) => num(a.name) - num(b.name) || a.name.localeCompare(b.name)) }));
-  }, [swatches]);
+  }, [list]);
   useEffect(() => {
     const open = (e: Event) => {
-      const name = (e as CustomEvent<string | undefined>).detail;
-      setPick(typeof name === "string" && name ? name : null);
+      const d = (e as CustomEvent<string | FabricOpenOpts | undefined>).detail;
+      const o: FabricOpenOpts = typeof d === "string" ? { name: d } : d && typeof d === "object" ? d : {};
+      setOpts(o);
+      setPick(o.name ? o.name : null);
       setTab(-1); setQ(""); setOn(true); document.body.style.overflow = "hidden";
     };
     const key = (e: KeyboardEvent) => { if (e.key === "Escape") close(); };
@@ -73,20 +82,22 @@ export default function FabricPopup({ swatches }: { swatches: LibrarySwatch[] })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [on, groups]);
   function close() { setOn(false); setHov(null); document.body.style.overflow = ""; }
-  // Parehong destinasyon ng dating pag-click sa tela.
-  function use(name: string) { close(); router.push(`/collections/customized-bed?fabric=${encodeURIComponent(name)}`); }
+  // Parehong destinasyon ng dating pag-click sa tela — maliban kung may sariling
+  // gagawin ang nagbukas (MTO form: pinipili ang tela sa build).
+  function use(name: string) { close(); if (opts.onUse) opts.onUse(name); else router.push(`/collections/customized-bed?fabric=${encodeURIComponent(name)}`); }
   if (!on) return null;
   const pool = tab < 0 ? groups.flatMap((gr) => gr.items) : (groups[tab]?.items ?? []);
   const needle = q.trim().toLowerCase();
   const items = needle ? pool.filter((s) => s.name.toLowerCase().includes(needle) || (s.material ?? "").toLowerCase().includes(needle)) : pool;
-  const picked = pick ? swatches.find((s) => s.name === pick) : undefined;
+  const picked = pick ? list.find((s) => s.name === pick) : undefined;
+  const why = (s: LibrarySwatch) => opts.disabled?.(s);
   const pill = (active: boolean) => `h-8 shrink-0 rounded-full px-3.5 text-[12.5px] font-semibold transition-colors ${active ? "pf-dark" : "bg-white text-ink shadow-[inset_0_0_0_1px_#E0D5C1] hover:shadow-[inset_0_0_0_1px_#B08A3E]"}`;
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 bg-[#1A140C]/60 backdrop-blur-[3px]" onClick={(e) => { if (e.target === e.currentTarget) close(); }} role="dialog" aria-modal="true" aria-label="Choose a fabric">
       <div className="relative flex w-[min(740px,100%)] max-h-[90vh] min-h-[min(72vh,620px)] flex-col overflow-hidden rounded-[20px] bg-[#FBF7EF] shadow-[0_0_0_1px_rgba(226,194,122,.45),0_40px_80px_-30px_rgba(0,0,0,.8)]">
         <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-[#E8DDC9] bg-[linear-gradient(180deg,#fff,#FAF5EC)]">
           <div className="min-w-0">
-            <p className="text-[10.5px] font-bold tracking-[0.18em] uppercase text-goldDeep">Fabric library · {swatches.length} fabrics</p>
+            <p className="text-[10.5px] font-bold tracking-[0.18em] uppercase text-goldDeep">Fabric library · {list.length} fabrics</p>
             <h2 className="font-cormorant text-[19px] font-semibold leading-tight tracking-[-0.01em] mt-1">Choose a fabric</h2>
           </div>
           <button onClick={close} aria-label="Close" className="grid place-items-center w-9 h-9 shrink-0 rounded-full bg-white text-ink shadow-[0_0_0_1.5px_#B08A3E,0_8px_16px_-10px_rgba(62,50,32,.5)] transition hover:bg-brownDeep hover:text-gold">
@@ -127,12 +138,13 @@ export default function FabricPopup({ swatches }: { swatches: LibrarySwatch[] })
             <div className="grid gap-2.5 [grid-template-columns:repeat(auto-fill,minmax(96px,1fr))]">
               {items.map((s) => {
                 const sel = s.name === pick;
+                const ban = why(s);
                 return (
-                  <button key={s.name} type="button" title={s.name} aria-pressed={sel} onClick={() => setPick(s.name)} onDoubleClick={() => use(s.name)}
+                  <button key={s.name} type="button" title={ban ? `${s.name} — ${ban}` : s.name} aria-pressed={sel} disabled={!!ban} onClick={() => { if (!ban) setPick(s.name); }} onDoubleClick={() => { if (!ban) use(s.name); }}
                     onMouseEnter={(e) => setHov({ s, x: e.clientX, y: e.clientY })}
                     onMouseMove={(e) => setHov({ s, x: e.clientX, y: e.clientY })}
                     onMouseLeave={() => setHov(null)}
-                    className={`group flex flex-col overflow-hidden rounded-xl bg-white text-center transition duration-200 hover:-translate-y-0.5 ${sel ? "shadow-[0_0_0_2px_#B08A3E,0_0_0_6px_rgba(226,194,122,.3),0_14px_22px_-14px_rgba(62,50,32,.6)]" : "shadow-[0_0_0_1px_#E0D5C1] hover:shadow-[0_0_0_1px_#B08A3E,0_14px_22px_-16px_rgba(62,50,32,.6)]"}`}>
+                    className={`group flex flex-col overflow-hidden rounded-xl bg-white text-center transition duration-200 hover:-translate-y-0.5 ${ban ? "cursor-not-allowed opacity-35" : ""} ${sel ? "shadow-[0_0_0_2px_#B08A3E,0_0_0_6px_rgba(226,194,122,.3),0_14px_22px_-14px_rgba(62,50,32,.6)]" : "shadow-[0_0_0_1px_#E0D5C1] hover:shadow-[0_0_0_1px_#B08A3E,0_14px_22px_-16px_rgba(62,50,32,.6)]"}`}>
                     <span className="relative block aspect-[4/3] w-full overflow-hidden" style={{ background: s.color ?? "#D9CFC0" }}>
                       {/* Maliit na 200px JPEG na (~8KB) mula sa Storage CDN — laktawan ang
                           next/image optimizer (bawat isa ay server resize noon = mabagal ang
@@ -170,4 +182,7 @@ export default function FabricPopup({ swatches }: { swatches: LibrarySwatch[] })
 
 // `name` = bubukas na nakapili na ang telang iyon. (Ang ibang uri ng argument,
 // hal. ang MouseEvent kapag direktang ginamit bilang onClick, ay binabalewala.)
-export function openFabrics(name?: unknown) { window.dispatchEvent(new CustomEvent(EVENT, { detail: typeof name === "string" ? name : undefined })); }
+export function openFabrics(arg?: unknown) {
+  const detail = typeof arg === "string" ? arg : arg && typeof arg === "object" && !("nativeEvent" in (arg as object)) ? (arg as FabricOpenOpts) : undefined;
+  window.dispatchEvent(new CustomEvent(EVENT, { detail }));
+}

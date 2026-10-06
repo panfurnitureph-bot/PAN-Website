@@ -15,7 +15,9 @@ import Reveal from "@/components/home/Reveal";
 import Toast from "@/components/Toast";
 import { BOOT_SCRIPT } from "@/components/boot-script";
 import { primeStoreContent } from "@/lib/content";
-import { NAV_LINKS, shopLinks } from "@/lib/products";
+import { NAV_LINKS, shopLinks, swatchLibrary } from "@/lib/products";
+import QuickView from "@/components/home/QuickView";
+import FabricPopup from "@/components/home/FabricPopup";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 // DISPLAY (2026-08-26) — Cormorant ito noon: ang libreng Didot na ginagamit ng
@@ -101,6 +103,10 @@ export default async function RootLayout({
           <ContactRail site={site} />
           <Reveal />
           <Toast />
+          {/* Quick view (product cards) at ang fabric library ay para sa LAHAT ng
+              pahina (2026-10-07, "di gumagana ang quick view sa listing"). */}
+          <QuickView />
+          <FabricPopup swatches={swatchLibrary} />
         </StoreProvider>
         </div>
       </body>

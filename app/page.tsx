@@ -31,8 +31,6 @@ import PromoBeds from "@/components/home/PromoBeds";
 import CategoryRows from "@/components/home/CategoryRows";
 import MadeToOrder from "@/components/home/MadeToOrder";
 import Showrooms from "@/components/home/Showrooms";
-import QuickView from "@/components/home/QuickView";
-import FabricPopup from "@/components/home/FabricPopup";
 import MessengerModal from "@/components/home/MessengerModal";
 
 export const revalidate = 0;
@@ -113,8 +111,6 @@ export default async function HomePage() {
       <Showrooms copy={h.showrooms} />
 
       <ScrollTop />
-      <QuickView />
-      <FabricPopup swatches={swatchLibrary} />
       <MessengerModal handle={handle} />
     </div>
   );
