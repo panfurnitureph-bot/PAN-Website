@@ -11,7 +11,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { formatPrice, type Product } from "@/lib/products";
+import { formatPrice, CATEGORY_TILES, type Product } from "@/lib/products";
 import { useStore } from "@/components/store";
 import { toast } from "@/components/Toast";
 import { readyCartLine } from "@/lib/ready-cart";
@@ -78,11 +78,21 @@ export default function QuickView() {
 
   return (
     <div className="pf-fade fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 bg-[#1A140C]/60 backdrop-blur-[3px]" onClick={(e) => { if (e.target === e.currentTarget) close(); }} role="dialog" aria-modal="true" aria-label={`Quick view: ${p.name}`}>
-      <div className="pf-pop relative bg-[#FBF7EF] w-[min(1000px,100%)] max-h-[92vh] overflow-auto rounded-[20px] grid md:grid-cols-[1.05fr_1fr] shadow-[0_0_0_1px_rgba(226,194,122,.45),0_40px_80px_-30px_rgba(0,0,0,.8)]">
-        <button onClick={close} aria-label="Close" className="absolute top-3.5 right-3.5 z-10 grid h-9 w-9 place-items-center rounded-full bg-white text-ink shadow-[0_0_0_1.5px_#B08A3E,0_8px_16px_-10px_rgba(62,50,32,.5)] transition hover:bg-brownDeep hover:text-gold"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><path d="M6 6l12 12M18 6 6 18" /></svg></button>
-
+      <div className="pf-pop relative bg-[#FBF7EF] w-[min(960px,100%)] max-h-[92vh] overflow-hidden rounded-[20px] flex flex-col shadow-[0_0_0_1px_rgba(226,194,122,.45),0_40px_80px_-30px_rgba(0,0,0,.8)]">
+        {/* QUICK VIEW NG MOCKUP (Joe 2026-10-07): header na kategorya + "Quick view",
+            litrato sa kaliwa, pangalan + presyo + DETAILS na talahanayan sa kanan,
+            footer na View full details / Close / Add to cart. Parehong kulay, sukat,
+            dami at cart logic. */}
+        <div className="flex items-center justify-between gap-4 border-b border-[#E8DDC9] bg-[linear-gradient(180deg,#fff,#FAF5EC)] px-5 py-3.5">
+          <div className="min-w-0">
+            <p className="text-[10.5px] font-bold tracking-[0.18em] uppercase text-goldDeep">{CATEGORY_TILES.find((t) => t.slug === p.category)?.label ?? p.category.replace(/-/g, " ")}</p>
+            <h2 className="font-cormorant text-[19px] font-semibold leading-tight tracking-[-0.01em] mt-0.5">Quick view</h2>
+          </div>
+          <button onClick={close} aria-label="Close" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white text-ink shadow-[0_0_0_1.5px_#B08A3E,0_8px_16px_-10px_rgba(62,50,32,.5)] transition hover:bg-brownDeep hover:text-gold"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><path d="M6 6l12 12M18 6 6 18" /></svg></button>
+        </div>
+        <div className="grid md:grid-cols-[1fr_1.05fr] overflow-auto">
         {/* media */}
-        <div className="flex flex-col p-5 pt-10 md:p-7 md:pt-10">
+        <div className="flex flex-col p-5 md:p-6">
           <div
             ref={stage}
             className="relative flex-1 min-h-[260px] md:min-h-[360px] flex items-center justify-center overflow-hidden rounded-[18px] pf-stage shadow-[inset_0_0_0_1px_rgba(176,138,62,.22)] cursor-zoom-in"
@@ -110,20 +120,31 @@ export default function QuickView() {
         </div>
 
         {/* info */}
-        <div className="p-5 md:p-10 md:pl-5 flex flex-col gap-4">
-          <div><p className="text-[10.5px] font-bold tracking-[0.18em] uppercase text-goldDeep mb-1.5">Quick view</p><h3 className="font-cormorant text-[26px] font-semibold leading-tight tracking-[-0.015em]">{p.name}</h3></div>
-          <dl className="grid grid-cols-[120px_1fr] gap-x-3 gap-y-2 text-[13px] m-0 rounded-xl bg-white px-4 py-3 shadow-[inset_0_0_0_1px_#EBE2D2]">
-            <dt className="font-medium">Product code</dt><dd className="m-0 text-stone">{p.sku ?? "—"}</dd>
-            <dt className="font-medium">Availability</dt>
-            <dd className={`m-0 ${mto ? "text-stone" : "text-[#2F7D4F] font-semibold"}`}>
-              {mto ? "Made to order · 4–6 weeks" : `${colorStock ?? stock} in stock · ships this week`}
-            </dd>
-          </dl>
-          <div className="font-cormorant text-2xl font-semibold">
-            {sizes.length && !sizePrice ? <span className="font-sans text-xs font-normal text-stone mr-1.5">from</span> : null}
-            {formatPrice(price)}
+        <div className="p-5 pt-0 md:p-6 md:pl-2 flex flex-col gap-4">
+          <div>
+            <p className="text-[10.5px] font-bold tracking-[0.18em] uppercase text-goldDeep">{CATEGORY_TILES.find((t) => t.slug === p.category)?.label ?? p.category.replace(/-/g, " ")}</p>
+            <h3 className="font-cormorant text-[24px] font-semibold leading-tight tracking-[-0.015em] mt-1">{p.name}</h3>
+            <div className="font-cormorant text-[22px] font-semibold tabular-nums mt-0.5">
+              {sizes.length && !sizePrice ? <span className="font-sans text-xs font-normal text-stone mr-1.5">from</span> : null}
+              {formatPrice(price)}
+            </div>
           </div>
-          {p.description && <p className="m-0 text-[13px] text-stone leading-relaxed">{p.description.length > 140 ? p.description.slice(0, 137) + "…" : p.description}</p>}
+          {(() => {
+            const rows: [string, string][] = [];
+            for (const d of p.dimensionSpecs ?? []) if (d.label && d.value) rows.push([d.label, d.value]);
+            if (!rows.length) for (const l of String(p.dimensions ?? "").split(/\r?\n/)) { const m = /^([^:]{1,40}):\s*(.+)$/.exec(l.trim()); if (m) rows.push([m[1].trim(), m[2].trim()]); }
+            // Kapag "17.7"W x 34"H" lang ang sukat (walang label: value), hatiin sa Width / Depth / Height (kapareho ng ProductTabs).
+            if (!rows.length) { const t = String(p.dimensions ?? ""); const g = (re: RegExp) => t.match(re)?.[1]; const w = g(/([\d.]+)\s*(?:"|”|in)?\s*W/i), d = g(/([\d.]+)\s*(?:"|”|in)?\s*D(?![a-z])/i), h = g(/([\d.]+)\s*(?:"|”|in)?\s*H/i); if (w) rows.push(["Width", `${w}"`]); if (d) rows.push(["Depth", `${d}"`]); if (h) rows.push(["Height", `${h}"`]); }
+            return rows.length ? (
+              <div>
+                <p className="text-[10.5px] font-bold tracking-[0.18em] uppercase text-goldDeep mb-1">Details</p>
+                <dl className="m-0 divide-y divide-[#EBE2D2] border-y border-[#E6DCCB] text-[13px]">
+                  {rows.slice(0, 6).map(([k, v]) => <div key={k} className="flex items-baseline justify-between gap-4 py-2"><dt className="text-stone">{k}</dt><dd className="m-0 text-right font-semibold text-ink">{v}</dd></div>)}
+                </dl>
+              </div>
+            ) : (p.description ? <p className="m-0 text-[13px] text-stone leading-relaxed">{p.description.length > 140 ? p.description.slice(0, 137) + "…" : p.description}</p> : null);
+          })()}
+          <p className="m-0 text-[12.5px] text-stone">{mto ? "Ships in 4–6 weeks · 30% downpayment to start" : `${colorStock ?? stock} in stock · ships this week`}{p.sku ? <span className="ml-2 text-stone/70">· {p.sku}</span> : null}</p>
 
           {colorNames.length > 0 && (
             <div className="flex flex-col gap-2">
@@ -164,12 +185,6 @@ export default function QuickView() {
             </div>
           </div>
 
-          <div className="flex gap-2.5 flex-wrap">
-            <button type="button" onClick={() => add(false)} disabled={added} className={`h-12 rounded-full px-6 text-[13.5px] font-bold transition ${added ? "bg-[#2F7D4F] text-white" : "pf-dark pf-btn hover:text-gold"}`}>
-              {added ? "Added ✓" : mto ? "Add to cart — made to order" : "Add to cart"}
-            </button>
-            <button type="button" onClick={() => add(true)} className="h-12 rounded-full bg-white px-6 text-[13.5px] font-bold text-brownDeep shadow-[inset_0_0_0_1.5px_#3E3220] transition hover:bg-brownDeep hover:text-gold">Buy now</button>
-          </div>
 
           <div className="text-[12.5px] flex items-center gap-3 flex-wrap">
             <span>Share:</span>
@@ -177,7 +192,17 @@ export default function QuickView() {
             <a className="font-semibold text-ink border-b-[1.5px] border-goldDeep pb-px hover:text-goldDeep" href={`fb-messenger://share?link=${encodeURIComponent(url)}`}>Messenger</a>
             <button type="button" className="font-semibold text-ink border-b-[1.5px] border-goldDeep pb-px hover:text-goldDeep" onClick={() => { navigator.clipboard?.writeText(url); setCopied(true); setTimeout(() => setCopied(false), 1200); }}>{copied ? "Copied ✓" : "Copy link"}</button>
           </div>
-          <Link href={`/products/${p.slug}`} className="inline-flex items-center gap-2 text-[13px] font-semibold text-ink hover:text-goldDeep"><span className="border-b-[1.5px] border-goldDeep pb-px">View full details, dimensions and fabric options</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-goldDeep" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg></Link>
+        </div>
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#E8DDC9] bg-[linear-gradient(180deg,#FAF5EC,#F5EDDF)] px-5 py-3.5">
+          <Link href={`/products/${p.slug}`} className="text-[13px] font-semibold text-ink border-b-[1.5px] border-goldDeep pb-px hover:text-goldDeep">View full details</Link>
+          <span className="flex gap-2">
+            <button type="button" onClick={close} className="h-11 rounded-xl bg-white px-5 text-[13.5px] font-semibold text-ink shadow-[inset_0_0_0_1px_#C9B98F] transition hover:text-goldDeep hover:shadow-[inset_0_0_0_1.5px_#B08A3E]">Close</button>
+            <button type="button" onClick={() => add(true)} className="h-11 rounded-xl bg-white px-5 text-[13.5px] font-bold text-brownDeep shadow-[inset_0_0_0_1.5px_#3E3220] transition hover:bg-brownDeep hover:text-gold">Buy now</button>
+            <button type="button" onClick={() => add(false)} disabled={added} className={`h-11 rounded-xl px-5 text-[13.5px] font-bold transition ${added ? "bg-[#2F7D4F] text-white" : "pf-dark pf-btn hover:text-gold"}`}>
+              {added ? "Added ✓" : "Add to cart"}
+            </button>
+          </span>
         </div>
       </div>
     </div>
