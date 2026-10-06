@@ -212,6 +212,8 @@ function Field({
 
 // Ang `site` at `products` ay ipinapasa ng page.tsx (server) — doon lang
 // nababasa ang sariwang laman ng Supabase.
+import { BtnRing } from "@/components/PanLoader";
+
 export default function CheckoutClient({
   site,
   products,
@@ -1068,7 +1070,7 @@ export default function CheckoutClient({
             className="pf-dark pf-btn inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl text-[15px] font-bold hover:text-gold disabled:opacity-60 disabled:hover:translate-y-0"
           >
             {placing
-              ? "Processing…"
+              ? <><BtnRing /> Processing…</>
               : <>Place order · Pay {formatPrice(downpayment)} now <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg></>}
           </button>
           <p className="text-xs text-stone text-center -mt-1">

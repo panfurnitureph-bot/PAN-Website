@@ -64,6 +64,8 @@ function Field({
   );
 }
 
+import { BtnRing } from "@/components/PanLoader";
+
 export default function QuoteRequestClient({ site }: { site: SiteContent }) {
   const { quote, removeFromQuote, quoteTotal, clearQuote } = useStore();
   const [hydrated, setHydrated] = useState(false);
@@ -618,7 +620,7 @@ export default function QuoteRequestClient({ site }: { site: SiteContent }) {
             disabled={sending}
             className="pf-dark pf-btn mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl text-[14px] font-bold hover:text-gold disabled:cursor-not-allowed disabled:bg-[#C9BFAE] disabled:bg-none disabled:text-white/85 disabled:shadow-none disabled:hover:translate-y-0"
           >
-            {sending ? "Sending…" : <>Send on Messenger · {quote.length} {quote.length === 1 ? "product" : "products"} <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg></>}
+            {sending ? <><BtnRing /> Sending…</> : <>Send on Messenger · {quote.length} {quote.length === 1 ? "product" : "products"} <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg></>}
           </button>
           {sendErr && (
             <p className="mt-2 rounded-xl bg-goldSoft px-3.5 py-2.5 text-xs font-medium text-ink" role="alert">

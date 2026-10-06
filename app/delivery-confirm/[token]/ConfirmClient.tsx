@@ -76,14 +76,14 @@ function Steps({ confirmed = false }: { confirmed?: boolean }) {
     <div className="flex items-center justify-center mt-6 mb-1">
       <div className="flex flex-col items-center">
         {confirmed
-          ? <span className="w-9 h-9 rounded-full bg-[#2e7d52] text-white font-bold flex items-center justify-center">✓</span>
-          : <span className="w-9 h-9 rounded-full bg-[#caa45a] text-white font-cormorant font-bold flex items-center justify-center">1</span>}
+          ? <span className="w-9 h-9 rounded-full bg-[#2e7d52] text-white flex items-center justify-center"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12.5l4.5 4.5L19 7" /></svg></span>
+          : <span className="w-9 h-9 rounded-full bg-brownDeep text-gold font-cormorant font-bold shadow-[0_0_0_1.5px_#B08A3E] flex items-center justify-center">1</span>}
         <span className={`text-[9px] font-bold tracking-widest2 mt-1.5 ${confirmed ? "text-[#2e7d52]" : "text-[#4a3b1a]"}`}>{confirmed ? "CONFIRMED" : "CONFIRM"}</span>
       </div>
       <span className={`w-12 border-t-2 mx-2 mb-5 ${confirmed ? "border-[#2e7d52]" : "border-[#e0d7c3]"}`} />
       <div className="flex flex-col items-center">
         {confirmed
-          ? <span className="w-9 h-9 rounded-full bg-[#caa45a] text-white font-cormorant font-bold flex items-center justify-center">2</span>
+          ? <span className="w-9 h-9 rounded-full bg-brownDeep text-gold font-cormorant font-bold shadow-[0_0_0_1.5px_#B08A3E] flex items-center justify-center">2</span>
           : <span className="w-9 h-9 rounded-full border border-[#d8cfba] text-[#8a8272] font-cormorant flex items-center justify-center">2</span>}
         <span className={`text-[9px] tracking-widest2 mt-1.5 ${confirmed ? "font-bold text-[#4a3b1a]" : "text-[#8a8272]"}`}>PREPARE</span>
       </div>
@@ -137,9 +137,9 @@ export default function ConfirmClient({ token, summary }: {
   const refNo = `DC-${ord.replace(/^ORD-/, "")}-01`;
 
   return (
-    <div className="rounded-xl overflow-hidden border border-[#e6dcc4] shadow-sm">
+    <div className="pf-pop rounded-[22px] overflow-hidden shadow-[0_0_0_1px_rgba(226,194,122,.45),0_40px_70px_-36px_rgba(62,50,32,.6)]">
       {/* Header: seal + wordmark (kapareho ng email) */}
-      <div className="bg-[#4a3b1a] px-7 pt-7 pb-6 border-b-[3px] border-[#caa45a] text-center">
+      <div className="pf-band px-7 pt-7 pb-6 border-b-[2px] border-gold text-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={LOGO} alt="PAN Furniture" className="mx-auto h-14 w-auto" />
         <p className="font-cormorant font-bold text-2xl tracking-[0.3em] text-[#f4ead8] mt-3.5">PAN&nbsp;FURNITURE</p>
@@ -149,7 +149,7 @@ export default function ConfirmClient({ token, summary }: {
         {busy ? (
           /* LOADING — spinner lang */
           <div className="text-center px-6 py-14 mb-4">
-            <span className="inline-block h-10 w-10 rounded-full border-4 border-[#e6dcc4] border-t-[#2e7d52] animate-spin" />
+            <span className="inline-block h-10 w-10 rounded-full border-[3px] border-[#E6DCCB] border-t-goldDeep animate-spin" />
             <p className="text-sm font-medium text-[#2b2620] mt-5">Confirming your delivery…</p>
             <p className="text-[11px] text-[#8a8272] mt-1">Please wait a moment.</p>
           </div>
@@ -161,7 +161,7 @@ export default function ConfirmClient({ token, summary }: {
             <p className="text-[13px] leading-relaxed text-[#57534b] mb-6">
               The date below is reserved for you. On delivery day, we will send a <b className="text-[#2b2620]">live tracking link</b> so you can follow our team as they approach.
             </p>
-            <div className="text-center rounded-lg border border-[#bfe0cc] bg-[#f0f7f2] px-6 py-5">
+            <div className="text-center rounded-2xl bg-[#f0f7f2] px-6 py-5 shadow-[inset_0_0_0_1px_#bfe0cc]">
               <p className="text-[10px] font-bold tracking-widest2 uppercase text-[#2e7d52] mb-2">Confirmed Delivery</p>
               <p className="font-cormorant text-[26px] font-bold text-[#1e5c3c] leading-tight">{fmtLong(summary.date)}</p>
               <p className="text-xs text-[#8a8272] mt-1.5">{weekdayOf(summary.date)}{summary.timeWindow ? ` · ${summary.timeWindow}` : ""}</p>

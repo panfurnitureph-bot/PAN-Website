@@ -10,6 +10,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { formatPrice, site } from "@/lib/products";
+import PanLoader, { BtnRing } from "@/components/PanLoader";
 
 type Stage = { name: string; done: boolean; current: boolean; at: string | null };
 type Item = { qty?: number; description?: string; unitPrice?: number; image?: string | null };
@@ -221,7 +222,7 @@ function TrackerInner() {
             disabled={busy || !order.trim() || !verify.trim()}
             className="pf-dark pf-btn inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl text-[14px] font-bold hover:text-gold disabled:opacity-40 disabled:hover:translate-y-0"
           >
-            {busy ? "Checking…" : <>Track <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg></>}
+            {busy ? <><BtnRing /> Checking…</> : <>Track <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg></>}
           </button>
           {error && (
             <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-center text-[13px] text-red-800">{error}</p>
@@ -255,9 +256,8 @@ function TrackerInner() {
                 : "pf-pop bg-[#FBF7EF] rounded-[20px] px-10 py-9 text-center shadow-[0_0_0_1px_rgba(226,194,122,.45),0_40px_80px_-30px_rgba(0,0,0,.8)] max-w-xs w-full"
             }
           >
-            <div className="mx-auto mb-5 h-9 w-9 animate-spin rounded-full border-2 border-[#E6DCCB] border-t-goldDeep" />
-            <p className="font-cormorant text-xl">Looking up your order</p>
-            <p className="mt-1.5 text-xs text-stone">This only takes a moment.</p>
+            <PanLoader label="This only takes a moment." size={88} />
+            <p className="font-cormorant text-xl mt-3">Looking up your order</p>
           </div>
         </div>
       )}

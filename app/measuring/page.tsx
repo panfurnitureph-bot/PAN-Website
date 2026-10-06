@@ -56,16 +56,16 @@ export default async function MeasuringPage() {
     .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <div className="max-w-[1100px] mx-auto px-4 sm:px-8">
-      <nav className="text-xs text-stone pt-4 flex gap-2">
+    <div className="max-w-7xl mx-auto px-4 sm:px-8">
+      <nav className="text-[12.5px] text-stone pt-6 flex gap-1.5" aria-label="Breadcrumb">
         <Link href="/" className="hover:text-goldDeep">Home</Link><span>/</span><b className="text-ink font-medium">Measure for delivery</b>
       </nav>
 
       {/* HERO */}
-      <section className="grid md:grid-cols-[1.1fr_1fr] gap-10 items-center py-9 pb-11 border-b border-sand">
+      <section className="grid md:grid-cols-[1.1fr_1fr] gap-10 items-center py-7 pb-9">
         <div>
-          <p className="text-[11px] font-bold tracking-[0.16em] uppercase text-goldDeep">Delivery guide</p>
-          <h1 className="font-cormorant font-semibold text-[clamp(30px,4vw,46px)] leading-[1.05] mt-2">Will it fit through the door?</h1>
+          <p className="text-[10.5px] font-bold tracking-[0.18em] uppercase text-goldDeep">Delivery guide</p>
+          <h1 className="font-cormorant font-semibold text-[clamp(30px,3.6vw,40px)] leading-[1.05] tracking-[-0.02em] mt-2">Will it fit through the door?</h1>
           <p className="text-stone text-[15px] leading-relaxed mt-3.5 max-w-[52ch]">Five minutes with a tape measure saves a failed delivery. Measure the path from the street to the room — door, hallway, stairs or elevator — and compare it with the packaged size on the product page. Our team will still measure on arrival, but this tells you before you order.</p>
         </div>
         <svg viewBox="0 0 320 240" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-full h-auto text-brown">
@@ -79,10 +79,10 @@ export default async function MeasuringPage() {
       </section>
 
       {/* STEPS */}
-      <div className="grid md:grid-cols-3 gap-4 mt-10">
+      <div data-stagger className="grid md:grid-cols-3 gap-4">
         {STEPS.map((s, i) => (
-          <div key={s.t} className="bg-white border border-sand p-[22px] flex flex-col gap-2">
-            <span className="w-9 h-9 rounded-full bg-brown text-gold border-2 border-gold flex items-center justify-center font-cormorant font-bold text-lg">{i + 1}</span>
+          <div key={s.t} className="pf-card pf-lift p-[22px] flex flex-col gap-2">
+            <span className="font-cormorant text-[28px] font-semibold leading-none tracking-[-0.02em] text-goldDeep">{String(i + 1).padStart(2, "0")}</span>
             <h3 className="font-cormorant font-semibold text-[19px] mt-1">{s.t}</h3>
             <p className="text-stone text-[13.5px] leading-relaxed">{s.p}</p>
           </div>
@@ -90,17 +90,17 @@ export default async function MeasuringPage() {
       </div>
 
       {/* FIT CHECKER */}
-      <section id="checker" className="mt-12 bg-brown text-cream p-6 md:p-9 grid md:grid-cols-2 gap-8">
+      <section id="checker" className="pf-card mt-10 p-6 md:p-8 grid md:grid-cols-2 gap-8">
         <div>
-          <p className="text-[11px] font-bold tracking-[0.16em] uppercase text-gold">Fit checker</p>
-          <h2 className="font-cormorant font-semibold text-[26px] leading-tight mt-1">Enter your tightest opening — see what fits</h2>
-          <p className="text-cream/80 text-sm mt-2 max-w-[44ch]">Usually the front door, a stair landing or the elevator. We check every product size against it, including the tilt-through diagonal — no need to pick a product first.</p>
-          <div className="mt-[22px] border border-gold/30 bg-cream/[.06] p-5">
-            <h3 className="text-xs tracking-[0.14em] uppercase text-gold mb-2.5">Typical Philippine openings</h3>
+          <p className="text-[10.5px] font-bold tracking-[0.18em] uppercase text-goldDeep">Fit checker</p>
+          <h2 className="font-cormorant font-semibold text-[26px] leading-tight tracking-[-0.015em] mt-1">Enter your tightest opening — see what fits</h2>
+          <p className="text-stone text-sm mt-2 max-w-[44ch]">Usually the front door, a stair landing or the elevator. We check every product size against it, including the tilt-through diagonal — no need to pick a product first.</p>
+          <div className="mt-[22px] rounded-2xl bg-white p-5 shadow-[inset_0_0_0_1px_#E4DACA]">
+            <h3 className="text-[10.5px] font-bold tracking-[0.16em] uppercase text-goldDeep mb-2.5">Typical Philippine openings</h3>
             <table className="w-full text-[13px]">
               <tbody>
                 {PH.map(([k, v], i) => (
-                  <tr key={k}><td className={`py-[7px] ${i < PH.length - 1 ? "border-b border-gold/20" : ""}`}>{k}</td><td className={`py-[7px] text-right font-semibold tabular-nums ${i < PH.length - 1 ? "border-b border-gold/20" : ""}`}>{v}</td></tr>
+                  <tr key={k}><td className={`py-[7px] text-stone ${i < PH.length - 1 ? "border-b border-[#EBE2D2]" : ""}`}>{k}</td><td className={`py-[7px] text-right font-semibold tabular-nums ${i < PH.length - 1 ? "border-b border-[#EBE2D2]" : ""}`}>{v}</td></tr>
                 ))}
               </tbody>
             </table>
@@ -112,19 +112,19 @@ export default async function MeasuringPage() {
       {/* GUIDES */}
       <section className="mt-14 mb-16">
         <div className="mb-[18px]">
-          <h2 className="font-cormorant font-semibold text-[28px]">What to measure, where</h2>
+          <h2 className="font-cormorant font-semibold text-[28px] tracking-[-0.015em]">What to measure, where</h2>
           <p className="text-stone mt-1.5 max-w-[60ch]">Measure every opening on the way in. The narrowest one decides.</p>
         </div>
         <div className="grid md:grid-cols-2 gap-4">
           {GUIDES.map((g) => (
-            <div key={g.t} className="bg-white border border-sand grid sm:grid-cols-[150px_1fr] gap-[18px] p-[22px]">
+            <div key={g.t} className="pf-card pf-lift grid sm:grid-cols-[150px_1fr] gap-[18px] p-[22px]">
               <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="w-[120px] h-[120px] sm:w-[150px] sm:h-[150px] text-brown">{g.svg}</svg>
               <div>
                 <h3 className="font-cormorant font-semibold text-[20px]">{g.t}</h3>
-                <ul className="mt-2 pl-4 list-disc text-stone text-[13.5px] leading-[1.7]">
-                  {g.li.map((l, i) => <li key={i}>{l}</li>)}
+                <ul className="mt-2 grid gap-1 text-stone text-[13.5px] leading-[1.6]">
+                  {g.li.map((l, i) => <li key={i} className="flex items-start gap-2.5"><span className="mt-[8px] h-1.5 w-1.5 shrink-0 rounded-full bg-goldDeep" /><span>{l}</span></li>)}
                 </ul>
-                <div className="mt-2.5 bg-goldSoft text-brown text-xs px-2.5 py-2 border-l-[3px] border-goldDeep">{g.tip}</div>
+                <div className="mt-2.5 rounded-xl bg-goldSoft text-brownDeep text-xs px-3 py-2 shadow-[inset_0_0_0_1px_rgba(176,138,62,.35)]">{g.tip}</div>
               </div>
             </div>
           ))}
