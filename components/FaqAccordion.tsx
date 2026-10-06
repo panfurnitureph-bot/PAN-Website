@@ -22,7 +22,7 @@ export default function FaqAccordion() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 items-start">
+      <div data-reveal className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 items-start">
         {cols.map((col, ci) => (
           <div key={ci} className="pf-card overflow-hidden divide-y divide-[#EBE2D2]">
             {col.map((f) => (
@@ -33,7 +33,7 @@ export default function FaqAccordion() {
                     <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6" /></svg>
                   </span>
                 </summary>
-                <p className="text-stone text-sm px-4 sm:px-5 pb-5 -mt-1 leading-relaxed max-w-[62ch]">{f.a}</p>
+                <p className="pf-rise text-stone text-sm px-4 sm:px-5 pb-5 -mt-1 leading-relaxed max-w-[62ch]">{f.a}</p>
               </details>
             ))}
           </div>

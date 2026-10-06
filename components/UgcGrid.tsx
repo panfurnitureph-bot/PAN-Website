@@ -251,7 +251,7 @@ export default function UgcGrid({
             <button
               key={ph.src + i}
               onClick={() => setOpenIdx(i)}
-              className="relative block w-full aspect-square overflow-hidden rounded-[20px] group bg-sand shadow-[0_0_0_1px_#E4DACA,0_22px_38px_-28px_rgba(62,50,32,.6)]"
+              className="relative block w-full aspect-square overflow-hidden rounded-[20px] group bg-sand shadow-[0_0_0_1px_#E4DACA,0_22px_38px_-28px_rgba(62,50,32,.6)] transition-transform duration-300 hover:-translate-y-1"
               aria-label={`View ${ph.product?.name ?? "photo"}`}
             >
               <Image

@@ -132,7 +132,7 @@ export default function Marquee({
   const items = Children.toArray(children);
 
   return (
-    <div>
+    <div data-reveal>
       <div className="flex items-end justify-between gap-4 mb-5 flex-wrap">
         <div>
           {/* Gintong guhit sa ibabaw ng pamagat kapag walang eyebrow (premium, 2026-10-07). */}
@@ -159,7 +159,7 @@ export default function Marquee({
         tabIndex={0}
         className="rail overflow-hidden pt-2 pb-9 -mb-6 px-0.5 cursor-grab select-none [touch-action:pan-y] [&.dragging]:cursor-grabbing outline-none"
       >
-        <div ref={track} className="flex will-change-transform [transform:translate3d(0,0,0)]" style={{ gap: GAP }}>
+        <div ref={track} data-stagger className="flex will-change-transform [transform:translate3d(0,0,0)]" style={{ gap: GAP }}>
           {Array.from({ length: count < 2 ? 1 : copies }, (_, k) =>
             items.map((c, i) => (
               <div key={`${k}-${i}`} className="shrink-0 grow-0 min-w-0" style={{ flexBasis: "var(--cw, 220px)", width: "var(--cw, 220px)" }} aria-hidden={k > 0 || undefined}>{c}</div>

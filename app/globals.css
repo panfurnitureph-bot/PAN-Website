@@ -222,3 +222,46 @@ html:not([data-hydrated]) .rail > * {
   .pf-lift { transition: none; }
   .pf-lift:hover { transform: none; }
 }
+
+/* GALAW NG PREMIUM HOME (Joe 2026-10-07, "makuha pati mga animation at
+   carousel pati mga effect") — parehong galaw ng mockup: dahan-dahang angat
+   ng mga card pagdating sa screen, mabagal na zoom ng hero, palit ng litrato
+   sa promo beds, guhit ng build na humahaba, at tibok ng "Open now".
+   Itsura lang; ang huling anyo ay laging kita (walang natatagong laman kapag
+   walang JS — ang `pf-pre` ay idinadagdag lang ng components/home/Reveal). */
+@keyframes pf-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes pf-kb { from { transform: scale(1.08); } to { transform: scale(1); } }
+@keyframes pf-pbin { from { opacity: 0; transform: translateY(10px) scale(0.97); } to { opacity: 1; transform: none; } }
+@keyframes pf-grow { from { transform: scaleX(0); } to { transform: none; } }
+@keyframes pf-pop { from { transform: scale(0); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes pf-bump { 40% { transform: scale(1.45); } }
+@keyframes pf-ping { 0% { box-shadow: 0 0 0 0 rgba(47, 125, 79, 0.45); } 100% { box-shadow: 0 0 0 9px rgba(47, 125, 79, 0); } }
+
+.pf-rise { animation: pf-rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
+.pf-kb { animation: pf-kb 7s ease-out backwards; }
+.pf-pbin { animation: pf-pbin 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+.pf-grow { transform-origin: left; animation: pf-grow 1.8s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+.pf-pop { animation: pf-pop 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.4) backwards; }
+.pf-bump { animation: pf-bump 0.35s ease; }
+.pf-ping { animation: pf-ping 1.8s ease-out infinite; }
+
+[data-reveal] { transition: opacity 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); }
+[data-reveal].pf-pre { opacity: 0; transform: translateY(18px); }
+/* Mga anak ng hilera: sunod-sunod na angat (hanggang ikaanim). */
+[data-stagger] > * { animation: pf-rise 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
+[data-stagger] > :nth-child(2) { animation-delay: 0.06s; }
+[data-stagger] > :nth-child(3) { animation-delay: 0.12s; }
+[data-stagger] > :nth-child(4) { animation-delay: 0.18s; }
+[data-stagger] > :nth-child(5) { animation-delay: 0.24s; }
+[data-stagger] > :nth-child(6) { animation-delay: 0.3s; }
+/* Habang hindi pa nasa screen: nakahinto ang mga galaw sa loob, kaya
+   nagsisimula ang mga ito sa mismong pagdating. */
+[data-reveal].pf-pre [data-stagger] > *,
+[data-reveal].pf-pre .pf-grow,
+[data-reveal].pf-pre .pf-pop { animation: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pf-rise, .pf-kb, .pf-pbin, .pf-grow, .pf-pop, .pf-bump, .pf-ping, [data-stagger] > * { animation: none; }
+  [data-reveal] { transition: none; }
+  [data-reveal].pf-pre { opacity: 1; transform: none; }
+}

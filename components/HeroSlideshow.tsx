@@ -88,7 +88,7 @@ export default function HeroSlideshow({
                 alt={slide.headline}
                 fill
                 priority={i === 0}
-                className="object-cover hidden md:block"
+                className={`object-cover hidden md:block ${i === current ? "pf-kb" : ""}`}
                 sizes="100vw"
               />
               {/* Mobile image (ibang crop, tulad ng tunay na site) */}
@@ -97,7 +97,7 @@ export default function HeroSlideshow({
                 alt={slide.headline}
                 fill
                 priority={i === 0}
-                className="object-cover md:hidden"
+                className={`object-cover md:hidden ${i === current ? "pf-kb" : ""}`}
                 sizes="100vw"
               />
             </>
@@ -107,7 +107,7 @@ export default function HeroSlideshow({
           {slide.headline && (
             <>
               <div className="absolute inset-0 bg-ink/20" />
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+              <div className={`absolute inset-0 flex flex-col items-center justify-center text-center px-6 ${i === current ? "pf-rise" : ""}`}>
                 <h1 className="font-cormorant font-semibold tracking-[-0.025em] text-white text-4xl sm:text-5xl lg:text-6xl max-w-3xl leading-[1.05] drop-shadow-md [text-wrap:balance]">
                   {slide.headline}
                 </h1>

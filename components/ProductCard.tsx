@@ -88,7 +88,7 @@ export default function ProductCard({
         onClick={() => toggleWishlist(product.slug)}
         className={`absolute top-3 right-3 z-10 grid h-[38px] w-[38px] place-items-center rounded-full bg-white/90 backdrop-blur-sm shadow-[0_0_0_1px_rgba(226,194,122,.55),0_8px_16px_-10px_rgba(62,50,32,.55)] transition hover:scale-105 ${wished ? "opacity-100" : "opacity-0 group-hover:opacity-100 max-lg:opacity-100"}`}
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill={wished ? "#B08A3E" : "none"} stroke={wished ? "#B08A3E" : "#1A1A1A"} strokeWidth="1.6">
+        <svg className={wished ? "pf-bump" : undefined} width="16" height="16" viewBox="0 0 24 24" fill={wished ? "#B08A3E" : "none"} stroke={wished ? "#B08A3E" : "#1A1A1A"} strokeWidth="1.6">
           <path d="M12 21C7 16.5 3 13 3 8.8 3 6 5.2 4 7.8 4c1.7 0 3.2.9 4.2 2.3C13 4.9 14.5 4 16.2 4 18.8 4 21 6 21 8.8c0 4.2-4 7.7-9 12.2z" />
         </svg>
       </button>
@@ -109,10 +109,10 @@ export default function ProductCard({
       </div>
 
       <div className={`relative ${square ? "aspect-square" : "aspect-[4/3]"} overflow-hidden pf-stage`}>
-        <i aria-hidden className="pf-floor" />
         {/* Litrato = diretso sa product page (2026-09-04, "ang hirap i-click sa mobile");
             ang Quick view ay sa button lang. */}
-        <Link href={`/products/${product.slug}`} className="absolute inset-0 block">
+        <Link href={`/products/${product.slug}`} className="absolute inset-0 block pf-stage transition-transform duration-500 ease-out group-hover:scale-[1.06]">
+          <i aria-hidden className="pf-floor" />
           <FitImage src={hero} alt={product.name} className={`mix-blend-multiply transition-opacity duration-300 ${showAlt ? "group-hover:opacity-0" : ""}`} sizes="(min-width: 1100px) 240px, (min-width: 640px) 33vw, 70vw" />
           {showAlt && <FitImage src={alt!} alt="" className="mix-blend-multiply opacity-0 transition-opacity duration-300 group-hover:opacity-100" sizes="240px" />}
         </Link>

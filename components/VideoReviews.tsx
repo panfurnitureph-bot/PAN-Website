@@ -41,11 +41,11 @@ function VideoCard({
   return (
     // Lapad = ang slot ng carousel (2026-10-07): dati 70vw / 300px na mas malapad
     // sa slot kaya nagpapatong ang magkatabing card sa telepono.
-    <div className="w-full">
-      <div className="relative aspect-[9/14] bg-sand overflow-hidden rounded-[20px] shadow-[0_0_0_1px_#E4DACA,0_22px_38px_-28px_rgba(62,50,32,.6)]">
+    <div className="group w-full">
+      <div className="relative aspect-[9/14] bg-sand overflow-hidden rounded-[20px] shadow-[0_0_0_1px_#E4DACA,0_22px_38px_-28px_rgba(62,50,32,.6)] transition-transform duration-300 group-hover:-translate-y-1">
         {isImage ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={video} alt={name || "Customer photo"} className="w-full h-full object-cover" />
+          <img src={video} alt={name || "Customer photo"} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
         ) : (
           <>
             <video

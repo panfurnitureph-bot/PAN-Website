@@ -18,7 +18,7 @@ export default function MadeToOrder({ copy, swatches, fallbackImage }: { copy: H
   return (
     <section className="bg-cream py-14">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 grid lg:grid-cols-[0.9fr_1.1fr] gap-10 lg:gap-11 items-stretch">
-        <div className="relative min-h-[320px] lg:min-h-[520px] bg-sand overflow-hidden rounded-[22px] sm:rounded-[26px] shadow-[0_0_0_1px_#E4DACA,0_40px_60px_-40px_rgba(62,50,32,.7)]">
+        <div data-reveal className="relative min-h-[320px] lg:min-h-[520px] bg-sand overflow-hidden rounded-[22px] sm:rounded-[26px] shadow-[0_0_0_1px_#E4DACA,0_40px_60px_-40px_rgba(62,50,32,.7)]">
           <Image src={img} alt="Custom bed built in the PAN workshop" fill className="object-cover" sizes="(min-width: 1024px) 45vw, 100vw" />
           <div className="absolute inset-x-2.5 bottom-2.5 sm:inset-x-3.5 sm:bottom-3.5 grid grid-cols-2 sm:grid-cols-[1fr_1.3fr_1fr] rounded-[16px] overflow-hidden bg-[#2E2518]/90 backdrop-blur-md shadow-[inset_0_0_0_1px_rgba(226,194,122,.4),0_18px_30px_-18px_rgba(0,0,0,.7)] text-cream">
             {[
@@ -34,7 +34,7 @@ export default function MadeToOrder({ copy, swatches, fallbackImage }: { copy: H
           </div>
         </div>
 
-        <div>
+        <div data-reveal>
           <p className="text-[11px] font-bold tracking-[0.18em] uppercase text-goldDeep">{copy?.eyebrow ?? "How made-to-order works"}</p>
           <h2 className="font-cormorant font-semibold text-[clamp(28px,3.3vw,40px)] leading-[1.05] tracking-[-0.02em] mt-2.5">{copy?.title ?? "Made to order, made here"}</h2>
           {copy?.sub && <p className="text-[15px] leading-relaxed mt-2.5 text-stone max-w-[60ch]">{copy.sub}</p>}
@@ -59,10 +59,10 @@ export default function MadeToOrder({ copy, swatches, fallbackImage }: { copy: H
                   {i === 1 && (
                     <div className="relative grid grid-cols-3 mt-2.5 max-w-[520px] text-[12px] text-goldDeep">
                       {/* Isang tuloy na guhit na may tatlong tuldok (Joe 2026-10-07, "palitan to ng line"). */}
-                      <i aria-hidden className="absolute left-[7px] right-[7px] top-[7px] h-[1.5px] bg-goldDeep/70" />
+                      <i aria-hidden className="pf-grow absolute left-[7px] right-[7px] top-[7px] h-[1.5px] bg-goldDeep/70" />
                       {[["Frame", "Week 1–2", 100], ["Upholstery", "Week 3–4", 100], ["QC & delivery", "Week 5–6", 55]].map(([n, w, p], k) => (
                         <span key={n as string} className={`relative flex flex-col gap-1 ${k === 1 ? "items-center text-center" : k === 2 ? "items-end text-right" : ""}`}>
-                          <i aria-hidden className={`block w-[15px] h-[15px] mb-2.5 rounded-full shadow-[0_0_0_1.5px_#B08A3E,0_0_0_4px_#FAF7F2] ${Number(p) < 100 ? "bg-brownDeep" : "bg-white"}`} />
+                          <i aria-hidden style={{ animationDelay: `${k * 0.6}s` }} className={`pf-pop block w-[15px] h-[15px] mb-2.5 rounded-full shadow-[0_0_0_1.5px_#B08A3E,0_0_0_4px_#FAF7F2] ${Number(p) < 100 ? "bg-brownDeep" : "bg-white"}`} />
                           <b className="text-ink font-semibold text-[13.5px]">{n}</b>{w}
                         </span>
                       ))}

@@ -34,6 +34,7 @@ import Showrooms from "@/components/home/Showrooms";
 import QuickView from "@/components/home/QuickView";
 import FabricPopup from "@/components/home/FabricPopup";
 import MessengerModal from "@/components/home/MessengerModal";
+import Reveal from "@/components/home/Reveal";
 
 export const revalidate = 0;
 
@@ -68,7 +69,11 @@ export default async function HomePage() {
                     Premium (2026-10-07): cream na entablado, natutunaw ang puting
                     background ng litrato (multiply), pangalan at arrow sa ibaba. */}
                 <span className="relative block aspect-square pf-stage overflow-hidden border-b border-goldDeep/20">
-                  <FitImage src={categoryTileImage(t.slug)} alt={t.label} className="mix-blend-multiply" sizes="(min-width: 1100px) 160px, 40vw" />
+                  {/* Ang zoom sa hover ay nasa balot na may sariling entablado, para
+                      hindi maputol ang multiply ng litrato habang gumagalaw. */}
+                  <span className="absolute inset-0 pf-stage transition-transform duration-500 ease-out group-hover:scale-[1.06]">
+                    <FitImage src={categoryTileImage(t.slug)} alt={t.label} className="mix-blend-multiply" sizes="(min-width: 1100px) 160px, 40vw" />
+                  </span>
                 </span>
                 <span className="flex flex-1 items-center justify-between gap-2 px-2.5 py-2.5 sm:px-3.5 sm:py-3 font-cormorant font-semibold text-[12.5px] sm:text-[14.5px] leading-tight">
                   <span className="min-w-0">{t.label}</span>
@@ -112,6 +117,7 @@ export default async function HomePage() {
       <QuickView />
       <FabricPopup swatches={swatchLibrary} />
       <MessengerModal handle={handle} />
+      <Reveal />
     </div>
   );
 }
