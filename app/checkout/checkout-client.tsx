@@ -1080,93 +1080,57 @@ export default function CheckoutClient({
         <aside className="pf-card overflow-hidden lg:sticky lg:top-24">
           <h2 className="flex items-center justify-between gap-4 border-b border-[#EBE2D2] px-5 py-3.5"><span className="text-[15px] font-semibold">Order summary</span><Link href="/cart" className="text-[12.5px] font-semibold border-b-[1.5px] border-goldDeep pb-px transition-colors hover:text-goldDeep">Edit cart</Link></h2>
           <div className="px-5 pt-4">
-          <div className="space-y-4 mb-5">
-            {rows.map(({ item, product }) => (
-              <div key={`${item.slug}-${item.color}`} className="text-sm">
-                {/* Header: larawan + pangalan + kabuuan ng linyang ito */}
+          {/* ORDER SUMMARY NA ITEM (mockup, 2026-10-07): litrato, pangalan, "Qty N ·
+              ₱x each", kategorya at status, at ang mga detalye ng build bilang
+              tuldok (parehong add-on lines ng cart; "+₱x" kapag may dagdag na presyo,
+              ang note ay nasa ilalim). Parehong datos ng dating nakapangkat na
+              breakdown, isang listahan lang ang anyo. */}
+          <div className="divide-y divide-[#EBE2D2] mb-1">
+            {rows.map(({ item, product }) => {
+              const unit = item.unitPrice ?? product!.price;
+              const inStock = (product!.stock ?? 0) > 0;
+              const lines: { label: string; price?: number; note?: string }[] = item.addOns && item.addOns.length > 0
+                ? item.addOns.map((a) => ({ label: a.label, price: Number(a.price) > 0 ? Number(a.price) : undefined, note: (a as { note?: string }).note }))
+                : item.color.includes(" + ")
+                  ? item.color.split(" + ").slice(1).map((label) => ({ label }))
+                  : [];
+              const base = item.baseLabel ?? item.color.split(" + ")[0];
+              const baseLine: { label: string; price?: number; note?: string }[] = base && !/^ready unit/i.test(base) && base !== product!.name ? [{ label: base }] : [];
+              return (
+              <div key={`${item.slug}-${item.color}`} className="py-4 first:pt-0 text-sm">
                 <div className="flex gap-3 items-start">
                   <div className="relative w-14 h-14 rounded-[12px] pf-stage overflow-hidden shrink-0 shadow-[inset_0_0_0_1px_rgba(176,138,62,.25)]">
                     <Image src={item.image || product!.images[0]} alt={product!.name} fill className="object-contain p-1.5 mix-blend-multiply" sizes="56px" />
-                    <span className="absolute top-0 right-0 bg-brownDeep text-gold text-[10px] font-bold rounded-bl-lg px-1.5">
-                      {item.qty}
-                    </span>
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <p className="font-cormorant font-semibold text-[16px] leading-snug tracking-[-0.01em]">{product!.name}</p>
-                    <p className="text-sm text-stone">
-                      {/* Lumang cart (walang breakdown): kunin lang ang unang
-                          bahagi bago ang "+" para hindi mahaba */}
-                      {item.baseLabel ?? item.color.split(" + ")[0]}
-                    </p>
+                    <p className="text-[12.5px] text-stone mt-0.5 tabular-nums">Qty {item.qty} · {formatPrice(unit)} each</p>
+                    <p className="text-[12.5px] text-stone">{prettyCategory(product!.category)} · {inStock ? "in stock, ships this week" : "made to order"}</p>
+                    {(baseLine.length > 0 || lines.length > 0) && (
+                      <ul className="mt-2 grid gap-1 text-[12.5px] text-stone">
+                        {[...baseLine, ...lines].map((l, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-goldDeep" />
+                            <span className="min-w-0 flex-1">
+                              {l.label}
+                              {l.price ? <span className="ml-1.5 font-semibold text-brownDeep">+{formatPrice(l.price)}</span> : null}
+                              {l.note && <span className="block text-[11.5px] text-goldDeep">{l.note}</span>}
+                            </span>
+                          </li>
+                        ))}
+                        {!item.addOns && item.color.includes(" + ") && (
+                          <li className="text-[11px] text-goldDeep">Re-add this item to see the full price breakdown.</li>
+                        )}
+                      </ul>
+                    )}
                   </div>
                   <p className="font-cormorant font-semibold text-[17px] whitespace-nowrap tabular-nums">
-                    {formatPrice((item.unitPrice ?? product!.price) * item.qty)}
+                    {formatPrice(unit * item.qty)}
                   </p>
                 </div>
-
-                {/* LUMANG cart (walang structured breakdown): ipakita ang
-                    mga add-on mula sa lumang label bilang listahan */}
-                {!item.addOns && item.color.includes(" + ") && (
-                  <div className="mt-2 ml-[76px] space-y-1 border-l border-sand pl-3">
-                    {item.color
-                      .split(" + ")
-                      .slice(1)
-                      .map((label, i) => (
-                        <p key={i} className="text-xs text-stone">
-                          + {label}
-                        </p>
-                      ))}
-                    <p className="text-[10px] text-cognac">
-                      Re-add this item to see the full price breakdown.
-                    </p>
-                  </div>
-                )}
-
-                {/* BREAKDOWN, NAKAPANGKAT — parehong hati ng /quote-request,
-                    ng quotation at ng Messenger echo. Patag na listahan ito
-                    noon, kaya ang parehong build ay may dalawang mukha
-                    depende kung saan tinitingnan.
-
-                    Ang "TBC" sa bawat walang presyong linya ay tinanggal din:
-                    ang Size at Fabric ay bahagi ng presyo ng bed frame, hindi
-                    dagdag na sisingilin — ang kolum ng "TBC" katapat ng bawat
-                    isa ay nagmumukhang may siyam pang hindi alam na halaga. */}
-                {item.addOns && item.addOns.length > 0 && (
-                  <div className="mt-3 space-y-2 border-t border-sand pt-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-ink">{prettyCategory(product!.category)}{/^ready unit/i.test(item.baseLabel ?? "") ? " · ready unit" : ""}</span>
-                      <span className="text-ink">{formatPrice(item.basePrice ?? 0)}</span>
-                    </div>
-                    {groupBuildLines(item.addOns, { allItem: /^ready unit/i.test(item.baseLabel ?? "") }).map((g) => (
-                      <div key={g.title} className="pt-1">
-                        <p className="mb-1 text-[10px] font-extrabold uppercase tracking-widest2 text-cognac">
-                          {g.title}
-                        </p>
-                        <div className="space-y-1">
-                          {g.lines.map((a, i) => (
-                            <div key={i} className="flex justify-between gap-3 text-[13px]">
-                              <span className="text-stone">
-                                {a.label}
-                                {(a as { note?: string }).note && (
-                                  <span className="mt-0.5 block text-xs text-cognac">
-                                    {(a as { note?: string }).note}
-                                  </span>
-                                )}
-                              </span>
-                              {Number(a.price) > 0 && (
-                                <span className="whitespace-nowrap font-semibold text-cognac">
-                                  +{formatPrice(Number(a.price))}
-                                </span>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
-            ))}
+              );
+            })}
           </div>
           </div>
           <div className="space-y-2 text-sm border-t border-[#EBE2D2] px-5 py-4">
