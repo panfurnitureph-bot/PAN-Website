@@ -141,3 +141,84 @@ html:not([data-hydrated]) .rail {
 html:not([data-hydrated]) .rail > * {
   scroll-snap-align: start;
 }
+
+/* PREMIUM NA ANYO NG HOMEPAGE (Joe 2026-10-07, "design lang talaga") — mga
+   ibabaw na paulit-ulit sa buong Home: card, entablado ng litrato, gintong
+   guhit sa ibabaw ng pamagat, at ang dalawang button. Itsura LANG ito; walang
+   kondisyon, link o laman na nakasalalay sa mga class na ito. */
+@layer components {
+  .pf-card {
+    border-radius: 20px;
+    background: linear-gradient(180deg, #FFFEFB, #FAF5EC);
+    box-shadow: 0 0 0 1px #E4DACA, 0 22px 38px -28px rgba(62, 50, 32, 0.5);
+  }
+  .pf-lift {
+    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.35s;
+  }
+  .pf-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 0 1.5px #B08A3E, 0 30px 46px -28px rgba(62, 50, 32, 0.6);
+  }
+  /* Entablado ng litrato: puti sa gitna, cream sa gilid. Ang litratong puti ang
+     background ay may `mix-blend-multiply` kaya natutunaw ang puti rito. */
+  .pf-stage {
+    background: radial-gradient(ellipse at 50% 74%, #fff 0, #FBF6EC 55%, #F3EADB 100%);
+  }
+  .pf-floor {
+    position: absolute;
+    left: 20%;
+    right: 20%;
+    bottom: 7%;
+    height: 14px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(62, 50, 32, 0.2), transparent);
+    pointer-events: none;
+  }
+  .pf-rule {
+    display: block;
+    width: 30px;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #B08A3E, #E2C27A);
+  }
+  .pf-gold {
+    background: linear-gradient(180deg, #EDD494, #D2AB56);
+    color: #2A2116;
+    box-shadow: 0 14px 24px -14px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  }
+  .pf-dark {
+    background: linear-gradient(180deg, #5B4A2F, #3E3220);
+    color: #FAF7F2;
+    box-shadow: 0 14px 24px -14px rgba(62, 50, 32, 0.7), inset 0 1px 0 rgba(226, 194, 122, 0.35);
+  }
+  .pf-band {
+    background:
+      radial-gradient(900px 380px at 10% -12%, rgba(226, 194, 122, 0.17), transparent 70%),
+      radial-gradient(700px 320px at 96% 110%, rgba(226, 194, 122, 0.08), transparent 70%),
+      linear-gradient(180deg, #3A2E1D, #241B11);
+    color: #F4EAD8;
+  }
+  .pf-arrow {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #fff;
+    color: #1A1A1A;
+    box-shadow: 0 0 0 1px #E0D5C1, 0 8px 16px -12px rgba(62, 50, 32, 0.5);
+    transition: background 0.2s, color 0.2s;
+  }
+  .pf-arrow:hover:not(:disabled) {
+    background: #3E3220;
+    color: #E2C27A;
+  }
+  .pf-arrow:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pf-lift { transition: none; }
+  .pf-lift:hover { transform: none; }
+}

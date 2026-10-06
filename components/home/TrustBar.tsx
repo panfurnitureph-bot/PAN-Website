@@ -20,14 +20,14 @@ const DEFAULT = [
 export default function TrustBar({ items }: { items?: HomepageContent["trustBar"] }) {
   const list = items?.length ? items : DEFAULT;
   return (
-    <div className="bg-brown text-cream border-t border-goldDeep">
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 grid grid-cols-2 lg:grid-cols-4 gap-x-3">
+    <div className="text-cream bg-[linear-gradient(180deg,#44361F,#33291A)] shadow-[inset_0_1px_0_rgba(226,194,122,.4),inset_0_-1px_0_rgba(226,194,122,.18)]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 grid grid-cols-2 lg:grid-cols-4 gap-x-4">
         {list.map((t, i) => (
-          <div key={i} className={`flex items-center gap-2.5 py-2.5 lg:py-3 lg:pr-4 lg:mr-4 min-h-[50px] ${i < list.length - 1 ? "lg:border-r lg:border-gold/20" : ""}`}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 shrink-0 text-gold">{ICON[t.icon] ?? ICON.home}</svg>
+          <div key={i} className={`flex items-center gap-3 lg:gap-3.5 py-3.5 lg:py-5 lg:pr-4 min-h-[50px] ${i < list.length - 1 ? "lg:border-r lg:border-gold/[.16]" : ""}`}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-[34px] h-[34px] p-[9px] lg:w-[42px] lg:h-[42px] lg:p-[11px] rounded-full shrink-0 text-gold bg-gold/[.08] shadow-[inset_0_0_0_1px_rgba(226,194,122,.45)]">{ICON[t.icon] ?? ICON.home}</svg>
             <span className="flex flex-col leading-tight">
-              <b className="font-semibold text-[11.5px] sm:text-[12.5px]">{t.title}</b>
-              <em className="not-italic text-[11px] text-cream/60 hidden sm:block">{t.sub}</em>
+              <b className="font-semibold text-[12.5px] sm:text-[13.5px] lg:text-[15px] text-[#F7EEDC]">{t.title}</b>
+              <em className="not-italic text-[11.5px] lg:text-[12.5px] mt-0.5 text-[#CFC2A4] hidden sm:block">{t.sub}</em>
             </span>
           </div>
         ))}

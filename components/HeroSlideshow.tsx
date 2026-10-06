@@ -108,7 +108,7 @@ export default function HeroSlideshow({
             <>
               <div className="absolute inset-0 bg-ink/20" />
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-                <h1 className="font-cormorant font-medium text-cream text-4xl sm:text-5xl lg:text-6xl max-w-3xl leading-tight drop-shadow-md">
+                <h1 className="font-cormorant font-semibold tracking-[-0.025em] text-white text-4xl sm:text-5xl lg:text-6xl max-w-3xl leading-[1.05] drop-shadow-md [text-wrap:balance]">
                   {slide.headline}
                 </h1>
                 <p className="text-cream/95 mt-4 max-w-xl text-base sm:text-lg drop-shadow">
@@ -134,16 +134,16 @@ export default function HeroSlideshow({
       <button
         onClick={prev}
         aria-label="Previous slide"
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 text-cream/80 hover:text-cream text-3xl w-10 h-10 flex items-center justify-center"
+        className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-white bg-black/30 backdrop-blur-sm shadow-[inset_0_0_0_1px_rgba(255,255,255,.25)] transition-colors hover:bg-black/50"
       >
-        ‹
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M15 5l-7 7 7 7" /></svg>
       </button>
       <button
         onClick={next}
         aria-label="Next slide"
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 text-cream/80 hover:text-cream text-3xl w-10 h-10 flex items-center justify-center"
+        className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-white bg-black/30 backdrop-blur-sm shadow-[inset_0_0_0_1px_rgba(255,255,255,.25)] transition-colors hover:bg-black/50"
       >
-        ›
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M9 5l7 7-7 7" /></svg>
       </button>
 
       {/* Dots */}
@@ -153,8 +153,8 @@ export default function HeroSlideshow({
             key={i}
             onClick={() => setCurrent(i)}
             aria-label={`Go to slide ${i + 1}`}
-            className={`w-2 h-2 rounded-full transition-colors ${
-              i === current ? "bg-cream" : "bg-cream/40"
+            className={`h-2 rounded-full transition-all duration-300 ${
+              i === current ? "w-6 bg-white" : "w-2 bg-white/45"
             }`}
           />
         ))}

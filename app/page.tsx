@@ -62,22 +62,27 @@ export default async function HomePage() {
         <Rail title="Shop by category" n={[7, 5, 4, 3]}>
           {tiles.map((t) =>
             t.live ? (
-              <Link key={t.slug} href={`/collections/${t.slug}`} className="group flex flex-col gap-2 text-center text-[12.5px] font-medium">
-                {/* Uniform na tile (2026-09-04): puting ground, buong litrato (contain) -
-                    pareho ang dating ng product photo at ng category photo, walang putol. */}
-                <span className="relative block aspect-square bg-white overflow-hidden border border-sand">
-                  <FitImage src={categoryTileImage(t.slug)} alt={t.label} sizes="(min-width: 1100px) 160px, 40vw" />
+              <Link key={t.slug} href={`/collections/${t.slug}`} className="group pf-card pf-lift flex h-full flex-col overflow-hidden text-left">
+                {/* Uniform na tile (2026-09-04): buong litrato (contain) - pareho ang
+                    dating ng product photo at ng category photo, walang putol.
+                    Premium (2026-10-07): cream na entablado, natutunaw ang puting
+                    background ng litrato (multiply), pangalan at arrow sa ibaba. */}
+                <span className="relative block aspect-square pf-stage overflow-hidden border-b border-goldDeep/20">
+                  <FitImage src={categoryTileImage(t.slug)} alt={t.label} className="mix-blend-multiply" sizes="(min-width: 1100px) 160px, 40vw" />
                 </span>
-                {t.label}
+                <span className="flex flex-1 items-center justify-between gap-2 px-2.5 py-2.5 sm:px-3.5 sm:py-3 font-cormorant font-semibold text-[12.5px] sm:text-[14.5px] leading-tight">
+                  <span className="min-w-0">{t.label}</span>
+                  <i aria-hidden className="hidden lg:grid place-items-center w-7 h-7 shrink-0 rounded-full bg-brownDeep text-gold text-[13px] not-italic transition group-hover:translate-x-0.5 group-hover:bg-gold group-hover:text-brownDeep">→</i>
+                </span>
               </Link>
             ) : (
-              <div key={t.slug} className="flex flex-col gap-2 text-center text-[12.5px] font-medium text-stone" aria-label={`${t.label} — coming soon`}>
-                <span className="relative flex aspect-square flex-col items-center justify-center gap-2 bg-brown text-cream overflow-hidden [background-image:radial-gradient(circle_at_30%_20%,rgba(226,194,122,.18),transparent_55%)]">
+              <div key={t.slug} className="pf-card flex h-full flex-col overflow-hidden text-left text-stone" aria-label={`${t.label} — coming soon`}>
+                <span className="relative flex aspect-square flex-col items-center justify-center gap-2 pf-band text-cream overflow-hidden">
                   <Image src="/images/pan-logo.png" alt="PAN Furniture" width={72} height={72} className="w-[46%] h-auto drop-shadow-[0_2px_6px_rgba(0,0,0,.35)]" />
                   <span className="text-[10px] font-bold tracking-[0.18em] uppercase text-gold">Coming soon</span>
                   <span className="absolute inset-x-3 bottom-2.5 border-t border-gold/25" />
                 </span>
-                {t.label}
+                <span className="flex flex-1 items-center px-2.5 py-2.5 sm:px-3.5 sm:py-3 font-cormorant font-semibold text-[12.5px] sm:text-[14.5px] leading-tight">{t.label}</span>
               </div>
             ),
           )}

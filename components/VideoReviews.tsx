@@ -39,8 +39,10 @@ function VideoCard({
   }
 
   return (
-    <div className="snap-center shrink-0 w-[70vw] sm:w-[300px]">
-      <div className="relative aspect-[9/14] bg-sand overflow-hidden">
+    // Lapad = ang slot ng carousel (2026-10-07): dati 70vw / 300px na mas malapad
+    // sa slot kaya nagpapatong ang magkatabing card sa telepono.
+    <div className="w-full">
+      <div className="relative aspect-[9/14] bg-sand overflow-hidden rounded-[20px] shadow-[0_0_0_1px_#E4DACA,0_22px_38px_-28px_rgba(62,50,32,.6)]">
         {isImage ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={video} alt={name || "Customer photo"} className="w-full h-full object-cover" />
@@ -61,13 +63,13 @@ function VideoCard({
               onClick={toggle}
             />
             {/* Controls */}
-            <div className="absolute bottom-3 left-3 flex items-center gap-2">
+            <div className="absolute z-[2] top-3 right-3 flex items-center gap-2">
               <button
                 onClick={toggle}
                 aria-label={playing ? "Pause" : "Play"}
-                className="w-9 h-9 rounded-full bg-cream/90 text-ink flex items-center justify-center text-sm"
+                className="w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm text-ink flex items-center justify-center shadow-[0_8px_16px_-10px_rgba(0,0,0,.6)]"
               >
-                {playing ? "❚❚" : "▶"}
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden>{playing ? <path d="M7 5h4v14H7zM13 5h4v14h-4z" /> : <path d="M8 5v14l11-7z" />}</svg>
               </button>
               <button
                 onClick={() => {
@@ -75,16 +77,19 @@ function VideoCard({
                   if (ref.current) ref.current.muted = !muted;
                 }}
                 aria-label={muted ? "Unmute" : "Mute"}
-                className="w-9 h-9 rounded-full bg-cream/90 text-ink flex items-center justify-center text-sm"
+                className="w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm text-ink flex items-center justify-center shadow-[0_8px_16px_-10px_rgba(0,0,0,.6)]"
               >
-                {muted ? "🔇" : "🔊"}
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor" />{muted ? <path d="M17 9l5 6M22 9l-5 6" /> : <path d="M17 8.5a5 5 0 0 1 0 7M19.5 6a8.5 8.5 0 0 1 0 12" />}</svg>
               </button>
             </div>
           </>
         )}
+        {/* Pangalan at role nakapatong sa ibaba ng card (premium, 2026-10-07) — parehong teksto. */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] px-3 pb-3 sm:px-4 sm:pb-4 pt-16 bg-[linear-gradient(180deg,transparent,rgba(26,20,12,.82))] text-white">
+          <p className="font-cormorant font-semibold text-[13.5px] sm:text-[15.5px] leading-tight">{name}</p>
+          <p className="text-[10.5px] font-bold tracking-[0.16em] uppercase text-gold mt-1">{role}</p>
+        </div>
       </div>
-      <p className="font-bold text-sm mt-4">{name}</p>
-      <p className="text-stone text-sm">{role}</p>
     </div>
   );
 }

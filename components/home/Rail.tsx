@@ -137,26 +137,26 @@ export default function Rail({
   const go = (dir: 1 | -1) => { const r = rail.current as (HTMLDivElement & { _next?: () => void; _prev?: () => void }) | null; if (!r) return; dir > 0 ? r._next?.() : r._prev?.(); };
   const ink = dark ? "text-cream" : "text-ink";
   const muted = dark ? "text-cream/75" : "text-stone";
-  const btn = dark ? "border-gold text-gold hover:bg-gold hover:text-brownDeep" : "border-brown text-brown hover:bg-brown hover:text-cream";
 
   return (
     <div>
       <div className="flex items-end justify-between gap-4 mb-5 flex-wrap">
         <div>
-          {eyebrow && <p className="text-[11px] font-bold tracking-[0.16em] uppercase text-goldDeep">{eyebrow}</p>}
-          <h2 className={`font-cormorant font-semibold text-[clamp(22px,2.6vw,30px)] leading-[1.05] mt-1.5 ${ink}`}>{title}</h2>
-          {sub && <p className={`text-sm mt-1.5 max-w-[60ch] ${muted}`}>{sub}</p>}
+          {/* Gintong guhit sa ibabaw ng pamagat kapag walang eyebrow (premium, 2026-10-07). */}
+          {eyebrow ? <p className={`text-[11px] font-bold tracking-[0.18em] uppercase ${dark ? "text-gold" : "text-goldDeep"}`}>{eyebrow}</p> : title ? <i className="pf-rule mb-3" /> : null}
+          <h2 className={`font-cormorant font-semibold text-[clamp(24px,2.7vw,32px)] leading-[1.1] tracking-[-0.02em] mt-1.5 ${ink}`}>{title}</h2>
+          {sub && <p className={`text-[14.5px] mt-2 max-w-[60ch] ${muted}`}>{sub}</p>}
         </div>
         <div className="flex items-center gap-3.5">
           {link && (
-            <Link href={link.href} className={`text-[11.5px] font-bold tracking-[0.14em] uppercase border-b-[1.5px] pb-0.5 whitespace-nowrap ${dark ? "text-gold border-gold" : "text-ink border-goldDeep"}`}>
+            <Link href={link.href} className={`text-[13px] font-semibold border-b-[1.5px] pb-0.5 whitespace-nowrap transition-colors ${dark ? "text-gold border-gold" : "text-ink border-goldDeep hover:text-goldDeep"}`}>
               {link.label}
             </Link>
           )}
           {count > 1 && (
-            <div className="flex gap-1.5">
-              <button type="button" aria-label="Previous" disabled={atStart} onClick={() => go(-1)} className={`w-8 h-8 border text-[17px] leading-none flex items-center justify-center bg-transparent disabled:opacity-35 disabled:cursor-default ${btn}`}>‹</button>
-              <button type="button" aria-label="Next" disabled={atEnd} onClick={() => go(1)} className={`w-8 h-8 border text-[17px] leading-none flex items-center justify-center bg-transparent disabled:opacity-35 disabled:cursor-default ${btn}`}>›</button>
+            <div className="flex gap-2">
+              <button type="button" aria-label="Previous" disabled={atStart} onClick={() => go(-1)} className="pf-arrow"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M15 5l-7 7 7 7" /></svg></button>
+              <button type="button" aria-label="Next" disabled={atEnd} onClick={() => go(1)} className="pf-arrow"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M9 5l7 7-7 7" /></svg></button>
             </div>
           )}
         </div>
@@ -164,7 +164,7 @@ export default function Rail({
       <div
         ref={rail}
         tabIndex={0}
-        className="rail overflow-hidden py-1 px-0.5 cursor-grab select-none [touch-action:pan-y] [&.dragging]:cursor-grabbing outline-none"
+        className="rail overflow-hidden pt-2 pb-9 -mb-6 px-0.5 cursor-grab select-none [touch-action:pan-y] [&.dragging]:cursor-grabbing outline-none"
       >
         {/* min-w-0 + width sa bawat slot (2026-09-06, "di na naman equal"): ang card
             na may 3 color thumbs ay mas malapad ang min-content kaysa sa slot, kaya
@@ -176,8 +176,8 @@ export default function Rail({
         </div>
       </div>
       {count > 1 && (
-        <div className={`h-0.5 mt-1.5 relative overflow-hidden ${dark ? "bg-cream/15" : "bg-sand"}`}>
-          <i className="absolute left-0 top-0 bottom-0 bg-goldDeep" style={{ width: `${prog.w}%`, transform: `translateX(${prog.t}%)` }} />
+        <div className={`h-[3px] rounded-full mt-1.5 relative overflow-hidden ${dark ? "bg-cream/15" : "bg-sand"}`}>
+          <i className="absolute left-0 top-0 bottom-0 rounded-full bg-goldDeep" style={{ width: `${prog.w}%`, transform: `translateX(${prog.t}%)` }} />
         </div>
       )}
     </div>

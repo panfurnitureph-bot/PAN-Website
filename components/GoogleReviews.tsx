@@ -32,7 +32,7 @@ function fakeCount(slug: string): number {
 
 function Stars({ n }: { n: number }) {
   return (
-    <span className="text-olive tracking-wider text-sm">
+    <span className="text-goldDeep tracking-wider text-sm">
       {"★".repeat(n)}
       {"☆".repeat(5 - n)}
     </span>
@@ -354,7 +354,7 @@ export default function GoogleReviews({
               role="button"
               tabIndex={0}
               onKeyDown={(e) => e.key === "Enter" && setOpenIdx(i)}
-              className="bg-linen p-6 cursor-pointer hover:shadow-md transition-shadow"
+              className="pf-card pf-lift p-5 sm:p-6 cursor-pointer"
             >
               <div className="flex items-center gap-3 mb-3">
                 <Avatar name={r.name} index={i} />

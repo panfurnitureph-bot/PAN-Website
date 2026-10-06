@@ -10,7 +10,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { formatPrice, type Product } from "@/lib/products";
+import { formatPrice, CATEGORY_TILES, type Product } from "@/lib/products";
 import { useStore } from "@/components/store";
 import { parseMattressSizes } from "@/lib/mattress-sizes";
 import { openQuickView } from "@/components/home/QuickView";
@@ -67,6 +67,12 @@ export default function ProductCard({
   const stock = active?.stock ?? product.stock ?? 0;
   const inStock = stock > 0;
 
+  // PREMIUM NA ANYO (2026-10-07) — itsura lang: maliit na ₱ sa unahan ng presyo
+  // (parehong bilang mula sa formatPrice) at pangalan ng category sa ibabaw ng
+  // pangalan ng produkto (ang sariling category ng produkto, walang bagong data).
+  const peso = (n: number) => { const s = formatPrice(n); return s.startsWith("₱") ? <><span className="mr-px align-[0.55em] text-[0.55em] font-semibold text-stone">₱</span>{s.slice(1)}</> : s; };
+  const kicker = CATEGORY_TILES.find((t) => t.slug === product.category)?.label;
+
   function add() {
     // Kapareho ng product page: as-is specs + kulay (2026-09-04).
     const colorName = active?.name ?? "";
@@ -76,59 +82,61 @@ export default function ProductCard({
   }
 
   return (
-    <div className="group relative flex flex-col h-full bg-white border border-sand transition-colors hover:border-goldDeep [contain:content]">
+    <div className="group relative flex flex-col h-full pf-card pf-lift overflow-hidden [contain:content]">
       <button
         aria-label={wished ? "Remove from wishlist" : "Add to wishlist"}
         onClick={() => toggleWishlist(product.slug)}
-        className={`absolute top-2.5 right-2.5 z-10 p-1.5 rounded-full bg-cream/85 transition-opacity ${wished ? "opacity-100" : "opacity-0 group-hover:opacity-100 max-lg:opacity-100"}`}
+        className={`absolute top-3 right-3 z-10 grid h-[38px] w-[38px] place-items-center rounded-full bg-white/90 backdrop-blur-sm shadow-[0_0_0_1px_rgba(226,194,122,.55),0_8px_16px_-10px_rgba(62,50,32,.55)] transition hover:scale-105 ${wished ? "opacity-100" : "opacity-0 group-hover:opacity-100 max-lg:opacity-100"}`}
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill={wished ? "#B08A3E" : "none"} stroke={wished ? "#B08A3E" : "#1A1A1A"} strokeWidth="1.6">
           <path d="M12 21C7 16.5 3 13 3 8.8 3 6 5.2 4 7.8 4c1.7 0 3.2.9 4.2 2.3C13 4.9 14.5 4 16.2 4 18.8 4 21 6 21 8.8c0 4.2-4 7.7-9 12.2z" />
         </svg>
       </button>
 
-      <div className="absolute top-2.5 left-2.5 z-10 flex flex-col gap-1">
+      <div className="absolute top-3 left-3 z-10 flex flex-col items-start gap-1">
         {showStock ? (
           inStock ? (
-            <span className={`inline-flex items-center gap-1.5 text-[9.5px] font-bold tracking-[0.1em] uppercase px-2 py-1 ${stock <= 3 ? "bg-[#F7EBD4] text-[#9A6B1E]" : "bg-[#E6F2EA] text-[#2F7D4F]"}`}>
+            <span className={`inline-flex items-center gap-1.5 rounded-full text-[9.5px] font-bold tracking-[0.1em] uppercase px-2.5 py-1 ${stock <= 3 ? "bg-[#F7EBD4] text-[#9A6B1E]" : "bg-[#E6F2EA] text-[#2F7D4F]"}`}>
               <i className={`w-1.5 h-1.5 rounded-full ${stock <= 3 ? "bg-[#9A6B1E]" : "bg-[#2F7D4F]"}`} />{stock <= 3 ? `Only ${stock} left` : `In stock · ${stock}`}
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 text-[9.5px] font-bold tracking-[0.1em] uppercase px-2 py-1 bg-goldSoft text-brown"><i className="w-1.5 h-1.5 rounded-full bg-goldDeep" />Made to order</span>
+            <span className="inline-flex items-center gap-1.5 rounded-full text-[9.5px] font-bold tracking-[0.1em] uppercase px-2.5 py-1 bg-goldSoft text-brown"><i className="w-1.5 h-1.5 rounded-full bg-goldDeep" />Made to order</span>
           )
         ) : product.isNew ? (
-          <span className="bg-brown text-gold text-[9.5px] font-bold tracking-[0.14em] uppercase px-2 py-1">New</span>
+          <span className="rounded-full bg-brownDeep text-gold text-[9.5px] font-bold tracking-[0.14em] uppercase px-2.5 py-1">New</span>
         ) : null}
-        {onSale && <span className="bg-cognac text-cream text-[9.5px] tracking-[0.14em] uppercase px-2 py-1">Sale</span>}
+        {onSale && <span className="rounded-full bg-cognac text-cream text-[9.5px] tracking-[0.14em] uppercase px-2.5 py-1">Sale</span>}
       </div>
 
-      <div className={`relative ${square ? "aspect-square" : "aspect-[4/3]"} overflow-hidden bg-white`}>
+      <div className={`relative ${square ? "aspect-square" : "aspect-[4/3]"} overflow-hidden pf-stage`}>
+        <i aria-hidden className="pf-floor" />
         {/* Litrato = diretso sa product page (2026-09-04, "ang hirap i-click sa mobile");
             ang Quick view ay sa button lang. */}
         <Link href={`/products/${product.slug}`} className="absolute inset-0 block">
-          <FitImage src={hero} alt={product.name} className={`transition-opacity duration-300 ${showAlt ? "group-hover:opacity-0" : ""}`} sizes="(min-width: 1100px) 240px, (min-width: 640px) 33vw, 70vw" />
-          {showAlt && <FitImage src={alt!} alt="" className="opacity-0 transition-opacity duration-300 group-hover:opacity-100" sizes="240px" />}
+          <FitImage src={hero} alt={product.name} className={`mix-blend-multiply transition-opacity duration-300 ${showAlt ? "group-hover:opacity-0" : ""}`} sizes="(min-width: 1100px) 240px, (min-width: 640px) 33vw, 70vw" />
+          {showAlt && <FitImage src={alt!} alt="" className="mix-blend-multiply opacity-0 transition-opacity duration-300 group-hover:opacity-100" sizes="240px" />}
         </Link>
         {quickView && (
           <button
             type="button"
             onClick={() => openQuickView(product)}
-            className="absolute left-2.5 right-2.5 bottom-2.5 z-[1] bg-ink/85 text-cream text-[11px] font-bold tracking-[0.14em] uppercase py-2 opacity-0 translate-y-1.5 transition group-hover:opacity-100 group-hover:translate-y-0 max-lg:opacity-100 max-lg:translate-y-0"
+            className="absolute left-3 right-3 bottom-3 z-[1] h-10 rounded-full bg-[#2A2116]/90 backdrop-blur-sm text-white text-[12.5px] font-bold shadow-[0_12px_22px_-12px_rgba(20,14,6,.7)] opacity-0 translate-y-1.5 transition hover:text-gold group-hover:opacity-100 group-hover:translate-y-0 max-lg:opacity-100 max-lg:translate-y-0"
           >
             Quick view
           </button>
         )}
       </div>
 
-      <div className="relative flex flex-col gap-1.5 p-3 pt-2.5 border-t border-sand flex-1">
+      <div className="relative flex flex-col gap-1.5 px-3 pt-3 pb-3.5 sm:px-4 sm:pt-3.5 sm:pb-4 border-t border-goldDeep/20 flex-1">
         {/* Buong info area ay link din (pangalan, presyo, puting espasyo) — ang
             color thumbs at Add to cart ay nakapatong (z-[1]) para gumana pa rin. */}
         <Link href={`/products/${product.slug}`} className="absolute inset-0" aria-hidden tabIndex={-1} />
-        <Link href={`/products/${product.slug}`} className="relative z-[1] text-[13.5px] font-semibold leading-snug hover:text-goldDeep line-clamp-1" title={product.name}>{product.name}</Link>
+        {kicker && <span className="text-[9.5px] font-bold tracking-[0.16em] uppercase text-goldDeep line-clamp-1">{kicker}</span>}
+        <Link href={`/products/${product.slug}`} className="relative z-[1] font-cormorant text-[14.5px] sm:text-[17px] font-semibold leading-snug tracking-[-0.01em] hover:text-goldDeep line-clamp-1" title={product.name}>{product.name}</Link>
         <div className="flex items-baseline justify-between gap-2">
-          <span className="text-[15px] font-bold tabular-nums">
-            {sizePick && sizePick.price > 0 ? formatPrice(sizePick.price) : product.priceFrom ? <><span className="font-normal text-stone text-[11px] mr-1">from</span>{formatPrice(product.priceFrom)}</> : <span className={onSale ? "text-cognac" : ""}>{formatPrice(product.price)}</span>}
-            {onSale && <span className="text-stone line-through ml-2 text-xs font-normal">{formatPrice(product.compareAtPrice!)}</span>}
+          <span className="font-cormorant text-[17px] sm:text-[20px] font-bold tabular-nums tracking-[-0.01em]">
+            {sizePick && sizePick.price > 0 ? peso(sizePick.price) : product.priceFrom ? <><span className="font-sans font-normal text-stone text-[11px] mr-1 tracking-normal">from</span>{peso(product.priceFrom)}</> : <span className={onSale ? "text-cognac" : ""}>{peso(product.price)}</span>}
+            {onSale && <span className="font-sans text-stone line-through ml-2 text-xs font-normal tracking-normal">{formatPrice(product.compareAtPrice!)}</span>}
           </span>
           <span className="text-[11px] text-stone whitespace-nowrap">
             {variants.length > 1 ? `${variants.length} colors` : sizePick ? sizePick.label.replace(/x/i, "×") : inStock ? "Ships this week" : product.bedSizes?.length ? "Single–King" : ""}
@@ -141,7 +149,7 @@ export default function ProductCard({
           {variants.length > 1 && (<>
             {variants.slice(0, 4).map((v, i) => (
               <button key={v.name + i} type="button" onMouseEnter={() => setActiveIdx(i)} onClick={() => { setActiveIdx(i); setPinned(true); }} title={v.name} aria-label={v.name}
-                className={`relative w-[56px] h-[56px] shrink-0 rounded-full bg-white overflow-hidden border-[1.5px] ${i === activeIdx ? "border-brown ring-2 ring-offset-2 ring-brown" : "border-sand"} ${v.stock !== undefined && v.stock <= 0 ? "opacity-40" : ""}`}>
+                className={`relative w-[56px] h-[56px] shrink-0 rounded-full bg-white overflow-hidden border-[1.5px] transition ${i === activeIdx ? "border-brownDeep ring-2 ring-offset-2 ring-offset-[#FBF7EF] ring-goldDeep" : "border-sand hover:border-goldDeep"} ${v.stock !== undefined && v.stock <= 0 ? "opacity-40" : ""}`}>
                 <Image src={v.thumb} alt="" fill className="object-contain" sizes="56px" />
               </button>
             ))}
@@ -159,7 +167,7 @@ export default function ProductCard({
           )}
         </div>
         {showAddToCart && (
-          <button type="button" onClick={add} disabled={added} className={`relative z-[1] mt-auto w-full py-2 text-[12px] font-semibold border ${added ? "bg-[#2F7D4F] border-[#2F7D4F] text-white" : "border-brown text-brown hover:bg-brown hover:text-cream"}`}>
+          <button type="button" onClick={add} disabled={added} className={`relative z-[1] mt-auto h-10 w-full rounded-full text-[12.5px] font-bold border transition-colors ${added ? "bg-[#2F7D4F] border-[#2F7D4F] text-white" : "border-brownDeep text-brownDeep hover:bg-brownDeep hover:text-gold"}`}>
             {added ? "Added ✓" : "Add to cart"}
           </button>
         )}

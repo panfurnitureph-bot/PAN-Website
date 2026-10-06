@@ -31,11 +31,11 @@ export default function ShowroomMap({ items }: { items: Item[] }) {
   if (!s) return null;
   const src = `https://maps.google.com/maps?q=${encodeURIComponent(queryFor(s))}&z=16&output=embed`;
   return (
-    <div className="border border-sand bg-white flex flex-col overflow-hidden min-h-[280px]">
+    <div className="pf-card flex flex-col overflow-hidden min-h-[280px] rounded-[22px]">
       {items.length > 1 && (
-        <div className="flex border-b border-sand">
+        <div className="flex gap-1 p-1.5 bg-[#2A2116]">
           {items.map((it, k) => (
-            <button key={it.name} type="button" onClick={() => setI(k)} className={`flex-1 px-3 py-2.5 text-[11px] font-bold tracking-[0.08em] uppercase border-b-2 -mb-px ${k === i ? "border-goldDeep text-ink" : "border-transparent text-stone hover:text-ink"}`}>
+            <button key={it.name} type="button" onClick={() => setI(k)} className={`flex-1 px-3 py-2.5 rounded-[14px] text-[11px] font-bold tracking-[0.1em] uppercase transition-colors ${k === i ? "pf-gold" : "text-[#CFC2A4] hover:text-white"}`}>
               {it.name}
             </button>
           ))}
@@ -52,11 +52,11 @@ export default function ShowroomMap({ items }: { items: Item[] }) {
           className="absolute inset-0 h-full w-full border-0"
         />
       </div>
-      <div className="flex justify-between items-center gap-3 px-3.5 py-2.5 border-t border-sand text-xs text-stone">
+      <div className="flex justify-between items-center gap-3 px-4 py-3 border-t border-[#EBE2D2] text-xs text-stone">
         <span className="min-w-0 truncate">{s.address || s.name}</span>
         <span className="flex gap-2 shrink-0">
-          {s.waze && <a href={s.waze} target="_blank" rel="noopener noreferrer" className="border border-brown text-brown text-[11px] font-bold tracking-[0.08em] uppercase px-2.5 py-1.5">Waze</a>}
-          <a href={s.maps || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(queryFor(s))}`} target="_blank" rel="noopener noreferrer" className="border border-ink text-ink text-[11px] font-bold tracking-[0.08em] uppercase px-2.5 py-1.5">Open in Google Maps</a>
+          {s.waze && <a href={s.waze} target="_blank" rel="noopener noreferrer" className="inline-flex items-center h-9 px-4 rounded-full bg-white text-ink text-[12px] font-bold shadow-[inset_0_0_0_1px_#E0D5C1] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E]">Waze</a>}
+          <a href={s.maps || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(queryFor(s))}`} target="_blank" rel="noopener noreferrer" className="pf-dark inline-flex items-center h-9 px-4 rounded-full text-[12px] font-bold whitespace-nowrap transition-colors hover:text-gold">Open in Google Maps</a>
         </span>
       </div>
     </div>

@@ -243,15 +243,15 @@ export default function UgcGrid({
     <section className="max-w-7xl mx-auto px-4 sm:px-8 py-12 md:py-14">
       <Marquee title={title} sub={subtitle} n={[4, 3, 2, 2]}>
         {[
-          <div key="cap" className="aspect-square bg-brown text-cream p-5 flex flex-col justify-center gap-2 text-[13px]">
+          <div key="cap" className="aspect-square overflow-hidden rounded-[20px] pf-band p-3.5 sm:p-5 flex flex-col justify-center gap-1.5 sm:gap-2 text-[11px] sm:text-[13px] shadow-[inset_0_0_0_1px_rgba(226,194,122,.3)]">
             {handle && <b className="text-gold text-xs tracking-[0.04em]">{handle}</b>}
-            <span className="leading-relaxed">{caption || "A little look at how our pieces are living in your homes."}</span>
+            <span className="leading-snug sm:leading-relaxed">{caption || "A little look at how our pieces are living in your homes."}</span>
           </div>,
           ...photos.map((ph, i) => (
             <button
               key={ph.src + i}
               onClick={() => setOpenIdx(i)}
-              className="relative block w-full aspect-square overflow-hidden group bg-sand"
+              className="relative block w-full aspect-square overflow-hidden rounded-[20px] group bg-sand shadow-[0_0_0_1px_#E4DACA,0_22px_38px_-28px_rgba(62,50,32,.6)]"
               aria-label={`View ${ph.product?.name ?? "photo"}`}
             >
               <Image
