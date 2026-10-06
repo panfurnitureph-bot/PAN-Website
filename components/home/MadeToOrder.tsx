@@ -49,11 +49,11 @@ export default function MadeToOrder({ copy, swatches, fallbackImage }: { copy: H
                   {i === 0 && (
                     <div className="flex flex-wrap gap-[7px] items-center mt-1.5">
                       {mosaic.map((sw) => (
-                        <span key={sw.name} title={sw.name} className="relative w-[30px] h-[30px] block rounded-lg shadow-[inset_0_0_0_1px_rgba(62,50,32,.18),0_2px_5px_-2px_rgba(62,50,32,.4)] overflow-hidden transition duration-150 hover:z-[1] hover:-translate-y-[3px] hover:scale-[1.12] hover:shadow-[inset_0_0_0_1px_rgba(62,50,32,.18),0_10px_16px_-8px_rgba(62,50,32,.6)]" style={{ background: sw.color ?? "#D9CFC0" }}>
+                        <button key={sw.name} type="button" title={sw.name} aria-label={`${sw.name} — open the fabric library`} onClick={() => openFabrics(sw.name)} className="relative w-[30px] h-[30px] block rounded-lg cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-goldDeep focus-visible:ring-offset-2 shadow-[inset_0_0_0_1px_rgba(62,50,32,.18),0_2px_5px_-2px_rgba(62,50,32,.4)] overflow-hidden transition duration-150 hover:z-[1] hover:-translate-y-[3px] hover:scale-[1.12] hover:shadow-[inset_0_0_0_1px_rgba(62,50,32,.18),0_10px_16px_-8px_rgba(62,50,32,.6)]" style={{ background: sw.color ?? "#D9CFC0" }}>
                           {sw.swatch && <Image src={sw.swatch} alt="" fill className="object-cover" sizes="30px" />}
-                        </span>
+                        </button>
                       ))}
-                      <button type="button" onClick={openFabrics} className="h-[30px] ml-1 rounded-full bg-white px-3.5 text-[12px] font-semibold text-brownDeep shadow-[inset_0_0_0_1px_#5B4A2F] transition duration-150 hover:-translate-y-0.5 hover:bg-brownDeep hover:text-gold">See all {swatches.length} →</button>
+                      <button type="button" onClick={() => openFabrics()} className="h-[30px] ml-1 rounded-full bg-white px-3.5 text-[12px] font-semibold text-brownDeep shadow-[inset_0_0_0_1px_#5B4A2F] transition duration-150 hover:-translate-y-0.5 hover:bg-brownDeep hover:text-gold">See all {swatches.length} →</button>
                     </div>
                   )}
                   {i === 1 && (
