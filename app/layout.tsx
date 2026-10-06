@@ -90,7 +90,7 @@ export default async function RootLayout({
         {/* Walang min-h-screen sa main (2026-09-04, "laki ng space"): kapag maikli
             ang page, footer agad; ang brownDeep sa wrapper ang pumupuno sa
             ilalim ng footer sa matataas na screen - hindi blangkong cream. */}
-        <div className="page-clip min-h-screen bg-brownDeep">
+        <div id="top" className="page-clip min-h-screen bg-brownDeep">
         <StoreProvider>
           {/* Nakikinig kung may binago sa PAN app admin — nagre-refresh ang
               nakabukas na page nang hindi kailangang gawin ito ng bisita. */}
