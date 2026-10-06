@@ -102,7 +102,7 @@ function Dropdown({
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className={`relative w-full rounded-lg border bg-transparent px-9 py-2.5 text-center text-sm font-semibold transition-colors ${open ? "border-cognac ring-2 ring-cognac/20" : "border-sand hover:border-stone/50"}`}
+          className={`relative h-11 w-full rounded-[10px] bg-white px-10 text-center text-[14.5px] font-semibold text-ink transition-shadow ${open ? "shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.3)]" : "shadow-[inset_0_0_0_1px_#D8CCB9,inset_0_1px_2px_rgba(62,50,32,.05)] hover:shadow-[inset_0_0_0_1px_#B08A3E]"}`}
         >
           {cur ? (
             <>
@@ -112,14 +112,14 @@ function Dropdown({
           ) : (
             <span className="font-normal text-stone/70">{placeholder}</span>
           )}
-          <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-stone transition-transform ${open ? "rotate-180" : ""}`}>▾</span>
+          <span className={`absolute right-3.5 top-1/2 -translate-y-1/2 text-brown transition-transform ${open ? "rotate-180" : ""}`}><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><path d="M6 9l6 6 6-6" /></svg></span>
         </button>
         {open && (
-          <div className="absolute left-0 right-0 top-full z-30 mt-1.5 max-h-60 overflow-auto rounded-lg border border-sand bg-white p-1 shadow-xl">
+          <div className="pf-estin absolute left-0 right-0 top-full z-30 mt-1.5 max-h-[270px] overflow-auto rounded-xl bg-white p-1.5 shadow-[0_0_0_1px_#E4DACA,0_20px_44px_-18px_rgba(62,50,32,.5)]">
             {clearable && (
-              <button type="button" onClick={() => { onPick(""); setOpen(false); }} className="relative w-full rounded-md px-8 py-2 text-center text-sm text-stone/70 hover:bg-linen">
+              <button type="button" onClick={() => { onPick(""); setOpen(false); }} className="relative w-full rounded-lg px-9 py-2.5 text-center text-sm text-stone/70 transition-colors hover:bg-[#F6F0E4]">
                 {placeholder}
-                {!value && <span className="absolute right-2.5 top-1/2 -translate-y-1/2 font-bold text-cognac">✓</span>}
+                {!value && <span className="absolute right-2.5 top-1/2 -translate-y-1/2 font-bold text-goldDeep">✓</span>}
               </button>
             )}
             {options.map((o) => {
@@ -131,7 +131,7 @@ function Dropdown({
                   disabled={!!o.ban}
                   title={o.ban ?? undefined}
                   onClick={() => { if (o.ban) return; onPick(o.label); setOpen(false); }}
-                  className={`relative w-full rounded-md px-8 py-2 text-center text-sm ${o.ban ? "cursor-not-allowed opacity-40" : "hover:bg-linen"} ${on ? "bg-linen font-bold" : ""}`}
+                  className={`relative w-full rounded-lg px-9 py-2.5 text-center text-sm transition-colors ${o.ban ? "cursor-not-allowed opacity-40" : "hover:bg-[#F6F0E4]"} ${on ? "bg-goldSoft font-bold text-brownDeep" : ""}`}
                 >
                   {o.label}
                   {o.note && !o.ban && <span className="ml-1.5 text-xs text-stone">{o.note}</span>}
@@ -1140,7 +1140,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
       {/* MALINAW NA NAG-E-EDIT — kung hindi, mukhang bagong build ang nasa
           harap at ang "Save changes" ay parang nagdadagdag ng pangalawa. */}
       {editId && (
-        <p className="mb-3 flex items-center gap-2 rounded-full border border-cognac bg-cognac/10 px-3 py-1.5 text-[11px] font-bold text-cognac">
+        <p className="mb-3 flex items-center gap-2 rounded-full bg-goldSoft px-3.5 py-2 text-[11px] font-bold text-brownDeep shadow-[inset_0_0_0_1px_rgba(176,138,62,.45)]">
           <span>✎ Editing item {quote.findIndex((b) => b.id === editId) + 1} of your request</span>
           <a href="/quote-request" className="ml-auto text-[10px] font-semibold underline">Back to request</a>
         </p>
@@ -1150,32 +1150,32 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
       <div className="flex items-baseline gap-3 flex-wrap">
         {priced ? (
           <>
-            <span className="text-3xl font-bold">{formatPrice(total)}</span>
+            <span className="font-cormorant text-[32px] font-semibold tabular-nums tracking-[-0.01em]">{formatPrice(total)}</span>
             <span className="text-xs text-stone">starting · changes per size/add-on</span>
           </>
         ) : (
           <>
-            <span className="text-2xl font-bold">Price upon quotation</span>
+            <span className="font-cormorant text-[26px] font-semibold tracking-[-0.01em]">Price upon quotation</span>
             <span className="text-xs text-stone">the team will send it via Messenger after reviewing your build</span>
           </>
         )}
       </div>
-      <hr className="border-sand my-5" />
+      <hr className="border-[#E6DCCB] my-5" />
 
       {/* ── MEASUREMENTS — one-line ±½ steppers ("3 ½") ── */}
       {measures.length > 0 && (
-        <div className="mb-3 rounded-lg border border-sand px-4 py-2">
-          <p className="mb-1 text-sm">Measurements</p>
+        <div className="pf-card mb-3 px-4 py-2.5">
+          <p className="mb-1.5 text-[10.5px] font-bold tracking-[0.16em] uppercase text-goldDeep">Measurements</p>
           {measures.map((m) => {
             const v = measVal[m.label] ?? 0;
             return (
-              <div key={m.label} className="grid grid-cols-[110px_1fr] items-center gap-3 border-b border-dashed border-sand py-1.5 last:border-b-0">
+              <div key={m.label} className="grid grid-cols-[110px_1fr] items-center gap-3 border-b border-dashed border-[#E6DCCB] py-2 last:border-b-0">
                 <span className="text-sm text-stone">{m.label}</span>
-                <div className="flex max-w-[220px] items-stretch">
+                <div className="flex max-w-[220px] items-stretch overflow-hidden rounded-[10px] bg-white shadow-[inset_0_0_0_1px_#D8CCB9,inset_0_1px_2px_rgba(62,50,32,.05)] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E] focus-within:shadow-[inset_0_0_0_1px_#B08A3E,0_0_0_3px_rgba(226,194,122,.3)]">
                   <button
                     type="button"
                     onClick={() => setMeasVal((p) => ({ ...p, [m.label]: Math.max(0, (p[m.label] ?? 0) - 0.5) }))}
-                    className="w-9 rounded-l border border-sand font-bold hover:text-cognac"
+                    className="w-10 text-[18px] font-semibold text-brown transition-colors hover:bg-[#F6EFE0] hover:text-brownDeep"
                     aria-label={`Decrease ${m.label}`}
                   >
                     −
@@ -1184,12 +1184,12 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                     value={fmtHalf(v)}
                     onChange={(e) => setMeasVal((p) => ({ ...p, [m.label]: parseHalf(e.target.value) }))}
                     inputMode="decimal"
-                    className="w-full min-w-0 border-y border-sand bg-transparent text-center text-sm font-semibold focus:outline-none"
+                    className="w-full min-w-0 bg-transparent py-2 text-center text-sm font-semibold tabular-nums focus:outline-none"
                   />
                   <button
                     type="button"
                     onClick={() => setMeasVal((p) => ({ ...p, [m.label]: (p[m.label] ?? 0) + 0.5 }))}
-                    className="w-9 rounded-r border border-sand font-bold hover:text-cognac"
+                    className="w-10 text-[18px] font-semibold text-brown transition-colors hover:bg-[#F6EFE0] hover:text-brownDeep"
                     aria-label={`Increase ${m.label}`}
                   >
                     +
@@ -1204,7 +1204,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
 
       {/* ── SIZE dropdown ── */}
       {sizes.length > 0 && (
-        <div className="mb-3 rounded-lg border border-sand px-4 py-2">
+        <div className="pf-card mb-3 px-4 py-2.5">
         <Dropdown
           label="Size"
           value={size}
@@ -1222,7 +1222,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
 
       {/* ── CHOICE dropdowns — isang dropdown kada group, options sa loob ── */}
       {choiceGroups.map((g) => (
-        <div key={g.name} className="mb-3 rounded-lg border border-sand px-4 py-2">
+        <div key={g.name} className="pf-card mb-3 px-4 py-2.5">
         <Dropdown
           key={g.name}
           label={g.name}
@@ -1237,14 +1237,14 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
 
       {/* ── FABRIC dropdown panel ── */}
       {fabrics.length > 0 && (
-        <div className="mb-3 rounded-lg border border-sand px-4 py-2">
+        <div className="pf-card mb-3 px-4 py-2.5">
         <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
           <span className="text-sm text-stone">Fabric</span>
           <div ref={fabRef} className="relative">
             <button
               type="button"
               onClick={() => setFabOpen((v) => !v)}
-              className={`relative flex w-full items-center justify-center gap-2 rounded-lg border bg-transparent px-9 py-2.5 text-sm font-semibold transition-colors ${fabOpen ? "border-cognac ring-2 ring-cognac/20" : "border-sand hover:border-stone/50"}`}
+              className={`relative flex h-11 w-full items-center justify-center gap-2 rounded-[10px] bg-white px-10 text-[14.5px] font-semibold text-ink transition-shadow ${fabOpen ? "shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.3)]" : "shadow-[inset_0_0_0_1px_#D8CCB9,inset_0_1px_2px_rgba(62,50,32,.05)] hover:shadow-[inset_0_0_0_1px_#B08A3E]"}`}
             >
               {fabrics_.length ? (
                 <>
@@ -1259,15 +1259,15 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
               ) : (
                 <span className="font-normal text-stone/70">{maxFabrics > 1 ? "Select fabric… (up to " + maxFabrics + ")" : "Select fabric…"}</span>
               )}
-              <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-stone transition-transform ${fabOpen ? "rotate-180" : ""}`}>▾</span>
+              <span className={`absolute right-3.5 top-1/2 -translate-y-1/2 text-brown transition-transform ${fabOpen ? "rotate-180" : ""}`}><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><path d="M6 9l6 6 6-6" /></svg></span>
             </button>
             {fabOpen && (
-              <div className="absolute right-0 top-full z-30 mt-1.5 w-[330px] max-w-[92vw] rounded-lg border border-sand bg-white p-2.5 shadow-xl">
+              <div className="pf-estin absolute right-0 top-full z-30 mt-1.5 w-[330px] max-w-[92vw] rounded-xl bg-white p-3 shadow-[0_0_0_1px_#E4DACA,0_20px_44px_-18px_rgba(62,50,32,.5)]">
                 <input
                   value={fabQ}
                   onChange={(e) => setFabQ(e.target.value)}
                   placeholder="Search color…"
-                  className="mb-2 w-full rounded-md border border-sand px-3 py-1.5 text-sm focus:border-cognac focus:outline-none"
+                  className="mb-2 h-10 w-full rounded-[10px] px-3 text-sm shadow-[inset_0_0_0_1px_#D8CCB9] transition-shadow focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E]"
                 />
                 <div className="mb-2 flex gap-1 overflow-x-auto pb-1">
                   {["", ...collections].map((c) => {
@@ -1277,7 +1277,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                         key={c || "all"}
                         type="button"
                         onClick={() => setFabCol(on && c ? "" : c)}
-                        className={`shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-bold ${on || (!fabCol && !c) ? "border-espresso bg-espresso text-cream" : "border-sand bg-white text-stone hover:bg-linen"}`}
+                        className={`shrink-0 rounded-full px-3 py-1.5 text-[11px] font-bold transition-colors ${on || (!fabCol && !c) ? "pf-dark" : "bg-white text-stone shadow-[inset_0_0_0_1px_#E0D5C1] hover:shadow-[inset_0_0_0_1px_#B08A3E]"}`}
                       >
                         {c || "All"}
                       </button>
@@ -1306,7 +1306,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                             if (maxFabrics === 1) setFabOpen(false);
                           }}
                           title={leatherBan ? `${l.name} — not available with Lift Storage` : full ? `Up to ${maxFabrics} fabrics` : l.name}
-                          className={`w-[92px] flex-none overflow-hidden rounded-md bg-white text-center ${leatherBan || full ? "cursor-not-allowed border border-sand opacity-30" : on ? "border-2 border-cognac ring-2 ring-cognac/20" : "border border-sand hover:border-cognac"}`}
+                          className={`w-[92px] flex-none overflow-hidden rounded-md bg-white text-center ${leatherBan || full ? "cursor-not-allowed border border-sand opacity-30" : on ? "shadow-[0_0_0_2px_#B08A3E,0_0_0_5px_rgba(226,194,122,.3)]" : "border border-sand hover:border-cognac"}`}
                         >
                           <SwatchTile s={l} className="h-9 w-full" />
                           <span className={`block truncate px-1 py-0.5 text-[9px] leading-tight ${on ? "font-bold text-ink" : "text-stone"}`}>
@@ -1326,13 +1326,13 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                 {fabrics_.map((f) => {
                   const lib = fabrics.find((x) => x.name === f.name);
                   return (
-                    <div key={f.name} className="flex items-center gap-2 rounded-lg border border-sand px-2 py-1.5">
+                    <div key={f.name} className="flex items-center gap-2 rounded-[10px] bg-white px-2.5 py-2 shadow-[inset_0_0_0_1px_#E0D5C1]">
                       {lib && <SwatchTile s={lib} className="h-[18px] w-[18px] shrink-0 overflow-hidden rounded border border-black/10" />}
                       <span className="min-w-0 flex-1 truncate text-xs">{f.name}</span>
                       <select
                         value={f.part}
                         onChange={(e) => setFabrics_((p) => p.map((x) => (x.name === f.name ? { ...x, part: e.target.value } : x)))}
-                        className="rounded-md border border-sand bg-transparent px-1.5 py-1 text-[11px] font-semibold outline-none focus:border-cognac"
+                        className="rounded-lg bg-white px-2 py-1 text-[11px] font-semibold shadow-[inset_0_0_0_1px_#E0D5C1] outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E]"
                       >
                         {FABRIC_PARTS.map((pt) => <option key={pt} value={pt}>{pt}</option>)}
                       </select>
@@ -1354,14 +1354,14 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
 
       {/* ── FIELD inputs ── */}
       {fields.map((f) => (
-        <div key={f.label} className="mb-3 rounded-lg border border-sand px-4 py-2">
+        <div key={f.label} className="pf-card mb-3 px-4 py-2.5">
         <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
           <span className="text-sm text-stone">{f.label.split("—")[0].split(":")[0].trim()}</span>
           <input
             value={fieldVal[f.label] ?? ""}
             onChange={(e) => setFieldVal((p) => ({ ...p, [f.label]: e.target.value }))}
             placeholder={f.label}
-            className="w-full rounded-lg border border-sand bg-transparent px-3 py-2.5 text-sm focus:border-cognac focus:outline-none"
+            className="h-11 w-full rounded-[10px] bg-white px-3.5 text-sm shadow-[inset_0_0_0_1px_#D8CCB9] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E] focus:outline-none focus:shadow-[inset_0_0_0_1.5px_#B08A3E,0_0_0_3px_rgba(226,194,122,.3)]"
           />
         </div>
         </div>
@@ -1369,9 +1369,9 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
 
       {/* ── OPSYONAL NA DETALYE NG KAMA (2026-10-04) ── Custom Bed lang; wala ritong required. */}
       {isBedCfg && (
-        <div className="mb-3 overflow-hidden rounded-lg border border-sand">
-          <div className="flex items-center gap-2 border-b border-sand bg-linen px-4 py-2.5">
-            <span className="text-xs font-bold tracking-widest2">MORE DETAILS</span>
+        <div className="pf-card mb-3 overflow-hidden">
+          <div className="flex items-center gap-2 border-b border-[#E6DCCB] bg-[linear-gradient(180deg,#FBF4E4,#F6EEDF)] px-4 py-2.5">
+            <span className="text-[10.5px] font-bold tracking-[0.16em] uppercase text-goldDeep">More details</span>
             <span className="text-[11px] text-stone">optional — leave blank if not needed</span>
           </div>
           <div className="px-4 py-2">
@@ -1398,7 +1398,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                 <input value={fieldVal["__wpW"] ?? ""} onChange={(e) => setX("__wpW", numOnly(e.target.value))} inputMode="decimal" placeholder="Width" aria-label="Wall padding width" className="w-24 rounded-lg border border-sand bg-transparent px-3 py-2.5 text-sm focus:border-cognac focus:outline-none" />
                 <span className="flex overflow-hidden rounded-full border border-sand">
                   {(["cm", "inches"] as const).map((u) => (
-                    <button key={u} type="button" onClick={() => setX("__wpU", u)} className={`px-3 py-1.5 text-xs font-semibold ${wpUnit === u ? "bg-cognac text-white" : "text-stone hover:text-ink"}`}>{u === "inches" ? "in" : u}</button>
+                    <button key={u} type="button" onClick={() => setX("__wpU", u)} className={`px-3 py-1.5 text-xs font-semibold ${wpUnit === u ? "bg-brownDeep text-gold" : "text-stone hover:text-ink"}`}>{u === "inches" ? "in" : u}</button>
                   ))}
                 </span>
               </div>
@@ -1416,11 +1416,11 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
 
       {/* ── ADD-ON checkbox rows ── */}
       {checks.length > 0 && (
-        <div className="mb-3 overflow-hidden rounded-lg border border-sand">
-          <button type="button" onClick={() => setAddOpen((v) => !v)} className="flex w-full items-center gap-2 border-b border-sand bg-linen px-4 py-2.5 text-left">
-            <span className="text-xs font-bold tracking-widest2">ADD-ONS</span>
-            <span className="rounded bg-cognac/10 px-2 py-0.5 text-[10px] font-bold tracking-widest2 text-cognac">{checks.filter((a) => isPicked(a.label)).length} SELECTED</span>
-            <span className="ml-auto text-xs text-stone">{addOpen ? "− HIDE" : "+ SHOW"}</span>
+        <div className="pf-card mb-3 overflow-hidden">
+          <button type="button" onClick={() => setAddOpen((v) => !v)} aria-expanded={addOpen} className="flex w-full items-center gap-2.5 border-b border-[#E6DCCB] bg-[linear-gradient(180deg,#FBF4E4,#F6EEDF)] px-4 py-2.5 text-left">
+            <span className="text-[10.5px] font-bold tracking-[0.16em] uppercase text-goldDeep">Add-ons</span>
+            <span className="rounded-full bg-goldSoft px-2.5 py-0.5 text-[10px] font-bold tracking-[0.12em] uppercase text-brownDeep">{checks.filter((a) => isPicked(a.label)).length} selected</span>
+            <span className="ml-auto text-[11px] font-semibold tracking-[0.1em] uppercase text-stone">{addOpen ? "− Hide" : "+ Show"}</span>
           </button>
           {addOpen && (
           <div className="p-3">
@@ -1431,14 +1431,14 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
               return (
                 <label
                   key={a.label}
-                  className={`flex items-center gap-3 rounded border px-4 py-3 text-sm transition-colors ${ban ? "cursor-not-allowed border-stone/20 opacity-50" : on ? "cursor-pointer border-cognac bg-cognac/5" : "cursor-pointer border-stone/30 hover:border-stone/60"}`}
+                  className={`flex items-center gap-3 rounded-xl bg-white px-4 py-3 text-sm transition ${ban ? "cursor-not-allowed opacity-50 shadow-[inset_0_0_0_1px_#E0D5C1]" : on ? "cursor-pointer shadow-[inset_0_0_0_1.5px_#B08A3E,0_12px_20px_-16px_rgba(62,50,32,.5)]" : "cursor-pointer shadow-[inset_0_0_0_1px_#E0D5C1] hover:shadow-[inset_0_0_0_1px_#B08A3E]"}`}
                 >
                   <input
                     type="checkbox"
                     checked={on}
                     disabled={!!ban}
                     onChange={() => toggleCheck(a.label)}
-                    className="accent-cognac"
+                    className="pf-check"
                   />
                   <span className="min-w-0 flex-1">
                     {/* RED STRIKETHROUGH sa banned — mabilis maintindihang bawal */}
@@ -1455,12 +1455,12 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             })}
           </div>
           {fourOn && (
-            <p className="mt-2 rounded bg-linen px-3 py-2 text-xs text-stone">
+            <p className="mt-2 rounded-xl bg-goldSoft px-3.5 py-2.5 text-xs text-stone">
               4 built-in drawers — no other add-ons will reflect.
             </p>
           )}
           {liftOn && (
-            <p className="mt-2 rounded bg-linen px-3 py-2 text-xs text-stone">
+            <p className="mt-2 rounded-xl bg-goldSoft px-3.5 py-2.5 text-xs text-stone">
               Lift Storage — Platform Style base; drawers/pullout are no longer available (Tufted only).
             </p>
           )}
@@ -1472,7 +1472,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
       {/* ── DOUBLE WALLING ── ang kapal ng dingding ang nagdedesisyon ng sukat ng
           FRAME — doon humihiwa ang workshop, hindi sa sukat ng kutson. */}
       {doubleWallOn && (
-        <div className="mt-3 rounded-lg border-l-4 border-cognac bg-linen/50 py-1 pl-4 pr-3">
+        <div className="pf-card mt-3 border-l-4 border-goldDeep py-1.5 pl-4 pr-3">
           <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
             {/* Ang kapal ng dingding ang nagtatakda ng sukat ng frame — unang
                 tanong ng bloke, at hindi na kailangang pangalanang "thickness"
@@ -1488,7 +1488,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                   key={t}
                   type="button"
                   onClick={() => setDwThick(t)}
-                  className={`rounded-full border px-3 py-1 text-xs font-semibold ${dwThick === t ? "border-cognac bg-cognac text-white" : "border-sand hover:border-cognac"}`}
+                  className={`rounded-full border px-3 py-1 text-xs font-semibold ${dwThick === t ? "border-brownDeep bg-brownDeep text-gold" : "border-[#D8CCB9] bg-white hover:border-goldDeep"}`}
                 >
                   {t}&quot;
                   {dwPriceAt("wall thickness", i) > 0 && (
@@ -1501,7 +1501,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           {/* Kaparehong hulma ng add-on row: rounded border, px-4 py-3, text-sm
               — pangalan sa kaliwa, halaga sa kanan na naka-bold. */}
           {frameLabel(size, dwThick) && (
-            <div className="my-1.5 overflow-hidden rounded border border-cognac/40">
+            <div className="my-1.5 overflow-hidden rounded-xl shadow-[inset_0_0_0_1px_rgba(176,138,62,.5)]">
               <div className="flex items-center gap-3 border-b border-sand px-4 py-3 text-sm">
                 <span className="min-w-0 flex-1 text-stone">Mattress size</span>
                 <span className="shrink-0 font-mono tabular-nums">
@@ -1512,8 +1512,8 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                   <span className="ml-1 text-xs font-sans text-stone">in</span>
                 </span>
               </div>
-              <div className="flex items-center gap-3 bg-cognac/5 px-4 py-3 text-sm">
-                <span className="min-w-0 flex-1 font-semibold text-cognac">Frame Dimension</span>
+              <div className="flex items-center gap-3 bg-goldSoft px-4 py-3 text-sm">
+                <span className="min-w-0 flex-1 font-semibold text-brownDeep">Frame Dimension</span>
                 <span className="shrink-0 font-mono font-bold tabular-nums">
                   {frameLabel(size, dwThick)!.replace("x", " × ")}
                   <span className="ml-1 text-xs font-sans font-normal text-stone">in</span>
@@ -1541,7 +1541,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           </div>
           {/* Palamuti — hindi kailangan para maitayo ang dingding. */}
           <div className="mt-1 flex items-center gap-2 border-t border-sand pt-1.5">
-            <span className="text-[10px] font-extrabold uppercase tracking-widest text-cognac">Add-ons</span>
+            <span className="text-[10px] font-extrabold uppercase tracking-widest text-goldDeep">Add-ons</span>
             <span className="text-[10px] text-stone">optional trim</span>
           </div>
           <div className="grid grid-cols-[110px_1fr] items-center gap-3 py-1.5">
@@ -1552,7 +1552,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
                   key={n}
                   type="button"
                   onClick={() => setDwNails(dwNails === n ? "" : n)}
-                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${dwNails === n ? "border-cognac bg-cognac text-white" : "border-sand hover:border-cognac"}`}
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${dwNails === n ? "border-brownDeep bg-brownDeep text-gold" : "border-[#D8CCB9] bg-white hover:border-goldDeep"}`}
                 >
                   <span className="h-3 w-3 shrink-0 rounded-full border border-black/15" style={{ background: css }} />
                   {n}
@@ -1569,7 +1569,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
               <button
                 type="button"
                 onClick={() => setDwAccent((v) => !v)}
-                className={`rounded-full border px-3 py-1 text-xs font-semibold ${dwAccent ? "border-cognac bg-cognac text-white" : "border-sand hover:border-cognac"}`}
+                className={`rounded-full border px-3 py-1 text-xs font-semibold ${dwAccent ? "border-brownDeep bg-brownDeep text-gold" : "border-[#D8CCB9] bg-white hover:border-goldDeep"}`}
               >
                 Gold accent{dwAccent ? " ✓" : ""}
                 {(dwOpt("gold accent")?.price ?? 0) > 0 && (
@@ -1583,9 +1583,9 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
 
       {/* ── FIXED as-is rows ── */}
       {fixed.map((f) => (
-        <div key={f.label} className="mt-2 flex items-center gap-2 rounded border border-dashed border-olive/60 bg-linen px-3 py-2 text-sm">
+        <div key={f.label} className="mt-2 flex items-center gap-2 rounded-xl border border-dashed border-goldDeep/60 bg-goldSoft/60 px-3.5 py-2.5 text-sm">
           <span className="min-w-0 flex-1">{f.label}</span>
-          <span className="shrink-0 text-[10px] font-extrabold uppercase tracking-widest2 text-olive">as-is</span>
+          <span className="shrink-0 text-[10px] font-extrabold uppercase tracking-widest2 text-goldDeep">as-is</span>
         </div>
       ))}
 
@@ -1608,7 +1608,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           habang binubuo pa ng customer ang produkto. Ang buong listahan ay
           nasa /quote-request; ang badge sa header ang paalala. */}
       {added2 && (
-        <p className="mt-3 flex items-center gap-2 rounded border border-olive/60 bg-olive/10 px-3 py-2 text-xs font-bold text-olive">
+        <p className="mt-3 flex items-center gap-2 rounded-xl bg-goldSoft px-3.5 py-2.5 text-xs font-bold text-brownDeep">
           ✓ Added to your request
           <a href="/quote-request" className="ml-auto text-[11px] font-semibold text-cognac underline">
             View request ({quote.length})
@@ -1623,10 +1623,10 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
       {handle && (
         <div className="mt-3 flex gap-3">
           {!editId && (
-            <div className="flex items-center rounded border border-stone/40">
-              <button onClick={() => setQty(Math.max(1, qty - 1))} className="px-4 py-3 hover:text-cognac" aria-label="Decrease quantity">−</button>
-              <span className="w-8 text-center text-sm">{qty}</span>
-              <button onClick={() => setQty(qty + 1)} className="px-4 py-3 hover:text-cognac" aria-label="Increase quantity">+</button>
+            <div className="flex h-12 items-center overflow-hidden rounded-xl bg-white shadow-[inset_0_0_0_1px_#E0D5C1] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E]">
+              <button onClick={() => setQty(Math.max(1, qty - 1))} className="h-full w-10 text-[18px] text-brown transition-colors hover:bg-[#F6EFE0] hover:text-brownDeep" aria-label="Decrease quantity">−</button>
+              <span className="w-9 text-center text-sm font-semibold tabular-nums">{qty}</span>
+              <button onClick={() => setQty(qty + 1)} className="h-full w-10 text-[18px] text-brown transition-colors hover:bg-[#F6EFE0] hover:text-brownDeep" aria-label="Increase quantity">+</button>
             </div>
           )}
           <button
@@ -1634,7 +1634,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
             disabled={quoteSending || buildMissingNow.length > 0}
             title={buildMissingNow.length ? `Still needed: ${buildMissingNow.join(", ")}` : undefined}
             onClick={addToRequest}
-            className="flex flex-1 items-center justify-center rounded border-[1.5px] border-dashed border-cognac bg-linen px-4 py-3 text-sm font-bold text-cognac transition-colors hover:bg-cognac hover:text-cream disabled:cursor-not-allowed disabled:border-stone/40 disabled:bg-transparent disabled:text-stone/60 disabled:hover:bg-transparent disabled:hover:text-stone/60"
+            className="flex h-12 flex-1 items-center justify-center rounded-xl border-[1.5px] border-dashed border-goldDeep bg-white px-4 text-[13.5px] font-bold text-brownDeep transition hover:bg-brownDeep hover:text-gold disabled:cursor-not-allowed disabled:border-[#D8CCB9] disabled:bg-transparent disabled:text-stone/60 disabled:hover:bg-transparent"
           >
             {added2 ? "✓ Added to request" : editId ? "Save changes" : "+ Add to request"}
           </button>
@@ -1642,7 +1642,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           {editId && (
             <a
               href="/quote-request"
-              className="flex items-center justify-center rounded border border-stone/40 px-5 py-3 text-xs font-bold uppercase tracking-widest2 text-stone transition-colors hover:border-ink hover:text-ink"
+              className="flex h-12 items-center justify-center rounded-xl bg-white px-5 text-[13px] font-semibold text-stone shadow-[inset_0_0_0_1px_#E0D5C1] transition hover:text-ink hover:shadow-[inset_0_0_0_1px_#B08A3E]"
             >
               Cancel
             </a>
@@ -1656,10 +1656,10 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           /quote-request, kung saan nakikita ang buong listahan. */}
       <div className={editId ? "hidden" : handle ? "mt-2 flex gap-3" : "mt-3 flex gap-3"}>
         {!handle && (
-          <div className="flex items-center rounded border border-stone/40">
-            <button onClick={() => setQty(Math.max(1, qty - 1))} className="px-4 py-3 hover:text-cognac" aria-label="Decrease quantity">−</button>
-            <span className="w-8 text-center text-sm">{qty}</span>
-            <button onClick={() => setQty(qty + 1)} className="px-4 py-3 hover:text-cognac" aria-label="Increase quantity">+</button>
+          <div className="flex h-12 items-center overflow-hidden rounded-xl bg-white shadow-[inset_0_0_0_1px_#E0D5C1] transition-shadow hover:shadow-[inset_0_0_0_1px_#B08A3E]">
+            <button onClick={() => setQty(Math.max(1, qty - 1))} className="h-full w-10 text-[18px] text-brown transition-colors hover:bg-[#F6EFE0] hover:text-brownDeep" aria-label="Decrease quantity">−</button>
+            <span className="w-9 text-center text-sm font-semibold tabular-nums">{qty}</span>
+            <button onClick={() => setQty(qty + 1)} className="h-full w-10 text-[18px] text-brown transition-colors hover:bg-[#F6EFE0] hover:text-brownDeep" aria-label="Increase quantity">+</button>
           </div>
         )}
         {/* IISANG LANDAS PARA SA LAHAT: idinadagdag ang nasa harap sa
@@ -1676,9 +1676,9 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
               if (buildMissingNow.length === 0) addToQuote(currentSlot());
               window.location.href = "/quote-request";
             }}
-            className="flex flex-1 items-center justify-center rounded bg-espresso px-4 py-3 text-base font-medium text-cream transition-colors hover:bg-cognac disabled:cursor-not-allowed disabled:bg-stone/50 disabled:hover:bg-stone/50"
+            className="pf-dark pf-btn inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-xl px-4 text-[14px] font-bold hover:text-gold disabled:cursor-not-allowed disabled:bg-[#C9BFAE] disabled:bg-none disabled:text-white/85 disabled:shadow-none disabled:hover:translate-y-0 disabled:hover:text-white/85"
           >
-            {quoteBtnCount > 1 ? `Request a Quote · ${quoteBtnCount} items` : "Request a Quote"}
+            {quoteBtnCount > 1 ? `Request a Quote · ${quoteBtnCount} items` : "Request a Quote"} <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg>
           </button>
         )}
         {heartBtn}
@@ -1689,15 +1689,16 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           Ang paalalang "ipapadala ito sa Messenger" ay tinanggal din — sinasabi
           na iyon ng buton mismo, at nasa /quote-request bago ipadala. */}
       {missingNow.length > 0 && (
-        <p className={`mt-2 rounded border px-3 py-2 text-xs ${quoteErr.length ? "border-red-200 bg-red-50 text-red-800" : "border-sand bg-linen text-stone"}`}>
-          <b className={quoteErr.length ? "" : "text-ink"}>Still needed:</b> {missingNow.join(", ")}.
+        <p className={`mt-2 flex flex-wrap items-center gap-1.5 rounded-xl px-3.5 py-2.5 text-xs ${quoteErr.length ? "border border-red-200 bg-red-50 text-red-800" : "bg-goldSoft text-stone"}`}>
+          <b className={`mr-1 ${quoteErr.length ? "" : "text-ink"}`}>Still needed:</b>
+          {missingNow.map((m, i) => <span key={`${m}-${i}`} className={`rounded-full px-2.5 py-1 text-[11.5px] font-semibold ${quoteErr.length ? "bg-white text-red-800" : "bg-white text-brownDeep shadow-[inset_0_0_0_1px_rgba(176,138,62,.35)]"}`}>{m}</span>)}
         </p>
       )}
       {/* Balik sa yari nang unit — same button style ng CUSTOMIZE */}
       {readyAvail && (
         <button
           onClick={() => setView("ready")}
-          className="mt-3 flex w-full items-center justify-center gap-2 rounded border border-ink py-3 px-4 text-sm font-bold tracking-widest2 transition-colors hover:bg-ink hover:text-cream"
+          className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-white py-3 px-4 text-[13.5px] font-semibold text-ink shadow-[inset_0_0_0_1px_#C9B98F] transition hover:shadow-[inset_0_0_0_1.5px_#B08A3E] hover:text-goldDeep"
         >
           ● BUY NOW — SHIPS THIS WEEK
         </button>
