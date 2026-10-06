@@ -64,7 +64,7 @@ export default async function HomePage() {
                 {/* Uniform na tile (2026-09-04): buong litrato (contain) - pareho ang
                     dating ng product photo at ng category photo, walang putol.
                     Premium (2026-10-07): cream na entablado, natutunaw ang puting
-                    background ng litrato (multiply), pangalan at arrow sa ibaba. */}
+                    background ng litrato (multiply), pangalan na nakagitna sa ibaba. */}
                 <span className="relative block aspect-square pf-stage overflow-hidden border-b border-goldDeep/20">
                   {/* Ang zoom sa hover ay nasa balot na may sariling entablado, para
                       hindi maputol ang multiply ng litrato habang gumagalaw. */}
@@ -72,10 +72,8 @@ export default async function HomePage() {
                     <FitImage src={categoryTileImage(t.slug)} alt={t.label} className="mix-blend-multiply" sizes="(min-width: 1100px) 160px, 40vw" />
                   </span>
                 </span>
-                <span className="flex flex-1 items-center justify-between gap-2 px-2.5 py-2.5 sm:px-3.5 sm:py-3 font-cormorant font-semibold text-[12.5px] sm:text-[14.5px] leading-tight">
-                  <span className="min-w-0">{t.label}</span>
-                  <i aria-hidden className="hidden lg:grid place-items-center w-7 h-7 shrink-0 rounded-full bg-brownDeep text-gold text-[13px] not-italic transition group-hover:translate-x-0.5 group-hover:bg-gold group-hover:text-brownDeep">→</i>
-                </span>
+                {/* Pangalan lang, nakagitna; tanggal ang arrow (Joe 2026-10-07). */}
+                <span className="flex flex-1 items-center justify-center px-2.5 py-2.5 sm:px-3.5 sm:py-3 text-center font-cormorant font-semibold text-[12.5px] sm:text-[14.5px] leading-tight transition-colors group-hover:text-goldDeep">{t.label}</span>
               </Link>
             ) : (
               <div key={t.slug} className="pf-card flex h-full flex-col overflow-hidden text-left text-stone" aria-label={`${t.label} — coming soon`}>
@@ -84,7 +82,7 @@ export default async function HomePage() {
                   <span className="text-[10px] font-bold tracking-[0.18em] uppercase text-gold">Coming soon</span>
                   <span className="absolute inset-x-3 bottom-2.5 border-t border-gold/25" />
                 </span>
-                <span className="flex flex-1 items-center px-2.5 py-2.5 sm:px-3.5 sm:py-3 font-cormorant font-semibold text-[12.5px] sm:text-[14.5px] leading-tight">{t.label}</span>
+                <span className="flex flex-1 items-center justify-center px-2.5 py-2.5 sm:px-3.5 sm:py-3 text-center font-cormorant font-semibold text-[12.5px] sm:text-[14.5px] leading-tight">{t.label}</span>
               </div>
             ),
           )}
