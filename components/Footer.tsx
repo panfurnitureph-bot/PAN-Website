@@ -14,6 +14,7 @@ import { contactLinks, homepage, type SiteContent } from "@/lib/products";
 const SHOP = [
   { label: "Beds & Mattress", href: "/collections/beds" },
   { label: "Sofas", href: "/collections/sofas" },
+  { label: "Chairs", href: "/collections/chairs" },
   { label: "Dining", href: "/collections/dining" },
   { label: "Living", href: "/collections/living" },
   { label: "Made to order", href: "/collections/customized-bed" },

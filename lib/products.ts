@@ -176,29 +176,23 @@ export function primeContent(next: {
 export const COLLECTIONS: Record<string, { title: string; categories: string[] }> = {
   "new-in": { title: "New In", categories: [] }, // special: lahat ng isNew
   // "new-*" = mga BAGONG items lang ng grupong yun (isNew filter)
-  "new-beds": { title: "New Beds", categories: ["bed", "sofa-bed", "mattress", "customized-bed"] },
-  "new-sofas": { title: "New Sofas", categories: ["sofa", "sofa-bed", "accent-chair"] },
-  "new-dining": {
-    title: "New Dining",
-    categories: ["dining-table", "dining-chairs", "dining-set", "barstool"],
-  },
-  "new-living": {
-    title: "New Living",
-    categories: ["accent-chair", "side-table", "ottoman-ph", "swivel-chair"],
-  },
+  // PAREHONG PANGKAT NG HOME (Joe 2026-10-08, "pagsama-samahin para di
+  // nakakaligaw"): ang mga grupo ng nav ay kapareho ng category rows ng Home —
+  // Chairs (Swivel, Dining Chair, Accent Chair, Barstool), Beds (Promo, Custom,
+  // Mattress), Sofas (Sofa, Sofa Bed), Dining (Table, Set, Barstool), Living
+  // (Side Table, Ottoman, Decoration). Walang Accent Chair sa Sofas, walang
+  // Sofa Bed sa Beds: isang lugar kada upuan, kagaya ng nasa Home.
+  "new-beds": { title: "New Beds", categories: ["bed", "customized-bed", "mattress"] },
+  "new-sofas": { title: "New Sofas", categories: ["sofa", "sofa-bed"] },
+  "new-chairs": { title: "New Chairs", categories: ["swivel-chair", "dining-chairs", "accent-chair", "barstool"] },
+  "new-dining": { title: "New Dining", categories: ["dining-table", "dining-set", "barstool"] },
+  "new-living": { title: "New Living", categories: ["side-table", "ottoman-ph", "collective-figurines", "mugs", "lamp", "vase"] },
   // --- Grupo (para sa top nav) ---
-  beds: { title: "Beds", categories: ["bed", "sofa-bed", "mattress", "customized-bed"] },
-  sofas: { title: "Sofas", categories: ["sofa", "sofa-bed", "accent-chair"] },
-  dining: {
-    title: "Dining",
-    categories: ["dining-table", "dining-chairs", "dining-set", "barstool"],
-  },
-  living: {
-    title: "Living",
-    // DECOR (2026-09-12): figurines, mugs, lamp, vase — sa Living din.
-    // SOFA ay Sofas lang (Joe 2026-09-12) — tanggal sa Living.
-    categories: ["accent-chair", "side-table", "ottoman-ph", "swivel-chair", "collective-figurines", "mugs", "lamp", "vase"],
-  },
+  beds: { title: "Beds", categories: ["bed", "customized-bed", "mattress"] },
+  sofas: { title: "Sofas", categories: ["sofa", "sofa-bed"] },
+  chairs: { title: "Chairs", categories: ["swivel-chair", "dining-chairs", "accent-chair", "barstool"] },
+  dining: { title: "Dining", categories: ["dining-table", "dining-set", "barstool"] },
+  living: { title: "Living", categories: ["side-table", "ottoman-ph", "collective-figurines", "mugs", "lamp", "vase"] },
   // --- Opisyal na categories — PAREHONG PANGALAN ng IMS MTO categories
   //     (lib/categories.ts sa IMS); ang slug ay URL lang, hindi binabago. ---
   bed: { title: "Promo Bed", categories: ["bed"] },
@@ -239,9 +233,8 @@ export const NAV_LINKS: NavLink[] = [
     children: [
       { label: "All Beds", href: "/collections/beds" },
       { label: "Promo Bed", href: "/collections/bed" },
-      { label: "Sofa Bed", href: "/collections/sofa-bed" },
-      { label: "Mattress", href: "/collections/mattress" },
       { label: "Custom Bed", href: "/collections/customized-bed" },
+      { label: "Mattress", href: "/collections/mattress" },
     ],
   },
   {
@@ -251,7 +244,18 @@ export const NAV_LINKS: NavLink[] = [
       { label: "All Sofas", href: "/collections/sofas" },
       { label: "Sofa", href: "/collections/sofa" },
       { label: "Sofa Bed", href: "/collections/sofa-bed" },
+    ],
+  },
+  {
+    // CHAIRS (Joe 2026-10-08): kapareho ng "Chairs" na row sa Home.
+    label: "Chairs",
+    href: "/collections/chairs",
+    children: [
+      { label: "All Chairs", href: "/collections/chairs" },
+      { label: "Swivel Chair", href: "/collections/swivel-chair" },
+      { label: "Dining Chair", href: "/collections/dining-chairs" },
       { label: "Accent Chair", href: "/collections/accent-chair" },
+      { label: "Barstool", href: "/collections/barstool" },
     ],
   },
   {
@@ -260,7 +264,6 @@ export const NAV_LINKS: NavLink[] = [
     children: [
       { label: "All Dining", href: "/collections/dining" },
       { label: "Dining Table", href: "/collections/dining-table" },
-      { label: "Dining Chair", href: "/collections/dining-chairs" },
       { label: "Dining Set", href: "/collections/dining-set" },
       { label: "Barstool", href: "/collections/barstool" },
     ],
@@ -272,8 +275,6 @@ export const NAV_LINKS: NavLink[] = [
       { label: "All Living", href: "/collections/living" },
       { label: "Side Table", href: "/collections/side-table" },
       { label: "Ottoman", href: "/collections/ottoman-ph" },
-      { label: "Accent Chair", href: "/collections/accent-chair" },
-      { label: "Swivel Chair", href: "/collections/swivel-chair" },
       // DECORATION (Joe 2026-09-12): isang entry para sa figurines, mugs,
       // lamp at vase — /collections/decoration ang lahat ng ito.
       { label: "Decoration", href: "/collections/decoration" },
