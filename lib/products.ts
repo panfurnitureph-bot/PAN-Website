@@ -296,6 +296,13 @@ export const CATEGORY_TILES = [
   { label: "Accent Chair", slug: "accent-chair" },
   { label: "Barstool", slug: "barstool" },
   { label: "Swivel Chair", slug: "swivel-chair" },
+  // DECOR (Joe 2026-10-08, "para sure lalabas lahat ung product"): may tile na
+  // rin ang mugs, lamp, vase at figurines; sa Home, lumalabas lang ang decor
+  // tile kapag may produkto na (walang "Coming soon" para sa decor).
+  { label: "Mugs", slug: "mugs" },
+  { label: "Lamp", slug: "lamp" },
+  { label: "Vase", slug: "vase" },
+  { label: "Collective Figurines", slug: "collective-figurines" },
 ];
 
 // ---------- Categories follow the IMS ----------

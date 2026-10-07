@@ -8,7 +8,7 @@
 import { useState } from "react";
 import Rail from "./Rail";
 import ProductCard from "@/components/ProductCard";
-import type { HomepageContent, Product } from "@/lib/products";
+import { CATEGORY_TILES, DECOR_CATEGORIES, type HomepageContent, type Product } from "@/lib/products";
 
 type Row = { title: string; tabs: { label: string; slug: string }[] };
 
@@ -25,6 +25,20 @@ export default function CategoryRows({ products, config }: { products: Product[]
       return { title: r.title, tabs, total };
     })
     .filter((r) => r.total >= min && r.tabs.length > 0);
+  // LAHAT NG MAY PRODUKTO AY LUMALABAS (Joe 2026-10-08, "para sure lalabas lahat
+  // ung product"): ang category na may produkto pero wala sa alinmang row ng
+  // IMS → Website → Homepage ay kusang nakukuha: ang decor (mugs, lamp, vase,
+  // figurines) bilang "Decoration" na row, ang iba bilang "More". Parehong min.
+  const covered = new Set(rows.flatMap((r) => r.tabs.map((t) => t.slug)));
+  const left = [...new Set(products.map((p) => p.category))].filter((c) => c && !covered.has(c));
+  const labelOf = (c: string) => CATEGORY_TILES.find((t) => t.slug === c)?.label ?? c.replace(/-/g, " ").replace(/\w/g, (ch) => ch.toUpperCase());
+  const auto = (title: string, cats: string[]) => {
+    const tabs = cats.map((c) => ({ label: labelOf(c), slug: c, items: products.filter((p) => p.category === c) })).filter((t) => t.items.length > 0).sort((a, b) => b.items.length - a.items.length);
+    return { title, tabs, total: tabs.reduce((n, t) => n + t.items.length, 0) };
+  };
+  for (const r of [auto("Decoration", left.filter((c) => DECOR_CATEGORIES.includes(c))), auto("More", left.filter((c) => !DECOR_CATEGORIES.includes(c)))]) {
+    if (r.total >= min && r.tabs.length > 0 && !built.some((b) => b.title === r.title)) built.push(r);
+  }
   if (!built.length) return null;
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-8 flex flex-col gap-12 md:gap-14 py-12 md:py-14">

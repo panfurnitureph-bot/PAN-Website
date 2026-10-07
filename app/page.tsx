@@ -13,7 +13,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { homepage, products, swatchLibrary, CATEGORY_TILES, categoryTileImage } from "@/lib/products";
+import { homepage, products, swatchLibrary, CATEGORY_TILES, DECOR_CATEGORIES, categoryTileImage } from "@/lib/products";
 import { primeStoreContent } from "@/lib/content";
 import FitImage from "@/components/FitImage";
 import { messengerHandle } from "@/lib/messenger";
@@ -47,7 +47,7 @@ export default async function HomePage() {
   // LAHAT ng category ang nasa tiles (2026-09-04): ang may published na
   // produkto = litrato + link; ang wala pa = "Coming soon" na PAN tile, hindi
   // clickable. Kusang nagiging tunay na tile pag may na-publish.
-  const tiles = CATEGORY_TILES.map((t) => ({ ...t, live: listed.some((p) => p.category === t.slug) }));
+  const tiles = CATEGORY_TILES.map((t) => ({ ...t, live: listed.some((p) => p.category === t.slug) })).filter((t) => t.live || !DECOR_CATEGORIES.includes(t.slug));
   const handle = messengerHandle((site as unknown as { social?: { facebook?: string } }).social?.facebook);
   const mtoImage = listed.find((p) => p.category === "customized-bed")?.images[0] ?? listed.find((p) => p.category === "bed")?.images[0];
 
