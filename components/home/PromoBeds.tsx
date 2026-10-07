@@ -140,17 +140,18 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
   const minPrice = Math.min(...tiles.map((t) => t.from).filter((n) => n > 0));
   const foot = copy?.foot?.length ? copy.foot : ["30% downpayment to start", "4–6 weeks build to delivery", "6-month warranty on frame, foam and workmanship"];
 
-  // GALLERY (Joe 2026-10-07: pinili sa mockup ang "3 · Gallery", "GO") — madilim
-  // na band: sa itaas ang eyebrow, pamagat, sub at "See all promo beds"; sa gitna
-  // ang malapad na maliwanag na STUDIO (detalye ng napiling kama sa kaliwa, ang
-  // kama mismo sa kanan, malaking numerong balangkas sa likod); sa ilalim ang
-  // mga kama bilang tab (litrato, bilang, pangalan); at ang foot lines sa isang
-  // hilera. Parehong mga kama, link at laman ng dati (pangalan, sizes na may
-  // presyo, "from", mga kulay); ang presyo sa pamagat ay ginto lang ang kulay.
-  // Itapat ang mouse sa tab = iyon ang nasa studio; sa telepono ang unang tap ay
-  // pumipili at ang pangalawa ang nagbubukas. BABALA SA BLEND: walang z-index,
-  // transform o opacity sa mga balot ng litrato sa pagitan nito at ng studio —
-  // kung meron, babalik ang puting background ng litrato.
+  // SHOWCASE (Joe 2026-10-07: "5 · Showcase" sa mockup, na may bagong mga
+  // button) — madilim na band, dalawang hanay: sa KALIWA ang kama mag-isa sa
+  // matangkad na maliwanag na studio (maliit na selyo ng bilang sa sulok, anino
+  // sa sahig); sa KANAN ang salaming panel na may eyebrow, pamagat, sub, ang
+  // cream na card ng napiling kama (pangalan, tampok, chips, "Build this bed" na
+  // madilim na bar na may gintong kislap sa hover) at ang apat na kama bilang
+  // patayong listahan (thumbnail, pangalan, tampok, tuldok). Sa ilalim ang foot
+  // lines at ang "See all promo beds" na outlined na pill. Parehong mga kama,
+  // link at laman ng dati (pangalan, sizes na may presyo, "from", mga kulay).
+  // Itapat ang mouse sa hilera = iyon ang nasa studio; sa telepono ang unang tap
+  // ay pumipili at ang pangalawa ang nagbubukas. BABALA SA BLEND: walang
+  // transform o opacity sa balot ng litrato sa pagitan nito at ng studio.
   const title = copy?.title || (Number.isFinite(minPrice) ? `Promo beds from ${formatPrice(minPrice)}` : "Promo beds");
   const list = [featured, ...rest];
   const cur = list[sel] ?? featured;
@@ -173,89 +174,103 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
       <span aria-hidden className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(226,194,122,.7)_25%,rgba(226,194,122,.7)_75%,transparent)]" />
       <span aria-hidden className="absolute inset-x-0 bottom-0 h-px bg-[linear-gradient(90deg,transparent,rgba(226,194,122,.7)_25%,rgba(226,194,122,.7)_75%,transparent)]" />
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
-        <div data-reveal className="grid gap-x-7 gap-y-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end mb-6 md:mb-7">
-          <div className="min-w-0">
-            <p className="inline-flex items-center gap-3 text-[11px] font-bold tracking-[0.2em] uppercase text-gold"><i aria-hidden className="w-7 h-px bg-gold" />{copy?.eyebrow ?? "Promo Bed · made to order"}</p>
-            <h2 className="font-cormorant font-semibold text-[clamp(28px,3.5vw,42px)] leading-[1.05] tracking-[-0.02em] mt-3.5 text-[#FBF4E4] [text-wrap:balance]">
-              {title.split(/(₱[\d,.]+)/).map((part, i) => i % 2 ? <em key={i} className="not-italic bg-[linear-gradient(180deg,#F3DDA4,#C99F4A)] bg-clip-text text-transparent">{part}</em> : part)}
-            </h2>
-            {copy?.sub && <p className="text-[15px] leading-relaxed mt-2.5 max-w-[62ch] text-[#D8CBB0]">{copy.sub}</p>}
-          </div>
-          <Link href="/collections/bed" className="group pf-gold pf-btn inline-flex w-max items-center gap-2 h-[50px] px-6 rounded-full text-sm font-bold whitespace-nowrap">See all promo beds <span className="transition-transform group-hover:translate-x-0.5">{arrow}</span></Link>
-        </div>
-
-        <div data-reveal>
-          <Link ref={stage} href={cur.href} className="group pf-studio-wide relative isolate grid lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:items-center lg:h-[480px] overflow-hidden rounded-[22px] sm:rounded-[28px] text-ink shadow-[0_0_0_1px_rgba(226,194,122,.6),0_0_0_8px_rgba(226,194,122,.08),0_44px_70px_-40px_rgba(0,0,0,.95)]">
-            <span aria-hidden className="pointer-events-none absolute right-2 top-0.5 lg:right-[2%] lg:-top-2 select-none font-cormorant font-semibold text-[150px] sm:text-[220px] lg:text-[clamp(240px,30vw,400px)] leading-[0.84] tracking-[-0.06em] text-transparent [-webkit-text-stroke:1.5px_rgba(176,138,62,.28)]">{String(sel + 1).padStart(2, "0")}</span>
-            <div className="relative flex justify-center lg:justify-end max-lg:aspect-[1.3/1] lg:order-2 lg:h-full lg:pr-[5%]">
-              <div className="relative h-full aspect-square">
-                <i aria-hidden className="absolute left-[2%] right-[2%] top-[81%] h-[8%] rounded-[50%] bg-[radial-gradient(closest-side,rgba(62,50,32,.36),transparent)]" />
-                {list.map((b, i) => <StagePhoto key={b.key} src={photo(b)} alt={i === sel ? b.name : ""} on={i === sel} priority={i === 0} w={108} floor={85} ceil={13} />)}
+        <div data-reveal className="grid gap-3 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,.85fr)] lg:gap-[18px]">
+          {/* studio: ang kama mag-isa */}
+          <Link ref={stage} href={cur.href} className="group pf-studio relative isolate block overflow-hidden rounded-[20px] lg:rounded-[26px] max-lg:aspect-[1.15/1] lg:min-h-[560px] text-ink shadow-[0_0_0_1px_rgba(226,194,122,.55),0_0_0_8px_rgba(226,194,122,.07),0_44px_70px_-36px_rgba(0,0,0,.95)]" aria-label={`${split(cur.name).title} — build this bed`}>
+            <span aria-hidden className="pointer-events-none absolute inset-0 z-[2] bg-[radial-gradient(ellipse_90%_80%_at_50%_50%,transparent_60%,rgba(62,50,32,.08)_100%)]" />
+            <span className="absolute right-3 top-3 lg:right-5 lg:top-[18px] z-[3] grid gap-0.5 rounded-xl bg-white/90 px-3 py-1.5 lg:px-3.5 lg:py-2 text-right shadow-[0_0_0_1px_rgba(176,138,62,.3),0_14px_24px_-16px_rgba(62,50,32,.6)] backdrop-blur-sm">
+              <small className="text-[9px] lg:text-[9.5px] font-bold tracking-[0.2em] uppercase text-goldDeep">{label}</small>
+              <b className="font-cormorant font-semibold text-[20px] lg:text-[26px] leading-none tracking-[-0.02em] text-[#231B11]">{String(sel + 1).padStart(2, "0")}</b>
+            </span>
+            <div className="absolute inset-[7%_7%_8%] grid place-items-center">
+              <div className="relative h-full aspect-square max-w-full">
+                <i aria-hidden className="absolute left-[8%] right-[8%] top-[80%] h-[8%] rounded-[50%] bg-[radial-gradient(closest-side,rgba(62,50,32,.36),transparent)]" />
+                {list.map((b, i) => <StagePhoto key={b.key} src={photo(b)} alt={i === sel ? b.name : ""} on={i === sel} priority={i === 0} w={96} floor={84} ceil={10} />)}
               </div>
             </div>
-            <div className="relative flex flex-col gap-2.5 px-5 pb-6 pt-1 sm:px-7 lg:order-1 lg:py-11 lg:pl-12 lg:pr-0">
-              <span className="inline-flex w-max items-center h-[26px] px-3 rounded-full bg-brownDeep text-gold text-[10px] font-bold tracking-[0.18em] uppercase">{cur === featured ? "Best seller" : label}</span>
-              <b className="font-cormorant font-semibold text-[clamp(26px,3vw,38px)] leading-[1.05] tracking-[-0.025em] text-[#231B11]">{split(cur.name).title}</b>
-              {cur.feat && <span className="text-[15px] text-[#6B5D45]">{cur.feat}</span>}
+          </Link>
+
+          {/* salaming panel */}
+          <div className="flex min-w-0 flex-col rounded-[20px] lg:rounded-[26px] p-5 sm:p-6 lg:p-[30px] lg:pb-6 bg-[linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02))] shadow-[inset_0_0_0_1px_rgba(226,194,122,.26),0_30px_50px_-36px_rgba(0,0,0,.9)]">
+            <p className="inline-flex w-max items-center gap-3 text-[11px] font-bold tracking-[0.2em] uppercase text-gold"><i aria-hidden className="w-7 h-px bg-gold" />{copy?.eyebrow ?? "Promo Bed · made to order"}</p>
+            <h2 className="font-cormorant font-semibold text-[clamp(26px,2.8vw,34px)] leading-[1.05] tracking-[-0.02em] mt-3 text-[#FBF4E4] [text-wrap:balance]">
+              {title.split(/(₱[\d,.]+)/).map((part, i) => i % 2 ? <em key={i} className="not-italic bg-[linear-gradient(180deg,#F3DDA4,#C99F4A)] bg-clip-text text-transparent">{part}</em> : part)}
+            </h2>
+            {copy?.sub && <p className="text-[14px] leading-relaxed mt-2 max-w-[46ch] text-[#D8CBB0]">{copy.sub}</p>}
+
+            {/* ang napiling kama */}
+            <div className="grid gap-[7px] mt-[18px] rounded-[18px] px-[18px] py-4 text-ink bg-[linear-gradient(180deg,#FBF4E4,#F3E7CF)] shadow-[inset_0_0_0_1px_rgba(176,138,62,.35),0_18px_30px_-22px_rgba(0,0,0,.7)]">
+              <b className="font-cormorant font-semibold text-[clamp(22px,2.2vw,27px)] leading-[1.05] tracking-[-0.02em] text-[#231B11]">{split(cur.name).title}</b>
+              {cur.feat && <span className="text-[13.5px] text-[#6B5D45]">{cur.feat}</span>}
               {cur.sizes.length > 0 ? (
-                <div className="flex gap-2 flex-wrap">
+                <div className="flex gap-1.5 flex-wrap">
                   {cur.sizes.map((s) => (
-                    <span key={s.size} className="rounded-xl bg-white/60 shadow-[inset_0_0_0_1px_rgba(62,50,32,.28)] px-3 py-1.5 text-xs text-[#3E3220] flex flex-col min-w-[78px]">
-                      <b className="text-[10px] tracking-[0.12em] uppercase text-goldDeep font-bold">{s.size}</b>{formatPrice(s.price)}
+                    <span key={s.size} className="rounded-lg bg-white/70 shadow-[inset_0_0_0_1px_rgba(62,50,32,.22)] px-2.5 py-1 text-[11.5px] text-[#3E3220] flex flex-col min-w-[70px]">
+                      <b className="text-[9.5px] tracking-[0.12em] uppercase text-goldDeep font-bold">{s.size}</b>{formatPrice(s.price)}
                     </span>
                   ))}
                 </div>
               ) : cur.from > 0 ? (
-                <span className="text-[15px] text-[#6B5D45]">from {formatPrice(cur.from)}</span>
+                <span className="text-[13.5px] text-[#6B5D45]">from {formatPrice(cur.from)}</span>
               ) : null}
               {(split(cur.name).size || cur.fabric || cur.colors.length > 0) && (
                 <div className="flex items-center gap-1.5 flex-wrap text-xs text-[#6B5D45]">
-                  {[split(cur.name).size, cur.colors.length ? "" : cur.fabric].filter(Boolean).map((c) => <span key={c} className="inline-flex items-center h-[26px] px-3 rounded-full bg-white/60 shadow-[inset_0_0_0_1px_rgba(62,50,32,.28)] text-[11.5px] font-semibold text-[#3E3220]">{c}</span>)}
+                  {[split(cur.name).size, cur.colors.length ? "" : cur.fabric].filter(Boolean).map((c) => <span key={c} className="inline-flex items-center h-[26px] px-3 rounded-full bg-white/70 shadow-[inset_0_0_0_1px_rgba(62,50,32,.25)] text-[11.5px] font-semibold text-[#3E3220]">{c}</span>)}
                   {cur.colors.slice(0, 4).map((c) => <i key={c.name} title={c.name} className="w-[22px] h-[22px] rounded-full border-2 border-white shadow-[0_0_0_1px_rgba(62,50,32,.25)] inline-block overflow-hidden relative" style={{ background: c.hex ?? "#CFC2A8" }}>{c.swatch && <Image src={c.swatch} alt="" fill className="object-cover" style={{ objectPosition: c.focus || "50% 50%" }} sizes="24px" />}</i>)}
                   {cur.colors.length > 0 && <span>{cur.colors.map((c) => c.name).slice(0, 3).join(" · ")}</span>}
                 </div>
               )}
-              <span className="pf-gold pf-btn inline-flex items-center justify-between gap-3 h-[50px] mt-2 pl-6 pr-2 rounded-full text-sm font-bold lg:w-max">Build this bed <i aria-hidden className="grid place-items-center w-[34px] h-[34px] rounded-full bg-[#2E2417] text-gold transition-transform duration-300 group-hover:translate-x-[3px]">{arrow}</i></span>
-            </div>
-          </Link>
-        </div>
-
-        <div data-reveal className={`grid grid-cols-2 ${tabCols} gap-2 sm:gap-3 mt-3.5`}>
-          {list.map((b, i) => {
-            const on = i === sel;
-            return (
-              <Link
-                key={b.key}
-                href={b.href}
-                aria-current={on || undefined}
-                onMouseEnter={() => { if (!touch.current) setSel(i); }}
-                onFocus={() => { setSel(i); setManual(true); }}
-                onPointerDown={(e) => { touch.current = e.pointerType !== "mouse"; armed.current = on; }}
-                onClick={(e) => {
-                  // Daliri: walang hover — ang unang tap ay pumipili (at ipinapakita
-                  // ang studio), ang pangalawa ang nagbubukas ng kama.
-                  if (touch.current) setManual(true);
-                  if (touch.current && !armed.current) { e.preventDefault(); setSel(i); stage.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }); }
-                }}
-                className={`group/tab relative grid sm:grid-cols-[66px_minmax(0,1fr)] items-center gap-2 sm:gap-3 overflow-hidden rounded-[18px] p-2 pb-3 sm:p-[9px] sm:pb-3 sm:pr-3.5 outline-none transition duration-300 ease-out focus-visible:ring-2 focus-visible:ring-gold ${on
-                  ? "-translate-y-1 text-[#2A2116] bg-[linear-gradient(180deg,#EDD494,#D2AB56)] shadow-[0_0_0_6px_rgba(226,194,122,.12),0_26px_36px_-22px_rgba(0,0,0,.95),inset_0_1px_0_rgba(255,255,255,.5)]"
-                  : "text-[#F4EAD8] bg-[linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03))] shadow-[inset_0_0_0_1px_rgba(226,194,122,.26),0_18px_28px_-22px_rgba(0,0,0,.8)] hover:-translate-y-[3px] hover:shadow-[inset_0_0_0_1px_rgba(226,194,122,.6),0_22px_30px_-22px_rgba(0,0,0,.85)]"}`}
-              >
-                <span className={`relative block w-full max-sm:aspect-[1.5/1] sm:w-[66px] sm:h-[66px] shrink-0 overflow-hidden rounded-[13px] pf-stage ${on ? "shadow-[0_0_0_1.5px_#2E2417]" : "shadow-[0_0_0_1px_rgba(226,194,122,.35)]"}`}>
-                  <FitImage src={photo(b)} alt="" fill={0.82} className="mix-blend-multiply" sizes="(min-width: 640px) 66px, 45vw" />
-                </span>
-                <span className="grid min-w-0 gap-[3px] max-sm:px-1">
-                  <i className={`not-italic text-[10.5px] font-bold tracking-[0.16em] ${on ? "text-[#5B4A2F]" : "text-gold"}`}>{String(i + 1).padStart(2, "0")}</i>
-                  <b className="font-cormorant font-semibold text-[15px] sm:text-[16.5px] leading-[1.15] tracking-[-0.01em]">{split(b.name).title}</b>
-                  {(b.feat || noteOf(b) || b.from > 0) && <small className={`truncate text-[12px] leading-snug ${on ? "text-[#4A3B25]" : "text-[#CFC2A4]"}`}>{b.feat || (b.from > 0 ? `from ${formatPrice(b.from)}` : noteOf(b))}</small>}
-                </span>
-                {on && run && <em key={sel} aria-hidden className="pf-fill absolute inset-x-0 bottom-0 h-[3px] bg-[#2E2417]" />}
+              {/* Build this bed: madilim na bar, gintong kislap sa hover (mockup 2026-10-07) */}
+              <Link href={cur.href} className="group/b pf-sheen flex items-center justify-between gap-3 h-14 mt-2 pl-[18px] pr-2 rounded-[14px] text-[11.5px] font-bold tracking-[0.16em] uppercase text-[#F7EEDC] bg-[linear-gradient(180deg,#3E3220,#1F170E)] shadow-[inset_0_0_0_1px_rgba(226,194,122,.5),inset_0_1px_0_rgba(255,255,255,.08),0_20px_30px_-18px_rgba(0,0,0,.85)] transition duration-300 hover:-translate-y-px hover:shadow-[inset_0_0_0_1px_rgba(226,194,122,.9),inset_0_1px_0_rgba(255,255,255,.1),0_24px_34px_-18px_rgba(0,0,0,.9)]">
+                Build this bed
+                <i aria-hidden className="relative z-[1] grid place-items-center w-10 h-10 rounded-full text-[#2A2116] bg-[linear-gradient(180deg,#EDD494,#D2AB56)] shadow-[0_8px_14px_-8px_rgba(0,0,0,.8)]"><span className="transition-transform duration-300 group-hover/b:-rotate-45">{arrow}</span></i>
               </Link>
-            );
-          })}
+            </div>
+
+            {/* ang listahan ng mga kama */}
+            <div className="relative grid gap-1.5 mt-4">
+              {list.map((b, i) => {
+                const on = i === sel;
+                return (
+                  <Link
+                    key={b.key}
+                    href={b.href}
+                    aria-current={on || undefined}
+                    onMouseEnter={() => { if (!touch.current) setSel(i); }}
+                    onFocus={() => { setSel(i); setManual(true); }}
+                    onPointerDown={(e) => { touch.current = e.pointerType !== "mouse"; armed.current = on; }}
+                    onClick={(e) => {
+                      // Daliri: walang hover — ang unang tap ay pumipili (at ipinapakita
+                      // ang studio), ang pangalawa ang nagbubukas ng kama.
+                      if (touch.current) setManual(true);
+                      if (touch.current && !armed.current) { e.preventDefault(); setSel(i); stage.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }); }
+                    }}
+                    className={`relative grid grid-cols-[44px_minmax(0,1fr)_auto] sm:grid-cols-[48px_minmax(0,1fr)_auto] items-center gap-3 overflow-hidden rounded-[14px] p-1.5 pr-2.5 text-[#F4EAD8] outline-none transition duration-300 focus-visible:ring-2 focus-visible:ring-gold ${on
+                      ? "translate-x-[3px] bg-[linear-gradient(90deg,rgba(226,194,122,.18),rgba(226,194,122,.06))] shadow-[inset_0_0_0_1px_rgba(226,194,122,.55)]"
+                      : "shadow-[inset_0_0_0_1px_rgba(226,194,122,.18)] hover:bg-gold/[.08]"}`}
+                  >
+                    <span className="relative block w-11 h-11 sm:w-12 sm:h-12 shrink-0 overflow-hidden rounded-[11px] pf-stage shadow-[0_0_0_1px_rgba(226,194,122,.3)]">
+                      <FitImage src={photo(b)} alt="" fill={0.82} className="mix-blend-multiply" sizes="48px" />
+                    </span>
+                    <span className="grid min-w-0 gap-[2px]">
+                      <b className={`font-cormorant font-semibold text-[15px] leading-[1.15] tracking-[-0.01em] ${on ? "text-white" : ""}`}>{split(b.name).title}</b>
+                      {(b.feat || noteOf(b) || b.from > 0) && <small className="truncate text-[11.5px] leading-snug text-[#CFC2A4]">{b.feat || (b.from > 0 ? `from ${formatPrice(b.from)}` : noteOf(b))}</small>}
+                    </span>
+                    <i aria-hidden className={`justify-self-end w-2 h-2 rounded-full transition duration-300 ${on ? "bg-gold shadow-[0_0_0_4px_rgba(226,194,122,.2)] scale-[1.15]" : "shadow-[inset_0_0_0_1.5px_rgba(226,194,122,.6)]"}`} />
+                    {on && run && <em key={sel} aria-hidden className="pf-fill absolute left-1.5 right-1.5 bottom-0 h-[2px] rounded-sm bg-gold" />}
+                  </Link>
+                );
+              })}
+            </div>
+            {/* See all: outlined na pill, napupuno ng ginto sa hover (mockup 2026-10-07) */}
+            <Link href="/collections/bed" className="group/a flex items-center justify-between gap-3.5 h-[52px] mt-3.5 pl-[22px] pr-[7px] rounded-full text-[13.5px] font-semibold tracking-[0.02em] text-[#F7EEDC] shadow-[inset_0_0_0_1.5px_rgba(226,194,122,.6)] transition duration-300 hover:-translate-y-0.5 hover:text-[#2A2116] hover:bg-[linear-gradient(90deg,#EDD494,#D2AB56)] hover:shadow-[inset_0_0_0_1.5px_rgba(226,194,122,1),0_18px_28px_-16px_rgba(154,119,48,.9)]">
+              See all promo beds
+              <i aria-hidden className="grid place-items-center w-[38px] h-[38px] rounded-full bg-gold text-[#2A2116] transition duration-300 group-hover/a:translate-x-[3px] group-hover/a:bg-[#2A2116] group-hover/a:text-gold">{arrow}</i>
+            </Link>
+          </div>
         </div>
 
-        <div className={`grid sm:grid-cols-2 ${factCols} mt-5 border-y border-gold/[.18] text-[13px] text-[#CFC2A4]`}>
+        <div className={`grid sm:grid-cols-2 ${factCols} mt-5 border-t border-gold/[.18] text-[13px] text-[#CFC2A4]`}>
           {foot.map((f, k) => { const [b, ...r] = f.split(" "); return (
             <span key={f} className={`flex items-center gap-3 py-3.5 sm:py-4 sm:px-4 first:sm:pl-0 ${k > 0 ? "max-sm:border-t max-sm:border-gold/[.18]" : ""} ${k % 2 ? "sm:max-lg:border-l sm:max-lg:border-gold/[.18]" : ""} ${k > 1 ? "sm:max-lg:border-t sm:max-lg:border-gold/[.18]" : ""} ${k > 0 ? "lg:border-l lg:border-gold/[.18]" : ""}`}>
               <i aria-hidden className="grid place-items-center w-[38px] h-[38px] shrink-0 rounded-full text-gold bg-gold/[.08] shadow-[inset_0_0_0_1px_rgba(226,194,122,.45)]"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">{factIcon(f)}</svg></i>
@@ -263,6 +278,7 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
             </span>
           ); })}
         </div>
+
       </div>
     </section>
   );

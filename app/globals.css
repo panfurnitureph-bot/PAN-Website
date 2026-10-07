@@ -300,6 +300,10 @@ html:not([data-hydrated]) .rail > * {
 /* Loader: gintong singsing na umiikot (conic na may butas), at ang seal na humihinga. */
 .pf-ring { background: conic-gradient(from 0deg, rgba(226, 194, 122, 0) 0deg, rgba(226, 194, 122, 0.15) 140deg, #B08A3E 300deg, #E2C27A 360deg); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px)); mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px)); animation: pf-spin 1.9s linear infinite; }
 .pf-breathe { animation: pf-breathe 2.6s ease-in-out infinite; }
+/* Gintong kislap na dumadaan sa madilim na button kapag tinapat ang mouse (promo beds "Build this bed"). */
+.pf-sheen { position: relative; isolation: isolate; overflow: hidden; }
+.pf-sheen::before { content: ""; position: absolute; top: -40%; bottom: -40%; left: -30%; width: 28%; z-index: 0; background: linear-gradient(100deg, transparent, rgba(226, 194, 122, 0.32), transparent); transform: skewX(-18deg) translateX(-120%); transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.pf-sheen:hover::before { transform: skewX(-18deg) translateX(560%); }
 .pf-ring-sm { border: 2px solid rgba(226, 194, 122, 0.35); border-top-color: currentColor; animation: pf-spin 0.8s linear infinite; }
 .pf-estin { animation: pf-estin 0.38s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
 .pf-tabin { animation: pf-rise 0.3s ease backwards; }
