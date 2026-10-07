@@ -279,6 +279,8 @@ html:not([data-hydrated]) .rail > * {
 @keyframes pf-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @keyframes pf-kb { from { transform: scale(1.08); } to { transform: scale(1); } }
 @keyframes pf-pbin { from { opacity: 0; transform: translateY(10px) scale(0.97); } to { opacity: 1; transform: none; } }
+/* Pagpasok ng kama sa studio ng promo beds: gaya ng pf-pbin pero sa `translate` at `scale` na hiwalay na property, dahil ang `transform` ng litrato ay ginagamit na ng StagePhoto para itayo ito sa sahig (inline). */
+@keyframes pf-bedin { from { opacity: 0; translate: 1.5% calc(1.5% + 10px); scale: 0.97; } to { opacity: 1; translate: 0 0; scale: 1; } }
 @keyframes pf-grow { from { transform: scaleX(0); } to { transform: none; } }
 @keyframes pf-pop { from { transform: scale(0); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes pf-bump { 40% { transform: scale(1.45); } }
@@ -293,6 +295,7 @@ html:not([data-hydrated]) .rail > * {
 .pf-rise { animation: pf-rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
 .pf-kb { animation: pf-kb 7s ease-out backwards; }
 .pf-pbin { animation: pf-pbin 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+.pf-bedin { animation: pf-bedin 0.55s cubic-bezier(0.2, 0.7, 0.2, 1); }
 .pf-grow { transform-origin: left; animation: pf-grow 1.8s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
 .pf-pop { animation: pf-pop 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.4) backwards; }
 .pf-bump { animation: pf-bump 0.35s ease; }
@@ -327,7 +330,7 @@ html:not([data-hydrated]) .rail > * {
 [data-reveal].pf-pre .pf-pop { animation: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  .pf-rise, .pf-kb, .pf-pbin, .pf-grow, .pf-pop, .pf-bump, .pf-ping, .pf-fill, .pf-estin, .pf-tabin, .pf-fade, .pf-ring, .pf-breathe, .pf-ring-sm, [data-stagger] > * { animation: none; }
+  .pf-rise, .pf-kb, .pf-pbin, .pf-bedin, .pf-grow, .pf-pop, .pf-bump, .pf-ping, .pf-fill, .pf-estin, .pf-tabin, .pf-fade, .pf-ring, .pf-breathe, .pf-ring-sm, [data-stagger] > * { animation: none; }
   [data-reveal] { transition: none; }
   [data-reveal].pf-pre { opacity: 1; transform: none; }
 }

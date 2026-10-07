@@ -62,7 +62,11 @@ function StagePhoto({ src, alt, on, priority, w = 80, floor = 84, ceil = 15 }: {
     const cx = (box.l + box.r) / 2;
     style = { transform: `translate(${(50 - cx * s).toFixed(2)}%, ${(floor - box.b * s).toFixed(2)}%) scale(${s.toFixed(3)})`, transformOrigin: "0 0" };
   }
-  return <Image src={src} alt={alt} fill priority={priority} className={`object-contain mix-blend-multiply transition-opacity duration-500 ease-out ${on ? "opacity-100" : "opacity-0"}`} style={style} sizes="(min-width: 1024px) 45vw, 100vw" />;
+  // Pagpasok (pf-bedin: kupas + angat + lumaki) tuwing ito ang napili, at zoom
+  // na 1.03 kapag tinapat ang mouse sa studio (`scale` na hiwalay na property,
+  // hindi `transform`, kaya hindi nabubura ang pagtayo sa sahig). Nasa litrato
+  // mismo ang galaw, hindi sa balot, para hindi masira ang multiply.
+  return <Image src={src} alt={alt} fill priority={priority} className={`object-contain mix-blend-multiply transition-[opacity,scale,translate] duration-700 ease-out group-hover:[scale:1.03] group-hover:[translate:-1.5%_-1.5%] ${on ? "opacity-100 pf-bedin" : "opacity-0"}`} style={style} sizes="(min-width: 1024px) 45vw, 100vw" />;
 }
 
 const num = (s: string) => Number(String(s).replace(/[^\d.]/g, "")) || 0;
