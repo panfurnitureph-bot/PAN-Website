@@ -161,10 +161,12 @@ html:not([data-hydrated]) .rail > * {
     transform: translateY(-5px);
     box-shadow: 0 0 0 1.5px #B08A3E, 0 30px 46px -28px rgba(62, 50, 32, 0.6);
   }
-  /* Entablado ng litrato: puti sa gitna, cream sa gilid. Ang litratong puti ang
-     background ay may `mix-blend-multiply` kaya natutunaw ang puti rito. */
+  /* Entablado ng litrato: PUTI (Joe 2026-10-07, "mas okay ata white background
+     nalang") sa halip na cream na gradient; ang litratong puti ang background ay
+     may `mix-blend-multiply` kaya walang makikitang gilid. Ang cream na katawan
+     ng card ang nagbibigay ng kulay. */
   .pf-stage {
-    background: radial-gradient(ellipse at 50% 74%, #fff 0, #FBF6EC 55%, #F3EADB 100%);
+    background: #fff;
   }
   /* Studio ng promo beds: maliwanag na pader sa itaas, bahagyang mas madilim na
      sahig sa ibaba, at ilaw sa gitna — parang nakatayo ang kama sa showroom. */

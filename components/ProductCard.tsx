@@ -110,7 +110,7 @@ export default function ProductCard({
         {onSale && <span className="rounded-full bg-cognac text-cream text-[9.5px] tracking-[0.14em] uppercase px-2.5 py-1">Sale</span>}
       </div>
 
-      <div className={`relative ${square ? "aspect-square" : "aspect-[4/3]"} overflow-hidden pf-stage`}>
+      <div className={`relative ${square ? "aspect-square" : "aspect-[4/3]"} overflow-hidden pf-stage border-b border-goldDeep/15`}>
         {/* Litrato = diretso sa product page (2026-09-04, "ang hirap i-click sa mobile");
             ang Quick view ay sa button lang. */}
         <Link href={`/products/${product.slug}`} className="absolute inset-0 block pf-stage transition-transform duration-500 ease-out group-hover:scale-[1.06]">
