@@ -256,7 +256,7 @@ function TrackerInner() {
                 : "pf-pop bg-[#FBF7EF] rounded-[20px] px-10 py-9 text-center shadow-[0_0_0_1px_rgba(226,194,122,.45),0_40px_80px_-30px_rgba(0,0,0,.8)] max-w-xs w-full"
             }
           >
-            <PanLoader label="This only takes a moment." size={88} />
+            <PanLoader label="This only takes a moment." size={128} />
             <p className="font-cormorant text-xl mt-3">Looking up your order</p>
           </div>
         </div>
