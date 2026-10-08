@@ -40,6 +40,11 @@ export default function FabricPopup({ swatches }: { swatches: LibrarySwatch[] })
   // HOVER PREVIEW (Joe 2026-09-06): malaking litrato ng tela na sumusunod sa
   // cursor habang naka-hover; nawawala pag-alis. Mouse lang — walang hover sa touch.
   const [hov, setHov] = useState<{ s: LibrarySwatch; x: number; y: number } | null>(null);
+  // TOUCH = WALANG PREVIEW (Joe 2026-10-09, screenshot sa telepono): ang tap ay
+  // nagpapaputok ng mouseenter pero hindi ng mouseleave, kaya naiiwan ang
+  // malaking preview sa ibabaw ng grid at ng Use this fabric. Mouse lang talaga.
+  const [canHover, setCanHover] = useState(false);
+  useEffect(() => { setCanHover(window.matchMedia("(hover: hover) and (pointer: fine)").matches); }, []);
   const groups = useMemo(() => {
     const by = new Map<string, LibrarySwatch[]>();
     for (const s of list) { const c = colOf(s.name); if (!by.has(c)) by.set(c, []); by.get(c)!.push(s); }
@@ -116,7 +121,7 @@ export default function FabricPopup({ swatches }: { swatches: LibrarySwatch[] })
           </div>
         </div>
 
-        {hov && hov.s.swatch && typeof window !== "undefined" && (() => {
+        {canHover && hov && hov.s.swatch && typeof window !== "undefined" && (() => {
           const W = 260, H = 300, M = 18;
           const left = Math.min(Math.max(hov.x + M, 8), window.innerWidth - W - 8);
           const top = hov.y + M + H > window.innerHeight - 8 ? Math.max(hov.y - M - H, 8) : hov.y + M;
@@ -141,8 +146,8 @@ export default function FabricPopup({ swatches }: { swatches: LibrarySwatch[] })
                 const ban = why(s);
                 return (
                   <button key={s.name} type="button" title={ban ? `${s.name} — ${ban}` : s.name} aria-pressed={sel} disabled={!!ban} onClick={() => { if (!ban) setPick(s.name); }} onDoubleClick={() => { if (!ban) use(s.name); }}
-                    onMouseEnter={(e) => setHov({ s, x: e.clientX, y: e.clientY })}
-                    onMouseMove={(e) => setHov({ s, x: e.clientX, y: e.clientY })}
+                    onMouseEnter={(e) => { if (canHover) setHov({ s, x: e.clientX, y: e.clientY }); }}
+                    onMouseMove={(e) => { if (canHover) setHov({ s, x: e.clientX, y: e.clientY }); }}
                     onMouseLeave={() => setHov(null)}
                     className={`group flex flex-col overflow-hidden rounded-xl bg-white text-center transition duration-200 hover:-translate-y-0.5 ${ban ? "cursor-not-allowed opacity-35" : ""} ${sel ? "shadow-[0_0_0_2px_#B08A3E,0_0_0_6px_rgba(226,194,122,.3),0_14px_22px_-14px_rgba(62,50,32,.6)]" : "shadow-[0_0_0_1px_#E0D5C1] hover:shadow-[0_0_0_1px_#B08A3E,0_14px_22px_-16px_rgba(62,50,32,.6)]"}`}>
                     <span className="relative block aspect-[4/3] w-full overflow-hidden" style={{ background: s.color ?? "#D9CFC0" }}>
