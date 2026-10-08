@@ -112,7 +112,8 @@ export default function ProductCard({
 
       <div className={`relative ${square ? "aspect-square" : "aspect-[4/3]"} overflow-hidden pf-stage border-b border-goldDeep/15`}>
         {/* Litrato = diretso sa product page (2026-09-04, "ang hirap i-click sa mobile");
-            ang Quick view ay sa button lang. */}
+            ang Quick view ay sa button lang, DESKTOP LANG (Joe 2026-10-09, "bakit may quick
+            view agad sa mobile"): walang hover sa telepono kaya laging kita dati; tago na sa < lg. */}
         <Link href={`/products/${product.slug}`} className="absolute inset-0 block pf-stage transition-transform duration-500 ease-out group-hover:scale-[1.06]">
           <i aria-hidden className="pf-floor" />
           <FitImage src={hero} alt={product.name} className={`mix-blend-multiply transition-opacity duration-300 ${showAlt ? "group-hover:opacity-0" : ""}`} sizes="(min-width: 1100px) 240px, (min-width: 640px) 33vw, 70vw" />
@@ -122,7 +123,7 @@ export default function ProductCard({
           <button
             type="button"
             onClick={() => openQuickView(product)}
-            className="absolute left-3 right-3 bottom-3 z-[1] h-10 rounded-full bg-[#2A2116]/90 backdrop-blur-sm text-white text-[12.5px] font-bold shadow-[0_12px_22px_-12px_rgba(20,14,6,.7)] opacity-0 translate-y-1.5 transition hover:text-gold group-hover:opacity-100 group-hover:translate-y-0 max-lg:opacity-100 max-lg:translate-y-0"
+            className="absolute left-3 right-3 bottom-3 z-[1] h-10 rounded-full bg-[#2A2116]/90 backdrop-blur-sm text-white text-[12.5px] font-bold shadow-[0_12px_22px_-12px_rgba(20,14,6,.7)] opacity-0 translate-y-1.5 transition hover:text-gold group-hover:opacity-100 group-hover:translate-y-0 max-lg:hidden"
           >
             Quick view
           </button>
