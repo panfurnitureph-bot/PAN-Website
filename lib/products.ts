@@ -186,13 +186,13 @@ export const COLLECTIONS: Record<string, { title: string; categories: string[] }
   "new-sofas": { title: "New Sofas", categories: ["sofa", "sofa-bed"] },
   "new-chairs": { title: "New Chairs", categories: ["swivel-chair", "dining-chairs", "accent-chair", "barstool"] },
   "new-dining": { title: "New Dining", categories: ["dining-table", "dining-set", "barstool"] },
-  "new-living": { title: "New Living", categories: ["side-table", "ottoman-ph", "collective-figurines", "mugs", "lamp", "vase"] },
+  "new-living": { title: "New Living", categories: ["side-table", "ottoman-ph", "bean-bag", "collective-figurines", "mugs", "lamp", "vase"] },
   // --- Grupo (para sa top nav) ---
   beds: { title: "Beds", categories: ["bed", "customized-bed", "mattress"] },
   sofas: { title: "Sofas", categories: ["sofa", "sofa-bed"] },
   chairs: { title: "Chairs", categories: ["swivel-chair", "dining-chairs", "accent-chair", "barstool"] },
   dining: { title: "Dining", categories: ["dining-table", "dining-set", "barstool"] },
-  living: { title: "Living", categories: ["side-table", "ottoman-ph", "collective-figurines", "mugs", "lamp", "vase"] },
+  living: { title: "Living", categories: ["side-table", "ottoman-ph", "bean-bag", "collective-figurines", "mugs", "lamp", "vase"] },
   // --- Opisyal na categories — PAREHONG PANGALAN ng IMS MTO categories
   //     (lib/categories.ts sa IMS); ang slug ay URL lang, hindi binabago. ---
   bed: { title: "Promo Bed", categories: ["bed"] },
@@ -216,6 +216,8 @@ export const COLLECTIONS: Record<string, { title: string; categories: string[] }
   mugs: { title: "Mugs", categories: ["mugs"] },
   lamp: { title: "Lamp", categories: ["lamp"] },
   vase: { title: "Vase", categories: ["vase"] },
+  // BEAN BAG (Joe 2026-10-09): bagong category sa IMS, sa Living.
+  "bean-bag": { title: "Bean Bag", categories: ["bean-bag"] },
 };
 
 // Main nav — may children = lalabas na mega-menu sa hover
@@ -275,6 +277,7 @@ export const NAV_LINKS: NavLink[] = [
       { label: "All Living", href: "/collections/living" },
       { label: "Side Table", href: "/collections/side-table" },
       { label: "Ottoman", href: "/collections/ottoman-ph" },
+      { label: "Bean Bag", href: "/collections/bean-bag" },
       // DECORATION (Joe 2026-09-12): isang entry para sa figurines, mugs,
       // lamp at vase — /collections/decoration ang lahat ng ito.
       { label: "Decoration", href: "/collections/decoration" },
@@ -297,6 +300,7 @@ export const CATEGORY_TILES = [
   { label: "Accent Chair", slug: "accent-chair" },
   { label: "Barstool", slug: "barstool" },
   { label: "Swivel Chair", slug: "swivel-chair" },
+  { label: "Bean Bag", slug: "bean-bag" },
   // DECOR (Joe 2026-10-08, "para sure lalabas lahat ung product"): may tile na
   // rin ang mugs, lamp, vase at figurines; sa Home, lumalabas lang ang decor
   // tile kapag may produkto na (walang "Coming soon" para sa decor).
