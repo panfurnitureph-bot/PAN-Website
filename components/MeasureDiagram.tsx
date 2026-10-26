@@ -26,21 +26,23 @@ const SPECS: Record<MeasureKind, Spec> = {
     { label: "Total Height", def: 34 }, { label: "Armrest Height", def: 24 }, { label: "Armrest Thickness", def: 6 },
     { label: "Backrest Thickness", def: 5 }, { label: "Seat depth", def: 22 }, { label: "Legs", def: 4 },
   ] },
+  // UPUAN = SUPPLIER SHEET (IMS 2026-10-26): naka-cm; ang Total Width / Total Depth / Seat Width /
+  // Arm Height ay dagdag na hanay sa table (galing sa Configurator). Pareho ang letra ng drawing.
   "dining-chair": { title: "Dining Chair", subject: "Chair", labels: [
-    { label: "Total Height", def: 36 }, { label: "Seat Height", def: 18 }, { label: "Seat Depth / Diameter", def: 17 }, { label: "Back Cushion Thickness", def: 3 },
+    { label: "Total Height", def: 91, unit: "cm" }, { label: "Seat Height", def: 46, unit: "cm" }, { label: "Seat Depth", def: 43, unit: "cm" }, { label: "Back Cushion Thickness", def: 8, unit: "cm" },
   ] },
   "accent-chair": { title: "Accent Chair", subject: "Chair", labels: [
     { label: "Height", def: 30 }, { label: "Backrest Thickness", def: 5 }, { label: "Backrest to Seat", def: 20 }, { label: "Seat Height", def: 17 },
   ] },
   barstool: { title: "Barstool", subject: "Stool", labels: [
-    { label: "Bar Counter Height", def: 34.5 }, { label: "End to End", def: 45, unit: "cm" }, { label: "Total Height", def: 34 }, { label: "Backrest to Seat", def: 55, unit: "cm" },
+    { label: "Bar Counter Height", def: 88, unit: "cm" }, { label: "End to End", def: 45, unit: "cm" }, { label: "Total Height", def: 100, unit: "cm" }, { label: "Backrest to Seat", def: 55, unit: "cm" },
   ] },
   ottoman: { title: "Ottoman", subject: "Ottoman", labels: [{ label: "Total Height", def: 16 }, { label: "Seat depth", def: 18 }] },
   "side-table": { title: "Side Table", subject: "Table", labels: [{ label: "Height", def: 20 }, { label: "Depth", def: 16 }] },
   "wall-padding": { title: "Wall Padding", subject: "Panel", labels: [{ label: "Height", def: 96 }, { label: "Width", def: 120 }] },
   "dining-table": { title: "Dining Table", subject: "Table", labels: [{ label: "Length", def: 72 }, { label: "Width", def: 36 }, { label: "Height", def: 30 }] },
   "swivel-chair": { title: "Swivel Chair", subject: "Chair", labels: [
-    { label: "Total Height", def: 38 }, { label: "Seat Height", def: 18 }, { label: "Seat Width", def: 20 }, { label: "Base Diameter", def: 26 },
+    { label: "Total Height", def: 90, unit: "cm" }, { label: "Seat Height", def: 48, unit: "cm" }, { label: "Seat Width", def: 47, unit: "cm" }, { label: "Base Diameter", def: 66, unit: "cm" },
   ] },
   // DECOR (IMS 2026-09-12): figurines, mugs, lamp, vase — kahon lang na may
   // taas / haba / lapad; ang totoong sukat ay mula sa Configurator ng IMS.
