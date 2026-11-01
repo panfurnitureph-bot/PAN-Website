@@ -40,7 +40,7 @@ const SPECS: Record<MeasureKind, Spec> = {
   ottoman: { title: "Ottoman", subject: "Ottoman", labels: [{ label: "Total Height", def: 16 }, { label: "Seat depth", def: 18 }] },
   "side-table": { title: "Side Table", subject: "Table", labels: [{ label: "Height", def: 20 }, { label: "Depth", def: 16 }] },
   "wall-padding": { title: "Wall Padding", subject: "Panel", labels: [{ label: "Height", def: 96 }, { label: "Width", def: 120 }] },
-  "dining-table": { title: "Dining Table", subject: "Table", labels: [{ label: "Length", def: 72 }, { label: "Width", def: 36 }, { label: "Height", def: 30 }] },
+  "dining-table": { title: "Dining Table", subject: "Table", labels: [{ label: "Length", def: 160, unit: "cm" }, { label: "Width", def: 100, unit: "cm" }, { label: "Height", def: 76, unit: "cm" }] },
   "swivel-chair": { title: "Swivel Chair", subject: "Chair", labels: [
     { label: "Total Height", def: 90, unit: "cm" }, { label: "Seat Height", def: 48, unit: "cm" }, { label: "Seat Width", def: 47, unit: "cm" }, { label: "Base Diameter", def: 66, unit: "cm" },
   ] },

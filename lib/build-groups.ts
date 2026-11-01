@@ -52,7 +52,7 @@ export function groupBuildLines(lines: BuildLine[], opts?: { allItem?: boolean }
   if (opts?.allItem) return [{ title: "The item", lines: nonWall }, ...(wallLines.length ? [{ title: "Double walling", lines: wallLines }] : [])].filter((g) => g.lines.length);
   const core = nonWall.some((l) => /^(size|fabric)\b/i.test(l.label));
   // Seat / Leg / Function = "DESC." ng supplier sheet ng upuan (IMS 2026-10-26): bahagi ng item, hindi add-on
-  const isItem = (l: string) => /^(size|fabric)\b/i.test(l) || /^(seat|leg|function)\s*:/i.test(l) || isMeasure(l);
+  const isItem = (l: string) => /^(size|fabric)\b/i.test(l) || /^(seat|leg|function|top|extension)\s*:/i.test(l) || isMeasure(l);
   const itemLines = core ? nonWall.filter((l) => isItem(l.label)) : nonWall;
   const rest = core ? nonWall.filter((l) => !isItem(l.label)) : [];
 
