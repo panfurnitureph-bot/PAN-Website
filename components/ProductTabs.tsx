@@ -23,14 +23,18 @@ const TABS = [
 ];
 
 // Hilahin ang W/D/H mula sa dimensions text (hal. `84.5" W x 38" D x 32" H`)
+// Tumatanggap ng '34"W x 24"D x 28"H' at ng metric na "60 cm W x 67 cm D x 92 cm H" (IMS 2026-11-01).
+// Ang halaga ay kasama ang unit kapag metric ("60 cm"), pulgada lang ang numero kung wala.
 function parseDims(s: string): { w?: string; d?: string; h?: string } {
-  const grab = (re: RegExp) => s.match(re)?.[1];
-  return {
-    w: grab(/([\d.]+)\s*(?:"|”|in)?\s*W/i),
-    d: grab(/([\d.]+)\s*(?:"|”|in)?\s*D(?![a-z])/i),
-    h: grab(/([\d.]+)\s*(?:"|”|in)?\s*H/i),
+  const grab = (axis: string) => {
+    const m = s.match(new RegExp(`([\\d.]+)\\s*(cm|mm|"|”|in)?\\s*${axis}(?![a-z])`, "i"));
+    if (!m) return undefined;
+    const u = (m[2] ?? "").toLowerCase();
+    return u === "cm" || u === "mm" ? `${m[1]} ${u}` : m[1];
   };
+  return { w: grab("W"), d: grab("D"), h: grab("H") };
 }
+const withInch = (v: string) => (/cm|mm/.test(v) ? v : `${v}"`);
 
 // Simpleng line diagram na may sukat na arrows (front view)
 function DimensionDiagram({ w, h, d }: { w?: string; d?: string; h?: string }) {
@@ -44,19 +48,19 @@ function DimensionDiagram({ w, h, d }: { w?: string; d?: string; h?: string }) {
       <line x1="60" y1="22" x2="240" y2="22" stroke="currentColor" strokeWidth="1" />
       <path d="M60 22l6 -3v6zM240 22l-6 -3v6z" fill="currentColor" />
       <text x="150" y="16" textAnchor="middle" fontSize="11" fill="currentColor">
-        {w ? `${w}" W` : "Width"}
+        {w ? `${withInch(w)} W` : "Width"}
       </text>
       {/* height arrow */}
       <line x1="272" y1="40" x2="272" y2="150" stroke="currentColor" strokeWidth="1" />
       <path d="M272 40l-3 6h6zM272 150l-3 -6h6z" fill="currentColor" />
       <text x="281" y="100" fontSize="11" fill="currentColor" transform="rotate(90 281 100)" textAnchor="middle">
-        {h ? `${h}" H` : "Height"}
+        {h ? `${withInch(h)} H` : "Height"}
       </text>
       {/* depth arrow (pahilis) */}
       <line x1="20" y1="192" x2="52" y2="164" stroke="currentColor" strokeWidth="1" />
       <path d="M20 192l7 -1l-4 -5zM52 164l-7 1l4 5z" fill="currentColor" />
       <text x="18" y="205" fontSize="11" fill="currentColor">
-        {d ? `${d}" D` : "Depth"}
+        {d ? `${withInch(d)} D` : "Depth"}
       </text>
     </svg>
   );
@@ -138,7 +142,10 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
   const specMeasRows = readySpecLines
     .map((l) => /^([^:]+):\s*(\d+(?:\.\d+)?)\s*(mm|cm|ft|"|″|in\b|inch(?:es)?)?\s*$/i.exec(l))
     .filter((m): m is RegExpExecArray => !!m && !/^sizes?$/i.test(m[1].trim()))
-    .map((m) => { const u = (m[3] ?? "").toLowerCase(); const raw = Number(m[2]); const n = u === "cm" ? Math.round((raw / 2.54) * 10) / 10 : u === "mm" ? Math.round((raw / 25.4) * 10) / 10 : u === "ft" ? raw * 12 : raw; return { label: m[1].trim(), n }; });
+    .map((m) => { const u = (m[3] ?? "").toLowerCase(); const raw = Number(m[2]); const n = u === "cm" ? Math.round((raw / 2.54) * 10) / 10 : u === "mm" ? Math.round((raw / 25.4) * 10) / 10 : u === "ft" ? raw * 12 : raw;
+      // IPAKITA SA UNIT NG IMS (Joe 2026-11-01): 60 cm ay "60 cm" sa site, hindi 23.6". Ang n (pulgada) ay para sa drawing scale lang.
+      const shown = u === "cm" || u === "mm" ? `${raw} ${u}` : `${n}"`;
+      return { label: m[1].trim(), n, shown }; });
   const specMeas: Record<string, number> = {};
   // "Seat Height (incl. legs)" ↔ "Seat Height" ng drawing: itala rin nang
   // walang parenthetical para tumugma ang letra (B) at ang halaga.
@@ -149,8 +156,10 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
   // Listahan sa kaliwa kapag locked: ang mga linya ng Product Management, may
   // letra kung nasa drawing ang sukat (A-D), wala kung dagdag na detalye.
   const lockedRows = useSpec
-    ? specMeasRows.map((r) => ({ k: mRows.rows.find((x) => normL(x.label) === normL(r.label) || normL(x.label) === normL(r.label.replace(/\s*\(.*?\)\s*/g, " ")))?.k ?? "", label: r.label, value: `${r.n}"` }))
+    ? specMeasRows.map((r) => ({ k: mRows.rows.find((x) => normL(x.label) === normL(r.label) || normL(x.label) === normL(r.label.replace(/\s*\(.*?\)\s*/g, " ")))?.k ?? "", label: r.label, value: r.shown }))
     : null;
+  // Ang drawing ay parehong unit ng listahan: ang letrang A–I sa diagram ay nagbabasa ng "92 cm", hindi 36.2".
+  if (lockedRows) for (const lr of lockedRows) { if (!lr.k) continue; const row = mRows.rows.find((x) => x.k === lr.k); if (row) row.value = lr.value; }
   if (mKind && /sofa.?bed/i.test(product.category)) {
     const on = (mto?.sizes ?? []).filter((x) => x.on !== false);
     const pick = on.find((x) => sizeName && x.label.toLowerCase().startsWith(sizeName.toLowerCase())) ?? on[0];
@@ -346,13 +355,13 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
             {dims.w && (
               <div>
                 <p className="font-bold text-ink">Width</p>
-                <p className="text-stone">{dims.w}&quot;</p>
+                <p className="text-stone">{withInch(dims.w)}</p>
               </div>
             )}
             {dims.h && (
               <div>
                 <p className="font-bold text-ink">Height</p>
-                <p className="text-stone">{dims.h}&quot;</p>
+                <p className="text-stone">{withInch(dims.h)}</p>
               </div>
             )}
             <div>
