@@ -412,6 +412,16 @@ export function averageRating(p: Product): number | null {
   return p.reviews.reduce((sum, r) => sum + r.rating, 0) / p.reviews.length;
 }
 
+// PRESYONG IPINAPAKITA (Joe 2026-11-12, "d kita dito ung price pero sa loob
+// kita"): ang yari-nang-unit (promo bed na may stock) ay walang base price —
+// ang presyo nito ay ang Ready price ng configurator, na siyang nasa product
+// page. Iisang batayan ng card, sort at price filter.
+export function shownPrice(p: Product): number {
+  if (p.price > 0) return p.price;
+  const ready = Number((p as unknown as { mtoReadyPrice?: number }).mtoReadyPrice ?? 0);
+  return ready > 0 ? ready : p.price;
+}
+
 export function formatPrice(n: number): string {
   return `₱${n.toLocaleString("en-PH")}`;
 }

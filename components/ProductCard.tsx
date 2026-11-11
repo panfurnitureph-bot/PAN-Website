@@ -10,7 +10,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { formatPrice, CATEGORY_TILES, type Product } from "@/lib/products";
+import { formatPrice, shownPrice, CATEGORY_TILES, type Product } from "@/lib/products";
 import { useStore } from "@/components/store";
 import { parseMattressSizes } from "@/lib/mattress-sizes";
 import { openQuickView } from "@/components/home/QuickView";
@@ -138,7 +138,7 @@ export default function ProductCard({
         <Link href={`/products/${product.slug}`} className="relative z-[1] font-cormorant text-[14.5px] sm:text-[17px] font-semibold leading-snug tracking-[-0.01em] hover:text-goldDeep line-clamp-1" title={product.name}>{product.name}</Link>
         <div className="flex items-baseline justify-between gap-2">
           <span className="font-cormorant text-[17px] sm:text-[20px] font-bold tabular-nums tracking-[-0.01em]">
-            {sizePick && sizePick.price > 0 ? peso(sizePick.price) : product.priceFrom ? <><span className="font-sans font-normal text-stone text-[11px] mr-1 tracking-normal">from</span>{peso(product.priceFrom)}</> : <span className={onSale ? "text-cognac" : ""}>{peso(product.price)}</span>}
+            {sizePick && sizePick.price > 0 ? peso(sizePick.price) : product.priceFrom ? <><span className="font-sans font-normal text-stone text-[11px] mr-1 tracking-normal">from</span>{peso(product.priceFrom)}</> : <span className={onSale ? "text-cognac" : ""}>{peso(shownPrice(product))}</span>}
             {onSale && <span className="font-sans text-stone line-through ml-2 text-xs font-normal tracking-normal">{formatPrice(product.compareAtPrice!)}</span>}
           </span>
           <span className="text-[11px] text-stone whitespace-nowrap">

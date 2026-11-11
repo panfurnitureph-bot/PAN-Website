@@ -16,7 +16,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
-import { formatPrice, type LibrarySwatch, type Product } from "@/lib/products";
+import { shownPrice, formatPrice, type LibrarySwatch, type Product } from "@/lib/products";
 import ProductCard from "@/components/ProductCard";
 import FitImage from "@/components/FitImage";
 
@@ -112,7 +112,7 @@ export default function CollectionView({
 
   // Price bounds mula sa products (para sa slider)
   const priceBounds = useMemo(() => {
-    const prices = products.map((p) => p.price).filter((n) => n > 0);
+    const prices = products.map((p) => shownPrice(p)).filter((n) => n > 0);
     if (!prices.length) return { min: 0, max: 0 };
     return { min: Math.floor(Math.min(...prices)), max: Math.ceil(Math.max(...prices)) };
   }, [products]);
@@ -169,7 +169,7 @@ export default function CollectionView({
     if (inStockOnly && !madeOnly) result = result.filter((p) => (p.stock ?? 0) > 0);
     if (madeOnly && !inStockOnly) result = result.filter((p) => (p.stock ?? 0) <= 0);
     if (priceActive) {
-      result = result.filter((p) => p.price >= priceMin && p.price <= priceMax);
+      result = result.filter((p) => shownPrice(p) >= priceMin && shownPrice(p) <= priceMax);
     }
     if (colorFilters.length) {
       result = result.filter((p) => swatchNamesOf(p).some((c) => colorFilters.includes(c)));
@@ -186,9 +186,9 @@ export default function CollectionView({
 
     switch (sort) {
       case "price-asc":
-        return [...result].sort((a, b) => a.price - b.price);
+        return [...result].sort((a, b) => shownPrice(a) - shownPrice(b));
       case "price-desc":
-        return [...result].sort((a, b) => b.price - a.price);
+        return [...result].sort((a, b) => shownPrice(b) - shownPrice(a));
       case "new":
         return [...result].sort((a, b) => Number(b.isNew) - Number(a.isNew));
       default:
