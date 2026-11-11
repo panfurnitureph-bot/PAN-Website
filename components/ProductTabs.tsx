@@ -171,7 +171,14 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
     const src = Object.keys(liveMeas).length ? liveMeas : (specBuild?.meas ?? {});
     const k = Object.keys(src).find((x) => re.test(x));
     const n = k ? src[k] : 0;
-    return n > 0 ? String(n) + '"' : undefined;
+    if (!(n > 0)) return undefined;
+    // UNIT MULA SA CONFIG (Joe 2026-11-12, "4 ay naka inch instead of feet"):
+    // ang sukat ay numero lang, kaya ang unit ng measurement sa Item
+    // Configuration ang batayan — ft → 4', cm → 120 cm, iba → 48".
+    const unit = (mto?.measurements ?? []).find((m) => re.test(m.label))?.unit ?? "";
+    if (/^(ft|feet|foot)$/i.test(unit.trim())) return `${n}'`;
+    if (/^cm$/i.test(unit.trim())) return `${n} cm`;
+    return String(n) + '"';
   };
   const liveB = liveInch(/headboard\s*height/i), liveD = liveInch(/bedframe\s*height|base\s*height/i);
   // MATTRESS: bawat modelo ay sariling item (Linen by PAN catalog) — ang kapal

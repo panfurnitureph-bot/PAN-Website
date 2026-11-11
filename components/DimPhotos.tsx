@@ -111,15 +111,20 @@ export default function DimPhotos({ photos, rows, subject, kind = "seat" }: { ph
   const H = totalH ? num(totalH.value) : Math.max(num(seatH?.value ?? "0"), num(backSeat?.value ?? "0"), 1);
   const frac = (v: string) => Math.min(1, num(v) / (H || 1));
   const hasSide = si >= 0 && !!(depth || backSeat || (kind === "seat" && thick));
+  const bedOne = kind === "bed" && !hasSide;
 
   return (
     <div className={`grid gap-3.5 bg-white border border-sand p-4 ${hasSide ? "md:grid-cols-2" : ""}`}>
       <Fig src={all[fi]} alt={`${subject} — front`}>
-        {totalH && <VLine x={f.l - 5} y1={f.t} y2={f.b} label={totalH.value} side="left" />}
+        {/* KAMA NA ISANG LITRATO (Joe 2026-11-12, "nagkabaliktad"): ang 3/4 na
+            kuha ay haba ang mahabang gilid sa kaliwa, at ang headboard ang nasa
+            itaas sa likod — kaya Length sa kaliwa, Headboard Height sa kanan. */}
+        {(bedOne ? depth ?? totalH : totalH) && <VLine x={f.l - 5} y1={f.t} y2={f.b} label={(bedOne ? depth ?? totalH : totalH)!.value} side="left" />}
         {width && <HLine y={f.b + 5} x1={f.l} x2={f.r} label={width.value} pos="below" />}
         {seatH && !hasSide && <VLine x={f.r + 5} y1={f.b - (f.b - f.t) * frac(seatH.value)} y2={f.b} label={seatH.value} side="right" />}
         {(hasSide ? extra ?? undefined : undefined) && <VLine x={f.r + 5} y1={f.b - (f.b - f.t) * frac(extra!.value)} y2={f.b} label={extra!.value} side="right" />}
-        {!hasSide && depth && <VLine x={f.r + 12} y1={f.t} y2={f.t + (f.b - f.t) * 0.3} label={`${depth.value} D`} side="right" />}
+        {bedOne && depth && totalH && <VLine x={f.r + 12} y1={f.t} y2={f.t + (f.b - f.t) * 0.3} label={totalH.value} side="right" />}
+        {!bedOne && !hasSide && depth && <VLine x={f.r + 12} y1={f.t} y2={f.t + (f.b - f.t) * 0.3} label={`${depth.value} D`} side="right" />}
       </Fig>
       {hasSide && (
         <Fig src={all[si]} alt={`${subject} — side`}>
