@@ -48,6 +48,18 @@ async function rest<T>(path: string): Promise<T | null> {
   }
 }
 
+type ShipCity = { name: string; fee: number; active?: boolean };
+type ShipProv = { name: string; cities: ShipCity[]; active?: boolean };
+function withActiveShipping(site: SiteContent): SiteContent {
+  const sh = (site as unknown as { shipping?: { provinces?: ShipProv[] } }).shipping;
+  if (!sh?.provinces) return site;
+  const provinces = sh.provinces
+    .filter((p) => p.active !== false)
+    .map((p) => ({ ...p, cities: (p.cities ?? []).filter((c) => c.active !== false) }))
+    .filter((p) => p.cities.length > 0);
+  return { ...site, shipping: { ...sh, provinces } } as SiteContent;
+}
+
 // Kunin ang lahat ng content nang sabay. Bawat bahagi ay may sariling fallback,
 // kaya ang pagkabigo ng isa ay hindi nagpapabagsak ng iba.
 export async function loadStoreContent(): Promise<StoreContent> {
@@ -71,7 +83,10 @@ export async function loadStoreContent(): Promise<StoreContent> {
     swatches: swatchRows?.length
       ? swatchRows.map((r) => r.data).filter((sw) => (sw as { published?: boolean }).published !== false)
       : FALLBACK.swatches,
-    site: (docs.get("site") as SiteContent) ?? FALLBACK.site,
+    // SHIPPING ON/OFF (IMS Shipping Rates, 2026-11-13): ang probinsya o lungsod
+    // na naka-off (`active: false`) ay hindi inaalok sa checkout, quote at
+    // product shipping estimate. Walang flag = naka-on.
+    site: withActiveShipping((docs.get("site") as SiteContent) ?? FALLBACK.site),
     // Isinasanib sa bundled JSON (2026-09-04): ang bagong homepage keys (trust
     // bar, promo beds, MTO, showrooms…) ay may default kahit hindi pa na-save
     // sa IMS ang dokumento.
