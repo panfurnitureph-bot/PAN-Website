@@ -50,9 +50,9 @@ function deliveryLine(r: Result): { label: string; value: string; firm: boolean 
   const from = new Date(r.placed_at);
   if (isNaN(from.getTime())) return null;
   // Hindi lahat ng order ay may lead_weeks (mga lumang record, o hindi pa
-  // naitatakda sa app). 4–6 na linggo ang standard, kaya yun ang default —
+  // naitatakda sa app). 7–9 na linggo ang standard, kaya yun ang default —
   // mas mabuti nang may tantiya kaysa mag-crash ang buong tracking page.
-  const [lo, hi] = Array.isArray(r.lead_weeks) ? r.lead_weeks : [4, 6];
+  const [lo, hi] = Array.isArray(r.lead_weeks) ? r.lead_weeks : [7, 9];
   const a = new Date(from);
   a.setDate(a.getDate() + lo * 7);
   const b = new Date(from);
