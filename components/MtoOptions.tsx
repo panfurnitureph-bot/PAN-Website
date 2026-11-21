@@ -953,7 +953,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
       <div className={`flex items-center gap-2 px-4 py-2.5 text-[13px] font-semibold ${shipsNow ? "bg-[#E6F2EA] text-[#2F7D4F]" : "bg-goldSoft text-brown"}`}>
         <span className={`h-2 w-2 rounded-full ${shipsNow ? "bg-[#2F7D4F] pf-ping" : "bg-goldDeep"}`} />
         {shipsNow ? `In stock · ${unitsNow} unit${unitsNow === 1 ? "" : "s"}` : "Made to order"}
-        <span className="ml-auto text-[10.5px] font-bold tracking-[0.14em] uppercase opacity-80">{shipsNow ? "Ready to ship" : "4–6 weeks"}</span>
+        <span className="ml-auto text-[10.5px] font-bold tracking-[0.14em] uppercase opacity-80">{shipsNow ? "Ready to ship" : "7–9 weeks"}</span>
       </div>
       <div className="px-4 py-3.5 text-[12.5px] text-stone">
         {shipsNow ? (
@@ -963,7 +963,7 @@ export default function MtoOptions({ cfg, product, site, locked }: { cfg: MtoIte
           </>
         ) : (
           <>
-            <b className="block text-ink font-semibold text-[13.5px]">Delivery in 4–6 weeks</b>
+            <b className="block text-ink font-semibold text-[13.5px]">Delivery in 7–9 weeks</b>
             Built in our San Pedro, Laguna workshop — delivered and set up by our own team. Delivery fee shown at checkout.
           </>
         )}

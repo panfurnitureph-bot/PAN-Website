@@ -769,7 +769,7 @@ export default function ProductDetail({
               <span className="ml-auto text-[10.5px] font-bold tracking-[0.14em] uppercase">{(product.stock ?? 99) <= 3 ? `Only ${product.stock} left` : "Ready to ship"}</span>
             </div>
             <div className="px-4 py-3.5 text-[12.5px] text-stone">
-              <b className="block text-ink font-semibold text-[13.5px]">Delivery in 4–6 weeks</b>
+              <b className="block text-ink font-semibold text-[13.5px]">Delivery in 7–9 weeks</b>
               Made to order in San Pedro, Laguna — delivered and set up by our own team. Delivery fee shown at checkout.
             </div>
           </div>

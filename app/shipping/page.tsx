@@ -76,7 +76,7 @@ export default async function ShippingPage() {
             )}
             <p className="mt-4 max-w-[66ch]">
               In-stock pieces ship within the week. Made-to-order pieces are built in our San Pedro, Laguna
-              workshop and delivered in <b className="text-ink">4–6 weeks</b>.
+              workshop and delivered in <b className="text-ink">7–9 weeks</b>.
             </p>
           </section>
 

@@ -142,7 +142,7 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
   const featuredImage = (copy as { featuredImage?: string } | undefined)?.featuredImage || featured.image;
   const rest = tiles.slice(1, 5);
   const minPrice = Math.min(...tiles.map((t) => t.from).filter((n) => n > 0));
-  const foot = copy?.foot?.length ? copy.foot : ["30% downpayment to start", "4–6 weeks build to delivery", "6-month warranty on frame, foam and workmanship"];
+  const foot = copy?.foot?.length ? copy.foot : ["30% downpayment to start", "7–9 weeks build to delivery", "6-month warranty on frame, foam and workmanship"];
 
   // SHOWCASE (Joe 2026-10-07: "5 · Showcase" sa mockup, na may bagong mga
   // button) — madilim na band, dalawang hanay: sa KALIWA ang kama mag-isa sa

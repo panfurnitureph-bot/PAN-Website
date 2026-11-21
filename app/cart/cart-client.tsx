@@ -62,7 +62,7 @@ export default function CartClient({ products }: { products: Product[] }) {
     <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6 md:py-8">
       <div className="mb-6">
         <h1 className="font-cormorant font-semibold text-[clamp(30px,3.6vw,40px)] leading-[1.05] tracking-[-0.02em]">Your cart</h1>
-        <p className="text-stone text-[14.5px] mt-2">{count} {count === 1 ? "item" : "items"}{anyMto ? " · made to order pieces ship in 4–6 weeks" : ""}</p>
+        <p className="text-stone text-[14.5px] mt-2">{count} {count === 1 ? "item" : "items"}{anyMto ? " · made to order pieces ship in 7–9 weeks" : ""}</p>
       </div>
 
       <div className="grid lg:grid-cols-[minmax(0,1fr)_368px] gap-5 lg:gap-7 items-start">

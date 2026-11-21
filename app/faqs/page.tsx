@@ -33,7 +33,7 @@ export default async function FaqsPage() {
   const handle = messengerHandle((site as unknown as { social?: { facebook?: string } }).social?.facebook);
   const phone = links.whatsapp || links.viber || c.phone || "";
   const cards = [
-    ["truck", "Delivery by our own team", "We deliver with our own trucks and crew. The fee depends on your city and is shown before you pay. Made-to-order pieces arrive in 4–6 weeks."],
+    ["truck", "Delivery by our own team", "We deliver with our own trucks and crew. The fee depends on your city and is shown before you pay. Made-to-order pieces arrive in 7–9 weeks."],
     ["returns", "Returns", "Inspect the piece before you sign. Damage or a wrong item noted at delivery goes back with our team for repair or replacement at no cost."],
     ["shield", "Warranty", "Every delivery comes with a signed certificate: 6 months on promo items and 1 year on customized pieces."],
   ] as const;

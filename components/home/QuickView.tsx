@@ -144,7 +144,7 @@ export default function QuickView() {
               </div>
             ) : (p.description ? <p className="m-0 text-[13px] text-stone leading-relaxed">{p.description.length > 140 ? p.description.slice(0, 137) + "…" : p.description}</p> : null);
           })()}
-          <p className="m-0 text-[12.5px] text-stone">{mto ? "Ships in 4–6 weeks · 30% downpayment to start" : `${colorStock ?? stock} in stock · ships this week`}{p.sku ? <span className="ml-2 text-stone/70">· {p.sku}</span> : null}</p>
+          <p className="m-0 text-[12.5px] text-stone">{mto ? "Ships in 7–9 weeks · 30% downpayment to start" : `${colorStock ?? stock} in stock · ships this week`}{p.sku ? <span className="ml-2 text-stone/70">· {p.sku}</span> : null}</p>
 
           {colorNames.length > 0 && (
             <div className="flex flex-col gap-2">

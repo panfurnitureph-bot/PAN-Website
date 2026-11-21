@@ -500,7 +500,7 @@ export default function ProductTabs({ product, site, mto }: { product: Product; 
                 {[
                   product.colors.length > 0 ? `Upholstered in ${product.colors.length === 1 ? product.colors[0] : `${product.colors.length} colors — ${product.colors.slice(0, 3).join(", ")}${product.colors.length > 3 ? "…" : ""}`}` : "",
                   product.materials ? product.materials.split(/[;\n]/)[0].trim() : "",
-                  (product.stock ?? 0) > 0 ? "Ready unit — ships within the week" : "Made to order in our San Pedro, Laguna workshop · 4–6 weeks",
+                  (product.stock ?? 0) > 0 ? "Ready unit — ships within the week" : "Made to order in our San Pedro, Laguna workshop · 7–9 weeks",
                   "Delivered and set up by our own team, nationwide",
                   "6-month warranty on frame, foam and workmanship",
                 ].filter(Boolean).map((t) => (
@@ -515,7 +515,7 @@ export default function ProductTabs({ product, site, mto }: { product: Product; 
                   ["SKU", product.sku ?? ""],
                   ["Category", (product.categoryTitle ?? product.category.replace(/-/g, " "))],
                   ["Availability", (product.stock ?? 0) > 0 ? "In stock" : "Made to order"],
-                  ["Ships", (product.stock ?? 0) > 0 ? "Within the week" : "4–6 weeks"],
+                  ["Ships", (product.stock ?? 0) > 0 ? "Within the week" : "7–9 weeks"],
                   ["Material", product.materials ? product.materials.split(/[;\n]/)[0].trim() : ""],
                   ["Colors", product.colors.length > 1 ? `${product.colors.length} options` : product.colors[0] ?? ""],
                 ].filter(([, v]) => v).map(([k, v]) => (
