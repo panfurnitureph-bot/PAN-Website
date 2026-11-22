@@ -207,10 +207,14 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
               <small className="text-[9px] lg:text-[9.5px] font-bold tracking-[0.2em] uppercase text-goldDeep">{label}</small>
               <b className="font-cormorant font-semibold text-[20px] lg:text-[26px] leading-none tracking-[-0.02em] text-[#231B11]">{String(sel + 1).padStart(2, "0")}</b>
             </span>
-            <div className="absolute inset-[7%_7%_8%] grid place-items-center">
-              <div className="relative h-full aspect-square max-w-full">
+            {/* Joe 2026-11-22 "di balance": the stage MUST be a true square (lib/subject-box
+                assumes it). On a tile taller than wide, h-full + max-w-full squeezed it, so portrait
+                photos sat off-center. min(100cqw,100cqh) keeps it square; old browsers ignore it
+                and keep the previous size. w 96→84 leaves side room like the product cards. */}
+            <div className="absolute inset-[7%_7%_8%] grid place-items-center [container-type:size]">
+              <div className="relative h-full aspect-square max-w-full supports-[width:1cqw]:w-[min(100cqw,100cqh)] supports-[width:1cqw]:h-[min(100cqw,100cqh)] supports-[width:1cqw]:max-w-none">
                 <i aria-hidden className="absolute left-[8%] right-[8%] top-[80%] h-[8%] rounded-[50%] bg-[radial-gradient(closest-side,rgba(62,50,32,.36),transparent)]" />
-                {list.map((b, i) => <StagePhoto key={b.key} src={photo(b)} alt={i === sel ? b.name : ""} on={i === sel} priority={i === 0} w={96} floor={84} ceil={10} />)}
+                {list.map((b, i) => <StagePhoto key={b.key} src={photo(b)} alt={i === sel ? b.name : ""} on={i === sel} priority={i === 0} w={84} floor={84} ceil={12} />)}
               </div>
             </div>
           </Link>
