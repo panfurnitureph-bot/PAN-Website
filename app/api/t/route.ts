@@ -21,7 +21,9 @@ export async function POST(req: NextRequest) {
   } catch {
     return new NextResponse(null, { status: 400 });
   }
-  const ip = (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() || req.headers.get("x-real-ip") || "";
+  // Lahat ng posibleng IP (CDN/proxy chain) — ang IMS ang pipili ng unang natukoy.
+  const ip = [req.headers.get("cf-connecting-ip"), req.headers.get("true-client-ip"), req.headers.get("x-forwarded-for"), req.headers.get("x-real-ip")]
+    .filter(Boolean).join(",");
   const ua = req.headers.get("user-agent") || "";
   try {
     await fetch(`${APP_URL}/api/web-analytics/collect`, {
