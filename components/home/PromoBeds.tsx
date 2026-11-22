@@ -107,7 +107,8 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
   // Joe 2026-11-22: a card saved in IMS → Promo Beds WITH a bed name is what shows here,
   // in card order. A card whose name matches a published product links to that product
   // page; otherwise to the bed collection. No named card = the published products, as before.
-  const named = ((copy as { cards?: Card[] } | undefined)?.cards ?? []).filter((c) => c && (c.name ?? "").trim());
+  // Joe 2026-11-22: a photo is enough — a card without a name shows as "Promo Bed n".
+  const named = ((copy as { cards?: Card[] } | undefined)?.cards ?? []).filter((c) => c && ((c.name ?? "").trim() || c.image || (c.colorList ?? []).some((x) => x.image)));
   let tiles: Tile[];
   if (named.length) {
     tiles = named.map((c, i) => {
@@ -116,7 +117,7 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
       const sizes = (c.sizeList ?? []).map((s) => ({ size: s.size, price: num(s.price) })).filter((s) => s.price > 0);
       return {
         key: `card-${i}`,
-        name: (c.name ?? "").trim(),
+        name: (c.name ?? "").trim() || `Promo Bed ${i + 1}`,
         href: prod ? `/products/${prod.slug}` : "/collections/bed",
         image: c.image || colorList.find((x) => x.image)?.image || prod?.images[0] || "/images/placeholder.jpg",
         from: num(c.price ?? "") || minOf(sizes.map((s) => s.price)) || (prod ? prod.priceFrom ?? prod.price : 0),
