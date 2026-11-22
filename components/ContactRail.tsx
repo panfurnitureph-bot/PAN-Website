@@ -12,6 +12,9 @@ import { contactLinks, type SiteContent } from "@/lib/products";
 export default function ContactRail({ site }: { site: SiteContent }) {
   const cl = contactLinks(site);
   const [open, setOpen] = useState<string | null>(null);
+  // MOBILE (Joe 2026-11-22, "pag mobile view panget"): below md the five icons fold into ONE
+  // button at the bottom-right; a tap opens them upward. Desktop is unchanged.
+  const [fab, setFab] = useState(false);
   // LOADING BAGO MAG-REDIRECT (Joe 2026-09-12): umiikot na singsing sa icon
   // saglit bago bumukas ang app/tab — kita na may nangyayari. Ang bagong tab
   // (WhatsApp, Gmail) ay binubuksan agad sa loob ng pindot (pinipigilan ng
@@ -97,7 +100,7 @@ export default function ContactRail({ site }: { site: SiteContent }) {
 
   return (
     // NASA GITNA NG KALIWANG GILID (Joe 2026-09-12, "i-center, nasa baba e").
-    <div data-floating className="fixed left-4 top-1/2 z-50 flex -translate-y-1/2 flex-col gap-5 sm:left-5">
+    <div data-floating className="fixed left-4 top-1/2 z-50 flex -translate-y-1/2 flex-col gap-5 sm:left-5 max-md:left-auto max-md:right-4 max-md:top-auto max-md:bottom-5 max-md:translate-y-0 max-md:items-end max-md:gap-3.5">
       {/* ANIMATION (2026-09-12): sunud-sunod na pagpasok mula kaliwa, pintig na
           singsing sa Messenger, at pop ng bati. Naka-off sa reduced-motion. */}
       <style>{`
@@ -114,7 +117,7 @@ export default function ContactRail({ site }: { site: SiteContent }) {
         @media (prefers-reduced-motion: reduce) { .pan-rail-item, .pan-rail-ring, .pan-rail-pop, .pan-rail-wiggle { animation: none !important; } }
       `}</style>
       {items.map((it, i) => (
-        <div key={it.key} className="pan-rail-item relative flex items-center" style={{ animationDelay: `${i * 90}ms` }}
+        <div key={it.key} className={`pan-rail-item relative flex items-center ${fab ? "" : "max-md:hidden"}`} style={{ animationDelay: `${fab ? i * 50 : i * 90}ms` }}
           onMouseEnter={() => setOpen(it.key)} onMouseLeave={() => setOpen((o) => (o === it.key ? null : o))}>
           {/* LAHAT NG ICON MAY ANIMATION (Joe 2026-09-12): pintig na singsing at
               pana-panahong wiggle sa bawat isa, magkakaiba ang oras para hindi
@@ -126,7 +129,7 @@ export default function ContactRail({ site }: { site: SiteContent }) {
             <button
               type="button"
               aria-label={`${it.label} · ${it.text}`}
-              onClick={() => { if (loading) return; spin(it.key); window.setTimeout(() => it.onClick?.(), 650); }}
+              onClick={() => { if (loading) return; spin(it.key); window.setTimeout(() => { it.onClick?.(); setFab(false); }, 650); }}
               onFocus={() => setOpen(it.key)} onBlur={() => setOpen(null)}
               className="pan-rail-wiggle relative flex h-11 w-11 items-center justify-center rounded-full text-white shadow-[0_0_0_1.5px_rgba(226,194,122,.55),0_12px_22px_-12px_rgba(0,0,0,.7)] transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold"
               style={{ background: it.bg, animationDelay: `${1200 + i * 1400}ms` }}
@@ -144,6 +147,7 @@ export default function ContactRail({ site }: { site: SiteContent }) {
             onClick={(e) => {
               if (loading) { e.preventDefault(); return; }
               spin(it.key, it.external ? 900 : 650);
+              window.setTimeout(() => setFab(false), it.external ? 900 : 650);
               if (!it.external) { e.preventDefault(); const href = it.href ?? ""; window.setTimeout(() => { window.location.href = href; }, 650); }
             }}
             onFocus={() => setOpen(it.key)} onBlur={() => setOpen(null)}
@@ -156,7 +160,7 @@ export default function ContactRail({ site }: { site: SiteContent }) {
           )}
           {/* Pop-up na bati sa tabi ng Messenger — pinipindot para magbukas ng chat. */}
           {it.badge && greet && (
-            <div className="pan-rail-pop absolute bottom-0 left-[56px] z-10 w-[15.5rem] rounded-2xl bg-[#FBF7EF] p-3 pr-8 shadow-[0_0_0_1px_rgba(226,194,122,.5),0_30px_50px_-20px_rgba(0,0,0,.5)]">
+            <div className="pan-rail-pop max-md:hidden absolute bottom-0 left-[56px] z-10 w-[15.5rem] rounded-2xl bg-[#FBF7EF] p-3 pr-8 shadow-[0_0_0_1px_rgba(226,194,122,.5),0_30px_50px_-20px_rgba(0,0,0,.5)]">
               <span className="absolute -left-1.5 bottom-4 h-3 w-3 rotate-45 bg-[#FBF7EF] shadow-[-1px_1px_0_rgba(226,194,122,.5)]" />
               <button type="button" aria-label="Close" onClick={dismissGreet} className="absolute right-2 top-2 grid h-6 w-6 place-items-center rounded-full text-stone transition hover:bg-brownDeep hover:text-gold"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden><path d="M6 6l12 12M18 6 6 18" /></svg></button>
               <button type="button" onClick={openChat} className="flex items-start gap-2 text-left">
@@ -170,13 +174,40 @@ export default function ContactRail({ site }: { site: SiteContent }) {
           {/* Bubble text — kanan ng icon, may maliit na tuldok na nakaturo. */}
           <span
             role="tooltip"
-            className={`pointer-events-none absolute left-[52px] whitespace-nowrap rounded-full bg-brownDeep px-3.5 py-1.5 text-[12px] font-semibold text-[#F7EEDC] shadow-[inset_0_0_0_1px_rgba(226,194,122,.4),0_12px_22px_-12px_rgba(0,0,0,.7)] transition-opacity ${open === it.key && !(it.badge && greet) ? "opacity-100" : "opacity-0"}`}
+            className={`pointer-events-none max-md:hidden absolute left-[52px] whitespace-nowrap rounded-full bg-brownDeep px-3.5 py-1.5 text-[12px] font-semibold text-[#F7EEDC] shadow-[inset_0_0_0_1px_rgba(226,194,122,.4),0_12px_22px_-12px_rgba(0,0,0,.7)] transition-opacity ${open === it.key && !(it.badge && greet) ? "opacity-100" : "opacity-0"}`}
           >
             <span className="absolute -left-1 top-1/2 h-2 w-2 -translate-y-1/2 rotate-45 bg-brownDeep" />
             {it.label} · {it.text}
           </span>
         </div>
       ))}
+      {/* MOBILE TOGGLE — one button; open = the icons above it, X closes. */}
+      <div className="relative md:hidden">
+        {greet && !fab && (
+          <div className="pan-rail-pop absolute bottom-1 right-[60px] z-10 w-[14.5rem] rounded-2xl bg-[#FBF7EF] p-3 pr-8 shadow-[0_0_0_1px_rgba(226,194,122,.5),0_30px_50px_-20px_rgba(0,0,0,.5)]">
+            <span className="absolute -right-1.5 bottom-4 h-3 w-3 rotate-45 bg-[#FBF7EF] shadow-[1px_-1px_0_rgba(226,194,122,.5)]" />
+            <button type="button" aria-label="Close" onClick={dismissGreet} className="absolute right-2 top-2 grid h-6 w-6 place-items-center rounded-full text-stone"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden><path d="M6 6l12 12M18 6 6 18" /></svg></button>
+            <button type="button" onClick={() => { dismissGreet(); setFab(true); }} className="text-left text-[12.5px] leading-snug text-ink">
+              <b>Hi there!</b> Need help with a build or an order? Tap to message us.
+            </button>
+          </div>
+        )}
+        <span aria-hidden="true" className={`pan-rail-ring pointer-events-none absolute inset-0 rounded-full bg-[#3E3220] ${fab ? "hidden" : ""}`} />
+        <button
+          type="button"
+          aria-label={fab ? "Close contact options" : "Contact us"}
+          aria-expanded={fab}
+          onClick={() => { dismissGreet(); setFab((f) => !f); }}
+          className="relative flex h-14 w-14 items-center justify-center rounded-full bg-[#3E3220] text-[#E2C27A] shadow-[0_0_0_1.5px_rgba(226,194,122,.7),0_14px_26px_-12px_rgba(0,0,0,.8)] focus:outline-none focus:ring-2 focus:ring-gold"
+        >
+          {fab ? (
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden><path d="M6 6l12 12M18 6 6 18" /></svg>
+          ) : (
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M21 12a8.5 8.5 0 0 1-12.6 7.4L3 21l1.6-5.4A8.5 8.5 0 1 1 21 12z" /><path d="M8.5 12h.01M12 12h.01M15.5 12h.01" /></svg>
+          )}
+          {!fab && <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">1</span>}
+        </button>
+      </div>
     </div>
   );
 }
