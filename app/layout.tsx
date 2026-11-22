@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import { Suspense } from "react";
 import ChatBubble from "@/components/ChatBubble";
 import ContactRail from "@/components/ContactRail";
+import Analytics from "@/components/Analytics";
 import TrackButton from "@/components/TrackButton";
 import EmbedMode from "@/components/EmbedMode";
 import ContentLive from "@/components/ContentLive";
@@ -107,6 +108,7 @@ export default async function RootLayout({
           <TrackButton />
           <ChatBubble site={site} />
           <ContactRail site={site} />
+          <Analytics />
           <Reveal />
           <Toast />
           {/* Quick view (product cards) at ang fabric library ay para sa LAHAT ng

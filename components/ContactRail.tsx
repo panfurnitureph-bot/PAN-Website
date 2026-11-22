@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import { contactLinks, type SiteContent } from "@/lib/products";
+import { trackContact } from "@/lib/analytics";
 
 // CONTACT RAIL (Joe 2026-09-12, "gawin na icon, ilagay sa left side, may
 // bubble text"): WhatsApp / Viber / Email bilang bilog na icon sa kaliwang-
@@ -129,7 +130,7 @@ export default function ContactRail({ site }: { site: SiteContent }) {
             <button
               type="button"
               aria-label={`${it.label} · ${it.text}`}
-              onClick={() => { if (loading) return; spin(it.key); window.setTimeout(() => { it.onClick?.(); setFab(false); }, 650); }}
+              onClick={() => { if (loading) return; trackContact(it.key); spin(it.key); window.setTimeout(() => { it.onClick?.(); setFab(false); }, 650); }}
               onFocus={() => setOpen(it.key)} onBlur={() => setOpen(null)}
               className="pan-rail-wiggle relative flex h-11 w-11 items-center justify-center rounded-full text-white shadow-[0_0_0_1.5px_rgba(226,194,122,.55),0_12px_22px_-12px_rgba(0,0,0,.7)] transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold"
               style={{ background: it.bg, animationDelay: `${1200 + i * 1400}ms` }}
@@ -146,6 +147,7 @@ export default function ContactRail({ site }: { site: SiteContent }) {
             aria-label={`${it.label} · ${it.text}`}
             onClick={(e) => {
               if (loading) { e.preventDefault(); return; }
+              trackContact(it.key);
               spin(it.key, it.external ? 900 : 650);
               window.setTimeout(() => setFab(false), it.external ? 900 : 650);
               if (!it.external) { e.preventDefault(); const href = it.href ?? ""; window.setTimeout(() => { window.location.href = href; }, 650); }

@@ -25,6 +25,12 @@ const SECTIONS: { h: string; body: string[] }[] = [
     ],
   },
   {
+    h: "Website visit statistics",
+    body: [
+      "To understand how people find and use this website, we count page visits on our own systems. Each browser gets a random visit ID stored on your device (no cookies, no name, email or phone number). We record the page you opened, the kind of device, how you arrived (for example a Facebook ad or Google) and an approximate province or city worked out from your internet connection. Your IP address is used only for that estimate and is not stored. Visit statistics are kept for up to 400 days and are not shared or sold.",
+    ],
+  },
+  {
     h: "Retention and security",
     body: [
       "We keep order records for as long as required for warranty, accounting, and legal obligations under Philippine law. Access to customer data inside our systems is role-restricted and logged.",
