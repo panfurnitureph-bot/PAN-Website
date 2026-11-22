@@ -104,8 +104,28 @@ export default function PromoBeds({ products, copy }: { products: Product[]; cop
   const photoFor = (name: string) => cards.find((c) => norm(c.name ?? "") === norm(name))?.image || "";
   const beds = products.filter((p) => p.category === "bed");
 
+  // Joe 2026-11-22: a card saved in IMS → Promo Beds WITH a bed name is what shows here,
+  // in card order. A card whose name matches a published product links to that product
+  // page; otherwise to the bed collection. No named card = the published products, as before.
+  const named = ((copy as { cards?: Card[] } | undefined)?.cards ?? []).filter((c) => c && (c.name ?? "").trim());
   let tiles: Tile[];
-  if (beds.length) {
+  if (named.length) {
+    tiles = named.map((c, i) => {
+      const prod = beds.find((b) => norm(b.name) === norm(c.name ?? ""));
+      const colorList = (c.colorList ?? []).filter((x) => x.name || x.image);
+      const sizes = (c.sizeList ?? []).map((s) => ({ size: s.size, price: num(s.price) })).filter((s) => s.price > 0);
+      return {
+        key: `card-${i}`,
+        name: (c.name ?? "").trim(),
+        href: prod ? `/products/${prod.slug}` : "/collections/bed",
+        image: c.image || colorList.find((x) => x.image)?.image || prod?.images[0] || "/images/placeholder.jpg",
+        from: num(c.price ?? "") || minOf(sizes.map((s) => s.price)) || (prod ? prod.priceFrom ?? prod.price : 0),
+        sizes: sizes.length ? sizes : (prod?.bedSizes ?? []).filter((s) => s.enabled !== false && (s.price ?? 0) > 0).map((s) => ({ size: s.size, price: s.price! })),
+        colors: colorList.map((x, k) => ({ name: x.name || `Color ${k + 1}`, hex: x.hex, swatch: x.image, focus: x.focus })),
+        ...(prod ? specOf(prod.dimensions || (prod as { mtoReadySpecs?: string }).mtoReadySpecs || "") : { feat: "", fabric: "" }),
+      };
+    });
+  } else if (beds.length) {
     tiles = beds.map((b) => ({
       key: b.slug, name: b.name, href: `/products/${b.slug}`,
       image: photoFor(b.name) || b.images[0] || "/images/placeholder.jpg",
