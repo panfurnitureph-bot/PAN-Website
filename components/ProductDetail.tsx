@@ -393,13 +393,19 @@ export default function ProductDetail({
             className="relative aspect-square w-full pf-stage overflow-hidden rounded-[22px] shadow-[0_0_0_1px_#E4DACA,0_30px_50px_-36px_rgba(62,50,32,.6)] cursor-zoom-in"
             aria-label="Open fullscreen gallery"
           >
-            <i aria-hidden className="pf-floor" />
-            <FitImage src={galleryImages[imageIdx]} alt={product.name} fill={0.76} priority className="mix-blend-multiply" sizes="620px" />
-            <span
-              aria-hidden
-              className={`pointer-events-none absolute inset-0 bg-white bg-no-repeat transition-opacity duration-150 ${zoom ? "opacity-100" : "opacity-0"}`}
-              style={{ backgroundImage: `url("${galleryImages[imageIdx]}")`, backgroundSize: "220%", backgroundPosition: zoom ? `${zoom.x}% ${zoom.y}%` : "center" }}
-            />
+            {/* HOVER ZOOM (Joe 2026-11-23, "napuputol ung details"): dating ang
+                buong raw na litrato ang pinalalaki nang 220% bilang background —
+                iba sa naka-fit na larawan, kaya putol at tagilid ang nakikita.
+                Ngayon ang MISMONG nakikitang larawan ang pinalalaki (2×) mula sa
+                tinuturo ng mouse. Ang balot ay pf-stage para hindi bumalik ang
+                puting background ng mix-blend-multiply na litrato habang naka-zoom. */}
+            <div
+              className="absolute inset-0 pf-stage transition-transform duration-200 ease-out"
+              style={{ transform: zoom ? "scale(2)" : "scale(1)", transformOrigin: zoom ? `${zoom.x}% ${zoom.y}%` : "50% 50%" }}
+            >
+              <i aria-hidden className="pf-floor" />
+              <FitImage src={galleryImages[imageIdx]} alt={product.name} fill={0.76} priority className="mix-blend-multiply" sizes="1240px" />
+            </div>
             <span className="absolute bottom-3.5 right-3.5 rounded-full bg-white/90 px-3 py-1.5 text-[11px] text-stone shadow-[0_0_0_1px_#E4DACA]">Hover to zoom · click for full screen</span>
           </button>
         </div>
