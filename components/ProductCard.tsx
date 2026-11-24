@@ -18,6 +18,22 @@ import { readyCartLine } from "@/lib/ready-cart";
 import FitImage from "@/components/FitImage";
 import { toast } from "@/components/Toast";
 
+// SIZE LABEL SA CARD (Joe 2026-11-24, "bakit may size king dito e ottoman"):
+// dating laging "Single–King" kapag may sizes — pati Ottoman. Ngayon galing sa
+// mismong sizes: kama (Single/Twin/…/King) = unang–huling pangalan; iba
+// (16x18 Standard, 4 Seater…) = ang iisang size o "N sizes".
+const BED_SIZE = /^(single|twin|double|full|queen|king|california|super)/i;
+function sizeRangeLabel(list?: { size: string; enabled?: boolean }[]): string {
+  const sizes = (list ?? []).filter((s) => s.enabled !== false && s.size?.trim());
+  if (!sizes.length) return "";
+  const name = (s: string) => s.trim().split(/\s+/)[0];
+  if (sizes.every((s) => BED_SIZE.test(s.size.trim()))) {
+    const a = name(sizes[0].size), b = name(sizes[sizes.length - 1].size);
+    return a === b ? a : `${a}–${b}`;
+  }
+  return sizes.length === 1 ? sizes[0].size.trim() : `${sizes.length} sizes`;
+}
+
 export default function ProductCard({
   product,
   square = true,
@@ -142,7 +158,7 @@ export default function ProductCard({
             {onSale && <span className="font-sans text-stone line-through ml-2 text-xs font-normal tracking-normal">{formatPrice(product.compareAtPrice!)}</span>}
           </span>
           <span className="text-[11px] text-stone whitespace-nowrap">
-            {variants.length > 1 ? `${variants.length} colors` : sizePick ? sizePick.label.replace(/x/i, "×") : inStock ? "Ships this week" : product.bedSizes?.length ? "Single–King" : ""}
+            {variants.length > 1 ? `${variants.length} colors` : sizePick ? sizePick.label.replace(/x/i, "×") : inStock ? "Ships this week" : sizeRangeLabel(product.bedSizes)}
           </span>
         </div>
         {/* UNIFORM NA TAAS (2026-09-04, "dapat uniform"): laging nakalaan ang
