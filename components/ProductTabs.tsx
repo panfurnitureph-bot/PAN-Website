@@ -164,7 +164,7 @@ function DimensionsPanel({ product, mto }: { product: Product; mto?: MtoItemConf
     const on = (mto?.sizes ?? []).filter((x) => x.on !== false);
     const pick = on.find((x) => sizeName && x.label.toLowerCase().startsWith(sizeName.toLowerCase())) ?? on[0];
     const m = pick ? /(\d+)\s*x\s*(\d+)/i.exec(pick.label) : null;
-    if (m) mRows.rows.push({ k: String.fromCharCode(65 + mRows.rows.length), label: "Opens to (mattress)", value: `${m[1]}"×${m[2]}"` });
+    if (m) mRows.rows.push({ k: String.fromCharCode(Math.max(64, ...mRows.rows.map((r) => r.k.charCodeAt(0))) + 1), label: "Opens to (mattress)", value: `${m[1]}"×${m[2]}"` });
   }
   const liveInch = (re: RegExp) => {
     // Live na sukat ng customizer; kung wala (locked), ang nasa orihinal na specs.

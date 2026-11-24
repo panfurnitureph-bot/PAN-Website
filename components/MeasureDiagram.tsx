@@ -81,12 +81,17 @@ export function measureRows(kind: MeasureKind, live?: Record<string, number> | n
     return n > 0 ? n : undefined;
   };
   let isLive = false;
-  const rows: MeasureRow[] = spec.labels.map((l, i) => {
+  // WALANG BUILT-IN NA DEFAULT (Joe 2026-11-24, "wala pako nilalagay ng details
+  // meron na agad sa dimension"): sukat na hindi nilagay sa IMS ay hindi
+  // ipinapakita — dati Height 30" / Seat Height 17" ng category ang lumalabas
+  // sa bawat produkto. Ang letra ay nananatili sa puwesto nito sa drawing.
+  const rows: MeasureRow[] = [];
+  spec.labels.forEach((l, i) => {
     const m = on.find((x) => norm(x.label) === norm(l.label));
     const lv = liveOf(l.label);
     if (lv !== undefined) isLive = true;
-    const n = lv ?? (m?.def ?? l.def);
-    return { k: String.fromCharCode(65 + i), label: m?.label ?? l.label, value: fmt(n, m?.unit ?? l.unit) };
+    const n = lv ?? m?.def ?? 0;
+    if (n > 0) rows.push({ k: String.fromCharCode(65 + i), label: m?.label ?? l.label, value: fmt(n, m?.unit ?? l.unit) });
   });
   let i = spec.labels.length;
   for (const m of on) {
@@ -94,7 +99,7 @@ export function measureRows(kind: MeasureKind, live?: Record<string, number> | n
     const lv = liveOf(m.label);
     if (lv !== undefined) isLive = true;
     const n = lv ?? m.def ?? 0;
-    rows.push({ k: String.fromCharCode(65 + i++), label: m.label, value: n > 0 ? fmt(n, m.unit) : "—" });
+    if (n > 0) rows.push({ k: String.fromCharCode(65 + i++), label: m.label, value: fmt(n, m.unit) });
   }
   return { rows, live: isLive };
 }
