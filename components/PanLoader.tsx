@@ -8,12 +8,11 @@ export default function PanLoader({ label = "Loading…", size = 150, className 
     <div role="status" aria-live="polite" className={`flex flex-col items-center gap-5 ${className}`}>
       <span className="relative block" style={{ width: size, height: size }}>
         <span aria-hidden className="pf-ring absolute inset-0 rounded-full" />
-        {/* Ang seal ay parisukat na litrato na kayumanggi ang background, kaya
-            kayumanggi rin ang bilog at punong-puno ito (parang barya), hindi
-            parisukat sa loob ng puting bilog. */}
-        <span aria-hidden className="pf-breathe absolute inset-[11px] grid place-items-center overflow-hidden rounded-full bg-brown shadow-[0_0_0_1.5px_#E2C27A,0_18px_30px_-18px_rgba(62,50,32,.7)]">
+        {/* HD NA BARYA (Joe 2026-11-26): ang madilim na PAN coin logo (347px, transparent
+            ang gilid, may sariling gintong singsing) — malinaw kahit sa 2x na screen. */}
+        <span aria-hidden className="pf-breathe absolute inset-[11px] grid place-items-center rounded-full shadow-[0_18px_30px_-18px_rgba(62,50,32,.7)]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/pan-seal.png" alt="" className="h-full w-full object-cover" />
+          <img src="/images/pan-coin.png" alt="" className="h-full w-full object-contain" />
         </span>
       </span>
       <span className="text-[13px] tracking-[0.02em] text-stone">{label}</span>
