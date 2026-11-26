@@ -131,8 +131,7 @@ export default function ProductCard({
             ang Quick view ay sa button lang, DESKTOP LANG (Joe 2026-10-09, "bakit may quick
             view agad sa mobile"): walang hover sa telepono kaya laging kita dati; tago na sa < lg. */}
         <Link href={`/products/${product.slug}`} className="absolute inset-0 block pf-stage transition-transform duration-500 ease-out group-hover:scale-[1.06]">
-          <i aria-hidden className="pf-floor" />
-          <FitImage src={hero} alt={product.name} className={`mix-blend-multiply transition-opacity duration-300 ${showAlt ? "group-hover:opacity-0" : ""}`} sizes="(min-width: 1100px) 240px, (min-width: 640px) 33vw, 70vw" />
+          <FitImage shadow src={hero} alt={product.name} className={`mix-blend-multiply transition-opacity duration-300 ${showAlt ? "group-hover:opacity-0" : ""}`} sizes="(min-width: 1100px) 240px, (min-width: 640px) 33vw, 70vw" />
           {showAlt && <FitImage src={alt!} alt="" className="mix-blend-multiply opacity-0 transition-opacity duration-300 group-hover:opacity-100" sizes="240px" />}
         </Link>
         {quickView && (

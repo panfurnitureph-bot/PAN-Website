@@ -401,10 +401,9 @@ export default function ProductDetail({
                 puting background ng mix-blend-multiply na litrato habang naka-zoom. */}
             <div
               className="absolute inset-0 pf-stage transition-transform duration-200 ease-out"
-              style={{ transform: zoom ? "scale(2)" : "scale(1)", transformOrigin: zoom ? `${zoom.x}% ${zoom.y}%` : "50% 50%" }}
+              style={{ transform: zoom ? "scale(1.5)" : "scale(1)", transformOrigin: zoom ? `${zoom.x}% ${zoom.y}%` : "50% 50%" }}
             >
-              <i aria-hidden className="pf-floor" />
-              <FitImage src={galleryImages[imageIdx]} alt={product.name} fill={0.76} priority className="mix-blend-multiply" sizes="1240px" />
+              <FitImage shadow src={galleryImages[imageIdx]} alt={product.name} fill={0.76} priority className="mix-blend-multiply" sizes="1240px" />
             </div>
             <span className="absolute bottom-3.5 right-3.5 rounded-full bg-white/90 px-3 py-1.5 text-[11px] text-stone shadow-[0_0_0_1px_#E4DACA]">Hover to zoom · click for full screen</span>
           </button>
